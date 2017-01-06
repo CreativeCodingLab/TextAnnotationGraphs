@@ -1,0 +1,15 @@
+#OS files and Swap Files
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
+
+#Vim
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+

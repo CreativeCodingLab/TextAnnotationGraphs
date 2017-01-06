@@ -1,0 +1,133 @@
+<html>
+<head>
+</head>
+
+<body>
+
+<div id="drawing"></div>
+ 
+<script src="libs/svg.js"></script>
+<script src="libs/svg.draggable.js"></script>
+<script src="libs/lodash.js"></script>
+
+<script src="js/enums.js"></script>
+<script src="js/annotate.js"></script>
+<script src="js/render.js"></script>
+<script src="js/interact.js"></script>
+<script src="js/utils.js"></script>
+
+<script type="text/javascript">
+
+var debug = true;
+
+var svgWidth = 500; //window.innerWidth - 16;
+var svgHeight = 1000;
+
+
+//var draw = SVG('drawing').size('100%', '100%');
+var draw = SVG('drawing').size(svgWidth, svgHeight);
+
+var fontstyle = {
+family:   'Brown' //'Helvetica'
+            , size:    8 
+            , anchor:   'left'
+            , leading:  '1.0em'
+            , 
+};
+
+var isDragging = false;
+
+//var rectSize = 12; //is this being used?
+var levelpadding = 6;
+var /*textpadding */ padding = 8; //15; //this is the padding within each word rect, between the text and the edge
+var wordpadding = 5;
+var topMargin = 0;
+var edgepadding = 10;
+
+
+
+var littleBitForHeight = 2; //this would depend on the font... fudging here to make centering look better
+
+var handleW = 10;
+var handleH = (padding * 2) + littleBitForHeight; 
+var handleColor = '#ff0000';
+var handleOpacity= 0.1;
+
+var arrowH = 9;
+var arrowMH = 7; //4
+var arrowW = 4; //3
+
+var wordHeight = (padding * 2) + littleBitForHeight;
+var minWordSize = 30; //getTextWidthAndHeight2("i") + (handleW * 2);
+
+var rowY = 0;
+var rowRects = [];
+var evenRowsColor = '#efeff4';
+var oddRowsColor = '#dddddf';
+var evenRowsColor_selected = '#cdcdff';
+var oddRowsColor_selected = '#bbbbff';
+var rowOpacity = 1.0;
+var dragRectSide = 8;
+var dragRectMargin = 2;
+var rowOffsetX = 0;
+var rowOffsetWord = null;
+
+var dragDir = directions.NONE;
+var prevX = -1;
+var minWordWidth = 10; //used when dragging handles to shrink or grow word size
+
+var linkStrokeThickness = 1.5;
+var linkStrokeColor = '#cc9999';
+var linkStrokeOpacity = 1.0;
+
+var linkStrokeThickness_selected = 1.5;
+var linkStrokeColor_selected = '#449944';
+var linkStrokeOpacity_selected = 1.0;
+
+var attachmentMargin = 0.1; //maybe this should be a percentage? not an absolute pixel value?
+
+var arrowColor = '#000000';
+var arrowOpacity = 1.0;
+var groupAllElements = draw.group(); //this will store all LINK elements, so that they can be redrawn when textboxes move...
+
+var rows = []; //list of Row object, each of those has a list of Word objects
+var rowBaseheights = []; 
+
+var word2word_strategy = strategies.FARTHEST;
+var word2link_strategy = strategies.FARTHEST; 
+var link2link_strategy = strategies.FARTHEST; 
+
+
+
+//set up has to be done in this order... probably can simplify this...
+
+
+// 1. create Words and Links objects (in utils.js) */
+var wordObjs = createTestWords(20, 1, 15);
+var linkObjs = createTestLinks(5, 5, 5); 
+
+// 2. draw words and boxes around words
+drawWords(wordObjs);
+
+// 3. figure out offsets for where links attach (depending on how many words / links there are)
+arrangeOffsetValsForAttachmentPoints(linkObjs); //, word2link_strategy);
+arrangeOffsetValsForAttachmentPoints(wordObjs); //, word2word_strategy);
+
+// 4. draw each of the links
+
+//create a group so that we can delete it and redraw as needed, prob should be more granular, ie, by row
+var groupAllElements = draw.group();
+
+Object.keys(linkObjs).forEach(function(key) {
+   
+   drawLink(linkObjs[key]);
+    });
+
+
+
+
+
+</script>
+</body>
+</html>
+
