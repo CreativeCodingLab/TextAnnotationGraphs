@@ -27,6 +27,12 @@ var svgHeight = 1000;
 //var draw = SVG('drawing').size('100%', '100%');
 var draw = SVG('drawing').size(svgWidth, svgHeight);
 
+
+/*
+   TODO - fix so text size / typeface can be changed dynamically without messing up layout 
+   TODO - different sized text for word labels and link labels 
+ */
+
 var fontstyle = {
 family:   'Brown' //'Helvetica'
             , size:    8 
@@ -38,7 +44,7 @@ family:   'Brown' //'Helvetica'
 var isDragging = false;
 
 //var rectSize = 12; //is this being used?
-var levelpadding = 6;
+var levelpadding = 16;
 var /*textpadding */ padding = 8; //15; //this is the padding within each word rect, between the text and the edge
 var wordpadding = 5;
 var topMargin = 0;
