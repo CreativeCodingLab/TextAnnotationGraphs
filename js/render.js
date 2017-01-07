@@ -1,22 +1,3 @@
-/*
-function getTextWidthAndHeight(word) {
-  var text2 = draw.text(word).font(fontstyle);
-    textbbox = text2.bbox();
-    text2.remove();
-
-    var uw = textbbox.w;
-
-     //forcing width >= minWordSize
-    
-    if (uw < minWordSize - (padding*2) ) {
-      //uw = minWordSize - (padding*2) ;
-    }
-   
-    return {w:uw, h:textbbox.h};
-}
-*/
-
-
 
 
 //gets max slot number to be assigned to this word
@@ -215,6 +196,17 @@ function drawWord(word) {
        
 }
 
+function drawLinks(ls) {
+  arrangeOffsetValsForAttachmentPoints(linkObjs); 
+  arrangeOffsetValsForAttachmentPoints(wordObjs); 
+
+  groupAllElements = draw.group();
+
+  Object.keys(ls).forEach(function(key) {
+    drawLink(ls[key]);
+  });
+}
+
 function drawWords(words) {
 
   var row = 0;
@@ -257,11 +249,11 @@ function getXPosForAttachmentByPercentageOffset(link) {
   var lengthOfHalfOfLeftWord = ((rightX_1 - leftX_1) / 2);
   var lengthOfHalfOfRightWord = ((rightX_2 - leftX_2) / 2)
 
-  if (link.leftAttach == 0) { //attaches to the left side of the left word
-    xL = leftX_1 + (lengthOfHalfOfLeftWord * link.x1percent) ;
-  } else { //right
-    xL = (rightX_1) - ( lengthOfHalfOfLeftWord * link.x1percent); 
-  }
+    if (link.leftAttach == 0) { //attaches to the left side of the left word
+      xL = leftX_1 + (lengthOfHalfOfLeftWord * link.x1percent) ;
+    } else { //right
+      xL = (rightX_1) - ( lengthOfHalfOfLeftWord * link.x1percent); 
+    }
 
   if (link.rightAttach == 0) { //attaches to the left side of the right word
     xR =  leftX_2 + (lengthOfHalfOfRightWord * link.x2percent); 
@@ -402,16 +394,13 @@ function drawLink(link) {
 
         drawLinkLabel("fin",  (p2x+p3x) / 2, p2y, rows[i].color, useOpacity2);
 
-
-
       } else { //middle row...
 
         var availableHeight = rows[i].baseHeight - rows[i].rect.bbox().y;
-        var percentagePadding = availableHeight /  (rows[i].maxSlots + 1);
+        var percentagePadding = availableHeight / (rows[i].maxSlots + 1);
 
         var useOpacity = linkStrokeOpacity;
-         var useOpacity2 = linkStrokeOpacity;
-
+        var useOpacity2 = linkStrokeOpacity;
 
         if (percentagePadding < hidePercentage) { 
           useOpacity = 0.0; 
@@ -463,8 +452,6 @@ function drawLink(link) {
       useOpacity2 = 0.0; 
     }
 
-
-
     y1 = rows[minRow].baseHeight - link.leftWord.h * percentagePadding;
     y2 = rows[minRow].baseHeight - link.h * percentagePadding;
     y3 = rows[minRow].baseHeight - link.h * percentagePadding;
@@ -482,22 +469,42 @@ function drawLink(link) {
     var p4x = x4; 
     var p4y = y4;
 
-    var line = groupAllElements.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y],[p4x,p4y] ]).stroke({ width: linkStrokeThickness, color:linkStrokeColor, opacity:useOpacity}).fill('none');
+    //var line = groupAllElements.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y],[p4x,p4y] ]).stroke({ width: linkStrokeThickness, color:linkStrokeColor, opacity:useOpacity}).fill('none');
+    var line = groupAllElements.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y],[p4x,p4y] ]);
 
     link.lines.push(line); 
     link.linesLeftX.push(p1x);
     link.linesRightX.push(p4x);
 
-    if (link.direction == directions.FORWARD || link.direction == directions.BOTH) {
-      drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity   );
-    } else {
-      drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity );
-    }
+    if (link.direction == directions.FORWARD) {
+      drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity);
 
-    if (link.direction == directions.BACKWARD || link.direction == directions.BOTH) {
+      drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity   );
+
+      line.style(styles.forwardLine);
+
+    } else if (link.direction == directions.BACKWARD) {
       drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity ) ;
+
+      drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity );
+
+      line.style(styles.backwardLine);
+    } else if (link.direction == directions.BOTH) {
+
+      drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity ) ;
+
+      drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity   );
+
+      line.style(styles.bothLine);
+
     } else {
       drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity);
+
+
+      drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity );
+
+
+      line.style(styles.noneLine);
 
     }
 

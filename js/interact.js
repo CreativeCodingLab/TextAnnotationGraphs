@@ -367,9 +367,9 @@ function checkIfCanDragRightHandleLeft(x, y, word) {
     rx = rows[word.row.idx].words[posInRow + 1].leftX - handleW;
     rw = rx - word.leftX + handleW;
     setWordToXW(word, word.leftX, rw);
-  } else if (x + handleW - word.leftX < minWordSize) {
-    rx = word.leftX + minWordSize - handleW;
-    rw = minWordSize;
+  } else if (x + handleW - word.leftX < minWordWidth) {
+    rx = word.leftX + minWordWidth - handleW;
+    rw = minWordWidth;
     setWordToXW(word, word.leftX, rw);
   } else {
     rx = x;
@@ -386,9 +386,9 @@ function checkIfCanDragRightHandleRight(x, y, word) {
   var rx, rw;
   var posInRow = word.row.words.indexOf(word);
 
-  if (x < word.leftX + minWordSize - handleW) {
-    rx = word.leftX + minWordSize - handleW;
-    rw = minWordSize;
+  if (x < word.leftX + minWordWidth - handleW) {
+    rx = word.leftX + minWordWidth - handleW;
+    rw = minWordWidth;
     setWordToXW(word, word.leftX, rw);
 
   } else if (posInRow == word.row.words.length - 1 && x > (svgWidth - edgepadding - handleW) ) {
@@ -426,9 +426,9 @@ function checkIfCanDragLeftHandleRight(x, y, word) {
   } else if (posInRow > 0 && x < rows[word.row.idx].words[posInRow - 1].rightX) {
     rx = rows[word.row.idx].words[posInRow - 1].rightX;
     rw = word.rightX - rx;
-  } else if (x > word.rightX - minWordSize) {
-    rx = word.rightX - minWordSize;
-    rw = minWordSize;
+  } else if (x > word.rightX - minWordWidth) {
+    rx = word.rightX - minWordWidth;
+    rw = minWordWidth;
   } else {
     rx = x;
     rw = word.rightX - rx;
@@ -444,9 +444,9 @@ function checkIfCanDragLeftHandleLeft(x, y, word) {
   var rx, rw;
   var posInRow = word.row.words.indexOf(word);
 
-  if (x > word.rightX - minWordSize) {
-    rx = word.rightX - minWordSize;
-    rw = minWordSize; 
+  if (x > word.rightX - minWordWidth) {
+    rx = word.rightX - minWordWidth;
+    rw = minWordWidth; 
     //prob want to return here...
   } else {
     rx = x;

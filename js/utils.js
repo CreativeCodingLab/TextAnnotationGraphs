@@ -32,7 +32,7 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
     var rand1 = getRandomInt(0, wordObjs.length-1);
     var rand2 = getRandomInt(0, wordObjs.length-1);
 
-    var direction = getRandomInt(0,2);
+    var direction = getRandomInt(-1,2);
 
     if (rand1 != rand2) {
       ls[cidx++] = new Link(wordObjs[rand1], wordObjs[rand2], direction);
