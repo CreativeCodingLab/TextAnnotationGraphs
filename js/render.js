@@ -1,4 +1,4 @@
-
+/*
 function getTextWidthAndHeight(word) {
   var text2 = draw.text(word).font(fontstyle);
     textbbox = text2.bbox();
@@ -14,9 +14,9 @@ function getTextWidthAndHeight(word) {
    
     return {w:uw, h:textbbox.h};
 }
+*/
 
-
-function getTextWidthAndHeight2(word) {
+function getTextWidthAndHeight(word) {
   var text2 = draw.text(word).font(fontstyle);
     textbbox = text2.bbox();
     text2.remove();
@@ -175,7 +175,7 @@ function drawWord(word) {
   console.log(" in drawWord : word.row.ry = " + word.row.ry);
   //    var test = word.row.ry;// + word.row.rh; //word.wy;
 
-  var textwh = getTextWidthAndHeight2(word.val);
+  var textwh = getTextWidthAndHeight(word.val);
 
   var text = draw.text(function(add) {
       
@@ -347,6 +347,9 @@ function drawLink(link) {
           drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity );
         }
 
+        drawLinkLabel("top",  (p2x+p3x) / 2, p2y);
+
+
 
       } else if (i == maxRow) { //LAST ROW
 
@@ -387,6 +390,10 @@ function drawLink(link) {
           drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity );
         }
 
+        drawLinkLabel("fin",  (p2x+p3x) / 2, p2y);
+
+
+
       } else { //middle row...
 
         var availableHeight = rows[i].baseHeight - rows[i].rect.bbox().y;
@@ -411,6 +418,13 @@ function drawLink(link) {
         link.lines.push(line);
         link.linesLeftX.push(p2x);
         link.linesRightX.push(p3x);
+
+
+        drawLinkLabel("mid",  (p2x+p3x) / 2, p2y);
+
+
+
+
       }
     }
 
@@ -421,33 +435,33 @@ function drawLink(link) {
     var availableHeight = rows[minRow].baseHeight - rows[minRow].rect.bbox().y;
     var percentagePadding = availableHeight / (rows[minRow].maxSlots + 1);
 
-   console.log("rows[minRow].baseHeight = " + rows[minRow].baseHeight);
-   console.log("availableHeight = " + availableHeight);
-  
+    console.log("rows[minRow].baseHeight = " + rows[minRow].baseHeight);
+    console.log("availableHeight = " + availableHeight);
 
-     var useOpacity = linkStrokeOpacity;
-        if (percentagePadding < 2) { 
-          useOpacity = 0.0; 
-        }
+
+    var useOpacity = linkStrokeOpacity;
+    if (percentagePadding < 2) { 
+      useOpacity = 0.0; 
+    }
 
     y1 = rows[minRow].baseHeight - link.leftWord.h * percentagePadding;
     y2 = rows[minRow].baseHeight - link.h * percentagePadding;
     y3 = rows[minRow].baseHeight - link.h * percentagePadding;
     y4 = rows[minRow].baseHeight - link.rightWord.h * percentagePadding;
-     
+
     var p1x = x1; 
     var p1y = y1;
 
     var p2x = x2; 
     var p2y = y2;
-   
+
     var p3x = x3; 
     var p3y = y3;
-   
+
     var p4x = x4; 
     var p4y = y4;
 
-   var line = groupAllElements.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y],[p4x,p4y] ]).stroke({ width: linkStrokeThickness, color:linkStrokeColor, opacity:useOpacity}).fill('none');
+    var line = groupAllElements.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y],[p4x,p4y] ]).stroke({ width: linkStrokeThickness, color:linkStrokeColor, opacity:useOpacity}).fill('none');
 
     link.lines.push(line); 
     link.linesLeftX.push(p1x);
@@ -465,9 +479,29 @@ function drawLink(link) {
       drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity);
 
     }
+
+
+    drawLinkLabel("one",  (p2x+p3x) / 2, p2y);
+
   }
 
   setupLineInteractions(link);
+}
+
+
+/* testing adding labels to links... */
+function drawLinkLabel(str, tx, ty ) {
+
+  var testLinkLabel = true; //false;
+
+  if (testLinkLabel) {
+    var twh = getTextWidthAndHeight(str);
+
+    groupAllElements.rect(twh.w, twh.h).x( tx ).y( ty - (twh.h/2) ).fill('#ffffff').stroke( {color:linkStrokeColor} );
+
+    groupAllElements.text(str).x( tx ).y(ty).font(fontstyle);
+  }
+
 }
 
 function getLeftXForLeftWord(link) {
@@ -517,7 +551,6 @@ function getRightXForRightWord(link) {
     }
   }
 }
-
 
 function drawDownArrow(x, y, link, word, side, leftX, rightX, fill, opacity) {
 

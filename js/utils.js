@@ -60,9 +60,6 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
     var direction = getRandomInt(0,2);
 
     if (rand1 != rand2) {
-      //var id = '[ ' + wordObjs[rand1].id + ' - ' + linkObjs[rand2].id + ' ]';
-      //console.log(id);
-
       ls[cidx++] = new Link(wordObjs[rand1], ls[rand2], direction);
     }
   }
@@ -96,33 +93,6 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
   return ls; 
 
 }
-
-
-/*
- * 
- function getHeightForWord(word) {
-
- var maxH = 0;
-
- for (var ii = 0; ii < word.slotsL.length; ii++) {
- maxH = Math.max(maxH, word.slotsL[ii]);
- }
-
- for (var ii = 0; ii < word.slotsR.length; ii++) {
- maxH = Math.max(maxH, word.slotsR[ii]);
- }
-
- return maxH;
- }
-
- function calculateHeightForEachRow(words) {
-
- var row2Height = [];
-
- var rowNum = 0;
- var maxSlot = 1;
-
-*/
 
 
 function printLink(link) {

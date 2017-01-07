@@ -98,20 +98,18 @@ var word2link_strategy = strategies.FARTHEST;
 var link2link_strategy = strategies.FARTHEST; 
 
 
-
 //set up has to be done in this order... probably can simplify this...
 
-
 // 1. create Words and Links objects (in utils.js) */
-var wordObjs = createTestWords(20, 1, 15);
-var linkObjs = createTestLinks(5, 5, 5); 
+var wordObjs = createTestWords(30, 1, 15);
+var linkObjs = createTestLinks(2, 2, 2); 
 
 // 2. draw words and boxes around words
 drawWords(wordObjs);
 
 // 3. figure out offsets for where links attach (depending on how many words / links there are)
-arrangeOffsetValsForAttachmentPoints(linkObjs); //, word2link_strategy);
-arrangeOffsetValsForAttachmentPoints(wordObjs); //, word2word_strategy);
+arrangeOffsetValsForAttachmentPoints(linkObjs); 
+arrangeOffsetValsForAttachmentPoints(wordObjs); 
 
 // 4. draw each of the links
 
@@ -119,9 +117,8 @@ arrangeOffsetValsForAttachmentPoints(wordObjs); //, word2word_strategy);
 var groupAllElements = draw.group();
 
 Object.keys(linkObjs).forEach(function(key) {
-   
    drawLink(linkObjs[key]);
-    });
+   });
 
 
 
