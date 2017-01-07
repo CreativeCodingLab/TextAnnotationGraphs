@@ -880,13 +880,9 @@ function checkMinMaxY(row, y, h) {
 function dragRow(x, y, row) {
 
   console.log("in dragRow("+x+", "+y+", "+row+"), wordHeight = " + wordHeight );
-  //if (testRect1) {
-  //  testRect1.remove();
-  //}
 
   var rowDragRect = row.dragRect;
   var prevY = row.rect.bbox().y;
-  //testRect1 = draw.rect(dragRectSide,dragRectSide).x(svgWidth - 20).y(prevBottom).fill( {color:'#ff0000'} );
 
   var inc = y - prevY;
 
@@ -908,7 +904,6 @@ function dragRow(x, y, row) {
   //check that this row is not smaller than the word size in the row
   
   if (inc + dragRectSide + dragRectMargin < wordHeight) {
-    //row.rect.height(row.words[0].rect.h);
     row.rect.height(wordHeight);
     y = row.rect.bbox().y + row.rect.bbox().h - (dragRectSide + dragRectMargin);
     row.lineBottom.y(y + dragRectSide + dragRectMargin);
@@ -933,10 +928,9 @@ function dragRow(x, y, row) {
     word.text.y(word.rect.y + textpaddingY); //  - maxTextY); 
   }
 
-  row.baseHeight = row.lineBottom.y() - (textpaddingY*2) - maxTextH; //wordHeight; 
+  row.baseHeight = row.lineBottom.y() - (textpaddingY*2) - maxTextH;
 
 
-  //var someVal = 5;
   if (row.idx < rows.length - 1) {
 
     var nextrow = rows[row.idx + 1];

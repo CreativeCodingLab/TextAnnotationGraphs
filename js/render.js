@@ -100,7 +100,7 @@ function setUpRowsAndWords(words) {
 
       x = edgepadding;
 
-    } else if (x + wh.w + (padding*2) + edgepadding > svgWidth) {
+    } else if (x + wh.w + (textpaddingX*2) + edgepadding > svgWidth) {
 
       rowNum++;
       row = new Row(rowNum);
@@ -117,7 +117,7 @@ function setUpRowsAndWords(words) {
     word.tw = wh.w;
     word.th = maxTextH; //wh.h;
 
-    x += wh.w + (padding*2) + wordpadding;
+    x += wh.w + (textpaddingX*2) + wordpadding;
   }
 
   for (var i = 0; i < rows.length; i++) {
@@ -146,13 +146,13 @@ function setUpRowsAndWords(words) {
       word.h = 0; //the number of link levels is 0 for the word
 
       var textwh = getTextWidthAndHeight(word.val, fontstyle);
-      word.ww = textwh.w + (padding * 2);
+      word.ww = textwh.w + (textpaddingX * 2);
       word.wx = x;
 
       word.wh = maxTextH + textpaddingY*2; 
       word.wy = row.ry + row.rh - word.wh;
 
-      x += textwh.w + (padding*2) + wordpadding;
+      x += textwh.w + (textpaddingX*2) + wordpadding;
 
       row.baseHeight = word.wy; //that is, where the top of the word is in the row.
 
@@ -277,6 +277,11 @@ function drawLink(link) {
 
   console.log ("\n\n in drawLink(" + link.id + ")");
 
+  var hidePercentage = 2;
+  var hidePercentage2 = 7;
+
+
+
   var attachmentXPositions = getXPosForAttachmentByPercentageOffset(link);
 
   var xL = attachmentXPositions.left;
@@ -311,8 +316,14 @@ function drawLink(link) {
         var percentagePadding = availableHeight /  (rows[i].maxSlots + 1);
 
         var useOpacity = linkStrokeOpacity;
-        if (percentagePadding < 2) { 
+        var useOpacity2 = linkStrokeOpacity;
+
+        if (percentagePadding < hidePercentage) { 
           useOpacity = 0.0; 
+        }
+
+        if (percentagePadding < hidePercentage2) { 
+          useOpacity2 = 0.0; 
         }
 
         y1 = rows[i].baseHeight - link.leftWord.h * percentagePadding;
@@ -341,9 +352,7 @@ function drawLink(link) {
           drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity );
         }
 
-        drawLinkLabel("top",  (p2x+p3x) / 2, p2y);
-
-
+        drawLinkLabel("top",  (p2x+p3x) / 2, p2y, rows[i].color, useOpacity2);
 
       } else if (i == maxRow) { //LAST ROW
 
@@ -353,9 +362,16 @@ function drawLink(link) {
         var percentagePadding = availableHeight /  (rows[i].maxSlots + 1);
 
         var useOpacity = linkStrokeOpacity;
-        if (percentagePadding < 2) { 
+         var useOpacity2 = linkStrokeOpacity;
+
+
+        if (percentagePadding < hidePercentage) { 
           useOpacity = 0.0; 
         }
+        if (percentagePadding < hidePercentage2) { 
+          useOpacity2 = 0.0; 
+        }
+
 
         y2 = rows[i].baseHeight - link.h * percentagePadding;
         y3 = rows[i].baseHeight - link.h * percentagePadding;
@@ -384,7 +400,7 @@ function drawLink(link) {
           drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity );
         }
 
-        drawLinkLabel("fin",  (p2x+p3x) / 2, p2y);
+        drawLinkLabel("fin",  (p2x+p3x) / 2, p2y, rows[i].color, useOpacity2);
 
 
 
@@ -394,8 +410,15 @@ function drawLink(link) {
         var percentagePadding = availableHeight /  (rows[i].maxSlots + 1);
 
         var useOpacity = linkStrokeOpacity;
-        if (percentagePadding < 2) { 
+         var useOpacity2 = linkStrokeOpacity;
+
+
+        if (percentagePadding < hidePercentage) { 
           useOpacity = 0.0; 
+        }
+
+        if (percentagePadding < hidePercentage2) { 
+          useOpacity2 = 0.0; 
         }
 
         y2 = rows[i].baseHeight - link.h * percentagePadding;
@@ -414,7 +437,7 @@ function drawLink(link) {
         link.linesRightX.push(p3x);
 
 
-        drawLinkLabel("mid",  (p2x+p3x) / 2, p2y);
+        drawLinkLabel("mid",  (p2x+p3x) / 2, p2y, rows[i].color, useOpacity2);
 
 
 
@@ -429,14 +452,18 @@ function drawLink(link) {
     var availableHeight = rows[minRow].baseHeight - rows[minRow].rect.bbox().y;
     var percentagePadding = availableHeight / (rows[minRow].maxSlots + 1);
 
-    console.log("rows[minRow].baseHeight = " + rows[minRow].baseHeight);
-    console.log("availableHeight = " + availableHeight);
-
-
     var useOpacity = linkStrokeOpacity;
-    if (percentagePadding < 2) { 
+    var useOpacity2 = linkStrokeOpacity;
+
+    if (percentagePadding < hidePercentage) { 
       useOpacity = 0.0; 
     }
+
+    if (percentagePadding < hidePercentage2) { 
+      useOpacity2 = 0.0; 
+    }
+
+
 
     y1 = rows[minRow].baseHeight - link.leftWord.h * percentagePadding;
     y2 = rows[minRow].baseHeight - link.h * percentagePadding;
@@ -475,7 +502,7 @@ function drawLink(link) {
     }
 
 
-    drawLinkLabel("one",  (p2x+p3x) / 2, p2y);
+    drawLinkLabel("one",  (p2x+p3x) / 2, p2y, rows[minRow].color, useOpacity2);
 
   }
 
@@ -483,19 +510,21 @@ function drawLink(link) {
 }
 
 
-/* testing adding labels to links... */
-function drawLinkLabel(str, tx, ty ) {
+/* testing adding labels to links... 
+ *
+ * TODO - draw all of these labels / rects last, after all links are drawn, to prevent inconsistant overlaps
+ */
+function drawLinkLabel(str, tx, ty, backgroundcolor, opac ) {
 
   var testLinkLabel = true; //false;
 
   if (testLinkLabel) {
     var twh = getTextWidthAndHeight(str, fontstyle2);
 
+    //groupAllElements.rect(twh.w + 4, maxTextH2).x( tx - 2 - twh.w/2).y( ty - maxTextH2/2 ).fill(backgroundcolor).stroke( {color:linkStrokeColor, opacity:1.0} ).radius(3,3);
+    groupAllElements.rect(twh.w + 4, maxTextH2).x( tx - 2 - twh.w/2).y( ty - maxTextH2/2 ).fill(backgroundcolor).opacity(opac).stroke( {color:linkStrokeColor, opacity:0.0} );
 
-    //groupAllElements.rect(twh.w, twh.h).x( tx ).y( ty - (twh.h/2) ).fill('#ffffff').stroke( {color:linkStrokeColor} );
-    groupAllElements.rect(twh.w, maxTextH2).x( tx ).y( ty - maxTextH2/2 ).fill('#ffffff').stroke( {color:linkStrokeColor} );
-
-    groupAllElements.text(str).x( tx ).y(ty - maxTextH2/2 - maxTextY2).font(fontstyle2);
+    groupAllElements.text(str).x( tx - twh.w/2 ).y(ty - maxTextH2/2 - maxTextY2).font(fontstyle2).opacity(opac);
   }
 
 }
@@ -550,19 +579,17 @@ function getRightXForRightWord(link) {
 
 function drawDownArrow(x, y, link, word, side, leftX, rightX, fill, opacity) {
 
-  var tipy = y + 1;
+  var tipy = y + 0;
 
   var a1 = 'M' + x + ',' + (tipy) + ' ';
   var a2 = 'L' + (x-arrowW) + ',' + (tipy-arrowH) + ' ';
   var a3 = 'L' + (x) + ',' + (tipy-arrowMH) + ' ';
-
   var a4 = 'L' + (x+arrowW) + ',' + (tipy-arrowH);
   var a5 = 'z';
 
   var arrow = a1 + a2 + a3 + a4;
 
   var path = groupAllElements.path(arrow).fill(fill).opacity(opacity);   
-  //var path = draw.path(arrow).fill(fill).opacity(0.2);   
 
   dragArrow(path, link, word, side, leftX, rightX);
 
