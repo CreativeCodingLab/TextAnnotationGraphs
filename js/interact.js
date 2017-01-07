@@ -928,7 +928,7 @@ function dragRow(x, y, row) {
     word.text.y(word.rect.y + textpaddingY); //  - maxTextY); 
   }
 
-  row.baseHeight = row.lineBottom.y() - (textpaddingY*2) - maxTextH;
+  row.baseHeight = row.lineBottom.y() - (textpaddingY*2) - texts.wordText.maxHeight;
 
 
   if (row.idx < rows.length - 1) {

@@ -10,7 +10,6 @@
 </div>
  
 
-
 <script src="libs/svg.js"></script>
 <script src="libs/svg.draggable.js"></script>
 <script src="libs/lodash.js"></script>
@@ -36,40 +35,20 @@ var draw = SVG('drawing').size(svgWidth, svgHeight);
 
 var styles = setupStyles(draw); //creates an associative array of whatever styles you want to make use of later
 
-var rectt = draw.rect(30,30).x(100).y(100).style(styles.forwardLine);
-
-
-var fontstyle = {
-family: 'Brown',
-        size: 12    
-};
-
-var maxTextH = getMaxTextHeightForFont("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV", fontstyle);
-var maxTextY = getDescentForFont("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV", fontstyle);
-
-
-var fontstyle2 = {
-family: 'Brown', 
-        size: 8   
-};
-
-var maxTextH2 = getMaxTextHeightForFont("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV", fontstyle2);
-var maxTextY2 = getDescentForFont("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV", fontstyle2);
-
-
+var texts = setupTexts(draw); //creates an associate array of whatever text you want to use. Currently useing 'texts.wordText' and 'texts.linkText', and using style, maxHeight, and descent to layout text
 
 var isDragging = false;
 
 var levelpadding = 16;
 var /*textpadding */ textpaddingX = 12; //this is the x-padding within each word rect, between the text and the rectangle it's inside of
-var textpaddingY = maxTextH / 2; //padding above and below text, between text and rectangle it's inside of
+var textpaddingY = texts.wordText.maxHeight / 2; //padding above and below text, between text and rectangle it's inside of
 var wordpadding = 5; //x padding between the rects containing words
 var topMargin = 0;
 var edgepadding = 10;
 
 
 var handleW = 10;
-var handleH = maxTextH + (textpaddingY * 2);
+var handleH = texts.wordText.maxHeight + (textpaddingY * 2);
 var handleColor = '#ff0000';
 var handleOpacity= 0.1;
 
@@ -77,8 +56,8 @@ var arrowH = 5; //9;
 var arrowMH = 5; //7; //4
 var arrowW = 3; //3
 
-var wordHeight = maxTextH + (textpaddingY * 2); 
-var minWordWidth = getTextWidthAndHeight("i", fontstyle).w + (handleW * 2);
+var wordHeight = texts.wordText.maxHeight + (textpaddingY * 2); 
+var minWordWidth = getTextWidthAndHeight("i", texts.wordText.style).w + (handleW * 2);
 //var minWordWidth = 10; //used when dragging handles to shrink or grow word size
 
 
@@ -116,7 +95,7 @@ var rows = []; //list of Row object, each of those has a list of Word objects
 var groupAllElements;
 
 // 1. create Words and Links objects (in utils.js) */
-var wordObjs = createTestWords(5, 1, 12);
+var wordObjs = createTestWords(15, 1, 12);
 var linkObjs = createTestLinks(5, 5, 1); 
 
 // 2. draw words and boxes around words

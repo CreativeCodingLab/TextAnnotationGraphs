@@ -68,7 +68,7 @@ function setUpRowsAndWords(words) {
 
   for (var i = 0; i < words.length; i++) {
 
-    var wh = getTextWidthAndHeight(wordObjs[i].val, fontstyle);
+    var wh = getTextWidthAndHeight(wordObjs[i].val, texts.wordText.style);
 
     console.log("wh = " + wh.w + ", " + wh.h);
 
@@ -96,7 +96,7 @@ function setUpRowsAndWords(words) {
     row.maxSlots = Math.max(row.maxSlots, getHeightForWord(word));
     word.row = row;
     word.tw = wh.w;
-    word.th = maxTextH; //wh.h;
+    word.th = texts.wordText.maxHeight; //wh.h;
 
     x += wh.w + (textpaddingX*2) + wordpadding;
   }
@@ -111,7 +111,7 @@ function setUpRowsAndWords(words) {
       row.ry = 5 + rows[row.idx - 1].ry + rows[row.idx - 1].rh;
     }
 
-    row.rh = 10 + ((textpaddingY * 2) + maxTextH) + (levelpadding * row.maxSlots);
+    row.rh = 10 + ((textpaddingY * 2) + texts.wordText.maxHeight) + (levelpadding * row.maxSlots);
 
     if (row.idx % 2 == 0) {
       row.color = evenRowsColor;
@@ -126,11 +126,11 @@ function setUpRowsAndWords(words) {
 
       word.h = 0; //the number of link levels is 0 for the word
 
-      var textwh = getTextWidthAndHeight(word.val, fontstyle);
+      var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
       word.ww = textwh.w + (textpaddingX * 2);
       word.wx = x;
 
-      word.wh = maxTextH + textpaddingY*2; 
+      word.wh = texts.wordText.maxHeight + textpaddingY*2; 
       word.wy = row.ry + row.rh - word.wh;
 
       x += textwh.w + (textpaddingX*2) + wordpadding;
@@ -147,29 +147,34 @@ function drawWord(word) {
 
   //if already exists, need to delete it first
 
-  var underneathRect = draw.rect( word.ww, word.wh ).x( word.wx ).y( word.wy ).fill( {color:'#ffffff',opacity: 1.0} ); //base layer, put text then tansparent draggable rect on top of this
-
-  console.log(" in drawWord : word.row.ry = " + word.row.ry);
+  //var underneathRect = draw.rect( word.ww, word.wh ).x( word.wx ).y( word.wy ).fill( {color:'#ffffff',opacity: 1.0} ); //base layer, put text then tansparent draggable rect on top of this
+  var underneathRect = draw.rect( word.ww, word.wh ).x( word.wx ).y( word.wy ).style(styles.wordFill.style);
+   
+    console.log(" in drawWord : word.row.ry = " + word.row.ry);
   //    var test = word.row.ry;// + word.row.rh; //word.wy;
 
-  var textwh = getTextWidthAndHeight(word.val, fontstyle);
+  var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
 
   var text = draw.text(function(add) {
       
     add.text(word.val)
-    .y(word.wy + textpaddingY - maxTextY)
+    .y(word.wy + textpaddingY - texts.wordText.descent)
     .x(word.wx + (word.ww/2) - (textwh.w / 2))
-    .font(fontstyle);
+    .font(texts.wordText.style);
     });
 
 
 
-    var rect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#ffffff',opacity: 0.0} ).stroke( { color: '#f06', opacity: 1, width: 1 } );
+    var rect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#ffffff',opacity: 0.0} );
 
-    var leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).fill( {color:handleColor}).opacity(0.0) ;
+    var leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
+      
+      //fill( {color:handleColor}).opacity(0.0) ;
     
 
-    var rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).fill( {color:handleColor}).opacity(0.0);
+    var rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
+
+      
 
     word.text = text;
     word.rectSVG = rect;
@@ -481,21 +486,21 @@ function drawLink(link) {
 
       drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity   );
 
-      line.style(styles.forwardLine);
+      line.style(styles.forwardLine.style);
 
     } else if (link.direction == directions.BACKWARD) {
       drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity ) ;
 
       drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity );
 
-      line.style(styles.backwardLine);
+      line.style(styles.backwardLine.style);
     } else if (link.direction == directions.BOTH) {
 
       drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity ) ;
 
       drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity   );
 
-      line.style(styles.bothLine);
+      line.style(styles.bothLine.style);
 
     } else {
       drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity);
@@ -504,7 +509,7 @@ function drawLink(link) {
       drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity );
 
 
-      line.style(styles.noneLine);
+      line.style(styles.noneLine.style);
 
     }
 
@@ -526,12 +531,12 @@ function drawLinkLabel(str, tx, ty, backgroundcolor, opac ) {
   var testLinkLabel = true; //false;
 
   if (testLinkLabel) {
-    var twh = getTextWidthAndHeight(str, fontstyle2);
+    var twh = getTextWidthAndHeight(str, texts.linkText.style);
 
     //groupAllElements.rect(twh.w + 4, maxTextH2).x( tx - 2 - twh.w/2).y( ty - maxTextH2/2 ).fill(backgroundcolor).stroke( {color:linkStrokeColor, opacity:1.0} ).radius(3,3);
-    groupAllElements.rect(twh.w + 4, maxTextH2).x( tx - 2 - twh.w/2).y( ty - maxTextH2/2 ).fill(backgroundcolor).opacity(opac).stroke( {color:linkStrokeColor, opacity:0.0} );
+    groupAllElements.rect(twh.w + 4, texts.linkText.maxHeight).x( tx - 2 - twh.w/2).y( ty - texts.linkText.maxHeight/2 ).fill(backgroundcolor).opacity(opac).stroke( {color:linkStrokeColor, opacity:0.0} );
 
-    groupAllElements.text(str).x( tx - twh.w/2 ).y(ty - maxTextH2/2 - maxTextY2).font(fontstyle2).opacity(opac);
+    groupAllElements.text(str).x( tx - twh.w/2 ).y(ty - texts.linkText.maxHeight/2 - texts.linkText.descent).font(texts.linkText.style).opacity(opac);
   }
 
 }
