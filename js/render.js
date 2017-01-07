@@ -16,17 +16,10 @@ function getTextWidthAndHeight(word) {
 }
 */
 
-function getTextWidthAndHeight(word) {
-  var text2 = draw.text(word).font(fontstyle);
-    textbbox = text2.bbox();
-    text2.remove();
-
-    var uw = textbbox.w;
-
-    return {w:uw, h:textbbox.h};
-}
 
 
+
+//gets max slot number to be assigned to this word
 function getHeightForWord(word) {
     
   var maxH = 0;
@@ -94,7 +87,9 @@ function setUpRowsAndWords(words) {
 
   for (var i = 0; i < words.length; i++) {
 
-    var wh = getTextWidthAndHeight(wordObjs[i].val);
+    var wh = getTextWidthAndHeight(wordObjs[i].val, fontstyle);
+
+    console.log("wh = " + wh.w + ", " + wh.h);
 
     if (i == 0) {
 
@@ -120,7 +115,7 @@ function setUpRowsAndWords(words) {
     row.maxSlots = Math.max(row.maxSlots, getHeightForWord(word));
     word.row = row;
     word.tw = wh.w;
-    word.th = wh.h;
+    word.th = maxTextH; //wh.h;
 
     x += wh.w + (padding*2) + wordpadding;
   }
@@ -135,7 +130,7 @@ function setUpRowsAndWords(words) {
       row.ry = 5 + rows[row.idx - 1].ry + rows[row.idx - 1].rh;
     }
 
-    row.rh = 10 + ((padding * 2) + littleBitForHeight) + (levelpadding * row.maxSlots);
+    row.rh = 10 + ((textpaddingY * 2) + maxTextH) + (levelpadding * row.maxSlots);
 
     if (row.idx % 2 == 0) {
       row.color = evenRowsColor;
@@ -150,21 +145,22 @@ function setUpRowsAndWords(words) {
 
       word.h = 0; //the number of link levels is 0 for the word
 
-      var textwh = getTextWidthAndHeight(word.val);
+      var textwh = getTextWidthAndHeight(word.val, fontstyle);
       word.ww = textwh.w + (padding * 2);
-      word.wh = (padding * 2) + littleBitForHeight;
       word.wx = x;
+
+      word.wh = maxTextH + textpaddingY*2; 
       word.wy = row.ry + row.rh - word.wh;
 
       x += textwh.w + (padding*2) + wordpadding;
 
       row.baseHeight = word.wy; //that is, where the top of the word is in the row.
 
-      // +  (levelpadding * row.maxSlots); // - ((padding * 2) + littleBitForHeight);
 
     }
   }
 }
+
 
 function drawWord(word) {
 
@@ -175,18 +171,16 @@ function drawWord(word) {
   console.log(" in drawWord : word.row.ry = " + word.row.ry);
   //    var test = word.row.ry;// + word.row.rh; //word.wy;
 
-  var textwh = getTextWidthAndHeight(word.val);
+  var textwh = getTextWidthAndHeight(word.val, fontstyle);
 
   var text = draw.text(function(add) {
       
     add.text(word.val)
-    .y(word.row.rect.bbox().y + word.row.rect.bbox().h - word.wh + padding + littleBitForHeight)
+    .y(word.wy + textpaddingY - maxTextY)
     .x(word.wx + (word.ww/2) - (textwh.w / 2))
     .font(fontstyle);
     });
 
-   // text.y(word.row.rect.bbox().y + word.row.rect.bbox().h - word.wh + padding - littleBitForHeight);
-   // text.x(word.wx + (word.ww/2) - (textwh.w / 2)) ; 
 
 
     var rect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#ffffff',opacity: 0.0} ).stroke( { color: '#f06', opacity: 1, width: 1 } );
@@ -218,6 +212,7 @@ function drawWord(word) {
     });
 
 
+       
 }
 
 function drawWords(words) {
@@ -259,20 +254,19 @@ function getXPosForAttachmentByPercentageOffset(link) {
   var leftX_2 = getLeftXForRightWord(link); 
   var rightX_2 = getRightXForRightWord(link);
 
-  var lengthOfLeftWord = ((rightX_1 - leftX_1) / 2);
-  var lengthOfRightWord = ((rightX_2 - leftX_2) / 2)
-
+  var lengthOfHalfOfLeftWord = ((rightX_1 - leftX_1) / 2);
+  var lengthOfHalfOfRightWord = ((rightX_2 - leftX_2) / 2)
 
   if (link.leftAttach == 0) { //attaches to the left side of the left word
-    xL = leftX_1 + (lengthOfLeftWord * link.x1percent) ;
+    xL = leftX_1 + (lengthOfHalfOfLeftWord * link.x1percent) ;
   } else { //right
-    xL = (rightX_1) - ( lengthOfLeftWord * link.x1percent); 
+    xL = (rightX_1) - ( lengthOfHalfOfLeftWord * link.x1percent); 
   }
 
   if (link.rightAttach == 0) { //attaches to the left side of the right word
-    xR =  leftX_2 + (lengthOfRightWord * link.x2percent); 
+    xR =  leftX_2 + (lengthOfHalfOfRightWord * link.x2percent); 
   } else { //right
-    xR = (rightX_2 ) - (lengthOfRightWord * link.x2percent);
+    xR = (rightX_2 ) - (lengthOfHalfOfRightWord * link.x2percent);
   }
 
   return {left:xL, right:xR};
@@ -495,11 +489,13 @@ function drawLinkLabel(str, tx, ty ) {
   var testLinkLabel = true; //false;
 
   if (testLinkLabel) {
-    var twh = getTextWidthAndHeight(str);
+    var twh = getTextWidthAndHeight(str, fontstyle2);
 
-    groupAllElements.rect(twh.w, twh.h).x( tx ).y( ty - (twh.h/2) ).fill('#ffffff').stroke( {color:linkStrokeColor} );
 
-    groupAllElements.text(str).x( tx ).y(ty).font(fontstyle);
+    //groupAllElements.rect(twh.w, twh.h).x( tx ).y( ty - (twh.h/2) ).fill('#ffffff').stroke( {color:linkStrokeColor} );
+    groupAllElements.rect(twh.w, maxTextH2).x( tx ).y( ty - maxTextH2/2 ).fill('#ffffff').stroke( {color:linkStrokeColor} );
+
+    groupAllElements.text(str).x( tx ).y(ty - maxTextH2/2 - maxTextY2).font(fontstyle2);
   }
 
 }

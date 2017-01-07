@@ -751,9 +751,8 @@ function moveWordToNewPosition(w, nx, ny) {
   w.underneathRect.y(ny);
 
   w.text.x(nx + (w.rect.w/2) - (w.text.bbox().w/2)  ); 
-  var texty = ny + w.rect.h - w.wh + padding - littleBitForHeight;
-  w.text.y(texty);
-
+  w.text.y(ny + textpaddingY);
+  
   var handley = ny + ( w.wh / 2 ) - ( handleH / 2 ); 
   w.leftHandle.x(nx);
   w.leftHandle.y(handley);
@@ -900,7 +899,6 @@ function dragRow(x, y, row) {
        */
 
     nextY = (rows[row.idx + 1].lineBottom.bbox().y - wordHeight ) - (dragRectSide + dragRectMargin) - 5 ;
-    //nextY = (rows[row.idx + 1].lineBottom.bbox().y - wordHeight * 2 ) - (dragRectSide + dragRectMargin) - 5 ;
 
     if (y > nextY) {
       nextRowTooSmall = true;
@@ -932,10 +930,10 @@ function dragRow(x, y, row) {
     word.leftHandle.y(wordY);  
     word.rightHandle.y(wordY);  
 
-    word.text.y(row.lineBottom.y() - word.wh + padding - littleBitForHeight); 
+    word.text.y(word.rect.y + textpaddingY); //  - maxTextY); 
   }
 
-  row.baseHeight = row.lineBottom.y() - wordHeight; 
+  row.baseHeight = row.lineBottom.y() - (textpaddingY*2) - maxTextH; //wordHeight; 
 
 
   //var someVal = 5;

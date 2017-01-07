@@ -34,28 +34,45 @@ var draw = SVG('drawing').size(svgWidth, svgHeight);
  */
 
 var fontstyle = {
-family:   'Brown' //'Helvetica'
-            , size:    8 
+family:   'Brown' //
+            , size:    18     //8
             , anchor:   'left'
             , leading:  '1.0em'
             , 
 };
 
+
+
+var maxTextH = getMaxTextHeightForFont("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV", fontstyle);
+var maxTextY = getDescentForFont("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV", fontstyle);
+
+
+var fontstyle2 = {
+family:   'Brown' //
+            , size:    8     //8
+            , anchor:   'left'
+            , leading:  '1.0em'
+            , 
+};
+
+var maxTextH2 = getMaxTextHeightForFont("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV", fontstyle2);
+var maxTextY2 = getDescentForFont("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV", fontstyle2);
+
+
+
 var isDragging = false;
 
 //var rectSize = 12; //is this being used?
 var levelpadding = 16;
-var /*textpadding */ padding = 8; //15; //this is the padding within each word rect, between the text and the edge
-var wordpadding = 5;
+var /*textpadding */ padding = 12; //this is the x-padding within each word rect, between the text and the rectangle it's inside of
+var textpaddingY = maxTextH / 6; //padding above and below text, between text and rectangle it's inside of
+var wordpadding = 5; //x padding between the rects containing words
 var topMargin = 0;
 var edgepadding = 10;
 
 
-
-var littleBitForHeight = 2; //this would depend on the font... fudging here to make centering look better
-
 var handleW = 10;
-var handleH = (padding * 2) + littleBitForHeight; 
+var handleH = maxTextH + (textpaddingY * 2);
 var handleColor = '#ff0000';
 var handleOpacity= 0.1;
 
@@ -63,7 +80,7 @@ var arrowH = 9;
 var arrowMH = 7; //4
 var arrowW = 4; //3
 
-var wordHeight = (padding * 2) + littleBitForHeight;
+var wordHeight = maxTextH + (textpaddingY * 2); 
 var minWordSize = 30; //getTextWidthAndHeight2("i") + (handleW * 2);
 
 var rowY = 0;
@@ -107,8 +124,8 @@ var link2link_strategy = strategies.FARTHEST;
 //set up has to be done in this order... probably can simplify this...
 
 // 1. create Words and Links objects (in utils.js) */
-var wordObjs = createTestWords(30, 1, 15);
-var linkObjs = createTestLinks(2, 2, 2); 
+var wordObjs = createTestWords(21, 1, 12);
+var linkObjs = createTestLinks(5, 0, 0); 
 
 // 2. draw words and boxes around words
 drawWords(wordObjs);

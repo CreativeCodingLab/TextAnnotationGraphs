@@ -95,6 +95,37 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
 }
 
 
+
+function getTextWidthAndHeight(word, fs) {
+  var text2 = draw.text(word).font(fs);
+    textbbox = text2.bbox();
+    text2.remove();
+
+    console.log("w / h = " + textbbox.w + ", " + textbbox.h);
+    return {w:textbbox.w, h:textbbox.h};
+}
+
+
+function getMaxTextHeightForFont(str, fs) {
+    var t = draw.text(str).y(0).font(fs);
+    textbbox = t.bbox();
+    t.remove();
+
+    //console.log("in getMaxTextHeightForFont, y = " + textbbox.y + ", y2 = " + textbbox.y2);
+    return textbbox.h;
+}
+
+
+function getDescentForFont(str, fs) {
+    var t = draw.text(str).y(0).font(fs);
+    textbbox = t.bbox();
+    t.remove();
+
+    //console.log("in getMaxTextHeightForFont, y = " + textbbox.y + ", y2 = " + textbbox.y2);
+    return textbbox.y;
+}
+
+
 function printLink(link) {
 
   if (debug) {
