@@ -272,12 +272,28 @@ function getXPosForAttachmentByPercentageOffset(link) {
 
 
 
-function getLinkStyles(link) {
+function getLinkStyles(link, xpts) {
 
+ 
   var linkStyles = [];
 
   var c1, c2;
   var styleStr;
+
+  var left = xpts.left;
+  var right = xpts.right;
+
+  //total length = middle rows * (screen width-margin*2) + (screenwidth-margin - left) + (right - margin)
+
+  var middleLength = 0;
+  if (link.numLineSegments > 2) {
+    middleLength = (svgWidth-edgepadding*2) * (link.numLineSegments - 2);
+  }
+  var firstLength = (svgWidth-edgepadding) - left;
+  var lastLength = right - edgepadding;
+  var totalLength = firstLength + middleLength + lastLength;
+
+  var sx = 0.0;
 
   for (var i = 0; i < link.numLineSegments; i++) {
 
@@ -285,9 +301,31 @@ function getLinkStyles(link) {
       c1 = link.style.stroke.c1;
       c2 = link.style.stroke.c2;
 
+      var sp,ep;
+      if (i == 0) {
+        sp = sx / totalLength;
+        ep = firstLength / totalLength;
+        sx += firstLength;
+      } else if (i > 0 && i < link.numLineSegments - 1) {
+        sp = sx / totalLength;
+        ep = (sx + (svgWidth-edgepadding*2)) / totalLength;
+
+        sx += (svgWidth-edgepadding*2);
+      } else {
+        sp = sx / totalLength;
+        ep = 1.0;
+        //sx = totalLength;
+        //sx += lastLength;
+        //console.log("does sx = totalLength? : " + sx + " = " + totalLength); //yep!
+      }
+
+      //console.log("in getLinkStyles : i = " + i + ", sp/ep = " + sp + ", " + ep);
+       /*
+        //Older way - simpler, but doesn't take into account total lenghth of link, so for instance, for a link with three rows, the middle row would always look the same, regardless of where the start and end were, but I think it looks nice when the gradient gives you a hint about how long the link is, especially to help differentiate other long links
       var sp = ((i) / link.numLineSegments) - 0.1;
       var ep = ((i + 1) / link.numLineSegments) + 0.1; 
       //seems to help user to recognize same line on different rows when we overlap the gardient transitions? .. testing w +0.1 and -0.1 on percents..., but may want to play around with it or remove it...
+      */
 
       var uc1 = chroma.mix(c1, c2, sp).hex();
       var uc2 = chroma.mix(c1, c2, ep).hex();
@@ -342,7 +380,8 @@ function drawLink(link) {
   if (maxRow > minRow) { //on different rows!
 
     link.numLineSegments = (maxRow - minRow)+1;
-    var linkStyles = getLinkStyles(link);
+    
+    var linkStyles = getLinkStyles(link, attachmentXPositions);
 
     for (var i = minRow; i <= maxRow; i++) {
 

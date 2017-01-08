@@ -59,6 +59,8 @@ class FillStyle {
 
 }
 
+
+//TODO - I think the arrows / end-of-link glyphs should be defined in here as well - the LineStyle class should let the user compose strokes and arrow look+feel (right now just stroke css attrs) 
 class LineStyle {
   //example 1: new LineStyle('#ff0000', 2, 0.7, "2,2");
   //example 2: new LineStyle(myGradientObject, 2, 0.7);
@@ -139,16 +141,13 @@ class LineStyle {
 
 }
 
-//basic - will add stroke/fills (masks?) later
 class TextStyle {
   constructor(fontfamily, fontsize, fillStyle) {
     this.family = fontfamily;
     this.size = fontsize;
 
     this.style = { 'family':this.family, 'size':this.size };
-    //this.style = "family:" + this.family + ";size:" + this.size;
-
-
+   
     this.maxHeight = getMaxTextHeightForFont("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV", this.style);
     this.descent = getDescentForFont("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV", this.style);
     if (fillStyle != null) {  
