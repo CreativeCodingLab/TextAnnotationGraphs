@@ -270,14 +270,53 @@ function getXPosForAttachmentByPercentageOffset(link) {
 }
 
 
+
+
+function getLinkStyles(link) {
+
+  var linkStyles = [];
+
+  var c1, c2;
+  var styleStr;
+
+  for (var i = 0; i < link.numLineSegments; i++) {
+
+    if (link.style.stroke instanceof LinearGradient) {
+      c1 = link.style.stroke.c1;
+      c2 = link.style.stroke.c2;
+
+      var sp = ((i) / link.numLineSegments) - 0.1;
+      var ep = ((i + 1) / link.numLineSegments) + 0.1; 
+      //seems to help user to recognize same line on different rows when we overlap the gardient transitions? .. testing w +0.1 and -0.1 on percents..., but may want to play around with it or remove it...
+
+      var uc1 = chroma.mix(c1, c2, sp).hex();
+      var uc2 = chroma.mix(c1, c2, ep).hex();
+
+      var g = groupAllElements.gradient('linear', 
+          function(stop) { 
+            stop.at(0.0, uc1); 
+            stop.at(1.0, uc2);
+          });
+
+      styleStr =  "fill:none;stroke:url(#" + g.node.id + ");stroke-width:"+link.style.width+";stroke-opacity:"+link.style.opacity+";stroke-dasharray:"+ link.style.dasharray + ";";
+
+    } else {
+      styleStr = link.style.style;
+    }
+
+    linkStyles.push(styleStr);
+  }
+
+  return linkStyles;
+
+}
+
 function drawLink(link) {
 
   console.log ("\n\n in drawLink(" + link.id + ")");
 
   var hidePercentage = 2;
   var hidePercentage2 = 7;
-
-
 
   var attachmentXPositions = getXPosForAttachmentByPercentageOffset(link);
 
@@ -302,72 +341,67 @@ function drawLink(link) {
 
   if (maxRow > minRow) { //on different rows!
 
+    link.numLineSegments = (maxRow - minRow)+1;
+    var linkStyles = getLinkStyles(link);
+
     for (var i = minRow; i <= maxRow; i++) {
 
-      console.log("looping through each row, row = " + i);
-      link.numLineSegments++;
+      var availableHeight = rows[i].baseHeight - rows[i].rect.bbox().y;
+      var percentagePadding = availableHeight /  (rows[i].maxSlots + 1);
 
       if (i == minRow) { //FIRST ROW
 
-        var availableHeight = rows[i].baseHeight - rows[i].rect.bbox().y;
-        var percentagePadding = availableHeight /  (rows[i].maxSlots + 1);
+          y1 = rows[i].baseHeight - link.leftWord.h * percentagePadding;
+          y2 = rows[i].baseHeight - link.h * percentagePadding;
+          y3 = rows[i].baseHeight - link.h * percentagePadding;
 
-        var useOpacity = linkStrokeOpacity;
-        var useOpacity2 = linkStrokeOpacity;
+          var p1x = x1; 
+          var p1y = y1;
 
-        if (percentagePadding < hidePercentage) { 
-          useOpacity = 0.0; 
-        }
-
-        if (percentagePadding < hidePercentage2) { 
-          useOpacity2 = 0.0; 
-        }
-
-        y1 = rows[i].baseHeight - link.leftWord.h * percentagePadding;
-        y2 = rows[i].baseHeight - link.h * percentagePadding;
-        y3 = rows[i].baseHeight - link.h * percentagePadding;
-
-        var p1x = x1; 
-        var p1y = y1;
-
-        var p2x = x2; 
-        var p2y = y2;
+          var p2x = x2; 
+          var p2y = y2;
 
         var p3x = svgWidth; 
         var p3y = y3;
 
-        var line = groupAllElements.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y] ]).stroke({ width: linkStrokeThickness,color:linkStrokeColor, opacity:useOpacity}).fill('none');
-
-        link.lines.push(line);
+        var line = groupAllElements.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y] ]);
+        
+                link.lines.push(line);
         link.linesLeftX.push(p1x);
         link.linesRightX.push(p3x);
+        
+        if (percentagePadding >= hidePercentage) { //only bother drawing links if there's room in the row
+
+          line.style(linkStyles[i - minRow]);
 
 
-        if (link.direction == directions.BACKWARD || link.direction == directions.BOTH) {
-          drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity ) ;
-        } else {
-          drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity );
+          if (link.direction == directions.BACKWARD) {
+            drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link)  ) ;
+          } else if (link.direction == directions.FORWARD){
+            drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
+          } else if (link.direction == directions.BOTH) {
+            drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link)  ) ;
+          } else { //NONE
+            drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
+          }
+
+        } else { //row is too small
+          line.style(styles.hiddenLine.style);
         }
 
-        drawLinkLabel("top",  (p2x+p3x) / 2, p2y, rows[i].color, useOpacity2);
+        if (percentagePadding >= hidePercentage2) { 
+          var style;
+          if (i % 2 == 0) {
+            style = styles.labelEvenFill.style;
+          } else {
+            style = styles.labelOddFill.style;
+          }
+
+          drawLinkLabel("top", (p2x+p3x) / 2, p2y, style);
+        }
+
 
       } else if (i == maxRow) { //LAST ROW
-
-        console.log(" last row");
-
-        var availableHeight = rows[i].baseHeight - rows[i].rect.bbox().y;
-        var percentagePadding = availableHeight /  (rows[i].maxSlots + 1);
-
-        var useOpacity = linkStrokeOpacity;
-         var useOpacity2 = linkStrokeOpacity;
-
-
-        if (percentagePadding < hidePercentage) { 
-          useOpacity = 0.0; 
-        }
-        if (percentagePadding < hidePercentage2) { 
-          useOpacity2 = 0.0; 
-        }
 
 
         y2 = rows[i].baseHeight - link.h * percentagePadding;
@@ -385,35 +419,44 @@ function drawLink(link) {
         var p4x = xR; 
         var p4y = y4;
 
-        var line = groupAllElements.polyline([ [p2x,p2y],[p3x,p3y],[p4x,p4y] ]).stroke({ width: linkStrokeThickness, color:linkStrokeColor, opacity:useOpacity  }).fill('none');
-
+       
+        var line = groupAllElements.polyline([ [p2x,p2y],[p3x,p3y],[p4x,p4y] ]);
+        
         link.lines.push(line);
         link.linesLeftX.push(p2x);
         link.linesRightX.push(p4x);
+        
+        if (percentagePadding >= hidePercentage) { //only bother drawing links if there's room in the row
+          line.style(linkStyles[i - minRow]);
 
-        if (link.direction == directions.FORWARD || link.direction == directions.BOTH) {        
-          drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity   );
-        } else {
-          drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity );
+          if (link.direction == directions.FORWARD) {        
+            drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link)   );
+          } else if (link.direction == directions.BACKWARD) {
+            drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link)  );
+          } else if (link.direction == directions.BOTH) {
+
+            drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link)   );
+          } else { //NONE
+            drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link)  );
+          }
+        } else { //row is too small
+          line.style(styles.hiddenLine.style);
         }
 
-        drawLinkLabel("fin",  (p2x+p3x) / 2, p2y, rows[i].color, useOpacity2);
+       
+        if (percentagePadding >= hidePercentage2) { 
+          var style;
+          if (i % 2 == 0) {
+            style = styles.labelEvenFill.style;
+          } else {
+            style = styles.labelOddFill.style;
+          }
+
+          drawLinkLabel("fin",  (p2x+p3x) / 2, p2y, style);
+        }
 
       } else { //middle row...
 
-        var availableHeight = rows[i].baseHeight - rows[i].rect.bbox().y;
-        var percentagePadding = availableHeight / (rows[i].maxSlots + 1);
-
-        var useOpacity = linkStrokeOpacity;
-        var useOpacity2 = linkStrokeOpacity;
-
-        if (percentagePadding < hidePercentage) { 
-          useOpacity = 0.0; 
-        }
-
-        if (percentagePadding < hidePercentage2) { 
-          useOpacity2 = 0.0; 
-        }
 
         y2 = rows[i].baseHeight - link.h * percentagePadding;
         y3 = rows[i].baseHeight - link.h * percentagePadding;
@@ -424,42 +467,44 @@ function drawLink(link) {
         var p3y = y3;
 
 
-        var line = groupAllElements.polyline([ [p2x,p2y],[p3x,p3y] ]).stroke({ width: linkStrokeThickness, color:linkStrokeColor, opacity:useOpacity}).fill('none');
+        //adding the first coordinate since the linearGradients don't seem to calculate on polylines with only 2 points!!! Seems to be an SVG bug!!! (the first coordinate is offscreen and so doesn't cause any problems... but I can imagine this could come back to haunt us...
+        var line = groupAllElements.polyline([ [p2x-10,p2y-10],[p2x,p2y],[p3x,p3y] ]); 
 
         link.lines.push(line);
         link.linesLeftX.push(p2x);
         link.linesRightX.push(p3x);
 
 
-        drawLinkLabel("mid",  (p2x+p3x) / 2, p2y, rows[i].color, useOpacity2);
+        if (percentagePadding >= hidePercentage) { //only bother drawing links if there's room in the row
+          line.style(linkStyles[i - minRow]);
 
+        } else { //row is too small
+          line.style(styles.hiddenLine.style);
+        }
 
+        if (percentagePadding >= hidePercentage2) { 
 
+          var labelStyle;
+          if (i % 2 == 0) {
+            labelStyle = styles.labelEvenFill.style;
+          } else {
+            labelStyle = styles.labelOddFill.style;
+          }
 
+          drawLinkLabel("mid",  (p2x+p3x) / 2, p2y, labelStyle);
+        }
       }
-    }
+}
+} else { //both ends of this link are on the same row - minRow and maxRow are the same
 
-  } else { //both ends of this link are on the same row - minRow and maxRow are the same
+  link.numLineSegments = 1;
 
-    link.numLineSegments = 1;
+  var availableHeight = rows[minRow].baseHeight - rows[minRow].rect.bbox().y;
+  var percentagePadding = availableHeight / (rows[minRow].maxSlots + 1);
 
-    var availableHeight = rows[minRow].baseHeight - rows[minRow].rect.bbox().y;
-    var percentagePadding = availableHeight / (rows[minRow].maxSlots + 1);
-
-    var useOpacity = linkStrokeOpacity;
-    var useOpacity2 = linkStrokeOpacity;
-
-    if (percentagePadding < hidePercentage) { 
-      useOpacity = 0.0; 
-    }
-
-    if (percentagePadding < hidePercentage2) { 
-      useOpacity2 = 0.0; 
-    }
-
-    y1 = rows[minRow].baseHeight - link.leftWord.h * percentagePadding;
-    y2 = rows[minRow].baseHeight - link.h * percentagePadding;
-    y3 = rows[minRow].baseHeight - link.h * percentagePadding;
+  y1 = rows[minRow].baseHeight - link.leftWord.h * percentagePadding;
+  y2 = rows[minRow].baseHeight - link.h * percentagePadding;
+  y3 = rows[minRow].baseHeight - link.h * percentagePadding;
     y4 = rows[minRow].baseHeight - link.rightWord.h * percentagePadding;
 
     var p1x = x1; 
@@ -474,47 +519,62 @@ function drawLink(link) {
     var p4x = x4; 
     var p4y = y4;
 
-    //var line = groupAllElements.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y],[p4x,p4y] ]).stroke({ width: linkStrokeThickness, color:linkStrokeColor, opacity:useOpacity}).fill('none');
     var line = groupAllElements.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y],[p4x,p4y] ]);
 
     link.lines.push(line); 
     link.linesLeftX.push(p1x);
     link.linesRightX.push(p4x);
 
-    if (link.direction == directions.FORWARD) {
-      drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity);
+    
+    if (percentagePadding >= hidePercentage) { //only bother drawing links if there's room in the row
 
-      drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity   );
+      line.style(link.style.style);
 
-      line.style(styles.forwardLine.style);
 
-    } else if (link.direction == directions.BACKWARD) {
-      drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity ) ;
+      if (link.direction == directions.FORWARD) {
+        drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
 
-      drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity );
+        drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link) );
 
-      line.style(styles.backwardLine.style);
-    } else if (link.direction == directions.BOTH) {
+          } else if (link.direction == directions.BACKWARD) {
+        drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link) ) ;
 
-      drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity ) ;
+        drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link) );
 
-      drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity   );
+      } else if (link.direction == directions.BOTH) {
 
-      line.style(styles.bothLine.style);
+        drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link) ) ;
+
+        drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link)   );
+
+
+      } else {
+        drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
+
+        drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link) );
+
+
+      }
 
     } else {
-      drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowColor, useOpacity);
-
-
-      drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowColor, useOpacity );
-
-
-      line.style(styles.noneLine.style);
-
+      line.style(styles.hiddenLine.style);
     }
+ 
+    
+
+ 
+    if (percentagePadding >= hidePercentage2) { 
 
 
-    drawLinkLabel("one",  (p2x+p3x) / 2, p2y, rows[minRow].color, useOpacity2);
+      var style;
+      if (minRow % 2 == 0) {
+        style = styles.labelEvenFill.style;
+      } else {
+        style = styles.labelOddFill.style;
+      }
+
+      drawLinkLabel("one",  (p2x+p3x) / 2, p2y, style);
+    }
 
   }
 
@@ -526,7 +586,7 @@ function drawLink(link) {
  *
  * TODO - draw all of these labels / rects last, after all links are drawn, to prevent inconsistant overlaps
  */
-function drawLinkLabel(str, tx, ty, backgroundcolor, opac ) {
+function drawLinkLabel(str, tx, ty, style) { // backgroundcolor ) {
 
   var testLinkLabel = true; //false;
 
@@ -534,9 +594,13 @@ function drawLinkLabel(str, tx, ty, backgroundcolor, opac ) {
     var twh = getTextWidthAndHeight(str, texts.linkText.style);
 
     //groupAllElements.rect(twh.w + 4, maxTextH2).x( tx - 2 - twh.w/2).y( ty - maxTextH2/2 ).fill(backgroundcolor).stroke( {color:linkStrokeColor, opacity:1.0} ).radius(3,3);
-    groupAllElements.rect(twh.w + 4, texts.linkText.maxHeight).x( tx - 2 - twh.w/2).y( ty - texts.linkText.maxHeight/2 ).fill(backgroundcolor).opacity(opac).stroke( {color:linkStrokeColor, opacity:0.0} );
+    var linkLabelRect = groupAllElements.rect(twh.w + 4, texts.linkText.maxHeight).x( tx - 2 - twh.w/2).y( ty - texts.linkText.maxHeight/2 ); 
 
-    groupAllElements.text(str).x( tx - twh.w/2 ).y(ty - texts.linkText.maxHeight/2 - texts.linkText.descent).font(texts.linkText.style).opacity(opac);
+    linkLabelRect.style(style);
+
+    //.fill(backgroundcolor).opacity(opac).stroke( {color:linkStrokeColor, opacity:0.0} );
+
+    groupAllElements.text(str).x( tx - twh.w/2 ).y(ty - texts.linkText.maxHeight/2 - texts.linkText.descent).font(texts.linkText.style);
   }
 
 }
@@ -589,7 +653,7 @@ function getRightXForRightWord(link) {
   }
 }
 
-function drawDownArrow(x, y, link, word, side, leftX, rightX, fill, opacity) {
+function drawDownArrow(x, y, link, word, side, leftX, rightX, opacity) {
 
   var tipy = y + 0;
 
@@ -601,7 +665,7 @@ function drawDownArrow(x, y, link, word, side, leftX, rightX, fill, opacity) {
 
   var arrow = a1 + a2 + a3 + a4;
 
-  var path = groupAllElements.path(arrow).fill(fill).opacity(opacity);   
+  var path = groupAllElements.path(arrow).style(styles.arrowFill.style);
 
   dragArrow(path, link, word, side, leftX, rightX);
 
@@ -609,7 +673,7 @@ function drawDownArrow(x, y, link, word, side, leftX, rightX, fill, opacity) {
 }
 
 
-function drawUpArrow(x, y, link, word, side, leftX, rightX, fill, opacity) {
+function drawUpArrow(x, y, link, word, side, leftX, rightX, opacity) {
   /*
      var tipy = y - 1;
 
@@ -622,7 +686,9 @@ function drawUpArrow(x, y, link, word, side, leftX, rightX, fill, opacity) {
 
      var arrow = a1 + a2 + a3 + a4;
      */
-  var path = groupAllElements.circle(5).cx(x).cy(y-3).fill(fill).opacity(opacity);   
+  var path = groupAllElements.circle(5).cx(x).cy(y-3).style(styles.arrowFill.style);
+
+
   dragArrow(path, link, word, side, leftX, rightX);
 
   return path;

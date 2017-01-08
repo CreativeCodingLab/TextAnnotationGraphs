@@ -13,6 +13,7 @@
 <script src="libs/svg.js"></script>
 <script src="libs/svg.draggable.js"></script>
 <script src="libs/lodash.js"></script>
+<script src="libs/chroma.min.js"></script>
 
 <script src="js/enums.js"></script>
 <script src="js/style.js"></script>
@@ -28,6 +29,11 @@ var debug = true;
 
 var svgWidth = 500; //window.innerWidth - 16;
 var svgHeight = 1000;
+
+
+
+var evenRowsColor = '#efeff4';
+var oddRowsColor = '#dddddf';
 
 
 //var draw = SVG('drawing').size('100%', '100%');
@@ -61,8 +67,6 @@ var minWordWidth = getTextWidthAndHeight("i", texts.wordText.style).w + (handleW
 //var minWordWidth = 10; //used when dragging handles to shrink or grow word size
 
 
-var evenRowsColor = '#efeff4';
-var oddRowsColor = '#dddddf';
 var evenRowsColor_selected = '#cdcdff';
 var oddRowsColor_selected = '#bbbbff';
 var rowOpacity = 1.0;
@@ -82,7 +86,7 @@ var linkStrokeThickness_selected = 1.5;
 var linkStrokeColor_selected = '#449944';
 var linkStrokeOpacity_selected = 1.0;
 
-var attachmentMargin = 0.1; //maybe this should be a percentage? not an absolute pixel value?
+var attachmentMargin = 0.1; //percentage value
 
 var arrowColor = '#000000';
 var arrowOpacity = 1.0;
@@ -95,8 +99,13 @@ var rows = []; //list of Row object, each of those has a list of Word objects
 var groupAllElements;
 
 // 1. create Words and Links objects (in utils.js) */
-var wordObjs = createTestWords(15, 1, 12);
-var linkObjs = createTestLinks(5, 5, 1); 
+var wordObjs = createTestWords(13, 1, 12);
+//var wordObjs = [];
+//wordObjs.push(new Word("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0));
+//wordObjs.push(new Word("bbbbbbbbbbbbbbbbbbbbbbbbbb", 1));
+
+
+var linkObjs = createTestLinks(10, 2, 0); 
 
 // 2. draw words and boxes around words
 drawWords(wordObjs);

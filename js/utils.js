@@ -33,9 +33,10 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
     var rand2 = getRandomInt(0, wordObjs.length-1);
 
     var direction = getRandomInt(-1,2);
+    var style = getRandomStyle();
 
     if (rand1 != rand2) {
-      ls[cidx++] = new Link(wordObjs[rand1], wordObjs[rand2], direction);
+      ls[cidx++] = new Link(wordObjs[rand1], wordObjs[rand2], direction, style);
     }
   }
 
@@ -57,10 +58,12 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
     var rand1 = getRandomInt(0,wordObjs.length - 1);
     var rand2 = getRandomInt(0,ls.length - 1);
 
-    var direction = getRandomInt(0,2);
+    var direction = getRandomInt(-1,2);
+    var style = getRandomStyle();
+
 
     if (rand1 != rand2) {
-      ls[cidx++] = new Link(wordObjs[rand1], ls[rand2], direction);
+      ls[cidx++] = new Link(wordObjs[rand1], ls[rand2], direction, style);
     }
   }
 
@@ -73,10 +76,11 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
     var rand1 = getRandomInt(0,ls.length - 1);
     var rand2 = getRandomInt(0,ls.length - 1);
 
-    var direction = getRandomInt(0,2);
+    var direction = getRandomInt(-1,2);
+    var style = getRandomStyle();
 
     if (rand1 != rand2) {
-      ls[cidx++] = new Link(ls[rand1], ls[rand2], direction);
+      ls[cidx++] = new Link(ls[rand1], ls[rand2], direction, style);
     }
   }
 
@@ -87,42 +91,56 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
     createLink(ls[key]);
     });
 
-
-
-
   return ls; 
-
 }
 
+function getRandomStyle() {
+   var num = getRandomInt(0,4);
+
+   switch (num) {
+     case 0:
+       return styles.gradientLine1;
+     case 1:
+       return styles.gradientLine2;
+     case 2:
+       return styles.bothLine;
+     case 3:
+       return styles.noneLine;
+     case 4:
+       return styles.simpleLine;
+     default:
+       return styles.simpleLine;
+   }
+}
 
 
 function getTextWidthAndHeight(word, fs) {
   var text2 = draw.text(word).font(fs);
-    textbbox = text2.bbox();
-    text2.remove();
+  textbbox = text2.bbox();
+  text2.remove();
 
-    console.log("w / h = " + textbbox.w + ", " + textbbox.h);
-    return {w:textbbox.w, h:textbbox.h};
+  console.log("w / h = " + textbbox.w + ", " + textbbox.h);
+  return {w:textbbox.w, h:textbbox.h};
 }
 
 
 function getMaxTextHeightForFont(str, fs) {
-    var t = draw.text(str).y(0).font(fs);
-    textbbox = t.bbox();
-    t.remove();
+  var t = draw.text(str).y(0).font(fs);
+  textbbox = t.bbox();
+  t.remove();
 
-    //console.log("in getMaxTextHeightForFont, y = " + textbbox.y + ", y2 = " + textbbox.y2);
-    return textbbox.h;
+  //console.log("in getMaxTextHeightForFont, y = " + textbbox.y + ", y2 = " + textbbox.y2);
+  return textbbox.h;
 }
 
 
 function getDescentForFont(str, fs) {
-    var t = draw.text(str).y(0).font(fs);
-    textbbox = t.bbox();
-    t.remove();
+  var t = draw.text(str).y(0).font(fs);
+  textbbox = t.bbox();
+  t.remove();
 
-    //console.log("in getMaxTextHeightForFont, y = " + textbbox.y + ", y2 = " + textbbox.y2);
-    return textbbox.y;
+  //console.log("in getMaxTextHeightForFont, y = " + textbbox.y + ", y2 = " + textbbox.y2);
+  return textbbox.y;
 }
 
 
@@ -184,10 +202,10 @@ function swapVals(vals){
      uMinSide = link.rootMaxSide;
      uMaxSide = link.rootMinSide;
 
-    link.rootMinWord = uMinWord;
-    link.rootMinSide = uMinSide;
-    link.rootMaxWord = uMaxWord;
-    link.rootMaxSide = uMaxSide;
-*/
+     link.rootMinWord = uMinWord;
+     link.rootMinSide = uMinSide;
+     link.rootMaxWord = uMaxWord;
+     link.rootMaxSide = uMaxSide;
+     */
 }
 

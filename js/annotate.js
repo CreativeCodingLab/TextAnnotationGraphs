@@ -1,9 +1,13 @@
 
 class Link {
-    constructor(s, e, direction) {
+    constructor(s, e, direction, style) {
         this.s = s;
         this.e = e;
-        this.direction = direction;
+        
+        //directions and types can be different things
+        this.direction = direction; //see enums.directions
+        this.style = style;
+
         this.parentsL = [];
         this.parentsR = [];
         this.h = 0; //which slot is it in
