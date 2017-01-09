@@ -24,8 +24,8 @@ function drawRow(row) {
  console.log("in drawRow("+row.idx+")");
 
  row.rect = draw.rect(svgWidth,row.rh).x(0).y(row.ry).fill( {color:row.color} ).opacity(rowOpacity);
- row.lineTop = draw.line(0, row.ry, svgWidth, row.ry).stroke( { color: '#555555', opacity: 1.0, width: 0.5 })
- row.lineBottom = draw.line(0, row.ry+row.rh, svgWidth, row.ry+row.rh).stroke({ color: '#555555', opacity: 1.0, width: 0.5  })
+ row.lineTop = draw.line(0, row.ry, svgWidth, row.ry).stroke( { color: rowEdgeColor, opacity: 1.0, width: 0.5 })
+ row.lineBottom = draw.line(0, row.ry+row.rh, svgWidth, row.ry+row.rh).stroke({ color: rowEdgeColor, opacity: 1.0, width: 0.5  })
 
   row.dragRect = draw.rect(dragRectSide,dragRectSide).x(svgWidth - (dragRectSide+dragRectMargin)).y(row.ry + row.rh - (dragRectSide+dragRectMargin)).fill( {color:'#000'} );
 
@@ -191,31 +191,18 @@ function drawWord(word) {
     setUpWordDraggable(word); 
     setupMouseOverInteractions(word);
 
-     rect.dblclick(function() {
-       if (word.isSelected == false) {
-        word.isSelected = true;
+    rect.dblclick(function() {
+      word.isSelected = !word.isSelected;
 
-        if (word.isHovered) {
-          underneathRect.style(styles.wordFill.hoverAndSelect);
-        } else {
-          underneathRect.style(styles.wordFill.select);
-        }
-       } else {
-        word.isSelected = false;
-
-        if (word.isHovered) {
-          underneathRect.style(styles.wordFill.hover);
-        } else {
-          underneathRect.style(styles.wordFill.style);
-        }
-       }
-      //this.fill({ color: '#f06', opacity:0.5 })
-      //this.stroke( { color: '#000', opacity: 1, width: 1 } ) 
-      //console.log("YOU CLICKED TWICE");
+      var style = "";
+      if (word.isSelected) {
+        style = word.isHovered ? "hoverAndSelect" : "select";
+      }
+      else {
+        style = word.isHovered ? "hover" : "style";
+      }
+      underneathRect.style(styles.wordFill[style]);
     });
-
-
-       
 }
 
 function drawLinks(ls) {
@@ -223,6 +210,9 @@ function drawLinks(ls) {
   arrangeOffsetValsForAttachmentPoints(wordObjs); 
 
   groupAllElements = draw.group();
+  groupAllElements.group().addClass('links');
+  groupAllElements.group().addClass('text');
+  groupAllElements.group().addClass('arrows');
 
   Object.keys(ls).forEach(function(key) {
     drawLink(ls[key]);
@@ -254,7 +244,7 @@ function drawWords(words) {
 /* fine for now, but really should be more granular, i.e., by row, or by thinks a dragged link affects, etc */
 function redrawLinks() {
 
-  groupAllElements.clear();
+  groupAllElements.select('g').members.forEach(group => group.clear());
 
   Object.keys(linkObjs).forEach(function(key) {
     drawLink(linkObjs[key]);
@@ -370,6 +360,10 @@ function getLinkStyles(link, xpts) {
 
 function drawLink(link) {
 
+  var linkG = groupAllElements.select('g.links').members[0],
+      textG = groupAllElements.select('g.text').members[0],
+      arrowG = groupAllElements.select('g.arrows').members[0];
+
   console.log ("\n\n in drawLink(" + link.id + ")");
 
   var hidePercentage = 2;
@@ -422,7 +416,7 @@ function drawLink(link) {
         var p3x = svgWidth; 
         var p3y = y3;
 
-        var line = groupAllElements.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y] ]);
+        var line = linkG.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y] ]);
         
         link.lines.push(line);
         link.linesLeftX.push(p1x);
@@ -434,13 +428,13 @@ function drawLink(link) {
 
 
           if (link.direction == directions.BACKWARD) {
-            drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link)  ) ;
+            drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowG  ) ;
           } else if (link.direction == directions.FORWARD){
-            drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
+            drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowG);
           } else if (link.direction == directions.BOTH) {
-            drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link)  ) ;
+            drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowG  ) ;
           } else { //NONE
-            drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
+            drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowG);
           }
 
         } else { //row is too small
@@ -455,7 +449,7 @@ function drawLink(link) {
             style = styles.labelOddFill.style;
           }
 
-          drawLinkLabel("top", (p2x+p3x) / 2, p2y, style);
+          drawLinkLabel("top", (p2x+p3x) / 2, p2y, style, link, textG);
         }
 
 
@@ -478,7 +472,7 @@ function drawLink(link) {
         var p4y = y4;
 
        
-        var line = groupAllElements.polyline([ [p2x,p2y],[p3x,p3y],[p4x,p4y] ]);
+        var line = linkG.polyline([ [p2x,p2y],[p3x,p3y],[p4x,p4y] ]);
         
         link.lines.push(line);
         link.linesLeftX.push(p2x);
@@ -488,14 +482,14 @@ function drawLink(link) {
           line.style(linkStyles[i - minRow]);
 
           if (link.direction == directions.FORWARD) {        
-            drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link)   );
+            drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowG   );
           } else if (link.direction == directions.BACKWARD) {
-            drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link)  );
+            drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowG  );
           } else if (link.direction == directions.BOTH) {
 
-            drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link)   );
+            drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowG   );
           } else { //NONE
-            drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link)  );
+            drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowG  );
           }
         } else { //row is too small
           line.style(styles.hiddenLine.style);
@@ -510,7 +504,7 @@ function drawLink(link) {
             style = styles.labelOddFill.style;
           }
 
-          drawLinkLabel("fin",  (p2x+p3x) / 2, p2y, style);
+          drawLinkLabel("fin",  (p2x+p3x) / 2, p2y, style, link, textG);
         }
 
       } else { //middle row...
@@ -526,7 +520,7 @@ function drawLink(link) {
 
 
         //adding the first coordinate since the linearGradients don't seem to calculate on polylines with only 2 points!!! Seems to be an SVG bug!!! (the first coordinate is offscreen and so doesn't cause any problems... but I can imagine this could come back to haunt us...
-        var line = groupAllElements.polyline([ [p2x-10,p2y-10],[p2x,p2y],[p3x,p3y] ]); 
+        var line = linkG.polyline([ [p2x-10,p2y-10],[p2x,p2y],[p3x,p3y] ]); 
 
         link.lines.push(line);
         link.linesLeftX.push(p2x);
@@ -549,20 +543,21 @@ function drawLink(link) {
             labelStyle = styles.labelOddFill.style;
           }
 
-          drawLinkLabel("mid",  (p2x+p3x) / 2, p2y, labelStyle);
+          drawLinkLabel("mid",  (p2x+p3x) / 2, p2y, labelStyle, link, textG);
         }
       }
-}
-} else { //both ends of this link are on the same row - minRow and maxRow are the same
+    }
+  }// end if (maxRow > minRow)...
+  else { //both ends of this link are on the same row - minRow and maxRow are the same
 
-  link.numLineSegments = 1;
+    link.numLineSegments = 1;
 
-  var availableHeight = rows[minRow].baseHeight - rows[minRow].rect.bbox().y;
-  var percentagePadding = availableHeight / (rows[minRow].maxSlots + 1);
+    var availableHeight = rows[minRow].baseHeight - rows[minRow].rect.bbox().y;
+    var percentagePadding = availableHeight / (rows[minRow].maxSlots + 1);
 
-  y1 = rows[minRow].baseHeight - link.leftWord.h * percentagePadding;
-  y2 = rows[minRow].baseHeight - link.h * percentagePadding;
-  y3 = rows[minRow].baseHeight - link.h * percentagePadding;
+    y1 = rows[minRow].baseHeight - link.leftWord.h * percentagePadding;
+    y2 = rows[minRow].baseHeight - link.h * percentagePadding;
+    y3 = rows[minRow].baseHeight - link.h * percentagePadding;
     y4 = rows[minRow].baseHeight - link.rightWord.h * percentagePadding;
 
     var p1x = x1; 
@@ -577,7 +572,7 @@ function drawLink(link) {
     var p4x = x4; 
     var p4y = y4;
 
-    var line = groupAllElements.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y],[p4x,p4y] ]);
+    var line = linkG.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y],[p4x,p4y] ]);
 
     link.lines.push(line); 
     link.linesLeftX.push(p1x);
@@ -590,26 +585,26 @@ function drawLink(link) {
 
 
       if (link.direction == directions.FORWARD) {
-        drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
+        drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowG);
 
-        drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link) );
+        drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowG );
 
           } else if (link.direction == directions.BACKWARD) {
-        drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link) ) ;
+        drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowG ) ;
 
-        drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link) );
+        drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowG );
 
       } else if (link.direction == directions.BOTH) {
 
-        drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link) ) ;
+        drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowG ) ;
 
-        drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link)   );
+        drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowG   );
 
 
       } else {
-        drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
+        drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowG);
 
-        drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link) );
+        drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowG );
 
 
       }
@@ -617,9 +612,6 @@ function drawLink(link) {
     } else {
       line.style(styles.hiddenLine.style);
     }
- 
-    
-
  
     if (percentagePadding >= hidePercentage2) { 
 
@@ -631,10 +623,10 @@ function drawLink(link) {
         style = styles.labelOddFill.style;
       }
 
-      drawLinkLabel("one",  (p2x+p3x) / 2, p2y, style);
+      drawLinkLabel("one",  (p2x+p3x) / 2, p2y, style, link, textG);
     }
 
-  }
+  }//end else (maxRow <= minRow)
 
   setupLineInteractions(link);
 }
@@ -644,21 +636,29 @@ function drawLink(link) {
  *
  * TODO - draw all of these labels / rects last, after all links are drawn, to prevent inconsistant overlaps
  */
-function drawLinkLabel(str, tx, ty, style) { // backgroundcolor ) {
+function drawLinkLabel(str, tx, ty, style, link, group) { // backgroundcolor ) {
 
   var testLinkLabel = true; //false;
 
   if (testLinkLabel) {
+    var label = group.group();
     var twh = getTextWidthAndHeight(str, texts.linkText.style);
 
     //groupAllElements.rect(twh.w + 4, maxTextH2).x( tx - 2 - twh.w/2).y( ty - maxTextH2/2 ).fill(backgroundcolor).stroke( {color:linkStrokeColor, opacity:1.0} ).radius(3,3);
-    var linkLabelRect = groupAllElements.rect(twh.w + 4, texts.linkText.maxHeight).x( tx - 2 - twh.w/2).y( ty - texts.linkText.maxHeight/2 ); 
+    var linkLabelRect = label.rect(twh.w + 4, texts.linkText.maxHeight).x( tx - 2 - twh.w/2).y( ty - texts.linkText.maxHeight/2 ); 
 
     linkLabelRect.style(style);
 
     //.fill(backgroundcolor).opacity(opac).stroke( {color:linkStrokeColor, opacity:0.0} );
 
-    groupAllElements.text(str).x( tx - twh.w/2 ).y(ty - texts.linkText.maxHeight/2 - texts.linkText.descent).font(texts.linkText.style);
+    label.text(str).x( tx - twh.w/2 ).y(ty - texts.linkText.maxHeight/2 - texts.linkText.descent).font(texts.linkText.style);
+    
+    if (link.labelRect) {
+      link.labelRect.push(label);
+    }
+    else {
+      link.labelRect = [label];
+    }
   }
 
 }
@@ -711,22 +711,16 @@ function getRightXForRightWord(link) {
   }
 }
 
-function drawDownArrow(x, y, link, word, side, leftX, rightX) {
-
-  var path = link.style.downArrow.draw(groupAllElements, x, y);
-
+function drawDownArrow(x, y, link, word, side, leftX, rightX, group) {
+  var path = link.style.downArrow.draw(group, x, y);
   dragArrow(path, link, word, side, leftX, rightX);
-
   return path;
 }
 
 
-function drawUpArrow(x, y, link, word, side, leftX, rightX) {
-
-  var path = link.style.upArrow.draw(groupAllElements, x, y);
-
+function drawUpArrow(x, y, link, word, side, leftX, rightX, group) {
+  var path = link.style.upArrow.draw(group, x, y);
   dragArrow(path, link, word, side, leftX, rightX);
-
   return path;
 }
 

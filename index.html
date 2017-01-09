@@ -10,6 +10,20 @@ cursor: default;
 -ms-user-select: none;
 user-select: none;
 }
+
+.split-left {width:66.5%; overflow:hidden;}
+.split-right {width:33% !important;}
+
+#graph {
+    transition:width 200ms ease;
+    width:0;
+    height:100%;
+    background:#ee9;
+    position:fixed;
+    top:0;
+    right:0;
+}
+
 </style>
 
 </head>
@@ -26,6 +40,7 @@ user-select: none;
 <script src="libs/lodash.js"></script>
 <script src="libs/chroma.min.js"></script>
 
+<script src="js/GraphLayout.js"></script>
 <script src="js/enums.js"></script>
 <script src="js/style.js"></script>
 <script src="js/annotate.js"></script>
@@ -45,7 +60,7 @@ var svgHeight = 1000;
 
 var evenRowsColor = '#efeff4';
 var oddRowsColor = '#dddddf';
-
+var rowEdgeColor = 'transparent';
 
 //var draw = SVG('drawing').size('100%', '100%');
 var draw = SVG('drawing').size(svgWidth, svgHeight);
@@ -129,6 +144,31 @@ drawWords(wordObjs);
 drawLinks(linkObjs);
 
 
+// init objects/listeners...
+window.onload = function() {
+  var Panel = new GraphLayout();
+  document.addEventListener('keyup',
+    function(e) {
+      var key = e.keyCode || e.which;
+      // console.log('keycode',key);
+      switch(key) {
+        case 37:          // left arrow
+          if (Panel.isOpen) {
+            Panel.close();
+          }
+          break;
+        case 39:          // right arrow
+          if (!Panel.isOpen) {
+            Panel.open();
+          }
+          Panel.graph(wordObjs.filter(word => word.isSelected));
+          break;
+        default:
+          break;
+      }
+    }, false);
+
+}
 
 </script>
 </body>
