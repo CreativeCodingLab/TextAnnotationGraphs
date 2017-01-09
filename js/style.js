@@ -225,8 +225,8 @@ class TextStyle {
 
     this.style = { 'family':this.family, 'size':this.size };
    
-    this.maxHeight = getMaxTextHeightForFont("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV", this.style);
-    this.descent = getDescentForFont("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV", this.style);
+    this.maxHeight = getMaxTextHeightForFont("Xlj", this.style);
+    this.descent = getDescentForFont("Xlj", this.style);
     if (fillStyle != null) {  
       this.fillStyle = fillStyle;
 
@@ -276,10 +276,10 @@ function setupStyles(svg) {
   styleArr.handleFill = new FillStyle('#ff0000', 0.0);
   styleArr.handleFill.hovering('#ff0000', 0.2);
 
-  styleArr.wordFill = new FillStyle('#ffffff', 1.0, new LineStyle('#000', 1) );
-  styleArr.wordFill.hovering('#ffffff', 1.0, new LineStyle('#000000', 1));
-  styleArr.wordFill.selecting('#ddffff', 1.0, new LineStyle('#000000', 1));
-  styleArr.wordFill.hoveringAndSelecting('#ddffff', 1.0, new LineStyle('#000000', 1));
+  styleArr.wordFill = new FillStyle('#ffffff', 1.0, new LineStyle('transparent', 1) );
+  styleArr.wordFill.hovering('#ffffff', 1.0/*, new LineStyle('#000000', 1)*/);
+  styleArr.wordFill.selecting('#fcc', 1.0, new LineStyle('#c99', 1));
+  styleArr.wordFill.hoveringAndSelecting('#fcc', 1.0/*, new LineStyle('#000000', 1)*/);
 
   styleArr.labelEvenFill = new FillStyle(evenRowsColor);
   styleArr.labelOddFill = new FillStyle(oddRowsColor);
@@ -297,8 +297,8 @@ function setupTexts(svg) {
   //var ng_f = new LinearGradient(draw, (stop) => { stop.at(0, '#f00'); stop.at(1, '#00f') } );
   //textArr.wordText = new TextStyle('Brown', 20, new FillStyle(ng_f, 0.5, styles.backwardLine));
 
-  textArr.wordText = new TextStyle('Brown', 12, new FillStyle('#444'));
-  textArr.linkText = new TextStyle('Brown', 8, new FillStyle('#888'));
+  textArr.wordText = new TextStyle('Brown, BrownPro, futura, helvetica', 12, new FillStyle('#444'));
+  textArr.linkText = new TextStyle('Brown, BrownPro, futura, helvetica', 10, new FillStyle('#888'));
 
   return textArr; 
 }
