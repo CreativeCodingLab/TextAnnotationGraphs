@@ -21,14 +21,20 @@ function getHeightForWord(word) {
 
 function drawRow(row) {
  
- console.log("in drawRow("+row.idx+")");
+ row.rect = draw.rect(svgWidth,row.rh).x(0).y(row.ry);
+ 
+ if (row.idx % 2 == 0) {
+   row.rect.style(styles.rowRectEvenFill.style);
+ } else {
+  row.rect.style(styles.rowRectOddFill.style); 
+ }
+ 
+ row.lineTop = draw.line(0, row.ry, svgWidth, row.ry).style(styles.rowLineStroke.style);
+ row.lineBottom = draw.line(0, row.ry+row.rh, svgWidth, row.ry+row.rh).style(styles.rowLineStroke.style);
 
- row.rect = draw.rect(svgWidth,row.rh).x(0).y(row.ry).fill( {color:row.color} ).opacity(rowOpacity);
- row.lineTop = draw.line(0, row.ry, svgWidth, row.ry).stroke( { color: '#555555', opacity: 1.0, width: 0.5 })
- row.lineBottom = draw.line(0, row.ry+row.rh, svgWidth, row.ry+row.rh).stroke({ color: '#555555', opacity: 1.0, width: 0.5  })
+  row.dragRect = draw.rect(dragRectSide,dragRectSide).x(svgWidth - (dragRectSide+dragRectMargin)).y(row.ry + row.rh - (dragRectSide+dragRectMargin)).style(styles.rowDragRectFill.style);
 
-  row.dragRect = draw.rect(dragRectSide,dragRectSide).x(svgWidth - (dragRectSide+dragRectMargin)).y(row.ry + row.rh - (dragRectSide+dragRectMargin)).fill( {color:'#000'} );
-
+    
  setUpRowDraggable(row);
 
 }
