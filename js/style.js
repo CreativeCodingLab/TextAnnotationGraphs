@@ -341,7 +341,7 @@ function setupStyles(svg) {
   styleArr.simpleLine = new LineStyle("#000000", 4, 0.5);
   styleArr.simpleLine.hovering("#000000", 8, 0.5);
 
-  styleArr.hiddenLine = new LineStyle("#ffff", 6, 0.0);
+  styleArr.hiddenLine = new LineStyle("#ffffff", 6, 0.0);
 
 
 
@@ -355,6 +355,11 @@ function setupStyles(svg) {
 
   styleArr.labelEvenFill = new FillStyle(evenRowsColor);
   styleArr.labelOddFill = new FillStyle(oddRowsColor);
+
+  styleArr.rowRectEvenFill = new FillStyle(evenRowsColor);
+  styleArr.rowRectOddFill = new FillStyle(oddRowsColor);
+  styleArr.rowLineStroke = new LineStyle("#555555", 0.5, 1.0);
+  styleArr.rowDragRectFill = new FillStyle('#000');
 
     return styleArr;
 }

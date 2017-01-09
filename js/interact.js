@@ -229,7 +229,6 @@ function dragArrow (arrow, link, word, side, leftX, rightX) {
   });
 }
 
-
 function checkDragDirection(x) {
 
    if (prevX == x) { 
@@ -242,7 +241,6 @@ function checkDragDirection(x) {
 
    return dragDir;
 }
-
 
 function setUpLeftHandleDraggable(leftHandle, rect, text, word, i) {
 
