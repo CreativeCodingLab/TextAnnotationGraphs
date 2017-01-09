@@ -85,6 +85,7 @@ class Word {
 
         this.isSelected = false;
         this.isHovered = false;
+        this.isDragging = false;
         //variables created in first render...
         //this.row; //this is a row object, for num do: this.row.idx
         //this.underneathRect;

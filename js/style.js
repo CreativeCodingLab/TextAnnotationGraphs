@@ -103,6 +103,27 @@ class FillStyle {
 }
 
 
+class ArrowStyle {
+  constructor(xoff, yoff, shapeFunc, fillStyle) {
+    console.log("in ArrowStyle constructor");
+    this.xoff = xoff;
+    this.yoff = yoff;
+
+    this.fillStyle = fillStyle;
+    this.shapeFunc = shapeFunc;
+
+ }
+
+  draw(svg, x, y){
+      var path = this.shapeFunc(svg, x, y, this.xoff, this.yoff, this.fillStyle);  
+        return path;
+  }
+
+  toString() {
+    return "cx:" + (this.xoff) + ";cy:" +(this.yoff) + ";" + this.fillStyle.style;
+  }
+}
+ // "cx:" + x + ";cy:" +(y-3) + ";" + styles.arrowFill.style
 
 
 //TODO - I think the arrows / end-of-link glyphs should be defined in here as well - the LineStyle class should let the user compose strokes and arrow look+feel (right now just stroke css attrs) 
@@ -130,6 +151,11 @@ class LineStyle {
 
     this.hover = '' + this.style;
     this.select = '' + this.style;
+
+    this.upArrow = defaultUpArrow;
+    this.downArrow = defaultDownArrow;
+
+    //console.log("upArrow = " + this.upArrow.toString());
   }
 
 
@@ -161,6 +187,9 @@ class LineStyle {
   clone() {
     return new LineStyle(this.stroke, this.width, this.opacity, this.dasharray);
   }
+
+  
+
 
   /* 
   //for updating a linear gradient with two stops
@@ -241,18 +270,61 @@ class TextStyle {
 }
 
 
+//arrow paths
+var circleArrowPath = (svg, x, y, xoff, yoff, fillStyle) => {
+  
+  var path = svg.circle(5);
+  path.style("cx:" + (x+xoff) + ";cy:" +(y+yoff) + ";" + fillStyle.style);
+
+  return path;
+}
+
+var downArrowPath = (svg, x, y, xoff, yoff, fillStyle) => {
+
+  var arrowH = 5; 
+  var arrowMH = 5;
+  var arrowW = 3; 
+  
+  var ux = x+xoff;
+  var uy = y+yoff;
+
+  var a1 = 'M' + ux + ',' + uy + ' ';
+  var a2 = 'L' + (ux-arrowW) + ',' + (uy-arrowH) + ' ';
+  var a3 = 'L' + (ux) + ',' + (uy-arrowMH) + ' ';
+  var a4 = 'L' + (ux+arrowW) + ',' + (uy-arrowH);
+  var a5 = 'z';
+
+  var arrow = a1 + a2 + a3 + a4;
+
+  var path = svg.path(arrow);
+  path.style(fillStyle.style);
+
+  return path;
+}
+
+
+//figure out best place to put this
+var defaultUpArrow = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
+var defaultDownArrow = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#000000', 1.0));
+  
+
+//set up link styles and word styles
 function setupStyles(svg) {
 
   var styleArr = {};
 
+  var ng_f = new LinearGradient(svg, '#ffff00', '#ff00ff');
+  var ng_b = new LinearGradient(svg, '#00ff00', '#0000ff');
+
+
   //this is how you create a linear gradient, which can be used for fills and strokes (and can also be applied to text fills and strokes)
   //var ng_f = new LinearGradient(draw, (stop) => { stop.at(0, '#f00'); stop.at(1.0, '#00f') } );
   //var ng_b = new LinearGradient(draw, (stop) => { stop.at(0, '#0ff'); stop.at(1.0, '#0f0') } );
-  var ng_f = new LinearGradient(draw, '#ffff00', '#ff00ff');
   //var ng_f = new LinearGradient(draw, '#ffffff', '#000000');
-  var ng_b = new LinearGradient(draw, '#00ff00', '#0000ff');
+   //default arrow style 
+  styleArr.arrowFill = new FillStyle('#000000', 1.0);
 
- 
+
   //types of links (not necessarily related to direction)
   styleArr.gradientLine1 = new LineStyle(ng_f, 4, 0.5); 
   styleArr.gradientLine1.hovering(ng_f, 8, 0.5); 
@@ -273,8 +345,8 @@ function setupStyles(svg) {
 
 
 
-  styleArr.handleFill = new FillStyle('#ff0000', 0.0);
-  styleArr.handleFill.hovering('#ff0000', 0.2);
+  styleArr.handleFill = new FillStyle('#000000', 0.0);
+  styleArr.handleFill.hovering('#ffcccc', 0.7);
 
   styleArr.wordFill = new FillStyle('#ffffff', 1.0, new LineStyle('#000', 1) );
   styleArr.wordFill.hovering('#ffffff', 1.0, new LineStyle('#000000', 1));
@@ -284,9 +356,7 @@ function setupStyles(svg) {
   styleArr.labelEvenFill = new FillStyle(evenRowsColor);
   styleArr.labelOddFill = new FillStyle(oddRowsColor);
 
-  styleArr.arrowFill = new FillStyle('#000000', 1.0);
-
-  return styleArr;
+    return styleArr;
 }
 
 

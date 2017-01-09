@@ -38,14 +38,16 @@ function setupMouseOverInteractions(word) {
 
   word.rightHandle.mouseover( function() { mover(word) }  );
   word.rightHandle.mouseout( function() { mout(word) }  );
+
+   word.rectSVG.mousemove( function() {  console.log("touchleave!");  }  );
+  
 }
 
 
 function mover(word){
   console.log("in mover for " + word.val);
 
-  if (isDragging) {return;} 
-
+  
   word.isHovered = true;
 
   if (word.isSelected) {
@@ -54,9 +56,13 @@ function mover(word){
    word.underneathRect.style(styles.wordFill.hover);
   }
 
+    if (isDragging) {return;} 
+
   
   word.leftHandle.style(styles.handleFill.hover);
   word.rightHandle.style(styles.handleFill.hover);
+
+
 
   /*
   for (var i = 0; i < word.parentsL.length; i++) {
@@ -265,6 +271,14 @@ function addDragStartingAndEndingListeners(elem) {
 
     prevX = -1;
     console.log("isDragging = " + isDragging);
+
+    if (dragElem instanceof Word) { //also check if x,y has changed, since even a click in place will trigger a dragEnd, which we don't want 
+   
+      //dragElem.leftHandle.style(styles.handleFill.style);
+      //dragElem.rightHandle.style(styles.handleFill.style);
+      dragElem = null;
+    }
+
   })
 
 }
@@ -338,7 +352,7 @@ function setUpLeftHandleDraggable(leftHandle, rect, text, word, i) {
 
   addDragStartingAndEndingListeners(leftHandle);
 
-  leftHandle.draggable(function(x, y) {
+    leftHandle.draggable(function(x, y) {
 
     var returnVal = dragLeftHandle(x, leftHandle.bbox().y, word);
     redrawLinks();//actually - only redraw links that moving this word would affect + this row
@@ -362,6 +376,9 @@ function setUpRightHandleDraggable(rightHandle, rect, text, word, i) {
 
 function dragLeftHandle(x, y, word) {
 
+  dragElem = word;
+
+
   var dragDir = checkDragDirection(x);
 
   if (dragDir == directions.BACKWARD) {
@@ -376,6 +393,9 @@ function dragLeftHandle(x, y, word) {
 }
 
 function dragRightHandle(x, y, word) {
+
+  dragElem = word;
+
 
   var dragDir = checkDragDirection(x);
 
@@ -688,6 +708,9 @@ function checkIfCanMoveRight(x, y, word) {
 
 function dragWord(x, y, word) {
 
+  dragElem = word; 
+  //word.isDragging = true;
+  
   var dragDir = checkDragDirection(x);
   
   if (dragDir == directions.BACKWARD) {

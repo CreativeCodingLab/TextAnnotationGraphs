@@ -711,19 +711,9 @@ function getRightXForRightWord(link) {
   }
 }
 
-function drawDownArrow(x, y, link, word, side, leftX, rightX, opacity) {
+function drawDownArrow(x, y, link, word, side, leftX, rightX) {
 
-  var tipy = y + 0;
-
-  var a1 = 'M' + x + ',' + (tipy) + ' ';
-  var a2 = 'L' + (x-arrowW) + ',' + (tipy-arrowH) + ' ';
-  var a3 = 'L' + (x) + ',' + (tipy-arrowMH) + ' ';
-  var a4 = 'L' + (x+arrowW) + ',' + (tipy-arrowH);
-  var a5 = 'z';
-
-  var arrow = a1 + a2 + a3 + a4;
-
-  var path = groupAllElements.path(arrow).style(styles.arrowFill.style);
+  var path = link.style.downArrow.draw(groupAllElements, x, y);
 
   dragArrow(path, link, word, side, leftX, rightX);
 
@@ -731,21 +721,9 @@ function drawDownArrow(x, y, link, word, side, leftX, rightX, opacity) {
 }
 
 
-function drawUpArrow(x, y, link, word, side, leftX, rightX, opacity) {
-  /*
-     var tipy = y - 1;
+function drawUpArrow(x, y, link, word, side, leftX, rightX) {
 
-     var a1 = 'M' + x + ',' + (tipy) + ' ';
-     var a2 = 'L' + (x-arrowW) + ',' + (tipy-arrowH) + ' ';
-     var a3 = 'L' + (x) + ',' + (tipy-arrowMH) + ' ';
-
-     var a4 = 'L' + (x+arrowW) + ',' + (tipy-arrowH);
-     var a5 = 'z';
-
-     var arrow = a1 + a2 + a3 + a4;
-     */
-  var path = groupAllElements.circle(5).cx(x).cy(y-3).style(styles.arrowFill.style);
-
+  var path = link.style.upArrow.draw(groupAllElements, x, y);
 
   dragArrow(path, link, word, side, leftX, rightX);
 

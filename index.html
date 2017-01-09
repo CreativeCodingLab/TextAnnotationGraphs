@@ -50,10 +50,13 @@ var oddRowsColor = '#dddddf';
 //var draw = SVG('drawing').size('100%', '100%');
 var draw = SVG('drawing').size(svgWidth, svgHeight);
 
+
+
 var styles = setupStyles(draw); //creates an associative array of whatever styles you want to make use of later
 
 var texts = setupTexts(draw); //creates an associate array of whatever text you want to use. Currently useing 'texts.wordText' and 'texts.linkText', and using style, maxHeight, and descent to layout text
 
+var dragElem = null;
 var isDragging = false;
 
 var levelpadding = 16;
@@ -69,6 +72,7 @@ var handleH = texts.wordText.maxHeight + (textpaddingY * 2);
 var handleColor = '#ff0000';
 var handleOpacity= 0.1;
 
+//should be able to remove these hardcoded vals - moved this logic to style.js, arrow functions. Looks like intereact.js dragArrow still uses them, should be able to remove...
 var arrowH = 5; //9;
 var arrowMH = 5; //7; //4
 var arrowW = 3; //3
@@ -103,8 +107,8 @@ var arrowColor = '#000000';
 var arrowOpacity = 1.0;
 
 var word2word_strategy = strategies.FARTHEST;
-var word2link_strategy = strategies.FARTHEST; 
-var link2link_strategy = strategies.FARTHEST; 
+var word2link_strategy = strategies.CLOSEST; 
+var link2link_strategy = strategies.CLOSEST; //CLOSEST sometimes causes overlaps - need to be a bit more rigorous when assigning slots - don't assign any slots that have the potential to overlap (when dragged manually)? - or let the buyer beware that this could happen - they can always move out of the way - right now it won't automatically overlap, but won't prevent a user from doing it. 
 
 var rows = []; //list of Row object, each of those has a list of Word objects
 var groupAllElements;
