@@ -45,7 +45,7 @@ function setupMouseOverInteractions(word) {
 
 
 function mover(word){
-  console.log("in mover for " + word.val);
+  // console.log("in mover for " + word.val);
 
   
   word.isHovered = true;
@@ -64,28 +64,11 @@ function mover(word){
 
 
 
-  /*
-  for (var i = 0; i < word.parentsL.length; i++) {
-    var p = word.parentsL[i];
-
-    for (var l = 0; l < p.lines.length; l++) {
-      p.lines[l].stroke( {color: "#00ff00"} );
-    }
-  }
-
-  for (var i = 0; i < word.parentsR.length; i++) {
-    var p = word.parentsR[i];
-    for (var l = 0; l < p.lines.length; l++) {
-      p.lines[l].stroke( {color: "#00ff00"} );
-    }
-  }
-  */
 }
 
 
 function mout(word){
-  console.log("in mout for " + word.val);
-
+  // console.log("in mout for " + word.val);
 
   if (isDragging) {return;} 
 
@@ -100,24 +83,22 @@ function mout(word){
   word.leftHandle.style(styles.handleFill.style);
   word.rightHandle.style(styles.handleFill.style);
 
+  // for (var i = 0; i < word.parentsL.length; i++) {
+  //   var p = word.parentsL[i];
 
+  //   for (var l = 0; l < p.lines.length; l++) {
+  //     p.lines[l].stroke( {color: "#ff0000"} );
+  //   }
+  // }
 
-  for (var i = 0; i < word.parentsL.length; i++) {
-    var p = word.parentsL[i];
+  // console.log("length of parentsR??? = " + word.parentsR.length);
+  // for (var i = 0; i < word.parentsR.length; i++) {
+  //   var p = word.parentsR[i];
 
-    for (var l = 0; l < p.lines.length; l++) {
-      p.lines[l].stroke( {color: "#ff0000"} );
-    }
-  }
-
-  console.log("length of parentsR??? = " + word.parentsR.length);
-  for (var i = 0; i < word.parentsR.length; i++) {
-    var p = word.parentsR[i];
-
-    for (var l = 0; l < p.lines.length; l++) {
-      p.lines[l].stroke( {color: "#ff0000"} );
-    }
-  }
+  //   for (var l = 0; l < p.lines.length; l++) {
+  //     p.lines[l].stroke( {color: "#ff0000"} );
+  //   }
+  // }
 }
 
 function link_mover(link) {
@@ -126,101 +107,14 @@ function link_mover(link) {
 
     link.lines[i].style(link.style.hover);
   }
-
-  /*
-
-  if (link.leftWord.lines) {
-    for (var i = 0; i < link.leftWord.lines.length; i++) {
-      link.leftWord.lines[i].stroke( { width: linkStrokeThickness,color:linkStrokeColor_selected,opacity:linkStrokeOpacity_selected  } );
-    }
-  }
-
-  if (link.rightWord.lines) {
-    for (var i = 0; i < link.rightWord.lines.length; i++) {
-      link.rightWord.lines[i].stroke( { width: linkStrokeThickness,color:linkStrokeColor_selected,opacity:linkStrokeOpacity_selected  } );
-    }
-  }
-
-
-  for (var i = 0; i < link.lines.length; i++) {
-    link.lines[i].stroke( { width: linkStrokeThickness,color:linkStrokeColor_selected,opacity:linkStrokeOpacity_selected  } );
-  }
-
-  if (link.parentsL) {
-    for (var i = 0; i < link.parentsL.length; i++) {
-      var p = link.parentsL[i];
-
-      for (var l = 0; l < p.lines.length; l++) {
-        p.lines[l].stroke( { width: linkStrokeThickness,color:linkStrokeColor_selected,opacity:linkStrokeOpacity_selected  } );
-      }
-
-    }
-  }
-
-  if (link.parentsR) {
-
-    for (var i = 0; i < link.parentsR.length; i++) {
-      var p = link.parentsR[i];
-
-      for (var l = 0; l < p.lines.length; l++) {
-        p.lines[l].stroke( { width: linkStrokeThickness,color:linkStrokeColor_selected,opacity:linkStrokeOpacity_selected  } );
-      }
-    }
-
-  }
-  */
 }
 
 
 function link_mout(link) {
 
  for (var i = 0; i < link.lines.length; i++) {
-
     link.lines[i].style(link.style.style);
   }
-
-/*
-  if (link.leftWord.lines) {
-    for (var i = 0; i < link.leftWord.lines.length; i++) {
-      link.leftWord.lines[i].stroke( { width: linkStrokeThickness,color:linkStrokeColor,opacity:linkStrokeOpacity  } );
-    }
-  }
-
-  if (link.rightWord.lines) {
-    for (var i = 0; i < link.rightWord.lines.length; i++) {
-      link.rightWord.lines[i].stroke( { width: linkStrokeThickness,color:linkStrokeColor,opacity:linkStrokeOpacity  } );
-    }
-  }
-
-
-  for (var i = 0; i < link.lines.length; i++) {
-    link.lines[i].stroke( { width: linkStrokeThickness,linkStrokeThickness,color:linkStrokeColor,opacity:linkStrokeOpacity  } );
-  }
-
-
-  if (link.parentsL) {
-
-    for (var i = 0; i < link.parentsL.length; i++) {
-      var p = link.parentsL[i];
-
-      for (var l = 0; l < p.lines.length; l++) {
-        p.lines[l].stroke( { width: linkStrokeThickness,linkStrokeThickness,color:linkStrokeColor,opacity:linkStrokeOpacity  } );
-
-      }
-
-    }
-  }
-  if (link.parentsR) {
-
-    for (var i = 0; i < link.parentsR.length; i++) {
-      var p = link.parentsR[i];
-
-      for (var l = 0; l < p.lines.length; l++) {
-        p.lines[l].stroke( { width: linkStrokeThickness,linkStrokeThickness,color:linkStrokeColor,opacity:linkStrokeOpacity  } );
-      }
-    }
-  }
-  */
 }
 
 function setupLineInteractions(link) {
@@ -262,10 +156,13 @@ function addDragStartingAndEndingListeners(elem) {
 
   })
 
-
   elem.on('dragend', function() {
     isDragging = false;
     //isCanceling = false;
+    if (rowOffsetWord && rowOffsetWord.isHovered) {
+      mout(rowOffsetWord);
+    }
+
     rowOffsetX = 0;
     rowOffsetWord = null;
 
@@ -352,7 +249,8 @@ function setUpLeftHandleDraggable(leftHandle, rect, text, word, i) {
 
   addDragStartingAndEndingListeners(leftHandle);
 
-    leftHandle.draggable(function(x, y) {
+  leftHandle.draggable(function(x, y) {
+    rowOffsetWord = word;
 
     var returnVal = dragLeftHandle(x, leftHandle.bbox().y, word);
     redrawLinks();//actually - only redraw links that moving this word would affect + this row
@@ -366,6 +264,7 @@ function setUpRightHandleDraggable(rightHandle, rect, text, word, i) {
   addDragStartingAndEndingListeners(rightHandle);
 
   rightHandle.draggable(function(x, y) {
+    rowOffsetWord = word;
 
     var returnVal = dragRightHandle(x, rightHandle.bbox().y, word);
     redrawLinks(); //actually - only redraw links that moving this word would affect + this row
@@ -410,6 +309,7 @@ function dragRightHandle(x, y, word) {
 }
 
 function checkIfCanDragRightHandleLeft(x, y, word) {
+  var minWidth = Math.max(minWordWidth,word.tw);
 
   var rx, rw;
   var posInRow = word.row.words.indexOf(word);
@@ -422,9 +322,9 @@ function checkIfCanDragRightHandleLeft(x, y, word) {
     rx = rows[word.row.idx].words[posInRow + 1].leftX - handleW;
     rw = rx - word.leftX + handleW;
     setWordToXW(word, word.leftX, rw);
-  } else if (x + handleW - word.leftX < minWordWidth) {
-    rx = word.leftX + minWordWidth - handleW;
-    rw = minWordWidth;
+  } else if (x + handleW - word.leftX < minWidth) {
+    rx = word.leftX + minWidth - handleW;
+    rw = minWidth;
     setWordToXW(word, word.leftX, rw);
   } else {
     rx = x;
@@ -437,13 +337,14 @@ function checkIfCanDragRightHandleLeft(x, y, word) {
 
 
 function checkIfCanDragRightHandleRight(x, y, word) {
+  var minWidth = Math.max(minWordWidth,word.tw);
 
   var rx, rw;
   var posInRow = word.row.words.indexOf(word);
 
-  if (x < word.leftX + minWordWidth - handleW) {
-    rx = word.leftX + minWordWidth - handleW;
-    rw = minWordWidth;
+  if (x < word.leftX + minWidth - handleW) {
+    rx = word.leftX + minWidth - handleW;
+    rw = minWidth;
     setWordToXW(word, word.leftX, rw);
 
   } else if (posInRow == word.row.words.length - 1 && x > (svgWidth - edgepadding - handleW) ) {
@@ -470,6 +371,7 @@ function checkIfCanDragRightHandleRight(x, y, word) {
 }
 
 function checkIfCanDragLeftHandleRight(x, y, word) {
+  var minWidth = Math.max(minWordWidth,word.tw);
 
   var rx, rw;
 
@@ -481,9 +383,9 @@ function checkIfCanDragLeftHandleRight(x, y, word) {
   } else if (posInRow > 0 && x < rows[word.row.idx].words[posInRow - 1].rightX) {
     rx = rows[word.row.idx].words[posInRow - 1].rightX;
     rw = word.rightX - rx;
-  } else if (x > word.rightX - minWordWidth) {
-    rx = word.rightX - minWordWidth;
-    rw = minWordWidth;
+  } else if (x > word.rightX - minWidth) {
+    rx = word.rightX - minWidth;
+    rw = minWidth;
   } else {
     rx = x;
     rw = word.rightX - rx;
@@ -495,13 +397,14 @@ function checkIfCanDragLeftHandleRight(x, y, word) {
 }
 
 function checkIfCanDragLeftHandleLeft(x, y, word) {
+  var minWidth = Math.max(minWordWidth,word.tw);
 
   var rx, rw;
   var posInRow = word.row.words.indexOf(word);
 
-  if (x > word.rightX - minWordWidth) {
-    rx = word.rightX - minWordWidth;
-    rw = minWordWidth; 
+  if (x > word.rightX - minWidth) {
+    rx = word.rightX - minWidth;
+    rw = minWidth; 
     //prob want to return here...
   } else {
     rx = x;
