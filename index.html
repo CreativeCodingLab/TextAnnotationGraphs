@@ -1,6 +1,17 @@
 <html>
 <head>
 
+<!-- turns off text selection for svg canvas -->
+<style>
+svg text {
+cursor: default;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+}
+</style>
+
 </head>
 
 <body>
@@ -27,7 +38,7 @@
 
 var debug = true;
 
-var svgWidth = 500; //window.innerWidth - 16;
+var svgWidth = window.innerWidth - 16;
 var svgHeight = 1000;
 
 
@@ -99,13 +110,13 @@ var rows = []; //list of Row object, each of those has a list of Word objects
 var groupAllElements;
 
 // 1. create Words and Links objects (in utils.js) */
-var wordObjs = createTestWords(15, 1, 12);
+var wordObjs = createTestWords(20, 1, 12);
 //var wordObjs = [];
 //wordObjs.push(new Word("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0));
 //wordObjs.push(new Word("bbbbbbbbbbbbbbbbbbbbbbbbbb", 1));
 
 
-var linkObjs = createTestLinks(4, 0, 0); 
+var linkObjs = createTestLinks(3, 5, 2); 
 
 // 2. draw words and boxes around words
 drawWords(wordObjs);

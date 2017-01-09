@@ -83,6 +83,8 @@ class Word {
         this.th = 0;
         this.id = `(${this.val}, ${this.idx})`;
 
+        this.isSelected = false;
+        this.isHovered = false;
         //variables created in first render...
         //this.row; //this is a row object, for num do: this.row.idx
         //this.underneathRect;

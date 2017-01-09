@@ -41,23 +41,68 @@ class FillStyle {
 
   constructor(fill, opacity, lineStyle) {
 
+    this.fill = fill;
+
     if (fill instanceof LinearGradient) {
-      this.fill = "url(#" + fill.id + ")";
+      this.fillStr = "url(#" + fill.id + ")";
     } else {
-      this.fill = fill;
+      this.fillStr = fill;
     }
 
     this.opacity = opacity;
-    
-    this.style = "fill:" + this.fill + ";opacity:" + this.opacity + ";";
 
     if (lineStyle != null) { //add everything from the LineStyle except for the fill attribute
       this.lineStyle = lineStyle;
-      this.style += "stroke:" + lineStyle.stroke + ";stroke-width:"+lineStyle.width+";stroke-opacity:"+lineStyle.opacity+";stroke-dasharray:"+ lineStyle.dasharray + ";";
+    }
+
+    this.style = this.makeStyleString(this.fillStr, this.opacity, this.lineStyle);
+    this.hover = '' + this.style;
+    this.select = '' + this.style;
+    this.hoverAndSelect = '' + this.style;
+
+  }
+
+  makeStyleString(f, o, ls) {
+    
+    var ss = "fill:" + f + ";opacity:" + o + ";";
+
+    if (ls != null) {
+      ss += "stroke:" + ls.strokeStr + ";stroke-width:"+ls.width+";stroke-opacity:"+ls.opacity+";stroke-dasharray:"+ ls.dasharray + ";";
+    }
+
+    return ss;
+  }
+
+
+  hovering(f, o, ls) {
+    if (f instanceof LinearGradient) {
+      this.hover = this.makeStyleString("url(#" + f.id + ")", o, ls);
+    } else {
+      this.hover = this.makeStyleString(f, o, ls);
     }
   }
 
+  
+  selecting(f, o, ls) {
+    if (f instanceof LinearGradient) {
+      this.select = this.makeStyleString("url(#" + f.id + ")", o, ls);
+    } else {
+      this.select = this.makeStyleString(f, o, ls);
+    }
+  }
+
+  hoveringAndSelecting(f, o, ls) {
+    if (f instanceof LinearGradient) {
+      this.hoverAndSelect = this.makeStyleString("url(#" + f.id + ")", o, ls);
+    } else {
+      this.hoverAndSelect = this.makeStyleString(f, o, ls);
+    }
+  }
+
+
 }
+
+
 
 
 //TODO - I think the arrows / end-of-link glyphs should be defined in here as well - the LineStyle class should let the user compose strokes and arrow look+feel (right now just stroke css attrs) 
@@ -69,22 +114,54 @@ class LineStyle {
 
   constructor(stroke, width, opacity, dasharray) {
 
+    this.stroke = stroke;
+
     if (stroke instanceof LinearGradient) {
-      this.stroke = stroke;
       this.strokeStr = "url(#" + stroke.id + ")";
     } else {
-      this.stroke = stroke;
       this.strokeStr = ''+ stroke;
     }
 
     this.width = width;
     this.opacity = opacity;
     this.dasharray = dasharray;
-    
-    this.style = "fill:none;stroke:" + this.strokeStr + ";stroke-width:"+this.width+";stroke-opacity:"+this.opacity+";stroke-dasharray:"+ this.dasharray + ";";
+
+    this.style = this.makeStyleString(this.strokeStr, this.width, this.opacity, this.dasharray);
+
+    this.hover = '' + this.style;
+    this.select = '' + this.style;
   }
 
- 
+
+  hovering(s, w, o, da) {
+    if (s instanceof LinearGradient) {
+      this.hover = this.makeStyleString("url(#" + s.id + ")", w, o, da);
+    } else {
+      this.hover = this.makeStyleString(s, w, o, da);
+    }
+  }
+
+  
+  selecting(s, w, o, da) {
+    if (s instanceof LinearGradient) {
+      this.select = this.makeStyleString("url(#" + s.id + ")", w, o, da);
+    } else {
+      this.select = this.makeStyleString(s, w, o, da);
+    }
+  }
+
+  update() {
+    this.style = this.makeStyleString(this.strokeStr, this.width, this.opacity, this.dasharray);
+  }
+
+  makeStyleString(ss, w, o, da) {
+    return "fill:none;stroke:" + ss + ";stroke-width:" + w + ";stroke-opacity:" + o +";stroke-dasharray:"+ da + ";";
+  }
+  
+  clone() {
+    return new LineStyle(this.stroke, this.width, this.opacity, this.dasharray);
+  }
+
   /* 
   //for updating a linear gradient with two stops
   update(a, b) {
@@ -172,22 +249,37 @@ function setupStyles(svg) {
   //var ng_f = new LinearGradient(draw, (stop) => { stop.at(0, '#f00'); stop.at(1.0, '#00f') } );
   //var ng_b = new LinearGradient(draw, (stop) => { stop.at(0, '#0ff'); stop.at(1.0, '#0f0') } );
   var ng_f = new LinearGradient(draw, '#ffff00', '#ff00ff');
+  //var ng_f = new LinearGradient(draw, '#ffffff', '#000000');
   var ng_b = new LinearGradient(draw, '#00ff00', '#0000ff');
 
  
-  //types of links (not necessarily related to direction
-  styleArr.gradientLine1 = new LineStyle(ng_f, 6, 0.5); 
-  styleArr.gradientLine2 = new LineStyle(ng_b, 6, 0.5);
-  styleArr.bothLine = new LineStyle("#ff0000", 1, 1, "2,5,2");
-  styleArr.noneLine = new LineStyle("#0000ff", 1, 1, "2,2");
-  styleArr.simpleLine = new LineStyle("#000000", 1);
-  
+  //types of links (not necessarily related to direction)
+  styleArr.gradientLine1 = new LineStyle(ng_f, 4, 0.5); 
+  styleArr.gradientLine1.hovering(ng_f, 8, 0.5); 
+
+  styleArr.gradientLine2 = new LineStyle(ng_b, 4, 0.5);
+  styleArr.gradientLine2.hovering(ng_b, 8, 0.5);
+
+  styleArr.bothLine = new LineStyle("#ff0000", 1, 0.5, "2,5,2");
+  styleArr.bothLine.hovering("#ff0000", 4, 0.5, "2,5,2");
+
+  styleArr.noneLine = new LineStyle("#0000ff", 1, 0.5, "2,2");
+  styleArr.noneLine.hovering("#0000ff", 4, 0.5, "2,2");
+
+  styleArr.simpleLine = new LineStyle("#000000", 4, 0.5);
+  styleArr.simpleLine.hovering("#000000", 8, 0.5);
+
   styleArr.hiddenLine = new LineStyle("#ffff", 6, 0.0);
 
 
 
-  styleArr.handleFill = new FillStyle('#ff0000', 0.5);
+  styleArr.handleFill = new FillStyle('#ff0000', 0.0);
+  styleArr.handleFill.hovering('#ff0000', 0.2);
+
   styleArr.wordFill = new FillStyle('#ffffff', 1.0, new LineStyle('#000', 1) );
+  styleArr.wordFill.hovering('#ffffff', 1.0, new LineStyle('#000000', 1));
+  styleArr.wordFill.selecting('#ddffff', 1.0, new LineStyle('#000000', 1));
+  styleArr.wordFill.hoveringAndSelecting('#ddffff', 1.0, new LineStyle('#000000', 1));
 
   styleArr.labelEvenFill = new FillStyle(evenRowsColor);
   styleArr.labelOddFill = new FillStyle(oddRowsColor);
@@ -205,7 +297,7 @@ function setupTexts(svg) {
   //var ng_f = new LinearGradient(draw, (stop) => { stop.at(0, '#f00'); stop.at(1, '#00f') } );
   //textArr.wordText = new TextStyle('Brown', 20, new FillStyle(ng_f, 0.5, styles.backwardLine));
 
-  textArr.wordText = new TextStyle('Brown', 14, new FillStyle('#444'));
+  textArr.wordText = new TextStyle('Brown', 12, new FillStyle('#444'));
   textArr.linkText = new TextStyle('Brown', 8, new FillStyle('#888'));
 
   return textArr; 

@@ -192,8 +192,25 @@ function drawWord(word) {
     setupMouseOverInteractions(word);
 
      rect.dblclick(function() {
-      this.fill({ color: '#f06', opacity:0.5 })
-      this.stroke( { color: '#000', opacity: 1, width: 1 } ) 
+       if (word.isSelected == false) {
+        word.isSelected = true;
+
+        if (word.isHovered) {
+          underneathRect.style(styles.wordFill.hoverAndSelect);
+        } else {
+          underneathRect.style(styles.wordFill.select);
+        }
+       } else {
+        word.isSelected = false;
+
+        if (word.isHovered) {
+          underneathRect.style(styles.wordFill.hover);
+        } else {
+          underneathRect.style(styles.wordFill.style);
+        }
+       }
+      //this.fill({ color: '#f06', opacity:0.5 })
+      //this.stroke( { color: '#000', opacity: 1, width: 1 } ) 
       //console.log("YOU CLICKED TWICE");
     });
 
@@ -274,6 +291,8 @@ function getXPosForAttachmentByPercentageOffset(link) {
 
 function getLinkStyles(link, xpts) {
 
+  //TODO - need to reverse direction of gradient when link reverses! currently always assumes increases in x direction, but manually moving links around can put the end x point before the start x point (ie, when moving link2link links). In that case, need to reverse the x's
+  // gradient.from(0, 0).to(1, 0) is the default, would need to be gradient.from(1, 0).to(0, 0)
  
   var linkStyles = [];
 
@@ -405,7 +424,7 @@ function drawLink(link) {
 
         var line = groupAllElements.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y] ]);
         
-                link.lines.push(line);
+        link.lines.push(line);
         link.linesLeftX.push(p1x);
         link.linesRightX.push(p3x);
         

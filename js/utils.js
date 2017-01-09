@@ -97,6 +97,8 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
 function getRandomStyle() {
    var num = getRandomInt(0,4);
 
+   //return styles.simpleLine;
+   
    switch (num) {
      case 0:
        return styles.gradientLine1;
@@ -111,6 +113,7 @@ function getRandomStyle() {
      default:
        return styles.simpleLine;
    }
+   
 }
 
 

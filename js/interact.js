@@ -42,14 +42,23 @@ function setupMouseOverInteractions(word) {
 
 
 function mover(word){
+  console.log("in mover for " + word.val);
+
   if (isDragging) {return;} 
 
-  word.rectSVG.stroke( { color: '#00ff00', opacity: 0.6, width: 1 } );
-  word.rectSVG.fill( {color: "#ff0000"} );
+  word.isHovered = true;
 
-  word.leftHandle.opacity(handleOpacity);
-  word.rightHandle.opacity(handleOpacity);
+  if (word.isSelected) {
+    word.underneathRect.style(styles.wordFill.hoverAndSelect);
+  } else {
+   word.underneathRect.style(styles.wordFill.hover);
+  }
 
+  
+  word.leftHandle.style(styles.handleFill.hover);
+  word.rightHandle.style(styles.handleFill.hover);
+
+  /*
   for (var i = 0; i < word.parentsL.length; i++) {
     var p = word.parentsL[i];
 
@@ -64,17 +73,28 @@ function mover(word){
       p.lines[l].stroke( {color: "#00ff00"} );
     }
   }
+  */
 }
 
 
 function mout(word){
+  console.log("in mout for " + word.val);
+
+
   if (isDragging) {return;} 
 
-  word.rectSVG.stroke( { color: '#ff0000', opacity: 0.6, width: 1 } );
-  word.rectSVG.fill( {color: "#0000ff"} );
+  word.isHovered = false;
 
-  word.leftHandle.opacity(0.0);
-  word.rightHandle.opacity(0.0);
+  if (word.isSelected) {
+   word.underneathRect.style(styles.wordFill.select);
+  } else {
+    word.underneathRect.style(styles.wordFill.style);
+  }
+
+  word.leftHandle.style(styles.handleFill.style);
+  word.rightHandle.style(styles.handleFill.style);
+
+
 
   for (var i = 0; i < word.parentsL.length; i++) {
     var p = word.parentsL[i];
@@ -95,6 +115,13 @@ function mout(word){
 }
 
 function link_mover(link) {
+
+  for (var i = 0; i < link.lines.length; i++) {
+
+    link.lines[i].style(link.style.hover);
+  }
+
+  /*
 
   if (link.leftWord.lines) {
     for (var i = 0; i < link.leftWord.lines.length; i++) {
@@ -135,11 +162,18 @@ function link_mover(link) {
     }
 
   }
+  */
 }
 
 
 function link_mout(link) {
 
+ for (var i = 0; i < link.lines.length; i++) {
+
+    link.lines[i].style(link.style.style);
+  }
+
+/*
   if (link.leftWord.lines) {
     for (var i = 0; i < link.leftWord.lines.length; i++) {
       link.leftWord.lines[i].stroke( { width: linkStrokeThickness,color:linkStrokeColor,opacity:linkStrokeOpacity  } );
@@ -180,6 +214,7 @@ function link_mout(link) {
       }
     }
   }
+  */
 }
 
 function setupLineInteractions(link) {
