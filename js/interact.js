@@ -70,9 +70,8 @@ function mover(word){
 function mout(word){
   // console.log("in mout for " + word.val);
 
-  if (isDragging) {return;} 
-
   word.isHovered = false;
+  if (isDragging) {return;} 
 
   if (word.isSelected) {
    word.underneathRect.style(styles.wordFill.select);
@@ -118,13 +117,15 @@ function link_mout(link) {
 }
 
 function setupLineInteractions(link) {
-
-  for (var i = 0; i < link.lines.length; i++) {
-    var l = link.lines[i];
-
-    l.mouseover( function() { link_mover(link) }  );
+  function addInteraction(l) {
+    l.mouseover( function() { link_mover(link) } );
     l.mouseout( function() { link_mout(link) }  );
   }
+  if (link.labelRect) { 
+    link.labelRect.forEach(addInteraction);
+  }
+  link.lines.forEach(addInteraction);
+
   //link.r1.mouseover( function() { link_mover(link) }  );
   //link.r2.mouseover( function() { link_mover(link) }  );
 
@@ -143,8 +144,6 @@ document.addEventListener("dragend",
       console.log("DRAG END!  " + e.detail); // Prints "Example of an event"
     },false);
 
-
-
 function addDragStartingAndEndingListeners(elem) {
 
   elem.on('dragstart', function() {
@@ -156,10 +155,10 @@ function addDragStartingAndEndingListeners(elem) {
 
   })
 
-  elem.on('dragend', function() {
+  elem.on('dragend', function(e) {
     isDragging = false;
     //isCanceling = false;
-    if (rowOffsetWord && rowOffsetWord.isHovered) {
+    if (rowOffsetWord && rowOffsetWord.isHovered == false) {
       mout(rowOffsetWord);
     }
 
