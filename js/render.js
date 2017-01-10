@@ -153,14 +153,10 @@ function drawWord(word) {
 
   //if already exists, need to delete it first
 
-  //var underneathRect = draw.rect( word.ww, word.wh ).x( word.wx ).y( word.wy ).fill( {color:'#ffffff',opacity: 1.0} ); //base layer, put text then tansparent draggable rect on top of this
   var underneathRect = draw.rect( word.ww, word.wh ).x( word.wx ).y( word.wy ).style(styles.wordFill.style);
    
-    console.log(" in drawWord : word.row.ry = " + word.row.ry);
-  //    var test = word.row.ry;// + word.row.rh; //word.wy;
-
   var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
-
+  
   var text = draw.text(function(add) {
       
     add.text(word.val)
@@ -170,13 +166,11 @@ function drawWord(word) {
     });
 
 
-
-    var rect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#ffffff',opacity: 0.0} );
+    //this is invisible, but used for detecting mouseevents, as its drawn on top of the word
+    var rect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
 
     var leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
       
-      //fill( {color:handleColor}).opacity(0.0) ;
-    
 
     var rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
 
@@ -215,9 +209,6 @@ function drawWord(word) {
           underneathRect.style(styles.wordFill.style);
         }
        }
-      //this.fill({ color: '#f06', opacity:0.5 })
-      //this.stroke( { color: '#000', opacity: 1, width: 1 } ) 
-      //console.log("YOU CLICKED TWICE");
     });
 
 
@@ -361,7 +352,7 @@ function getLinkStyles(link, xpts) {
             stop.at(1.0, uc2);
           });
 
-      styleStr =  "fill:none;stroke:url(#" + g.node.id + ");stroke-width:"+link.style.width+";stroke-opacity:"+link.style.opacity+";stroke-dasharray:"+ link.style.dasharray + ";";
+      styleStr = "fill:none;stroke:url(#" + g.node.id + ");stroke-width:"+link.style.width+";stroke-opacity:"+link.style.opacity+";stroke-dasharray:"+ link.style.dasharray + ";";
 
     } else {
       styleStr = link.style.style;
@@ -657,12 +648,8 @@ function drawLinkLabel(str, tx, ty, style) { // backgroundcolor ) {
   if (testLinkLabel) {
     var twh = getTextWidthAndHeight(str, texts.linkText.style);
 
-    //groupAllElements.rect(twh.w + 4, maxTextH2).x( tx - 2 - twh.w/2).y( ty - maxTextH2/2 ).fill(backgroundcolor).stroke( {color:linkStrokeColor, opacity:1.0} ).radius(3,3);
     var linkLabelRect = groupAllElements.rect(twh.w + 4, texts.linkText.maxHeight).x( tx - 2 - twh.w/2).y( ty - texts.linkText.maxHeight/2 ); 
-
     linkLabelRect.style(style);
-
-    //.fill(backgroundcolor).opacity(opac).stroke( {color:linkStrokeColor, opacity:0.0} );
 
     groupAllElements.text(str).x( tx - twh.w/2 ).y(ty - texts.linkText.maxHeight/2 - texts.linkText.descent).font(texts.linkText.style);
   }
