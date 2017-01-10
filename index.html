@@ -12,11 +12,12 @@ user-select: none;
 }
 
 .split-left {width:66.5%; overflow:hidden;}
-.split-right {width:33% !important;}
+.split-right {transform:translateX(0) !important;}
 
 #graph {
-    transition:width 200ms ease;
-    width:0;
+    transition:transform 200ms ease;
+    transform:translateX(100%);
+    width:33%;
     height:100%;
     background:#ee9;
     position:fixed;
@@ -35,6 +36,7 @@ user-select: none;
 </div>
  
 
+<script src="libs/d3.min.js"></script>
 <script src="libs/svg.js"></script>
 <script src="libs/svg.draggable.js"></script>
 <script src="libs/lodash.js"></script>
@@ -63,7 +65,8 @@ var oddRowsColor = '#dddddf';
 var rowEdgeColor = 'transparent';
 
 //var draw = SVG('drawing').size('100%', '100%');
-var draw = SVG('drawing').size(svgWidth, svgHeight);
+var draw = SVG('drawing').size(svgWidth, svgHeight)
+             .attr('viewBox', '0 0 ' + svgWidth + ' ' + svgHeight);
 
 
 
@@ -146,18 +149,20 @@ drawLinks(linkObjs);
 // init objects/listeners...
 window.onload = function() {
   var Panel = new GraphLayout();
-  document.addEventListener('keyup',
+  document.addEventListener('keydown',
     function(e) {
       var key = e.keyCode || e.which;
       // console.log('keycode',key);
       switch(key) {
         case 37:          // left arrow
           if (Panel.isOpen) {
+            draw.size(svgWidth, svgHeight);
             Panel.close();
           }
           break;
         case 39:          // right arrow
           if (!Panel.isOpen) {
+            draw.size(svgWidth*0.665, svgHeight*0.665);
             Panel.open();
           }
           Panel.graph(wordObjs.filter(word => word.isSelected));

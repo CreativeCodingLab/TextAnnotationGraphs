@@ -13,6 +13,8 @@ class Link {
         this.h = 0; //which slot is it in
         this.lines = [];
         this.id = `(${this.s.id}, ${this.e.id})`;
+
+        this.type = "LINK";
         if (this.s instanceof Word) {
           this.ts = types.WORD;
         } else if (this.s instanceof Link) {
@@ -82,6 +84,8 @@ class Word {
         this.tw = 0;
         this.th = 0;
         this.id = `(${this.val}, ${this.idx})`;
+
+        this.type = "WORD";
 
         this.isSelected = false;
         this.isHovered = false;
