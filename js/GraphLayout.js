@@ -33,8 +33,13 @@ class GraphLayout {
         // force simulation
         this.simulation = d3.forceSimulation()
             .force('link', d3.forceLink().id(d => d.id))
-            .force('collision', d3.forceCollide(20))
-            .force('charge', d3.forceManyBody())
+            .force('collision', d3.forceCollide(d => {
+                return d.role === "link-anchor" ? 0 : 20;
+            }))
+            .force('charge', d3.forceManyBody()
+                .strength(d => d.role === "link-anchor" ? 0 : -30)
+                .distanceMax(30)
+            )
             .force('center', d3.forceCenter( 
                 this.bounds.width/2, this.bounds.height/2 
             ));
@@ -53,7 +58,8 @@ class GraphLayout {
         }
     }
     graph(words) {
-        if (words === this.words) { return; }
+        if (this.words.length === words.length && 
+            this.words.every((w,i) => words[i] === w)) { return; }
         else { this.words = words; }
 
         this.generateData();
@@ -174,12 +180,41 @@ class GraphLayout {
 
         node.enter().append('circle')
             .attr('class', 'node')
-            .attr('r',() => Math.random()*20+4)
+            .attr('r',7)
             .attr("transform", () => {
                 return 'translate(' + this.bounds.width/2 + ',' + this.bounds.height/2 + ')';
             })
-            .attr('fill',() => ['blue','red','black','white','green'][Math.floor(Math.random()*5)])
-        .merge(node)
+            .attr('fill',(d) => {
+                if (d.role !== 'word') {
+                    // if (d.role === 'link-anchor') { return 'rgba(255,255,255,0.5)'; }
+                    return 'transparent';
+                }
+                else {
+                    return 'gray';
+                    // var a = 0.8 - d.depth / this.distanceFromRoot / 2;
+                    // return 'hsl(240,' + a*100 +'%,60%)';
+                }
+            })
+            .call(d3.drag()
+                .on('start', (d) => {
+                    if (!d3.event.active) {
+                        this.simulation.alphaTarget(0.3).restart();
+                    }
+                    d.fx = d.x,
+                    d.fy = d.y;
+                })
+                .on('drag', function(d) {
+                    if (d.role !== "link-anchor") {
+                        d.fx += d3.event.dx,
+                        d.fy += d3.event.dy;                        
+                    }
+                })
+                .on('end', function(d) {
+                    if (d.role !== "link-anchor") {
+                        d.fx = d.fy = null;
+                    }
+                })
+            );
 
         node.exit().remove();
     }
@@ -188,27 +223,27 @@ class GraphLayout {
         var link = this.links.selectAll('.link')
             .data(this.data.links);
 
-        link.enter().append('line') // path
+        link.enter().append('path')
             .attr('class','link')
             .attr('fill','none')
             .attr('stroke','black')
-            .attr('stroke-width',2)
+            .attr('stroke-width',0.5)
         .merge(link)
 
         link.exit().remove();
     }
 
     updateGraph() {
-        this.bounds = this.div.getBoundingClientRect();
+        var box = this.bounds = this.div.getBoundingClientRect();
 
         var margin = 10;
         var clampX = d3.scaleLinear()
-                .domain([margin, this.bounds.width-margin])
-                .range([margin, this.bounds.width-margin])
+                .domain([margin, box.width-margin])
+                .range([margin, box.width-margin])
                 .clamp(true),
             clampY = d3.scaleLinear()
-                .domain([margin, this.bounds.height-margin])
-                .range([margin, this.bounds.height-margin])
+                .domain([margin, box.height-margin])
+                .range([margin, box.height-margin])
                 .clamp(true);
 
         var node = this.nodes.selectAll('.node'),
@@ -216,23 +251,70 @@ class GraphLayout {
 
         function tick() {
           node
-            .datum(d => { d.x = clampX(d.x), d.y = clampY(d.y); return d; })
-            .attr("transform", function(d) { 
-                return 'translate(' + d.x + ',' + d.y + ')';
+            .datum(d => { 
+                d.x = clampX(d.x), d.y = clampY(d.y); 
+                if (d.role === "link-anchor") {
+                    // get position of link-anchor on line
+                    var target = d.link.target,
+                        source = d.link.source;
+
+                    var dx = target.x - source.x,
+                        dy = target.y - source.y,
+                        dr = Math.sqrt( dx * dx + dy * dy);
+
+                    if (dr === 0) { 
+                        d.fx = target.x,
+                        d.fy = target.y;
+                        return d; 
+                    }
+
+                    var sin60 = Math.sqrt(3)/2;
+                    var cx = source.x + dx * 0.5 - dy * sin60,
+                        cy = source.y + dy * 0.5 + dx * sin60;
+
+                    var acos = Math.acos( (source.x - cx)/dr ),
+                        asin = Math.asin( (source.y - cy)/dr );
+
+                    var theta = (asin < 0) ? -acos : acos;
+
+                    d.fx = cx + dr*Math.cos(theta + Math.PI/3 * d.t),
+                    d.fy = cy + dr*Math.sin(theta + Math.PI/3 * d.t);
+
+                }
+                return d; 
             })
+            .attr("transform", (d) => {
+                return 'translate(' + d.x + ',' + d.y + ')';
+            });
 
           link
-            .attr("x1", function(d) { return d.source.x; })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
+            .attr('d', arrowPath);
 
+
+          function arrowPath(d,i) {
+            var target = d.target,
+                source = d.source;
+
+            var dx = target.x - source.x,
+                dy = target.y - source.y,
+                dr = Math.sqrt( dx * dx + dy * dy);
+
+            // if (target.role === "link-anchor" || source.role === "link-anchor") {
+            //     dr /= 2;
+            // }
+
+            return  "M" + source.x + "," + source.y +
+                "A" + dr + "," + dr + " 0 0,1 " +
+                target.x + "," + target.y;
+          }
         }
 
         this.simulation
             .force('center', d3.forceCenter( this.bounds.width/2, this.bounds.height/2 ))
             .nodes(this.data.anchors)
             .on('tick', tick);
+
+        // this.simulation.force('link').links(this.data.links);
 
         if (this.simulation.alpha() < 0.1) {
             this.simulation.alpha(0.3).restart();
