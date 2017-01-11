@@ -14,12 +14,14 @@ class GraphLayout {
 
         // d3 dom references
         this.svg = d3.select('#graph').append('svg')
-                        .attr('width', this.bounds.width)
-                        .attr('height', this.bounds.height);
-        this.links = this.svg.append('g')
-                        .attr('class','links');
-        this.nodes = this.svg.append('g')
-                        .attr('class','nodes');
+                    .attr('width', this.bounds.width)
+                    .attr('height', this.bounds.height);
+        this.g = this.svg.append('g')
+                    .attr('transform','translate(' + this.bounds.width/2 + ',' + this.bounds.height/2 + ')');
+        this.links = this.g.append('g')
+                    .attr('class','links');
+        this.nodes = this.g.append('g')
+                    .attr('class','nodes');
 
         // selected words to generate graph around
         this.words = [];
@@ -38,23 +40,35 @@ class GraphLayout {
             }))
             .force('charge', d3.forceManyBody()
                 .strength(d => d.role === "link-anchor" ? 0 : -30)
-                .distanceMax(30)
+                .distanceMax(100)
             )
-            .force('center', d3.forceCenter( 
-                this.bounds.width/2, this.bounds.height/2 
-            ));
+            .force('center', d3.forceCenter( 0,0 ));
     }
 
     open() {
         this.isOpen = true;
         this.drawing.classList.add('split-left');
         this.div.classList.add('split-right');
+        this.resize();
     }
     close() {
         if (this.isOpen) {
             this.isOpen = false;
             this.drawing.classList.remove('split-left');
             this.div.classList.remove('split-right');            
+        }
+    }
+    resize() {
+        this.bounds = this.div.getBoundingClientRect();
+        this.svg
+            .attr('width', this.bounds.width)
+            .attr('height', this.bounds.height);
+
+        this.g
+            .attr('transform','translate(' + this.bounds.width/2 + ',' + this.bounds.height/2 + ')');
+
+        if (!this.nodes.selectAll('.node-group').empty()) {
+            this.updateGraph();
         }
     }
     graph(words) {
@@ -175,9 +189,8 @@ class GraphLayout {
     }//end generateData()
 
     drawNodes() {
-        var node = this.nodes.selectAll('.node')
-            .data(this.data.anchors);
 
+        // setup/pre-declared variables
         var colors = d3.scaleSequential(d3.interpolateMagma).clamp(true);
         var sim = this.simulation;
         var drag = d3.drag()
@@ -233,13 +246,53 @@ class GraphLayout {
                 }
             });
 
-        node.enter().append('circle')
-            .attr('class', 'node')
+        // data entry/merge
+        var nodeGroup = this.nodes.selectAll('.node-group')
+            .data(this.data.anchors);
+
+        nodeGroup.exit().remove();
+        var nodeEnter = nodeGroup.enter().append('g')
+            .attr('class','node-group')
             .attr("transform", () => {
                 return 'translate(' + this.bounds.width/2 + ',' + this.bounds.height/2 + ')';
-            })
-        .merge(node)
+            });
+
+        nodeEnter.append('circle')
+            .attr('class','node');
+        var label = nodeEnter.append('g')
+            .attr('class','node-label')
+            .attr('pointer-events','none')
+            .attr('transform','translate(10,-5)');
+        label.append('text')
+            .style('font-size','0.8em')
+            .attr('text-anchor','start');
+        label.append('rect')
+            .attr('rx',1)
+            .attr('ry',1)
+            .attr('fill', '#fafaea')
+            .attr('stroke','#cacabc');
+
+        nodeGroup = nodeGroup.merge(nodeEnter);
+        nodeGroup
             .classed('node-word', d => d.role === 'word')
+            .on('mouseover', (d) => {
+                function mouseoverWord(word) {
+                    // TODO: link back to word in "drawing" svg
+
+                }
+                if (d.role === "word") { mouseoverWord( d.data ); }
+                console.log('moused over',d)
+            })
+            .on('mouseout', (d) => {
+                function mouseoutWord(word) {
+
+                }
+            })
+            .call(drag);
+
+        // draw circle
+        var node = nodeGroup.selectAll('.node')
+            .data(d => [d])
             .attr('r',(d) => d.role === 'word' ? 7 : 4)
             .attr('stroke', 'rgba(0,0,0,0.2)')
             .attr('fill',(d) => {
@@ -249,11 +302,26 @@ class GraphLayout {
                 else {
                     return colors((d.depth+2)/10);
                 }
+            });
+
+        // draw text label
+        label = nodeGroup.selectAll('.node-label')
+            .raise()
+            .data(d => [d]);
+
+        label.select('text')
+            .text(d => d.role === "word" ? d.data.val : '')
+            .attr('x',5);
+        label.select('rect')
+            .style('display', d => d.role === "word" ? "block" : "none")
+            .attr('width', function() {
+                return this.parentNode.getElementsByTagName('text')[0].getBBox().width + 10;
             })
-            .call(drag);
+            .attr('height','1.5em')
+            .attr('y','-1em')
+            .lower();
 
         this.nodes.selectAll('.node-word').raise();
-        node.exit().remove();
     }
 
     drawLinks() {
@@ -271,25 +339,22 @@ class GraphLayout {
     }
 
     updateGraph() {
-        var box = this.bounds = this.div.getBoundingClientRect();
+        var node = this.nodes.selectAll('.node-group'),
+            link = this.links.selectAll('.link');
 
         var margin = 10;
         var clampX = d3.scaleLinear()
-                .domain([margin, box.width-margin])
-                .range([margin, box.width-margin])
+                .domain([margin-this.bounds.width/2, this.bounds.width/2-margin])
+                .range([margin-this.bounds.width/2, this.bounds.width/2-margin])
                 .clamp(true),
             clampY = d3.scaleLinear()
-                .domain([margin, box.height-margin])
-                .range([margin, box.height-margin])
+                .domain([margin-this.bounds.height/2, this.bounds.height/2-margin])
+                .range([margin-this.bounds.height/2, this.bounds.height/2-margin])
                 .clamp(true);
-
-        var node = this.nodes.selectAll('.node'),
-            link = this.links.selectAll('.link');
 
         function tick() {
           node
             .datum(d => { 
-                d.x = clampX(d.x), d.y = clampY(d.y); 
                 if (d.role === "link-anchor") {
                     // get position of link-anchor on line
                     var target = d.link.target,
@@ -316,7 +381,10 @@ class GraphLayout {
 
                     d.fx = cx + dr*Math.cos(theta + Math.PI/3 * d.t),
                     d.fy = cy + dr*Math.sin(theta + Math.PI/3 * d.t);
-
+                }
+                else {
+                    d.x = clampX(d.x);
+                    d.y = clampY(d.y);
                 }
                 return d; 
             })
@@ -347,7 +415,6 @@ class GraphLayout {
         }
 
         this.simulation
-            .force('center', d3.forceCenter( this.bounds.width/2, this.bounds.height/2 ))
             .nodes(this.data.anchors)
             .on('tick', tick);
 

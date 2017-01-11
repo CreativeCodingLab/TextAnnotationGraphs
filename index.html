@@ -149,6 +149,19 @@ drawLinks(linkObjs);
 // init objects/listeners...
 window.onload = function() {
   var Panel = new GraphLayout();
+  var ratio = svgHeight/svgWidth;
+
+  function svgResize() {
+    var w = window.innerWidth - 16;
+    var h = w*ratio;
+    if (Panel.isOpen) {
+      draw.size(w * 0.665, h * 0.665);
+    }
+    else {
+      draw.size(w, h);
+    }
+  }
+
   document.addEventListener('keydown',
     function(e) {
       var key = e.keyCode || e.which;
@@ -156,14 +169,14 @@ window.onload = function() {
       switch(key) {
         case 37:          // left arrow
           if (Panel.isOpen) {
-            draw.size(svgWidth, svgHeight);
             Panel.close();
+            svgResize();
           }
           break;
         case 39:          // right arrow
           if (!Panel.isOpen) {
-            draw.size(svgWidth*0.665, svgHeight*0.665);
             Panel.open();
+            svgResize();
           }
           Panel.graph(wordObjs.filter(word => word.isSelected));
           break;
@@ -172,6 +185,12 @@ window.onload = function() {
       }
     }, false);
 
+  function resize() {
+    svgResize();
+    Panel.resize();
+  }
+
+  window.onresize = _.debounce(resize, 300);
 }
 
 </script>
