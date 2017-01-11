@@ -23,7 +23,7 @@ class GraphLayout {
 
         // selected words to generate graph around
         this.words = [];
-        this.distanceFromRoot = 3; // default value for max dist from root
+        this.distanceFromRoot = 30; // default value for max dist from root
         this.data = {
             flat: {},
             anchors: [],
@@ -178,44 +178,81 @@ class GraphLayout {
         var node = this.nodes.selectAll('.node')
             .data(this.data.anchors);
 
+        var colors = d3.scaleSequential(d3.interpolateMagma).clamp(true);
+        var sim = this.simulation;
+        var drag = d3.drag()
+            .on('start', (d) => {
+                if (!d3.event.active) {
+                    sim.alphaTarget(0.3).restart();
+                }
+                d.fx = d.x,
+                d.fy = d.y;
+            })
+            .on('drag', function(d) {
+                if (d.role !== "link-anchor") {
+                    d.fx += d3.event.dx,
+                    d.fy += d3.event.dy;                        
+                }
+                else {
+                    // get distance to source/target
+                    var nsDx = d.link.source.x - d.x,
+                        nsDy = d.link.source.y - d.y,
+                        ntDx = d.link.target.x - d.x,
+                        ntDy = d.link.target.y - d.y,
+
+                        esDx = d.link.source.x - d3.event.x,
+                        esDy = d.link.source.y - d3.event.y,
+                        etDx = d.link.target.x - d3.event.x,
+                        etDy = d.link.target.y - d3.event.y;
+
+                    var nodeDistanceToSource = nsDx*nsDx + nsDy*nsDy,
+                        nodeDistanceToTarget = ntDx*ntDx + ntDy*ntDy,
+                        dragDistanceToSource = esDx*esDx + esDy*esDy,
+                        dragDistanceToTarget = etDx*etDx + etDy*etDy;
+
+                    var direction = 0;
+                    if (dragDistanceToSource < nodeDistanceToSource) {
+                        direction = -0.01;
+                    }
+                    else if (dragDistanceToTarget < nodeDistanceToTarget) {
+                        direction = 0.01;
+                    }
+                    else {
+                        direction = dragDistanceToSource<dragDistanceToTarget ?
+                            -0.01 : 0.01;
+                    }
+                    d.t = Math.max(Math.min(d.t + direction, 0.9), 0.1);
+                }
+            })
+            .on('end', (d) => {
+                if (!d3.event.active) {
+                    sim.alphaTarget(0);
+                }
+                if (d.role !== "link-anchor") {
+                    d.fx = d.fy = null;
+                }
+            });
+
         node.enter().append('circle')
             .attr('class', 'node')
-            .attr('r',7)
             .attr("transform", () => {
                 return 'translate(' + this.bounds.width/2 + ',' + this.bounds.height/2 + ')';
             })
+        .merge(node)
+            .classed('node-word', d => d.role === 'word')
+            .attr('r',(d) => d.role === 'word' ? 7 : 4)
+            .attr('stroke', 'rgba(0,0,0,0.2)')
             .attr('fill',(d) => {
                 if (d.role !== 'word') {
-                    // if (d.role === 'link-anchor') { return 'rgba(255,255,255,0.5)'; }
                     return 'transparent';
                 }
                 else {
-                    return 'gray';
-                    // var a = 0.8 - d.depth / this.distanceFromRoot / 2;
-                    // return 'hsl(240,' + a*100 +'%,60%)';
+                    return colors((d.depth+2)/10);
                 }
             })
-            .call(d3.drag()
-                .on('start', (d) => {
-                    if (!d3.event.active) {
-                        this.simulation.alphaTarget(0.3).restart();
-                    }
-                    d.fx = d.x,
-                    d.fy = d.y;
-                })
-                .on('drag', function(d) {
-                    if (d.role !== "link-anchor") {
-                        d.fx += d3.event.dx,
-                        d.fy += d3.event.dy;                        
-                    }
-                })
-                .on('end', function(d) {
-                    if (d.role !== "link-anchor") {
-                        d.fx = d.fy = null;
-                    }
-                })
-            );
+            .call(drag);
 
+        this.nodes.selectAll('.node-word').raise();
         node.exit().remove();
     }
 
@@ -226,7 +263,7 @@ class GraphLayout {
         link.enter().append('path')
             .attr('class','link')
             .attr('fill','none')
-            .attr('stroke','black')
+            .attr('stroke','rgba(0,0,0,0.8)')
             .attr('stroke-width',0.5)
         .merge(link)
 
