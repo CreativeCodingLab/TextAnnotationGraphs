@@ -124,6 +124,7 @@ class Word {
       return Math.max(minWordWidth, this.tw);
     }
     
+    /* must return a value less than row width - edgepaddings, else will try to reposition long words forever! */
     getMaxWidth() {
       return (this.row.rect.width() - (edgepadding*2)) / 3.1; 
     }
@@ -177,7 +178,8 @@ function checkAndUpdateWordToWordSlots(link, startSlot) { //, minWord, minSide, 
 
       if (i == wo1.idx) { //check right side...
 
-        if (side1 == 0) { //then have to check left side too...
+        //side1 == 0
+        if (side1 == sides.LEFT) { //then have to check left side too...
 
           if (checkSlotAvailabity(x, wordObjs[i].slotsL)) {
 
@@ -210,7 +212,8 @@ function checkAndUpdateWordToWordSlots(link, startSlot) { //, minWord, minSide, 
           break;
         }
 
-        if (side2 == 1) { //then have to check right side too...
+        //side2 == 1
+        if (side2 == sides.RIGHT) { //then have to check right side too...
 
           if (checkSlotAvailabity(x, wordObjs[i].slotsR)) {
             slotIsAvailable = false;
@@ -233,7 +236,8 @@ function checkAndUpdateWordToWordSlots(link, startSlot) { //, minWord, minSide, 
 
       if (i == wo1.idx) { //update right side...
 
-        if (side1 == 0) {
+        //side1 == 0 
+        if (side1 == sides.LEFT) {
           wordObjs[i].slotsL.push(useSlot);
         }
 
@@ -248,7 +252,8 @@ function checkAndUpdateWordToWordSlots(link, startSlot) { //, minWord, minSide, 
 
         wordObjs[i].slotsL.push(useSlot);
 
-        if (side2 == 1) {
+        //side2 == 1
+        if (side2 == sides.RIGHT) {
           wordObjs[i].slotsR.push(useSlot);
         }
       } 
@@ -475,21 +480,23 @@ function createLink(link) {
   //console.log("rightWord = " + link.rightWord.id);
 
   //explicitly link parents of link (i.e., links that attach to this link)
-  if (link.leftAttach == 0) {
+  //if (link.leftAttach == 0) {
+  if (link.leftAttach == sides.LEFT) {
     //console.log(link.leftWord);
     //console.log(link.leftWord.parentsL);
     link.leftWord.parentsL.push(link);
-  } else {
+  } else if (link.leftAttach == sides.RIGHT) {
     //console.log(link.leftWord);
     //console.log(link.leftWord.parentsR);
     link.leftWord.parentsR.push(link);
   }
 
-  if (link.rightAttach == 0) {
+  //if (link.rightAttach == 0) {
+  if (link.rightAttach == sides.LEFT) {
     //console.log(link.rightWord);
     //console.log(link.rightWord.parentsL);
     link.rightWord.parentsL.push(link);
-  } else {
+  } else if (link.rightAttach == sides.RIGHT) {
     //console.log(link.rightWord);
     //console.log(link.rightWord.parentsR);
     link.rightWord.parentsR.push(link);

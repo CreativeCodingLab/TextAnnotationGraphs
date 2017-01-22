@@ -79,7 +79,7 @@ function recalculateRows(percChange) {
 
       //first try to expand or shrink size of words - but no smaller than the word's min width
       var nw = Math.max(word.getMinWidth(), word.rectSVG.width() * percChange);
-      nw = Math.min(nw, word.getMaxWidth());
+      nw = Math.max(nw, word.getMaxWidth());
 
       var nx = edgepadding + (word.percPos * (svgWidth-edgepadding*2));
 
@@ -157,8 +157,6 @@ function recalculateRows(percChange) {
           }
 
 
-
-
           var numWords = row.words.length;
           var pixelsPerWord = resizeByHowMuch / numWords; 
 
@@ -186,6 +184,7 @@ function recalculateRows(percChange) {
             }
           }
 
+          /*
           for (var ii = row.words.length-1; ii >= 0 ; ii--) {
             var word = row.words[ii];
             //checkIfCanMoveLeft(word.rectSVG.x(), word.rectSVG.y(), word);
@@ -194,6 +193,7 @@ function recalculateRows(percChange) {
             var word = row.words[ii];
             //checkIfCanMoveRight(word.rectSVG.x(), word.rectSVG.y(), word);
           }
+          */
 
         }
 
@@ -218,11 +218,11 @@ function recalculateRows(percChange) {
 
     for (var ii = row.words.length-1; ii >= 0 ; ii--) {
       var word = row.words[ii];
-      checkIfCanMoveLeft(word.rectSVG.x(), word.rectSVG.y(), word);
+      checkIfCanMoveLeft(word.rectSVG.x(), word.rectSVG.y(), word, false);
     }
     for (var ii = 0; ii < row.words.length; ii++) {
       var word = row.words[ii];
-      checkIfCanMoveRight(word.rectSVG.x(), word.rectSVG.y(), word);
+      checkIfCanMoveRight(word.rectSVG.x(), word.rectSVG.y(), word, false);
     }
 
  }
@@ -531,15 +531,15 @@ function getXPosForAttachmentByPercentageOffset(link) {
   var lengthOfHalfOfLeftWord = ((rightX_1 - leftX_1) / 2);
   var lengthOfHalfOfRightWord = ((rightX_2 - leftX_2) / 2)
 
-    if (link.leftAttach == 0) { //attaches to the left side of the left word
+    if (link.leftAttach == sides.LEFT) { //attaches to the left side of the left word
       xL = leftX_1 + (lengthOfHalfOfLeftWord * link.x1percent) ;
-    } else { //right
+    } else if (link.leftAttach == sides.RIGHT) { //right
       xL = (rightX_1) - ( lengthOfHalfOfLeftWord * link.x1percent); 
     }
 
-  if (link.rightAttach == 0) { //attaches to the left side of the right word
+  if (link.rightAttach == sides.LEFT) { //attaches to the left side of the right word
     xR =  leftX_2 + (lengthOfHalfOfRightWord * link.x2percent); 
-  } else { //right
+  } else if (link.rightAttach == sides.RIGHT) { //right
     xR = (rightX_2 ) - (lengthOfHalfOfRightWord * link.x2percent);
   }
 
@@ -630,6 +630,10 @@ function getLinkStyles(link, xpts) {
 
 }
 
+/* 
+ TODO Is it slow to remove and redraw these? maybe can be more precise and only redraw when necessary, and otherwise just update.
+ */ 
+
 function drawLink(link) {
 
   var linkG = groupAllElements.select('g.links').members[0],
@@ -667,11 +671,19 @@ function drawLink(link) {
     link.numLineSegments = (maxRow - minRow)+1;
 
     var linkStyles = getLinkStyles(link, attachmentXPositions);
+   
+    /* thought that it would be faster to not create new gradients on the fly, but doesn't seem to be the case! */ 
+    /*
+    var linkStyles = [];
+    for (var i = 0; i < link.numLineSegments; i++) {
+      linkStyles[i] = link.style.style;
+    }
+    */
 
     for (var i = minRow; i <= maxRow; i++) {
 
       var availableHeight = rows[i].baseHeight - rows[i].rect.bbox().y;
-      var percentagePadding = availableHeight /  (rows[i].maxSlots + 1);
+      var percentagePadding = availableHeight / (rows[i].maxSlots + 1);
 
       if (i == minRow) { //FIRST ROW
 
@@ -737,15 +749,12 @@ function drawLink(link) {
 
         var p2x = 0; 
         var p2y = y2;
-        //var p2y = uy;
 
         var p3x = xR; 
         var p3y = y3;
-        //var p3y = uy;
 
         var p4x = xR; 
         var p4y = y4;
-
 
         var line = linkG.polyline([ [p2x,p2y],[p3x,p3y],[p4x,p4y] ]);
 
@@ -959,7 +968,7 @@ function getLeftXForLeftWord(link) {
   } else { //link
     if (link.leftAttach == sides.LEFT) {
       return link.leftWord.linesLeftX[0];
-    } else {
+    } else if (link.leftAttach == sides.RIGHT){
       return link.leftWord.linesLeftX[link.leftWord.numLineSegments-1];
     }
   }
@@ -971,7 +980,7 @@ function getRightXForLeftWord(link) {
   } else { //link
     if (link.leftAttach == sides.LEFT) {
       return link.leftWord.linesRightX[0];
-    } else {
+    } else if (link.leftAttach == sides.RIGHT) {
       return link.leftWord.linesRightX[link.leftWord.numLineSegments-1];
     }
   }
@@ -983,7 +992,7 @@ function getLeftXForRightWord(link) {
   } else { //link
     if (link.rightAttach == sides.LEFT) {
       return link.rightWord.linesLeftX[0];
-    } else {
+    } else if (link.rightAttach == sides.RIGHT) {
       return link.rightWord.linesLeftX[link.rightWord.numLineSegments-1];
     }
   }
@@ -995,7 +1004,7 @@ function getRightXForRightWord(link) {
   } else { //link
     if (link.rightAttach == sides.LEFT) {
       return link.rightWord.linesRightX[0];
-    } else {
+    } else if (link.rightAttach == sides.RIGHT) {
       return link.rightWord.linesRightX[link.rightWord.numLineSegments-1];
     }
   }

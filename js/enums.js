@@ -5,7 +5,8 @@ var types = {
 };
 
 var sides = {
-  LEFT: 0,
+  LEFT: -1,
+  CENTER: 0,
   RIGHT: 1,
 };
 
