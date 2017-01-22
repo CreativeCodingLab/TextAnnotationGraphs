@@ -70,6 +70,8 @@ var draw = SVG('drawing').size(svgWidth, svgHeight)
             // .attr('viewBox', '0 0 ' + svgWidth + ' ' + svgHeight);
 
 var rowGroup = draw.group();
+var groupAllElements;
+//var gradientDefGroup = draw.defs().group();
 
 var styles = setupStyles(draw); //creates an associative array of whatever styles you want to make use of later
 
@@ -129,11 +131,10 @@ var word2link_strategy = strategies.FARTHEST;
 var link2link_strategy = strategies.FARTHEST; //CLOSEST sometimes causes overlaps - need to be a bit more rigorous when assigning slots - don't assign any slots that have the potential to overlap (when dragged manually)? - or let the buyer beware that this could happen - they can always move out of the way - right now it won't automatically overlap, but won't prevent a user from doing it. 
 
 var rows = []; //list of Row object, each of those has a list of Word objects
-var groupAllElements;
 
 
 // 1. create Words and Links objects (in utils.js) */
-var wordObjs = createTestWords(9, 5, 15);
+var wordObjs = createTestWords(12, 1, 15);
 //var wordObjs = [];
 //wordObjs.push(new Word("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0));
 //wordObjs.push(new Word("bbbbbbbbbbbbbbbbbbbbbbbbbb", 1));

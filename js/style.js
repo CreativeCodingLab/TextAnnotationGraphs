@@ -25,7 +25,8 @@ class LinearGradient {
       stop.at(0.0, c1)
       stop.at(1.0, c2) 
     };
-    
+   
+    //this.gradient = gradientDefGroup.gradient('linear', this.stopFunction); //.from(0,0).to(1,0);
     this.gradient = svg.gradient('linear', this.stopFunction); //.from(0,0).to(1,0);
     this.id = this.gradient.node.id;
   }
@@ -268,7 +269,6 @@ class TextStyle {
     }
   }
 }
-
 
 //arrow paths
 var circleArrowPath = (svg, x, y, xoff, yoff, fillStyle) => {

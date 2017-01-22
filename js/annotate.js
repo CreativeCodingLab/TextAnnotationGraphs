@@ -123,7 +123,10 @@ class Word {
     getMinWidth() {
       return Math.max(minWordWidth, this.tw);
     }
-
+    
+    getMaxWidth() {
+      return (this.row.rect.width() - (edgepadding*2)) / 3.1; 
+    }
 
     toString() {
         return this.id;

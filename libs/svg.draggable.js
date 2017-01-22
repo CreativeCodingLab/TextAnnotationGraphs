@@ -188,7 +188,7 @@
     // fire dragend event
     this.el.fire('dragend', { event: e, p: p, m: this.m, handler: this })
 
-    console.log("drag is ended...");
+    //console.log("drag is ended...");
   
 
     // unbind events

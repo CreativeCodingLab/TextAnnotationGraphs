@@ -5,7 +5,7 @@ function getHeightForWord(word) {
     
   var maxH = 0;
 
-  console.log("in getHeightForWord " + word.toString());
+  //console.log("in getHeightForWord " + word.toString());
   for (var ii = 0; ii < word.slotsL.length; ii++) {
     maxH = Math.max(maxH, word.slotsL[ii]);
   }
@@ -14,7 +14,7 @@ function getHeightForWord(word) {
     maxH = Math.max(maxH, word.slotsR[ii]);
   }
 
-  console.log("returning largest slot for this word = " + maxH );
+  //console.log("returning largest slot for this word = " + maxH );
   return maxH;
 }
 
@@ -59,10 +59,10 @@ function checkIfNeedToResizeWords(row) {
 
 function recalculateRows(percChange) {
 
-  console.log("\n\nin recalculateRows()");
+  //console.log("\n\nin recalculateRows()");
   for (var i = 0; i < rows.length; i++) {
     var row = rows[i];
-    console.log("\t) row #" + row.idx);
+    //console.log("\t) row #" + row.idx);
 
     row.rect.width(draw.width());
 
@@ -79,6 +79,8 @@ function recalculateRows(percChange) {
 
       //first try to expand or shrink size of words - but no smaller than the word's min width
       var nw = Math.max(word.getMinWidth(), word.rectSVG.width() * percChange);
+      nw = Math.min(nw, word.getMaxWidth());
+
       var nx = edgepadding + (word.percPos * (svgWidth-edgepadding*2));
 
       setWordToXW(word, nx, nw);
@@ -88,12 +90,12 @@ function recalculateRows(percChange) {
 
     if (!everythingFits) { 
 
-      console.log("nope, not everything fits!");
+      //console.log("nope, not everything fits!");
 
       var resizeByHowMuch = checkIfNeedToResizeWords(row);
 
       if (resizeByHowMuch == 0) {
-        console.log("great, we just need to push words around");
+        //console.log("great, we just need to push words around");
 
         /*
            for (var ii = row.words.length-1; ii >= 0 ; ii--) {
@@ -107,19 +109,19 @@ function recalculateRows(percChange) {
            */
 
       } else {
-        console.log("hmm... need to shrink the words if we can, by " + resizeByHowMuch);
+        //console.log("hmm... need to shrink the words if we can, by " + resizeByHowMuch);
 
-        console.log("is this possible?");
+        //console.log("is this possible?");
 
         var wordsFitInRow = true;
 
         if (row.getMinWidth() > (svgWidth - edgepadding*2)) {
-          console.log("words will not fit in row! have to adjust...");
+          //console.log("words will not fit in row! have to adjust...");
           wordsFitInRow = false;
         } 
 
         if (!wordsFitInRow) {
-          console.log("not possible... need to hop rows or make new row");
+          //console.log("not possible... need to hop rows or make new row");
 
           //we'll make all minimum width
 
@@ -130,7 +132,7 @@ function recalculateRows(percChange) {
 
           //deal with repositioning... room above? if no, then room below? if no, make new row...
         } else {
-          console.log("yep! it's possbile");
+          //console.log("yep! it's possbile");
 
           //which words can shrink? and by how much?
 
@@ -139,7 +141,7 @@ function recalculateRows(percChange) {
           var newArray = [];
           for (var ii = 0; ii < row.words.length; ii++) {
             newArray[ii] = row.words[ii];
-            console.log("copying word " + newArray[ii].val);
+            //console.log("copying word " + newArray[ii].val);
           }
 
           newArray.sort(function(a, b) {
@@ -170,7 +172,7 @@ function recalculateRows(percChange) {
               var minus = word.rectSVG.width() - minW;
               setWordToXW(word, word.rectSVG.x(), minW);
 
-              console.log("ii = " + ii + ": can't shrink by " +  pixelsPerWord + ", so shrinking by much as possible = " + minus);
+              //console.log("ii = " + ii + ": can't shrink by " +  pixelsPerWord + ", so shrinking by much as possible = " + minus);
 
               numWords--;
               resizeByHowMuch -= minus;
@@ -201,7 +203,7 @@ function recalculateRows(percChange) {
 
 
     } else { 
-      console.log("everything fits!");
+      //console.log("everything fits!");
     }
 
 
@@ -212,7 +214,7 @@ function recalculateRows(percChange) {
   //ok loop again, through every world, and just see if can go left
  for (var i = 0; i < rows.length; i++) {
     var row = rows[i];
-    console.log("\t) row #" + row.idx);
+    //console.log("\t) row #" + row.idx);
 
     for (var ii = row.words.length-1; ii >= 0 ; ii--) {
       var word = row.words[ii];
@@ -329,8 +331,8 @@ function calculateMaxSlotForRow(row) {
 
   }
 
-  console.log("row idx = " + row.idx + ", row.maxSlots = " + row.maxSlots);
-  console.log("row idx = " + row.idx + ", row.baseHeight = " + row.baseHeight);
+  //console.log("row idx = " + row.idx + ", row.maxSlots = " + row.maxSlots);
+  //console.log("row idx = " + row.idx + ", row.baseHeight = " + row.baseHeight);
 
 
 
@@ -346,7 +348,7 @@ function setUpRowsAndWords(words) {
 
     var wh = getTextWidthAndHeight(wordObjs[i].val, texts.wordText.style);
 
-    console.log("wh = " + wh.w + ", " + wh.h);
+    //console.log("wh = " + wh.w + ", " + wh.h);
 
     if (i == 0) {
 
@@ -505,13 +507,14 @@ function drawWords(words) {
       rows[i].words[ii].draw();
     }
   }
-
 }
 
 /* fine for now, but really should be more granular, i.e., by row, or by thinks a dragged link affects, etc */
 function redrawLinks() {
 
+  //groupAllElements.select('g').members.forEach(group => group.clear());
   groupAllElements.select('g').members.forEach(group => group.clear());
+  //draw.defs().clear(); //select('g').members.forEach(group => group.clear());
 
   Object.keys(linkObjs).forEach(function(key) {
     drawLink(linkObjs[key]);
@@ -606,6 +609,8 @@ function getLinkStyles(link, xpts) {
       var uc1 = chroma.mix(c1, c2, sp).hex();
       var uc2 = chroma.mix(c1, c2, ep).hex();
 
+      
+      //var g = gradientDefGroup.gradient('linear', 
       var g = groupAllElements.gradient('linear', 
           function(stop) { 
             stop.at(0.0, uc1); 
@@ -631,7 +636,7 @@ function drawLink(link) {
       textG = groupAllElements.select('g.text').members[0],
       arrowG = groupAllElements.select('g.arrows').members[0];
 
-  console.log ("\n\n in drawLink(" + link.id + ")");
+  //console.log ("\n\n in drawLink(" + link.id + ")");
 
   var hidePercentage = 2;
   var hidePercentage2 = 7;
@@ -704,6 +709,9 @@ function drawLink(link) {
             drawUpArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowG);
           }
 
+           setupLineInteractions(link); //only can interact with them if they are visible
+
+
         } else { //row is too small
           line.style(styles.hiddenLine.style);
         }
@@ -748,6 +756,7 @@ function drawLink(link) {
         if (percentagePadding >= hidePercentage) { //only bother drawing links if there's room in the row
           line.style(linkStyles[i - minRow]);
 
+
           if (link.direction == directions.FORWARD) {        
             drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowG   );
           } else if (link.direction == directions.BACKWARD) {
@@ -758,6 +767,10 @@ function drawLink(link) {
           } else { //NONE
             drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowG  );
           }
+
+           setupLineInteractions(link); //only can interact with them if they are visible
+
+
         } else { //row is too small
           line.style(styles.hiddenLine.style);
         }
@@ -796,6 +809,7 @@ function drawLink(link) {
 
         if (percentagePadding >= hidePercentage) { //only bother drawing links if there's room in the row
           line.style(linkStyles[i - minRow]);
+          setupLineInteractions(link); //only can interact with them if they are visible
 
         } else { //row is too small
           line.style(styles.hiddenLine.style);
@@ -876,6 +890,8 @@ function drawLink(link) {
 
       }
 
+      setupLineInteractions(link); //only can interact with them if they are visible
+
     } else {
       line.style(styles.hiddenLine.style);
     }
@@ -895,7 +911,7 @@ function drawLink(link) {
 
   }//end else (maxRow <= minRow)
 
-  setupLineInteractions(link);
+  
 }
 
 

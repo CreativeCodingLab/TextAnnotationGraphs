@@ -87,7 +87,7 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
 
   Object.keys(ls).forEach(function(key) {
 
-    console.log(ls[key].toString());
+    //console.log(ls[key].toString());
     createLink(ls[key]);
     });
 
@@ -122,7 +122,7 @@ function getTextWidthAndHeight(word, fs) {
   textbbox = text2.bbox();
   text2.remove();
 
-  console.log("w / h = " + textbbox.w + ", " + textbbox.h);
+  //console.log("w / h = " + textbbox.w + ", " + textbbox.h);
   return {w:textbbox.w, h:textbbox.h};
 }
 
@@ -188,7 +188,7 @@ function swapVals(vals){
 
   vals = {a:tmpB, b:tmpA}
 
-  console.log("    in swap, a = " + vals.a.id + ", b = " + vals.b.id);
+  //console.log("    in swap, a = " + vals.a.id + ", b = " + vals.b.id);
 
 
 
