@@ -51,15 +51,26 @@ class Row {
         this.maxSlots = 0;
         this.id = `(${this.idx})`;
 
-        //this.rect
-        //this.color
-        //
-        //this.dragRect
+        //svg elements
+        this.rect = null;
+        this.lineTop = null;
+        this.lineBottom = null
+        this.dragRect = null;
    }
 
     draw() {
       console.log(" in Row " + this.idx + " about to call drawRow");
       drawRow(this);
+    }
+
+    getMinWidth() {
+      
+      var w = 0;
+      for (var i = 0; i < this.words.length; i++) {
+        w += this.words[i].getMinWidth();
+      }
+
+      return w;
     }
 
     toString() {
@@ -81,24 +92,38 @@ class Word {
         this.parentsL = [];
         this.parentsR = [];
         this.lines = []; 
-        this.tw = 0;
+        this.tw = 0; //width of text part of word, used also to determine minimum size of word rect
         this.th = 0;
         this.id = `(${this.val}, ${this.idx})`;
+        this.percPos = 0.0; //this is used to indicate where along the row the word is positioned, used when resizing the browser's width, or when popping open a right panel.
 
         this.type = "WORD";
 
         this.isSelected = false;
         this.isHovered = false;
         this.isDragging = false;
+        
         //variables created in first render...
         //this.row; //this is a row object, for num do: this.row.idx
-        //this.underneathRect;
+        this.rectSVG = null; //the actual svg element 
+        this.rect = null; //the bbox of the svg element
+        this.underneathRect = null; //not clickable, but solid rect on which other word parts are placed (text, handles, clickable rect)
+        this.text = null; //the svg text
+        this.leftHandle = null; //the left draggable handle to resize word
+        this.rightHandle = null; //the right draggable handle to resize word
+         
+        
     }
 
     draw() {
       console.log(" in Word " + this.val + " about to call drawWord");
       drawWord(this);
     }
+
+    getMinWidth() {
+      return Math.max(minWordWidth, this.tw);
+    }
+
 
     toString() {
         return this.id;

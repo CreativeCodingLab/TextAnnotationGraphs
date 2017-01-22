@@ -19,41 +19,306 @@ function getHeightForWord(word) {
 }
 
 
-function drawRow(row) {
- 
- row.rect = draw.rect(svgWidth,row.rh).x(0).y(row.ry);
- 
- if (row.idx % 2 == 0) {
-   row.rect.style(styles.rowRectEvenFill.style);
- } else {
-  row.rect.style(styles.rowRectOddFill.style); 
+function checkIfEverythingFits(row) {
+
+  for (var ii = 0; ii < row.words.length; ii++) {
+
+    var word = row.words[ii];
+
+    if (ii > 0) {
+      var pw = row.words[ii-1];
+      if (word.leftX < pw.rightX) {
+        return false;
+      }
+
+      if (ii == row.words.length - 1) {
+        if (word.rightX > (svgWidth - edgepadding) ) {
+          return false;
+        }
+      }
+    }
+  }
+  
+  return true;
+}
+
+function checkIfNeedToResizeWords(row) {
+
+  var totalW = 0;
+  for (var ii = 0; ii < row.words.length; ii++) {
+    var word = row.words[ii];
+    totalW += word.rectSVG.width();
+  }
+
+  if (totalW > svgWidth - (edgepadding*2)) {
+    return totalW - (svgWidth - (edgepadding*2));
+  }
+
+  return 0;
+}
+
+function recalculateRows(percChange) {
+
+  console.log("\n\nin recalculateRows()");
+  for (var i = 0; i < rows.length; i++) {
+    var row = rows[i];
+    console.log("\t) row #" + row.idx);
+
+    row.rect.width(draw.width());
+
+    row.lineTop.plot(0, row.ry, draw.width(), row.ry);
+    row.lineBottom.plot(0, row.ry+row.rh, draw.width(), row.ry+row.rh);
+
+    row.dragRect.x(draw.width() - (dragRectSide+dragRectMargin));
+
+    //first pass at resizing   
+
+    for (var ii = 0; ii < row.words.length; ii++) {
+
+      var word = row.words[ii];
+
+      //first try to expand or shrink size of words - but no smaller than the word's min width
+      var nw = Math.max(word.getMinWidth(), word.rectSVG.width() * percChange);
+      var nx = edgepadding + (word.percPos * (svgWidth-edgepadding*2));
+
+      setWordToXW(word, nx, nw);
+    }
+
+    var everythingFits = checkIfEverythingFits(row);
+
+    if (!everythingFits) { 
+
+      console.log("nope, not everything fits!");
+
+      var resizeByHowMuch = checkIfNeedToResizeWords(row);
+
+      if (resizeByHowMuch == 0) {
+        console.log("great, we just need to push words around");
+
+        /*
+           for (var ii = row.words.length-1; ii >= 0 ; ii--) {
+           var word = row.words[ii];
+           checkIfCanMoveLeft(word.rectSVG.x(), word.rectSVG.y(), word);
+           }
+           for (var ii = 0; ii < row.words.length; ii++) {
+           var word = row.words[ii];
+           checkIfCanMoveRight(word.rectSVG.x(), word.rectSVG.y(), word);
+           }
+           */
+
+      } else {
+        console.log("hmm... need to shrink the words if we can, by " + resizeByHowMuch);
+
+        console.log("is this possible?");
+
+        var wordsFitInRow = true;
+
+        if (row.getMinWidth() > (svgWidth - edgepadding*2)) {
+          console.log("words will not fit in row! have to adjust...");
+          wordsFitInRow = false;
+        } 
+
+        if (!wordsFitInRow) {
+          console.log("not possible... need to hop rows or make new row");
+
+          //we'll make all minimum width
+
+          for (var ii = row.words.length-1; ii >= 0 ; ii--) {
+            var word = row.words[ii];
+            setWordToXW(word, word.leftX, word.getMinWidth());
+          }
+
+          //deal with repositioning... room above? if no, then room below? if no, make new row...
+        } else {
+          console.log("yep! it's possbile");
+
+          //which words can shrink? and by how much?
+
+
+          //copy words in row to a temp array, which we'll sort by room left
+          var newArray = [];
+          for (var ii = 0; ii < row.words.length; ii++) {
+            newArray[ii] = row.words[ii];
+            console.log("copying word " + newArray[ii].val);
+          }
+
+          newArray.sort(function(a, b) {
+
+            var d1 = a.rectSVG.width() - a.getMinWidth();
+            var d2 = b.rectSVG.width() - b.getMinWidth();
+
+            return d1 - d2; 
+          });
+
+          for (var ii = 0; ii < newArray.length; ii++) {
+            //console.log("sorted " + ii + " = " + newArray[ii].val);           
+          }
+
+
+
+
+          var numWords = row.words.length;
+          var pixelsPerWord = resizeByHowMuch / numWords; 
+
+          for (var ii = 0; ii < newArray.length; ii++) {
+            var word = newArray[ii];
+
+            var minW = word.getMinWidth();
+
+            if (word.rectSVG.width() - pixelsPerWord < minW) {
+
+              var minus = word.rectSVG.width() - minW;
+              setWordToXW(word, word.rectSVG.x(), minW);
+
+              console.log("ii = " + ii + ": can't shrink by " +  pixelsPerWord + ", so shrinking by much as possible = " + minus);
+
+              numWords--;
+              resizeByHowMuch -= minus;
+              pixelsPerWord = resizeByHowMuch / numWords; 
+            } else {
+              setWordToXW(word, word.rectSVG.x(), word.rectSVG.width() - pixelsPerWord);
+              numWords--;
+              resizeByHowMuch -= pixelsPerWord;
+
+              //console.log("ii = " + ii + ": shrinking by pixelsPerWord = " +  pixelsPerWord);
+            }
+          }
+
+          for (var ii = row.words.length-1; ii >= 0 ; ii--) {
+            var word = row.words[ii];
+            //checkIfCanMoveLeft(word.rectSVG.x(), word.rectSVG.y(), word);
+          }
+          for (var ii = 0; ii < row.words.length; ii++) {
+            var word = row.words[ii];
+            //checkIfCanMoveRight(word.rectSVG.x(), word.rectSVG.y(), word);
+          }
+
+        }
+
+
+      }
+
+
+
+    } else { 
+      console.log("everything fits!");
+    }
+
+
+
+  } //end loop rows
+
+
+  //ok loop again, through every world, and just see if can go left
+ for (var i = 0; i < rows.length; i++) {
+    var row = rows[i];
+    console.log("\t) row #" + row.idx);
+
+    for (var ii = row.words.length-1; ii >= 0 ; ii--) {
+      var word = row.words[ii];
+      checkIfCanMoveLeft(word.rectSVG.x(), word.rectSVG.y(), word);
+    }
+    for (var ii = 0; ii < row.words.length; ii++) {
+      var word = row.words[ii];
+      checkIfCanMoveRight(word.rectSVG.x(), word.rectSVG.y(), word);
+    }
+
  }
- 
- row.lineTop = draw.line(0, row.ry, svgWidth, row.ry).style(styles.rowLineStroke.style);
- row.lineBottom = draw.line(0, row.ry+row.rh, svgWidth, row.ry+row.rh).style(styles.rowLineStroke.style);
 
-  row.dragRect = draw.rect(dragRectSide,dragRectSide).x(svgWidth - (dragRectSide+dragRectMargin)).y(row.ry + row.rh - (dragRectSide+dragRectMargin)).style(styles.rowDragRectFill.style);
+ redrawLinks();
+}
 
-    
- setUpRowDraggable(row);
+
+function removeLastRow() {
+    rows[rows.length-1].rect.remove();
+    rows[rows.length-1].lineTop.remove();
+    rows[rows.length-1].lineBottom.remove();
+    rows[rows.length-1].dragRect.remove();
+    rows.pop();
+}
+
+function appendRow() {
+
+
+  row = new Row(rows.length);
+  rows.push(row);
+  row.maxSlots = 0;
+
+
+  //row.ry = 5 + rows[row.idx - 1].ry + rows[row.idx - 1].rh;
+  row.ry = 5 + rows[row.idx - 1].rect.bbox().y + rows[row.idx - 1].rect.bbox().h;
+
+  //row.rect.bbox().y + row.rect.bbox().h + 5;
+  //row.rh = 10 + ((textpaddingY * 2) + texts.wordText.maxHeight) + (levelpadding * row.maxSlots);
+  row.rh = rows[row.idx - 1].rect.bbox().h; //10 + ((textpaddingY * 2) + texts.wordText.maxHeight) + (levelpadding * row.maxSlots);
+
+
+  if (row.idx % 2 == 0) {
+    row.color = evenRowsColor;
+  } else {
+    row.color = oddRowsColor;
+  }
+
+  drawRow(row);
 
 }
 
-function calcuateMaxSlotForRow(row) {
+function drawRow(row) {
+
+  row.rect = rowGroup.rect(svgWidth,row.rh).x(0).y(row.ry);
+
+  if (row.idx % 2 == 0) {
+    row.rect.style(styles.rowRectEvenFill.style);
+  } else {
+    row.rect.style(styles.rowRectOddFill.style); 
+  }
+
+  row.lineTop = rowGroup.line(0, row.ry, svgWidth, row.ry).style(styles.rowLineStroke.style);
+  row.lineBottom = rowGroup.line(0, row.ry+row.rh, svgWidth, row.ry+row.rh).style(styles.rowLineStroke.style);
+
+  row.dragRect = rowGroup.rect(dragRectSide,dragRectSide).x(svgWidth - (dragRectSide+dragRectMargin)).y(row.ry + row.rh - (dragRectSide+dragRectMargin)).style(styles.rowDragRectFill.style);
+
+
+  row.baseHeight = row.lineBottom.y() - (textpaddingY*2) - texts.wordText.maxHeight;
+
+
+  setUpRowDraggable(row);
+
+  /*
+     row.rect = draw.rect(svgWidth,row.rh).x(0).y(row.ry);
+
+     if (row.idx % 2 == 0) {
+     row.rect.style(styles.rowRectEvenFill.style);
+     } else {
+     row.rect.style(styles.rowRectOddFill.style); 
+     }
+
+     row.lineTop = draw.line(0, row.ry, svgWidth, row.ry).style(styles.rowLineStroke.style);
+     row.lineBottom = draw.line(0, row.ry+row.rh, svgWidth, row.ry+row.rh).style(styles.rowLineStroke.style);
+
+     row.dragRect = draw.rect(dragRectSide,dragRectSide).x(svgWidth - (dragRectSide+dragRectMargin)).y(row.ry + row.rh - (dragRectSide+dragRectMargin)).style(styles.rowDragRectFill.style);
+
+
+     setUpRowDraggable(row);
+     */
+
+}
+
+function calculateMaxSlotForRow(row) {
 
   row.maxSlots = 0;
 
- /* 
-  for (var i = 0; i < row.words.length; i++) {
-    row.maxSlots = Math.max(row.maxSlots, getHeightForWord(row.words[i]));
-  }
-  */
- 
+  /* 
+     for (var i = 0; i < row.words.length; i++) {
+     row.maxSlots = Math.max(row.maxSlots, getHeightForWord(row.words[i]));
+     }
+     */
+
   //hmm... we also have to calculate the slot # of the links that don't actually touch any words in this row, but pass through it, or when there are no words on this row...
   //so any link that starts earlier and ends later will have to be counted, which may mean we need to loop through all links (or sort them somehow...)
 
   //for each link
-    //check minword's and maxword's row. If minw.row >= row && row <= maxw.row, check slot#  
+  //check minword's and maxword's row. If minw.row >= row && row <= maxw.row, check slot#  
 
 
   for (var i = 0; i < linkObjs.length; i++) { 
@@ -63,6 +328,11 @@ function calcuateMaxSlotForRow(row) {
     }
 
   }
+
+  console.log("row idx = " + row.idx + ", row.maxSlots = " + row.maxSlots);
+  console.log("row idx = " + row.idx + ", row.baseHeight = " + row.baseHeight);
+
+
 
 }
 
@@ -143,65 +413,63 @@ function setUpRowsAndWords(words) {
 
       row.baseHeight = word.wy; //that is, where the top of the word is in the row.
 
-
     }
   }
 }
-
 
 function drawWord(word) {
 
   //if already exists, need to delete it first
 
   var underneathRect = draw.rect( word.ww, word.wh ).x( word.wx ).y( word.wy ).style(styles.wordFill.style);
-   
+
   var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
-  
+
   var text = draw.text(function(add) {
-      
+
     add.text(word.val)
     .y(word.wy + textpaddingY - texts.wordText.descent)
     .x(word.wx + (word.ww/2) - (textwh.w / 2))
     .font(texts.wordText.style);
-    });
+  });
+
+  //this is invisible, but used for detecting mouseevents, as its drawn on top of the word
+  var rect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
+
+  var leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
 
 
-    //this is invisible, but used for detecting mouseevents, as its drawn on top of the word
-    var rect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
+  var rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
 
-    var leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
-      
 
-    var rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
 
-      
+  word.text = text;
+  word.rectSVG = rect;
+  word.underneathRect = underneathRect;
+  word.rect = rect.bbox();
+  word.leftX = rect.bbox().x;
+  word.rightX = rect.bbox().x + rect.bbox().w;
+  word.leftHandle = leftHandle;
+  word.rightHandle = rightHandle;
+  word.percPos = (word.leftX-edgepadding) / (svgWidth-edgepadding*2);
 
-    word.text = text;
-    word.rectSVG = rect;
-    word.underneathRect = underneathRect;
-    word.rect = rect.bbox();
-    word.leftX = rect.bbox().x;
-    word.rightX = rect.bbox().x + rect.bbox().w;
-    word.leftHandle = leftHandle;
-    word.rightHandle = rightHandle;
+  setUpLeftHandleDraggable(leftHandle, rect, text, word, word.idx );
+  setUpRightHandleDraggable(rightHandle, rect, text, word, word.idx );
 
-    setUpLeftHandleDraggable(leftHandle, rect, text, word, word.idx );
-    setUpRightHandleDraggable(rightHandle, rect, text, word, word.idx );
+  setUpWordDraggable(word); 
+  setupMouseOverInteractions(word);
 
-    setUpWordDraggable(word); 
-    setupMouseOverInteractions(word);
+  rect.dblclick(function() {
+    word.isSelected = !word.isSelected;
 
-    rect.dblclick(function() {
-      word.isSelected = !word.isSelected;
-
-      if (word.isSelected) {
-        style = word.isHovered ? "hoverAndSelect" : "select";
-      }
-      else {
-        style = word.isHovered ? "hover" : "style";
-      }
-      underneathRect.style(styles.wordFill[style]);
-    });
+    if (word.isSelected) {
+      style = word.isHovered ? "hoverAndSelect" : "select";
+    }
+    else {
+      style = word.isHovered ? "hover" : "style";
+    }
+  underneathRect.style(styles.wordFill[style]);
+  });
 }
 
 function drawLinks(ls) {
@@ -282,7 +550,7 @@ function getLinkStyles(link, xpts) {
 
   //TODO - need to reverse direction of gradient when link reverses! currently always assumes increases in x direction, but manually moving links around can put the end x point before the start x point (ie, when moving link2link links). In that case, need to reverse the x's
   // gradient.from(0, 0).to(1, 0) is the default, would need to be gradient.from(1, 0).to(0, 0)
- 
+
   var linkStyles = [];
 
   var c1, c2;
@@ -328,8 +596,8 @@ function getLinkStyles(link, xpts) {
       }
 
       //console.log("in getLinkStyles : i = " + i + ", sp/ep = " + sp + ", " + ep);
-       /*
-        //Older way - simpler, but doesn't take into account total lenghth of link, so for instance, for a link with three rows, the middle row would always look the same, regardless of where the start and end were, but I think it looks nice when the gradient gives you a hint about how long the link is, especially to help differentiate other long links
+      /*
+      //Older way - simpler, but doesn't take into account total lenghth of link, so for instance, for a link with three rows, the middle row would always look the same, regardless of where the start and end were, but I think it looks nice when the gradient gives you a hint about how long the link is, especially to help differentiate other long links
       var sp = ((i) / link.numLineSegments) - 0.1;
       var ep = ((i + 1) / link.numLineSegments) + 0.1; 
       //seems to help user to recognize same line on different rows when we overlap the gardient transitions? .. testing w +0.1 and -0.1 on percents..., but may want to play around with it or remove it...
@@ -392,7 +660,7 @@ function drawLink(link) {
   if (maxRow > minRow) { //on different rows!
 
     link.numLineSegments = (maxRow - minRow)+1;
-    
+
     var linkStyles = getLinkStyles(link, attachmentXPositions);
 
     for (var i = minRow; i <= maxRow; i++) {
@@ -402,25 +670,25 @@ function drawLink(link) {
 
       if (i == minRow) { //FIRST ROW
 
-          y1 = rows[i].baseHeight - link.leftWord.h * percentagePadding;
-          y2 = rows[i].baseHeight - link.h * percentagePadding;
-          y3 = rows[i].baseHeight - link.h * percentagePadding;
+        y1 = rows[i].baseHeight - link.leftWord.h * percentagePadding;
+        y2 = rows[i].baseHeight - link.h * percentagePadding;
+        y3 = rows[i].baseHeight - link.h * percentagePadding;
 
-          var p1x = x1; 
-          var p1y = y1;
+        var p1x = x1; 
+        var p1y = y1;
 
-          var p2x = x2; 
-          var p2y = y2;
+        var p2x = x2; 
+        var p2y = y2;
 
         var p3x = svgWidth; 
         var p3y = y3;
 
         var line = linkG.polyline([ [p1x,p1y],[p2x,p2y],[p3x,p3y] ]);
-        
+
         link.lines.push(line);
         link.linesLeftX.push(p1x);
         link.linesRightX.push(p3x);
-        
+
         if (percentagePadding >= hidePercentage) { //only bother drawing links if there's room in the row
 
           line.style(linkStyles[i - minRow]);
@@ -470,13 +738,13 @@ function drawLink(link) {
         var p4x = xR; 
         var p4y = y4;
 
-       
+
         var line = linkG.polyline([ [p2x,p2y],[p3x,p3y],[p4x,p4y] ]);
-        
+
         link.lines.push(line);
         link.linesLeftX.push(p2x);
         link.linesRightX.push(p4x);
-        
+
         if (percentagePadding >= hidePercentage) { //only bother drawing links if there's room in the row
           line.style(linkStyles[i - minRow]);
 
@@ -494,7 +762,7 @@ function drawLink(link) {
           line.style(styles.hiddenLine.style);
         }
 
-       
+
         if (percentagePadding >= hidePercentage2) { 
           var style;
           if (i % 2 == 0) {
@@ -577,7 +845,7 @@ function drawLink(link) {
     link.linesLeftX.push(p1x);
     link.linesRightX.push(p4x);
 
-    
+
     if (percentagePadding >= hidePercentage) { //only bother drawing links if there's room in the row
 
       line.style(link.style.style);
@@ -588,7 +856,7 @@ function drawLink(link) {
 
         drawDownArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowG );
 
-          } else if (link.direction == directions.BACKWARD) {
+      } else if (link.direction == directions.BACKWARD) {
         drawDownArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link), arrowG ) ;
 
         drawUpArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link), arrowG );
@@ -611,7 +879,7 @@ function drawLink(link) {
     } else {
       line.style(styles.hiddenLine.style);
     }
- 
+
     if (percentagePadding >= hidePercentage2) { 
 
 
@@ -642,14 +910,14 @@ function drawLinkLabel(str, tx, ty, style, link, group) { // backgroundcolor ) {
   if (testLinkLabel) {
     var label = group.group();
     var twh = getTextWidthAndHeight(str, texts.linkText.style);
-/*
-<<<<<<< HEAD
-    var linkLabelRect = groupAllElements.rect(twh.w + 4, texts.linkText.maxHeight).x( tx - 2 - twh.w/2).y( ty - texts.linkText.maxHeight/2 ); 
-    linkLabelRect.style(style);
+    /*
+       <<<<<<< HEAD
+       var linkLabelRect = groupAllElements.rect(twh.w + 4, texts.linkText.maxHeight).x( tx - 2 - twh.w/2).y( ty - texts.linkText.maxHeight/2 ); 
+       linkLabelRect.style(style);
 
-    groupAllElements.text(str).x( tx - twh.w/2 ).y(ty - texts.linkText.maxHeight/2 - texts.linkText.descent).font(texts.linkText.style);
-=======
-*/
+       groupAllElements.text(str).x( tx - twh.w/2 ).y(ty - texts.linkText.maxHeight/2 - texts.linkText.descent).font(texts.linkText.style);
+       =======
+       */
     //groupAllElements.rect(twh.w + 4, maxTextH2).x( tx - 2 - twh.w/2).y( ty - maxTextH2/2 ).fill(backgroundcolor).stroke( {color:linkStrokeColor, opacity:1.0} ).radius(3,3);
     var linkLabelRect = label.rect(twh.w + 4, texts.linkText.maxHeight).x( tx - 2 - twh.w/2).y( ty - texts.linkText.maxHeight/2 ); 
 
@@ -658,7 +926,7 @@ function drawLinkLabel(str, tx, ty, style, link, group) { // backgroundcolor ) {
     //.fill(backgroundcolor).opacity(opac).stroke( {color:linkStrokeColor, opacity:0.0} );
 
     label.text(str).x( tx - twh.w/2 ).y(ty - texts.linkText.maxHeight/2 - texts.linkText.descent).font(texts.linkText.style);
-    
+
     if (link.labelRect) {
       link.labelRect.push(label);
     }

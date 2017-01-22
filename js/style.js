@@ -348,16 +348,17 @@ function setupStyles(svg) {
   styleArr.handleFill = new FillStyle('#000000', 0.0);
   styleArr.handleFill.hovering('#ffcccc', 0.7);
 
-  styleArr.wordFill = new FillStyle('#ffffff', 1.0, new LineStyle('transparent', 1) );
+  //styleArr.wordFill = new FillStyle('#ffffff', 1.0, new LineStyle('transparent', 1) );
+  styleArr.wordFill = new FillStyle('#ffffff', 1.0, new LineStyle('#000', 1) );
   styleArr.wordFill.hovering('#ffffff', 1.0/*, new LineStyle('#000000', 1)*/);
   styleArr.wordFill.selecting('#fcc', 1.0, new LineStyle('#c99', 1));
   styleArr.wordFill.hoveringAndSelecting('#fcc', 1.0/*, new LineStyle('#000000', 1)*/);
 
-  styleArr.labelEvenFill = new FillStyle(evenRowsColor);
-  styleArr.labelOddFill = new FillStyle(oddRowsColor);
+  styleArr.labelEvenFill = new FillStyle(evenRowsColor, 0.5);
+  styleArr.labelOddFill = new FillStyle(oddRowsColor, 0.5);
 
-  styleArr.rowRectEvenFill = new FillStyle(evenRowsColor);
-  styleArr.rowRectOddFill = new FillStyle(oddRowsColor);
+  styleArr.rowRectEvenFill = new FillStyle(evenRowsColor, 0.5);
+  styleArr.rowRectOddFill = new FillStyle(oddRowsColor, 0.5);
   styleArr.rowLineStroke = new LineStyle("#555555", 0.5, 1.0);
   styleArr.rowDragRectFill = new FillStyle('#000');
 
