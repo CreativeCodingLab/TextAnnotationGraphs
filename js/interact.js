@@ -123,11 +123,13 @@ function setupLineInteractions(link) {
     l.mouseover( function() { link_mover(link) } );
     l.mouseout( function() { link_mout(link) }  );
   }
+  
+  
   if (link.labelRect) { 
     link.labelRect.forEach(addInteraction);
   }
   link.lines.forEach(addInteraction);
-
+  
   //link.r1.mouseover( function() { link_mover(link) }  );
   //link.r2.mouseover( function() { link_mover(link) }  );
 
@@ -517,7 +519,6 @@ function checkIfCanMoveLeft(x, y, word, adjustWidth) {
 }
 
 
-
 function setWordToXW(word, xval, wval) {
 
   word.rectSVG.x(xval);
@@ -650,7 +651,6 @@ function moveWordDownARow(w) {
   rows[nextRowIdx].words.unshift(w);
   w.row = rows[nextRowIdx];
   var nx = edgepadding;
-  //var ny = w.row.ry + w.row.rh - w.wh;
   var ny = w.row.rect.bbox().y + w.row.rect.bbox().h - w.wh;
 
   moveWordToNewPosition(w, nx, ny);
@@ -670,7 +670,6 @@ function moveWordUpARow(w) {
   rows[nextRowIdx].words.push(w);
   w.row = rows[nextRowIdx];
   var nx = svgWidth - edgepadding - w.rectSVG.width();
-  //var ny = w.row.ry + w.row.rh - w.wh;
   var ny = w.row.rect.bbox().y + w.row.rect.bbox().h - w.wh;
 
   moveWordToNewPosition(w, nx, ny);
@@ -683,9 +682,8 @@ function moveWordUpARow(w) {
   for (var i = 0; i < rows.length; i++) {
     calculateMaxSlotForRow(rows[i]);
   }
-
-
 }
+
 
 function setUpWordDraggable(word) {
 
@@ -703,77 +701,16 @@ function setUpWordDraggable(word) {
   });
 }
 
-/*
-function checkMinMaxY(row, y, h) {
-
-  var rowArr = row.words;
-
-  var miny, maxy;
-  var dir = directions.NONE;
-
-  if (row.idx == 0) {
-    miny = 0; //edgepadding;
-  } else {
-    miny = rows[row.idx-1].rect.bbox().y; //+h?
-  }
-
-  //console.log("x + w = " + (x + word.rect.w));
-  if (row.idx == (rows.length - 1) ) {
-
-    //console.log("svgWidth = " + svgWidth);
-    //maxx = draw.bbox().w - edgepadding;
-    //maxx = svgWidth - edgepadding;
-  } else {  
-    maxy = rows[row.idx+1].rect.bbox().y + rows[row.idx+1].rect.bbox().h; //i think
-  } 
-
-  if (y < miny) {
-    dir = directions.BACKWARD;
-  } else if (y + h >= maxy) {
-    //x = maxx - w;
-    dir = directions.FORWARD;
-  }
-
-  //need to calculate size of other words on this row...
-  var rowMinY = edgepadding;
-  for (var i = 0; i < wordInRow; i++) {
-    rowMinX += rowArr[i].rect.w; //wordInRow
-  }
-
-  var rowMaxX = svgWidth - edgepadding;
-
-  for (var i = wordInRow; i < rowArr.length; i++) {
-    rowMaxX -= rowArr[i].rect.w; 
-  }
-
-  if (x < rowMinX) {
-    x = rowMinX;
-  } else if (x > rowMaxX) {
-    x = rowMaxX;
-  }
-
-  return {x:x, dir:dir};
-}
-*/
-
-
 function dragRow(x, y, row) {
 
-  //console.log("in dragRow("+x+", "+y+", "+row+"), wordHeight = " + wordHeight );
-
-  var rowDragRect = row.dragRect;
   var prevY = row.rect.bbox().y;
-
   var inc = y - prevY;
 
   var nextRowTooSmall = false;
   var nextY = 0;
 
   if (row.idx < rows.length - 1) {
-    /*
-       nextY = top of next row + height of next row ... so the bottom of the next row (prob can just use the lineBottom for that...), minus the height of the word's rectangle, then need to subtract the dragRectangle, + the margin between rows.
-       */
-
+   
     nextY = (rows[row.idx + 1].lineBottom.bbox().y - wordHeight ) - (dragRectSide + dragRectMargin) - 5 ;
 
     if (y > nextY) {
@@ -797,15 +734,7 @@ function dragRow(x, y, row) {
   }
 
   for (var i = 0; i < row.words.length; i++) {
-    var word = row.words[i];
-    var wordY = row.lineBottom.bbox().y - word.rectSVG.height();
-    word.rectSVG.y(wordY);
-    word.rect = word.rectSVG.bbox();
-    word.underneathRect.y(wordY);  
-    word.leftHandle.y(wordY);  
-    word.rightHandle.y(wordY);  
-
-    word.text.y(word.rect.y + textpaddingY); 
+    setWordToY(row.words[i], row.lineBottom.bbox().y - row.words[i].rectSVG.height() );
   }
 
   row.baseHeight = row.lineBottom.y() - (textpaddingY*2) - texts.wordText.maxHeight;
@@ -820,22 +749,27 @@ function dragRow(x, y, row) {
     nextrow.lineTop.y(row.rect.bbox().y + row.rect.bbox().h + 5);
   }
 
-  var returnVal = {x:rowDragRect.bbox().x, y:y}; 
+  var returnVal = {x:row.dragRect.bbox().x, y:y}; 
 
   return returnVal;
 }
 
+
+function setWordToY(word, wy) {
+    word.rectSVG.y(wy);
+    word.rect = word.rectSVG.bbox();
+    word.underneathRect.y(wy);  
+    word.leftHandle.y(wy);  
+    word.rightHandle.y(wy);  
+    word.text.y(word.rect.y + textpaddingY); 
+}
+
 function setUpRowDraggable(row) {
 
+  addDragStartingAndEndingListeners(row.dragRect);
 
-  var rowDragRect = row.dragRect;
-
-  addDragStartingAndEndingListeners(rowDragRect);
-
-  rowDragRect.draggable(function(x, y) {
-
+  row.dragRect.draggable(function(x, y) {
     var returnVal = dragRow(x, y, row);
-
     redrawLinks(); //actually - only redraw links that moving this word would affect + this row?
 
     return returnVal;

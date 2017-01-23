@@ -354,11 +354,11 @@ function setupStyles(svg) {
   styleArr.wordFill.selecting('#fcc', 1.0, new LineStyle('#c99', 1));
   styleArr.wordFill.hoveringAndSelecting('#fcc', 1.0/*, new LineStyle('#000000', 1)*/);
 
-  styleArr.labelEvenFill = new FillStyle(evenRowsColor, 0.5);
-  styleArr.labelOddFill = new FillStyle(oddRowsColor, 0.5);
+  styleArr.labelEvenFill = new FillStyle(evenRowsColor, 1.0);
+  styleArr.labelOddFill = new FillStyle(oddRowsColor, 1.0);
 
-  styleArr.rowRectEvenFill = new FillStyle(evenRowsColor, 0.5);
-  styleArr.rowRectOddFill = new FillStyle(oddRowsColor, 0.5);
+  styleArr.rowRectEvenFill = new FillStyle(evenRowsColor, 1.0);
+  styleArr.rowRectOddFill = new FillStyle(oddRowsColor, 1.0);
   styleArr.rowLineStroke = new LineStyle("#555555", 0.5, 1.0);
   styleArr.rowDragRectFill = new FillStyle('#000');
 

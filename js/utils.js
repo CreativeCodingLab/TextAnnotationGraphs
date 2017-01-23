@@ -3,7 +3,14 @@ function createTestWords(numWords, minLength, maxLength) {
   var ws = [];
   for (var i = 0; i < numWords; i++) {
 
-    var str = "";
+    ws.push(new Word(getRandomString(minLength, maxLength), i));
+  }
+
+  return ws;
+}
+
+function getRandomString(minLength, maxLength) {
+ var str = "";
     var numChars = getRandomInt(minLength, maxLength);
     for (var ii = 0; ii < numChars; ii++) {
 
@@ -11,12 +18,9 @@ function createTestWords(numWords, minLength, maxLength) {
       str += ch;
     }
 
-    ws.push(new Word("" + str, i));
-  }
+    return str;
 
-  return ws;
 }
-
 
 /* 
  * numWord2WordLinks must be greater than one if you have any word2LinkLinks or link2LinkLinks.
@@ -36,10 +40,9 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
     var style = getRandomStyle();
 
     if (rand1 != rand2) {
-      ls[cidx++] = new Link(wordObjs[rand1], wordObjs[rand2], direction, style);
+      ls[cidx++] = new Link(wordObjs[rand1], wordObjs[rand2], direction, style, getRandomString(3,5), texts.linkText);
     }
   }
-
 
   ls.sort(function(a, b) {
 
@@ -63,7 +66,7 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
 
 
     if (rand1 != rand2) {
-      ls[cidx++] = new Link(wordObjs[rand1], ls[rand2], direction, style);
+      ls[cidx++] = new Link(wordObjs[rand1], ls[rand2], direction, style, getRandomString(3,5), texts.linkText);
     }
   }
 
@@ -80,7 +83,7 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
     var style = getRandomStyle();
 
     if (rand1 != rand2) {
-      ls[cidx++] = new Link(ls[rand1], ls[rand2], direction, style);
+      ls[cidx++] = new Link(ls[rand1], ls[rand2], direction, style, getRandomString(3,5), texts.linkText);
     }
   }
 

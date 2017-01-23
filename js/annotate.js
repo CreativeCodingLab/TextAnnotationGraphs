@@ -1,12 +1,16 @@
 
 class Link {
-    constructor(s, e, direction, style) {
+    constructor(s, e, direction, style, textStr, textStyle) {
         this.s = s;
         this.e = e;
         
         //directions and types can be different things
         this.direction = direction; //see enums.directions
         this.style = style;
+
+        this.textStr = textStr;
+        this.textStyle = textStyle;
+        this.textWH = getTextWidthAndHeight(this.textStr, this.textStyle.style)
 
         this.parentsL = [];
         this.parentsR = [];
