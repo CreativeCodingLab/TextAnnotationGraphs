@@ -2116,6 +2116,8 @@ SVG.BBox = SVG.invent({
 
         // find native bbox
         box = element.node.getBBox()
+        //console.log("box = ")
+        //console.log(box);      
       } catch(e) {
         if(element instanceof SVG.Shape){
           var clone = element.clone(SVG.parser.draw).show()

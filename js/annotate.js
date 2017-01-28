@@ -36,8 +36,11 @@ class Link {
 
         //this.rootMinWord
         //this.rootMaxWord
-
+        
+      
     }
+
+    
 
     toString() {
         return this.id; 
@@ -117,24 +120,57 @@ class Word {
         this.rightHandle = null; //the right draggable handle to resize word
          
         
+        //used for calculating positions during drag
+        this.tempX = 0.0;
+        this.tempW = 0.0;
+        this.tempY = 0.0;
     }
 
+    
+    //take temp values and update actual svg values
+    update() {
+      
+      //console.log("\n***\nin update : " + this.tempW);
+      this.rectSVG.x(this.tempX);
+      this.rectSVG.width(this.tempW);
+     
+      this.underneathRect.x(this.tempX);
+      this.underneathRect.width(this.tempW);
+
+
+       this.rect = this.rectSVG.bbox();
+
+
+      
+      this.text.x(this.tempX + (this.tempW/2) - (this.text.bbox().w / 2) ); 
+      this.leftX = this.tempX; 
+      this.rightX = this.tempX + this.tempW;
+
+      this.percPos = (this.leftX-edgepadding) / (svgWidth-edgepadding*2);
+
+      this.leftHandle.x(this.tempX);
+      this.rightHandle.x(this.rightX - handleW);
+
+          
+    }
+    
+
     draw() {
-      console.log(" in Word " + this.val + " about to call drawWord");
+      //console.log(" in Word " + this.val + " about to call drawWord");
       drawWord(this);
     }
 
     getMinWidth() {
       return Math.max(minWordWidth, this.tw);
     }
-    
+
     /* must return a value less than row width - edgepaddings, else will try to reposition long words forever! */
     getMaxWidth() {
       return (this.row.rect.width() - (edgepadding*2)) / 3.1; 
     }
 
     toString() {
-        return this.id;
+      return this.id;
     }
 
     static testMe(val) {
@@ -177,7 +213,7 @@ function checkAndUpdateWordToWordSlots(link, startSlot) { //, minWord, minSide, 
 
     var slotIsAvailable = true;
 
-   
+
     for (var i = wo1.idx; i <= wo2.idx; i++) {
 
       if (i == wo1.idx) { //check right side...
