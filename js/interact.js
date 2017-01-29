@@ -190,10 +190,8 @@ function addDragStartingAndEndingListeners(elem) {
    
       //dragElem.leftHandle.style(styles.handleFill.style);
       //dragElem.rightHandle.style(styles.handleFill.style);
-
-      //updateWords();   
     
-      realignWords(); //overkill?
+      //realignWords(); //overkill? this is kind of a hack - shouldn't need it - but right now sometimes words get stuck off a row when moving words to the right... not sure why, shouldn't happen!
 
   
       dragElem = null;
@@ -338,7 +336,7 @@ function dragLeftHandle(x, y, word) {
 function checkIfCanDragLeftHandleLeft(x, y, word) {
     var rw = Math.max( Math.min(word.getMaxWidth(), (word.rightX - x)), word.getMinWidth() );
 
-    setWordToXW(word, x, rw);
+    setWordToXWY(word, x, rw, y);
 
     var rv = checkIfCanMoveLeft(x, rw, y, word, true);
     return rv;
@@ -348,7 +346,7 @@ function checkIfCanDragLeftHandleRight(x, y, word) {
 
     var rw = Math.max( Math.min(word.getMaxWidth(), (word.rightX - x) ), word.getMinWidth() );
 
-    setWordToXW(word, x, rw);
+    setWordToXWY(word, x, rw, y);
 
     var rv = checkIfCanMoveRight(x, rw, y, word, true);
     return rv;
@@ -375,7 +373,7 @@ function dragRightHandle(x, y, word) {
 function checkIfCanDragRightHandleLeft(x, y, word) {
     var rw = Math.max( Math.min(word.getMaxWidth(), (x - word.leftX + handleW)), word.getMinWidth() );
 
-    setWordToXW(word, word.leftX, rw);
+    setWordToXWY(word, word.leftX, rw, y);
 
     var rv = checkIfCanMoveLeft(x - (rw - handleW), rw, y, word, false);
     rv.x = word.leftX + rw - handleW;
@@ -387,7 +385,7 @@ function checkIfCanDragRightHandleRight(x, y, word) {
 
     var rw = Math.max( Math.min(word.getMaxWidth(), (x - word.leftX + handleW) ), word.getMinWidth() );
 
-    setWordToXW(word, word.leftX, rw);
+    setWordToXWY(word, word.leftX, rw, y);
 
     var rv = checkIfCanMoveRight(x - (rw - handleW), rw, y, word, false);
     rv.x = word.leftX + rw - handleW;
@@ -397,61 +395,80 @@ function checkIfCanDragRightHandleRight(x, y, word) {
 
 function checkIfCanMoveRight(x, w, y, word, adjustWidth) {
 
+  //console.log("....checking " + word.val); 
   var posInRow = word.row.words.indexOf(word);
   var rx = x;
   var ry = y;
+  var didJump = false;
+
+
+  /* Make sure the x value is in a legal position, if not, shift it right to a legal position */
+
+  //am i *not* the first word (or only word) in this row?
+  if (posInRow > 0) {
+    //then make sure that I am greater than previous word x + w
+    var prevWord = word.row.words[posInRow - 1];
+    var prevWordX;
+    var prevWordW;
+
+    if (prevWord.needsUpdate) {
+      prevWordX = prevWord.tempX;
+      prevWordW = prevWord.tempW;
+    } else {
+      prevWordX = prevWord.rect.x;
+      prevWordW = prevWord.rect.w;
+    }
+
+    //make sure our X val isn't *before* the rightX of the previous word
+
+    if (x < prevWordX + prevWordW) {
+      var origXW = word.rightX;
+      rx = prevWordX + prevWordW;
+      w = origXW - rx;
+    } 
+  } else {
+    //make sure our X val isn't *before* the leftmost edgepadding
+    if (x < edgepadding) {
+      var origXW = word.rightX;
+      rx = edgepadding;
+      w = origXW - rx;
+    } 
+  }
+
+
+  /* Check to see if the word needs to jump to the next row */
 
   //am i the last word (or only word) in this row?
   if (posInRow == word.row.words.length - 1) {
 
     //did i hit the right side of the row?
-    //if (x + word.rect.w > svgWidth - edgepadding) {
-    if (x + w > svgWidth - edgepadding) {
+    if (x+w > svgWidth - (edgepadding)) {
 
-      //can I jump down to the next row?
-      //if (word.row.idx < rows.length - 1 && checkIfSpaceToMoveDownARow(word.rect.w, rows[word.row.idx + 1]) == true) {
-      if (word.row.idx < rows.length - 1 && checkIfSpaceToMoveDownARow(w, rows[word.row.idx + 1]) == true) {
-
-        //yes, move to next row
-        moveWordDownARow(word);
-        rx = edgepadding;
-
-        //handle drag offset if i am dragging this word
-        if (word == rowOffsetWord) {
-          //rowOffsetX -= (svgWidth -  (2*edgepadding) - (word.rectSVG.width() ) );
-          rowOffsetX -= (svgWidth - (2*edgepadding) - (w) );
-        }
-
-        ry = word.rect.y;
-
-        //refire this checkIfCanMoveRight, since it will push words on the next row out of the way, if needed -- may break up this method into little pieces so can fire something more granular
-        checkIfCanMoveRight(rx, w, y, word, false);
-
-      } else {
-        //rx = svgWidth - edgepadding - word.rect.w; //do this instead if you don't want to make new rows just by dragging
-        
+      if (word.row.idx == rows.length - 1 ) { //then we're on the last row
         appendRow();
-
-        moveWordDownARow(word);
-        rx = edgepadding;
-
-        //handle drag offset if i am dragging this word
-        if (word == rowOffsetWord) {
-          //rowOffsetX -= (svgWidth - (word.rect.w) - (2*edgepadding));
-          rowOffsetX -= (svgWidth - (w) - (2*edgepadding));
-        }
-
-        ry = word.rect.y;
-
-        //refire this checkIfCanMoveRight, since it will push words on the next row out of the way, if needed -- may break up this method into little pieces so can fire something more granular
-        checkIfCanMoveRight(rx, w, y, word, false);
-
       }
-    }
-  } else if (posInRow < word.row.words.length - 1) {
 
-   
-    //i am not the last word in this row, am i hitting someone in front of me?
+      var vals = moveWordDownARow(word);
+
+      //handle drag offset if i am dragging this word
+      if (word == rowOffsetWord) {
+        rowOffsetX -= (svgWidth - (2*edgepadding) - (w) );
+      }
+
+      rx = vals.x;
+      ry = vals.y;
+
+      didJump = true; //will check the *new* last word on this row to see if it needs to jump as well, after I've repositioned the other words 
+    }
+  }
+
+  /* Set new position of this word */
+  setWordToXWY(word, rx, w, ry);
+
+  /* Does it push into the next word? */
+  posInRow = word.row.words.indexOf(word);
+
+  if (posInRow < word.row.words.length - 1) {
     var nextWord = word.row.words[posInRow + 1];
     var nextWordX;
     var nextWordW;
@@ -463,118 +480,71 @@ function checkIfCanMoveRight(x, w, y, word, adjustWidth) {
       nextWordX = nextWord.rect.x;
       nextWordW = nextWord.rect.w;
     }
-  
-   // w = word.rightX - x; 
-  //  console.log("tempX = " + word.tempX + ", x = " + x);
-  //  console.log(" x = " + x + ", w = " + w + "\n(x+w) " + (x+w) + " > nextWordX = " + nextWordX);
-    //if (x + word.rect.w > nextWordX) {
-    if (x + w > nextWordX) {
-      //yes I am, can that word move out of the way?
 
-      //var inc = (x + word.rect.w) - nextWordX;
-      var inc = (x + w) - nextWordX;
-      var uvals = checkIfCanMoveRight(nextWordX + inc, nextWordW, y, nextWord, false);
-
-      //check if the word we've hit has jumped a row
-      if (nextWord.row.idx == word.row.idx) {
-        //rx = uvals.x - word.rect.w;
-        rx = uvals.x - w;
-      } //else it jumped a row, so keep rx the same
-    } 
-  } 
- 
-    
-  //recheck posInRow, it might have changed if a word jumped a row
-  posInRow = word.row.words.indexOf(word);
-
-  if (posInRow > 0) {
-
-    var prevWord = word.row.words[posInRow - 1];
-    var prevWordX;
-    var prevWordW;
-    
-    if (prevWord.needsUpdate) {
-      prevWordX = prevWord.tempX;
-      prevWordW = prevWord.tempW;
-    } else {
-      prevWordX = prevWord.rect.x;
-      prevWordW = prevWord.rect.w;
-    }
-   
-    if (rx < prevWordX + prevWordW ) {
-      rx = prevWordX + prevWordW;
-    }
-  } else { //first one in row
-    if (rx < edgepadding) {
-      rx = edgepadding;
+    if (rx + w > nextWordX) { //then need to push the next word
+      checkIfCanMoveRight(rx + w, nextWordW, nextWord.rectSVG.y(), nextWord, false);
     }
   }
-  
 
+  /* If this word jumped to new row, check to see if the *new* last word of the original row also needs to jump - This can happen if a really big word jumps onto the row */
+  if (didJump && rows[word.row.idx - 1].words.length > 0) {
 
-  var rw;
-  if (adjustWidth == true) {
-    rw = word.rightX - rx;
-  } else {
-    //rw = word.rectSVG.width();
-    rw = w;
+    prevRow = rows[word.row.idx - 1];
+
+      var prevWord = prevRow.words[prevRow.words.length - 1];
+      var prevWordX;
+      var prevWordW;
+
+      if (prevWord.needsUpdate) {
+        prevWordX = prevWord.tempX;
+        prevWordW = prevWord.tempW;
+      } else {
+        prevWordX = prevWord.rect.x;
+        prevWordW = prevWord.rect.w;
+      }
+
+      checkIfCanMoveRight(prevWordX, prevWordW, y, prevWord, false);
   }
-
-  //if rw > maxWidth, then set to maxWidth
-  rw = Math.min(rw, word.getMaxWidth());
-
-  //in rare cases, if window width is small, maxWidth > minWidth!
-  rw = Math.max(rw, word.getMinWidth());
-
-  //console.log("in checkIfCanMoveRight: about to call setWordToXW");
-  setWordToXW(word, rx, rw);
 
   return {x:rx, y:ry};
 }
 
 
 function checkIfCanMoveLeft(x, w, y, word, adjustWidth) {
-
-  //console.log("word = " + word.val);
   var posInRow = word.row.words.indexOf(word);
-
   var rx = x;
   var ry = y;
 
-  //am i the first word in this row?
+  /* If this is the first word, check if can jump up a row */
   if (posInRow == 0) {
 
     //did i hit the left side of the row?
     if (x < edgepadding) {
 
-      //can I jump up to the previous row?
-      //if (word.row.idx > 0 && checkIfSpaceToMoveUpARow(word.rect.w, rows[word.row.idx - 1]) == true) {
       if (word.row.idx > 0 && checkIfSpaceToMoveUpARow(w, rows[word.row.idx - 1]) == true) {
-
-        //yes, move to previous row
         moveWordUpARow(word);
-        //rx = svgWidth - edgepadding - word.rect.w;
-        rx = svgWidth - edgepadding - w;
 
         //handle drag offset if i am dragging this word
         if (word == rowOffsetWord) {
-          //rowOffsetX += (svgWidth - (word.rect.w) - (2*edgepadding));
-          rowOffsetX += (svgWidth - (w) - (2*edgepadding));
+          rowOffsetX += (svgWidth - (2*edgepadding) - (w) );
         }
 
+        rx = svgWidth - edgepadding - w;
         ry = word.rect.y;
 
-         //refire this checkIfCanMoveLeft, since it will push words on the previous row out of the way, if needed -- may break up this method into little pieces so can fire something more granular
+        //refire this checkIfCanMoveLeft, since it will push words on the previous row out of the way, if needed -- may break up this method into little pieces so can fire something more granular
         checkIfCanMoveLeft(rx, w, y, word, false);
 
       } else {
         rx = edgepadding; //on top row, so can't move left of left margin
       }
     }
-  } else if (posInRow > 0) {
+  }
 
-    //i am not the first word in this row, am i hitting someone in behind me?
+  /* Does the word need to push the previous word out of the way? */
+  posInRow = word.row.words.indexOf(word);
 
+  if (posInRow > 0) {
     var prevWord = word.row.words[posInRow - 1];
     var prevWordX;
     var prevWordW;
@@ -587,103 +557,79 @@ function checkIfCanMoveLeft(x, w, y, word, adjustWidth) {
       prevWordW = prevWord.rect.w;
     }
 
-    if (x < prevWordX + prevWordW) {
-      //yes I am, can that word move out of the way?
-      var inc = (prevWordX + prevWordW) - x;
+    if (rx < prevWordX + prevWordW) {
+      //yes it does, can the previous word move out of the way?
+      var inc = (prevWordX + prevWordW) - rx;
       //try to move prevWord (inc) units to the left
       var uvals = checkIfCanMoveLeft(prevWordX - inc, prevWordW, y, prevWord, false);
 
-      //check if the word we've hit has jumped a row
+      //if the prevWord hasn't jumped up a row, then make sure we aren't overlapping (ie, if prevword *can't* move) 
       if (prevWord.row.idx == word.row.idx) {
         rx = uvals.x + prevWordW;
-      } //else it jumped a row, so keep rx the same
+      } 
     } 
   }
 
-    
-  //recheck posInRow, it might have changed if a word jumped a row
-  posInRow = word.row.words.indexOf(word);
 
-  if (posInRow < word.row.words.length - 1) {
-
-    var nextWord = word.row.words[posInRow + 1];
-    var nextWordX;
-    var nextWordW;
-
-    if (nextWord.needsUpdate) {
-      nextWordX = nextWord.tempX;
-      nextWordW = nextWord.tempW;
-    } else {
-      nextWordX = nextWord.rect.x;
-      nextWordW = nextWord.rect.w;
-    }
-
-    //if (rx + word.rect.w > word.row.words[posInRow + 1].rect.x) {
-    if (rx + w > nextWordX) {
-      //rx = Math.max(edgepadding, word.row.words[posInRow + 1].rect.x - word.rect.w);
-      rx = Math.max(edgepadding, nextWordX - w);
-    }
-  } else { //last one in row
-    
-    //if (rx + word.rect.w > svgWidth - edgepadding) {
-    if (rx + w > svgWidth - edgepadding) {
-      //rx = svgWidth - edgepadding - word.rect.w;
-      rx = svgWidth - edgepadding - w;
-    }
-  }
-    
-
-  var rw;
-
-  if (adjustWidth == true) {
-    //rw = w;
+  if (adjustWidth == true) { //if moving left handle, need to get correct width 
     rw = word.rightX - rx;
+
+    //if rw > maxWidth, then set to maxWidth
+    rw = Math.max( Math.min(rw, word.getMaxWidth()), word.getMinWidth()) ;
+    //in rare cases, if window width is small, maxWidth can be < minWidth!
+
   } else {
-    //rw = word.rectSVG.width();
     rw = w;
   }
 
-  //if rw > maxWidth, then set to maxWidth
-  rw = Math.min(rw, word.getMaxWidth());
+  setWordToXWY(word, rx, rw, ry);
 
-  //in rare cases, if window width is small, maxWidth can be < minWidth!
-  rw = Math.max(rw, word.getMinWidth());
-
-  setWordToXW(word, rx, rw);
 
   return {x:rx, y:ry};
+
+
+}
+
+function moveWordToNewPosition(w, nx, ny) {
+
+  w.tempX = nx;
+  w.tempW = w.rect.w;
+  //w.needsUpdate = true;
+
+  w.rectSVG.x(nx);
+  w.rectSVG.y(ny);
+
+  w.rect = w.rectSVG.bbox();
+  w.leftX = nx; 
+  w.rightX = nx + w.rect.w;
+
+  w.percPos = (w.leftX-edgepadding) / (svgWidth-edgepadding*2);
+
+  w.underneathRect.x(nx);
+  w.underneathRect.y(ny);
+
+  w.text.x(nx + (w.rect.w/2) - (w.text.bbox().w/2)  ); 
+  w.text.y(ny + textpaddingY);
+
+  var handley = ny + ( w.wh / 2 ) - ( handleH / 2 ); 
+  w.leftHandle.x(nx);
+  w.leftHandle.y(handley);
+
+  w.rightHandle.x( w.rightX - handleW );
+  w.rightHandle.y(handley);
+
 }
 
 
-function setWordToXW(word, xval, wval) {
+function setWordToXWY(word, xval, wval, yval) {
 
   word.tempX = xval;
   word.tempW = wval;
   word.needsUpdate = true;
-  //console.log("\n***\nin setWordToXW");
- 
- /* 
-  word.rectSVG.x(xval);
-  word.rectSVG.width(wval);
-  word.rect = word.rectSVG.bbox();
 
-  word.text.x(xval + (wval/2) - (word.text.bbox().w / 2) ); 
-  word.leftX = xval; 
-  word.rightX = xval + wval;
-
-  word.percPos = (word.leftX-edgepadding) / (svgWidth-edgepadding*2);
-  word.leftHandle.x(xval);
-  word.rightHandle.x(word.rightX - handleW);
-
-  word.underneathRect.x(xval);
-  word.underneathRect.width(wval);
-  //console.log("out setWordToXW\n***\n");
- */
-  
 }
 
 function dragWord(x, y, word) {
-
   dragElem = word; 
 
   var dragDir = checkDragDirection(x);
@@ -706,7 +652,6 @@ function checkIfSpaceToMoveUpARow(width, prevRow) {
     cw += prevWord.rect.w;
 
     if (cw > rowWidth) {
-      //console.log("no, width doesn't fit on this row #... " + prevRow.idx);
 
       if (prevRow.idx == 0) { //on first row, so doesn't fit!
         return false;
@@ -719,9 +664,7 @@ function checkIfSpaceToMoveUpARow(width, prevRow) {
 
       return checkIfSpaceToMoveUpARow(pw, rows[prevRow.idx - 1]);
 
-    } else {
-      //console.log("yes, word does fit on this row #... " + prevRow.idx);
-    }
+    } 
   }
 
   return true;
@@ -760,35 +703,6 @@ function checkIfSpaceToMoveDownARow(width, nextRow) {
   return true;
 }
 
-function moveWordToNewPosition(w, nx, ny) {
-
-  updateWords();
-
-  w.rectSVG.x(nx);
-  w.rectSVG.y(ny);
-
-  w.rect = w.rectSVG.bbox();
-  w.leftX = nx; 
-  w.rightX = nx + w.rect.w;
-
-  w.percPos = (w.leftX-edgepadding) / (svgWidth-edgepadding*2);
-
-  w.underneathRect.x(nx);
-  w.underneathRect.y(ny);
-
-  w.text.x(nx + (w.rect.w/2) - (w.text.bbox().w/2)  ); 
-  w.text.y(ny + textpaddingY);
-
-  var handley = ny + ( w.wh / 2 ) - ( handleH / 2 ); 
-  w.leftHandle.x(nx);
-  w.leftHandle.y(handley);
-
-  w.rightHandle.x( w.rightX - handleW );
-  w.rightHandle.y(handley);
-
-  //need to handle updating percentages for links, eg, if we've moved a word with links that have higher slots than any other word previously associated with this row.
-}
-
 function moveWordDownARow(w) {
 
   var currentRowIdx = w.row.idx;
@@ -797,7 +711,7 @@ function moveWordDownARow(w) {
   rows[nextRowIdx].words.unshift(w);
   w.row = rows[nextRowIdx];
   var nx = edgepadding;
-  var ny = w.row.rect.bbox().y + w.row.rect.bbox().h - w.wh;
+  var ny = w.row.ry + w.row.rh - w.wh;
 
   moveWordToNewPosition(w, nx, ny);
 
@@ -805,6 +719,7 @@ function moveWordDownARow(w) {
     calculateMaxSlotForRow(rows[i]);
   }
 
+  return {x:nx, y:ny};
 }
 
 function moveWordUpARow(w) {
@@ -815,8 +730,15 @@ function moveWordUpARow(w) {
   var w = rows[currentRowIdx].words.shift();
   rows[nextRowIdx].words.push(w);
   w.row = rows[nextRowIdx];
-  var nx = svgWidth - edgepadding - w.rectSVG.width();
-  var ny = w.row.rect.bbox().y + w.row.rect.bbox().h - w.wh;
+
+  var nx;
+  var ny = w.row.ry + w.row.rh - w.wh;
+
+  if (w.needsUpdate) {
+    nx = svgWidth - edgepadding - w.tempW;
+  } else {
+    nx = svgWidth - edgepadding - (w.rightX - w.leftX); //w.rectSVG.width();
+  }
 
   moveWordToNewPosition(w, nx, ny);
 
@@ -828,6 +750,9 @@ function moveWordUpARow(w) {
   for (var i = 0; i < rows.length; i++) {
     calculateMaxSlotForRow(rows[i]);
   }
+
+  return {x:nx, y:ny};
+
 }
 
 
@@ -856,10 +781,10 @@ function setUpWordDraggable(word) {
     var returnXY = dragWord(x, word.rect.y, word);
 
     //console.log("in word.draggable");
-  
+
     updateWords();
 
-      redrawLinks(); //actually - only redraw links that moving this word would affect + this row
+    redrawLinks(); //actually - only redraw links that moving this word would affect + this row
     prevX = x;
 
     return returnXY;
@@ -940,7 +865,7 @@ function setUpRowDraggable(row) {
 
   row.dragRect.draggable(function(x, y) {
     var returnVal = dragRow(x, y, row);
-   redrawLinks(); //actually - only redraw links that moving this word would affect + this row?
+    redrawLinks(); //actually - only redraw links that moving this word would affect + this row?
 
     return returnVal;
   });

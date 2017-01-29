@@ -86,7 +86,7 @@ function recalculateRows(percChange) {
 
       var nx = edgepadding + (word.percPos * (svgWidth-edgepadding*2));
 
-      setWordToXW(word, nx, nw);
+      setWordToXWY(word, nx, nw, word.rectSVG.y());
       word.update();
     }
 
@@ -175,7 +175,8 @@ function recalculateRows(percChange) {
 
   } //end loop rows
 
-  realignWords();
+  redrawLinks();
+ // realignWords();
 
 
 }
@@ -186,19 +187,21 @@ function realignWords() {
   for (var i = 0; i < rows.length; i++) {
     var row = rows[i];
 
-    for (var ii = row.words.length-1; ii >= 0 ; ii--) {
-
-      var word = row.words[ii];
-      checkIfCanMoveLeft(word.rectSVG.x(), word.rectSVG.width(), word.rectSVG.y(), word, false);
-      word.update();
-    }
-
+ 
 
     for (var ii = 0; ii < row.words.length; ii++) {
       var word = row.words[ii];
       checkIfCanMoveRight(word.rectSVG.x(), word.rectSVG.width(), word.rectSVG.y(), word, false);
       word.update();
     }
+
+       for (var ii = row.words.length-1; ii >= 0 ; ii--) {
+
+      var word = row.words[ii];
+      checkIfCanMoveLeft(word.rectSVG.x(), word.rectSVG.width(), word.rectSVG.y(), word, false);
+      word.update();
+    }
+
 
   }
 

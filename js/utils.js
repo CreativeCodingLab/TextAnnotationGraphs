@@ -3,11 +3,26 @@ function createTestWords(numWords, minLength, maxLength) {
   var ws = [];
   for (var i = 0; i < numWords; i++) {
 
-    ws.push(new Word(getRandomString(minLength, maxLength), i));
+    //ws.push(new Word(getRandomString(minLength, maxLength), i));
+    ws.push(new Word(getLetterString(i, minLength, maxLength), i));
   }
 
   return ws;
 }
+
+
+function getLetterString(i, minLength, maxLength) {
+ var str = "";
+    var numChars = getRandomInt(minLength, maxLength);
+    for (var ii = 0; ii < numChars; ii++) {
+
+      var ch = String.fromCharCode(97+i);
+      str += ch;
+    }
+
+    return str;
+}
+
 
 function getRandomString(minLength, maxLength) {
  var str = "";
