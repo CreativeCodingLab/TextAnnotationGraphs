@@ -178,36 +178,22 @@ class Word {
       
     //  console.log("\n***\nin update X = " + this.tempX + ", Y = " + this.tempY + ", W = " + this.tempW );
       this.rectSVG.x(this.tempX);
-      //this.rectSVG.y(this.tempY);
       this.rectSVG.width(this.tempW);
      
       this.underneathRect.x(this.tempX);
-      //this.underneathRect.y(this.tempY);
       this.underneathRect.width(this.tempW);
 
       this.rect = this.rectSVG.bbox();
-
-
       
       this.text.x(this.tempX + (this.tempW/2) - (this.text.bbox().w / 2) ); 
-      //this.text.y(this.tempY + textpaddingY);
-
     
       this.leftX = this.tempX; 
       this.rightX = this.tempX + this.tempW;
 
       this.percPos = (this.leftX-edgepadding) / (svgWidth-edgepadding*2);
 
-
-      //var handley = this.tempY + ( this.wh / 2 ) - ( handleH / 2 ); 
-
       this.leftHandle.x(this.tempX);
-      //this.leftHandle.y(handley);
-      
-
       this.rightHandle.x(this.rightX - handleW);
-      //this.rightHandle.y(handley);
-          
     }
     
 

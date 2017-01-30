@@ -79,6 +79,11 @@ function updateLinksOfWord(word) {
 }
 
 
+function updateAllLinks() {
+  for (let item of linkObjs) {
+    item.needsUpdate = true;
+  }
+}
 
 function updateLinks(link) {
 
@@ -470,7 +475,7 @@ function dragLeftHandle(x, y, word) {
 function checkIfCanDragLeftHandleLeft(x, y, word) {
     var rw = Math.max( Math.min(word.getMaxWidth(), (word.rightX - x)), word.getMinWidth() );
 
-    setWordToXWY(word, x, rw, y);
+    setWordToXW(word, x, rw);
 
     var rv = checkIfCanMoveLeft(x, rw, y, word, true);
     rv.y = word.y;
@@ -481,7 +486,7 @@ function checkIfCanDragLeftHandleRight(x, y, word) {
 
     var rw = Math.max( Math.min(word.getMaxWidth(), (word.rightX - x) ), word.getMinWidth() );
 
-    setWordToXWY(word, x, rw, y);
+    setWordToXW(word, x, rw);
 
     var rv = checkIfCanMoveRight(x, rw, y, word, true);
     rv.y = word.y;
@@ -510,7 +515,7 @@ function dragRightHandle(x, y, word) {
 function checkIfCanDragRightHandleLeft(x, y, word) {
     var rw = Math.max( Math.min(word.getMaxWidth(), (x - word.leftX + handleW)), word.getMinWidth() );
 
-    setWordToXWY(word, word.leftX, rw, y);
+    setWordToXW(word, word.leftX, rw);
 
     var rv = checkIfCanMoveLeft(x - (rw - handleW), rw, y, word, false);
     //rv.x = word.leftX + rw - handleW;
@@ -526,7 +531,7 @@ function checkIfCanDragRightHandleRight(x, y, word) {
 
     var rw = Math.max( Math.min(word.getMaxWidth(), (x - word.leftX + handleW) ), word.getMinWidth() );
 
-    setWordToXWY(word, word.leftX, rw, y);
+    setWordToXW(word, word.leftX, rw);
 
     var rv = checkIfCanMoveRight(x - (rw - handleW), rw, y, word, false);
     //rv.x = word.leftX + rw - handleW;
@@ -582,6 +587,9 @@ function checkIfCanMoveRight(x, w, y, word, adjustWidth) {
   }
 
 
+  w = Math.max( Math.min(w, word.getMaxWidth()), word.getMinWidth()) ;
+ 
+
   /* Check to see if the word needs to jump to the next row */
 
   //am i the last word (or only word) in this row?
@@ -609,7 +617,7 @@ function checkIfCanMoveRight(x, w, y, word, adjustWidth) {
   }
 
   /* Set new position of this word */
-  setWordToXWY(word, rx, w, ry);
+  setWordToXW(word, rx, w);
 
   /* Does it push into the next word? */
   posInRow = word.row.words.indexOf(word);
@@ -728,7 +736,9 @@ function checkIfCanMoveLeft(x, w, y, word, adjustWidth) {
     rw = w;
   }
 
-  setWordToXWY(word, rx, rw, ry);
+  //rw = Math.max( Math.min(rw, word.getMaxWidth()), word.getMinWidth()) ;
+ 
+  setWordToXW(word, rx, rw);
 
 
   return {x:rx, y:ry};
@@ -740,8 +750,7 @@ function moveWordToNewPosition(w, nx, ny) {
 
   w.tempX = nx;
   w.tempW = w.rect.w;
-  //w.needsUpdate = true;
-
+  
   w.rectSVG.x(nx);
   w.rectSVG.y(ny);
 
@@ -764,10 +773,12 @@ function moveWordToNewPosition(w, nx, ny) {
   w.rightHandle.x( w.rightX - handleW );
   w.rightHandle.y(handley);
 
+  w.needsUpdate = true;
+
 }
 
 
-function setWordToXWY(word, xval, wval, yval) {
+function setWordToXW(word, xval, wval) {
 
   word.tempX = xval;
   word.tempW = wval;
@@ -967,7 +978,7 @@ function dragRow(x, y, row) {
 
   for (var i = 0; i < row.words.length; i++) {
     setWordToY(row.words[i], row.lineBottom.bbox().y - row.words[i].rectSVG.height() );
-    updateLinksOfWord(row.words[i]);
+    //updateLinksOfWord(row.words[i]);
   }
 
   row.baseHeight = row.lineBottom.y() - (textpaddingY*2) - texts.wordText.maxHeight;
@@ -986,13 +997,12 @@ function dragRow(x, y, row) {
     nextrow.lineTop.y(row.rect.bbox().y + row.rect.bbox().h + 5);
       
     for (var i = 0; i < nextrow.words.length; i++) {
-      updateLinksOfWord(nextrow.words[i]);
+      //updateLinksOfWord(nextrow.words[i]);
     }
   }
 
-  //redrawLinks();
-  //updateWords();
-  
+  //hmm... what about links that pass through the row, but aren't attached to any word on this row?
+  updateAllLinks(); //this works for now
 
   var returnVal = {x:row.dragRect.bbox().x, y:y}; 
 
