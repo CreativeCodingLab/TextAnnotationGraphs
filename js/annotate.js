@@ -31,8 +31,52 @@ class Link {
           this.te = types.LINK;
         }       
 
+        this.arrow1Style; 
+        this.arrow2Style;
+
+        this.arrow1 = null;
+        this.arrow2 = null;
+        
+        if (this.direction == directions.FORWARD) {
+          this.arrow1Style = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
+          this.arrow2Style = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#000000', 1.0));
+;
+        } else if (this.direction == directions.BACKWARD) {
+          this.arrow1Style = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#000000', 1.0)); 
+          this.arrow2Style = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
+        } else if (this.direction == directions.BOTH) {
+          this.arrow1Style = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#000000', 1.0)); 
+          this.arrow2Style = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#000000', 1.0)); 
+        } else { //NONE
+          this.arrow1Style = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
+          this.arrow2Style = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
+        }
+
+        
         this.x1percent = 0.0;
         this.x2percent = 0.0;
+
+
+        this.needsUpdate = true;
+
+        this.numLineSegments = 0;
+        this.polylines = [];
+        this.polylineSVGs = []; //null;
+        this.labels = [];
+        this.labelRectSVGs = [];
+        this.labelTextSVGs = [];
+       
+        //this.polyline = null;
+        //this.polylineSVG = null;
+        this.label = null;
+        this.labelRectSVG = null;
+        this.labelTextSVG = null;
+       //this.arrow1SVG = null;
+        //this.arrow2SVG = null;
+
+  
+
+
 
         //this.rootMinWord
         //this.rootMaxWord
@@ -121,6 +165,8 @@ class Word {
          
         
         //used for calculating positions during drag
+        //this.needsUpdate = true;
+     
         this.tempX = 0.0;
         this.tempW = 0.0;
         this.tempY = 0.0;

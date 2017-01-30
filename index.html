@@ -136,19 +136,23 @@ var rows = []; //list of Row object, each of those has a list of Word objects
 
 
 // 1. create Words and Links objects (in utils.js) */
-var wordObjs = createTestWords(12, 5, 11);
+var wordObjs = createTestWords(13, 5, 11);
 //var wordObjs = [];
 //wordObjs.push(new Word("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0));
 //wordObjs.push(new Word("bbbbbbbbbbbbbbbbbbbbbbbbbb", 1));
 
 
-//var linkObjs = createTestLinks(0, 0, 0); 
-var linkObjs = createTestLinks(3, 3, 3); 
+//var linkObjs = createTestLinks(1,1,0); 
+var linkObjs = createTestLinks(4,4,4); 
+
 
 // 2. draw words and boxes around words
 drawWords(wordObjs);
 
 // 3. draw each of the links
+var hidePercentage = 3;
+var hidePercentage2 = 7;
+
 drawLinks(linkObjs);
 
 var prevWidth = svgWidth;

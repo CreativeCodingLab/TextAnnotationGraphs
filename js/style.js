@@ -40,7 +40,7 @@ class FillStyle {
   // only arg that's necessary is the first (fill color or Gradient object)
 
 
-  constructor(fill, opacity, lineStyle) {
+  constructor(fill, opacity = 1.0, lineStyle) {
 
     this.fill = fill;
 
@@ -65,10 +65,10 @@ class FillStyle {
 
   makeStyleString(f, o, ls) {
     
-    var ss = "fill:" + f + ";opacity:" + o + ";";
+    var ss = "fill:" + f + ";opacity:" + o + ";" + ";display:inline;";
 
     if (ls != null) {
-      ss += "stroke:" + ls.strokeStr + ";stroke-width:"+ls.width+";stroke-opacity:"+ls.opacity+";stroke-dasharray:"+ ls.dasharray + ";";
+      ss += "stroke:" + ls.strokeStr + ";stroke-width:"+ls.width+";stroke-opacity:"+ls.opacity+";stroke-dasharray:"+ ls.dasharray + ";display:inline;";
     }
 
     return ss;
@@ -112,19 +112,30 @@ class ArrowStyle {
 
     this.fillStyle = fillStyle;
     this.shapeFunc = shapeFunc;
+    this.path = null;
+    this.pathStr = null;
 
  }
 
-  draw(svg, x, y){
-      var path = this.shapeFunc(svg, x, y, this.xoff, this.yoff, this.fillStyle);  
-        return path;
+  update(x, y) {
+    this.pathStr = this.shapeFunc(x, y, this.xoff, this.yoff);
+    this.path.plot(this.pathStr);
+    this.path.style(this.fillStyle.style);
+    return this.path; 
+  }
+
+  draw(svg, x, y) {
+    this.pathStr = this.shapeFunc(x, y, this.xoff, this.yoff);
+    this.path = svg.path(this.pathStr);
+    this.path.style(this.fillStyle.style);
+    return this.path;
   }
 
   toString() {
     return "cx:" + (this.xoff) + ";cy:" +(this.yoff) + ";" + this.fillStyle.style;
   }
 }
- // "cx:" + x + ";cy:" +(y-3) + ";" + styles.arrowFill.style
+// "cx:" + x + ";cy:" +(y-3) + ";" + styles.arrowFill.style
 
 
 //TODO - I think the arrows / end-of-link glyphs should be defined in here as well - the LineStyle class should let the user compose strokes and arrow look+feel (right now just stroke css attrs) 
@@ -134,7 +145,7 @@ class LineStyle {
   //example 3: new LineStyle('#0000ff'); //blue line, width 1, opacity 1, no dash array
   // only arg that's necessary is the first (color or Gradient object)
 
-  constructor(stroke, width, opacity, dasharray) {
+  constructor(stroke, width, opacity = 1.0, dasharray) {
 
     this.stroke = stroke;
 
@@ -153,10 +164,6 @@ class LineStyle {
     this.hover = '' + this.style;
     this.select = '' + this.style;
 
-    this.upArrow = defaultUpArrow;
-    this.downArrow = defaultDownArrow;
-
-    //console.log("upArrow = " + this.upArrow.toString());
   }
 
 
@@ -168,7 +175,7 @@ class LineStyle {
     }
   }
 
-  
+
   selecting(s, w, o, da) {
     if (s instanceof LinearGradient) {
       this.select = this.makeStyleString("url(#" + s.id + ")", w, o, da);
@@ -182,26 +189,26 @@ class LineStyle {
   }
 
   makeStyleString(ss, w, o, da) {
-    return "fill:none;stroke:" + ss + ";stroke-width:" + w + ";stroke-opacity:" + o +";stroke-dasharray:"+ da + ";";
+    return "fill:none;stroke:" + ss + ";stroke-width:" + w + ";stroke-opacity:" + o +";stroke-dasharray:"+ da + ";opacity:1.0";
   }
-  
+
   clone() {
     return new LineStyle(this.stroke, this.width, this.opacity, this.dasharray);
   }
 
-  
+
 
 
   /* 
   //for updating a linear gradient with two stops
   update(a, b) {
 
-    if (this.stroke instanceof LinearGradient) {
-      var s = this.stroke.gradient.get(0);
-      var e = this.stroke.gradient.get(1);
+  if (this.stroke instanceof LinearGradient) {
+  var s = this.stroke.gradient.get(0);
+  var e = this.stroke.gradient.get(1);
 
-      var uc1 = chroma.mix(this.stroke.c1, this.stroke.c2, a).hex();
-      var uc2 = chroma.mix(this.stroke.c1, this.stroke.c2, b).hex();
+  var uc1 = chroma.mix(this.stroke.c1, this.stroke.c2, a).hex();
+  var uc2 = chroma.mix(this.stroke.c1, this.stroke.c2, b).hex();
 
       console.log(a +"%: uc1 = " + uc1);
       console.log(b +"%: uc2 = " + uc2);
@@ -253,7 +260,7 @@ class TextStyle {
     this.family = fontfamily;
     this.size = fontsize;
 
-    this.style = { 'family':this.family, 'size':this.size };
+    this.style = { 'family':this.family, 'size':this.size, 'display':'inline' };
    
     this.maxHeight = getMaxTextHeightForFont("Xlj", this.style);
     this.descent = getDescentForFont("Xlj", this.style);
@@ -271,15 +278,16 @@ class TextStyle {
 }
 
 //arrow paths
-var circleArrowPath = (svg, x, y, xoff, yoff, fillStyle) => {
-  
-  var path = svg.circle(5);
-  path.style("cx:" + (x+xoff) + ";cy:" +(y+yoff) + ";" + fillStyle.style);
-
-  return path;
+var circleArrowPath = ( x, y, xoff, yoff, fillStyle) => {
+ 
+  var r = 3;
+  var ux = x+xoff;
+  var uy = y+yoff;
+  var arrowStr = 'M '+ux+','+uy+' m -'+r+', 0 a '+r+','+r+' 0 1,0 '+(r*2)+',0 a '+r+','+r+' 0 1,0 -'+(r*2)+',0'; 
+  return arrowStr; 
 }
 
-var downArrowPath = (svg, x, y, xoff, yoff, fillStyle) => {
+var downArrowPath = (x, y, xoff, yoff) => {
 
   var arrowH = 5; 
   var arrowMH = 5;
@@ -294,18 +302,16 @@ var downArrowPath = (svg, x, y, xoff, yoff, fillStyle) => {
   var a4 = 'L' + (ux+arrowW) + ',' + (uy-arrowH);
   var a5 = 'z';
 
-  var arrow = a1 + a2 + a3 + a4;
+  var arrowStr = a1 + a2 + a3 + a4;
 
-  var path = svg.path(arrow);
-  path.style(fillStyle.style);
-
-  return path;
+  return arrowStr;
 }
 
 
+
 //figure out best place to put this
-var defaultUpArrow = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
-var defaultDownArrow = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#000000', 1.0));
+//var defaultUpArrow = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
+//var defaultDownArrow = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#000000', 1.0));
   
 
 //set up link styles and word styles

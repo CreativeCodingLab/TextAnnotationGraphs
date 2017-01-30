@@ -68,6 +68,70 @@ function mover(word){
 
 }
 
+function updateLinksOfWord(word) {
+
+    var arr = [];
+    getAttachedLinks(word, arr); 
+      
+    for (let item of arr) {
+      item.needsUpdate = true;
+    }
+}
+
+
+
+function updateLinks(link) {
+
+    var arr = [link];
+    getAttachedLinks(link, arr); 
+      
+    for (let item of arr) {
+     //console.log(item.toString());
+     item.needsUpdate = true;
+    }
+
+ 
+}
+
+
+/** Update words that have been dragged or pushed by a dragged word, and collect the links that need to be updated **/
+function updateWords() {
+
+  var arr = [];
+
+  for (var i = 0; i < wordObjs.length; i++) {
+    var w = wordObjs[i];
+
+    if (w.needsUpdate == true) {
+      w.update();
+      w.needsUpdate = false; 
+  
+      getAttachedLinks(w, arr); 
+      
+      for (let item of arr) {
+        item.needsUpdate = true;
+      }
+    }
+  }
+}
+
+
+function getAttachedLinks(e, arr) {
+
+  for (var i = 0; i < e.parentsL.length; i++) {
+    //console.log(e.parentsL[i]);
+
+    arr.push(e.parentsL[i]);
+    getAttachedLinks(e.parentsL[i], arr);
+  }
+
+  for (var i = 0; i < e.parentsR.length; i++) {
+
+    arr.push(e.parentsR[i]);
+    getAttachedLinks(e.parentsR[i], arr);
+  }
+}
+
 
 function mout(word){
   // console.log("in mout for " + word.val);
@@ -193,7 +257,8 @@ function addDragStartingAndEndingListeners(elem) {
     
       //realignWords(); //overkill? this is kind of a hack - shouldn't need it - but right now sometimes words get stuck off a row when moving words to the right... not sure why, shouldn't happen!
 
-  
+     //redrawLinks(true);
+
       dragElem = null;
 
     
@@ -203,27 +268,91 @@ function addDragStartingAndEndingListeners(elem) {
 
 }
 
-function updateWords() {
 
-  for (var i = 0; i < wordObjs.length; i++) {
-    var w = wordObjs[i];
+function dragArrow1 (lo, arrowSVG, arrowInfo ) {
 
-    if (w.needsUpdate == true) {
-      //console.log(w.val + " needs updating");
-      w.update();
-      w.needsUpdate = false; 
-    }
-  }
+  addDragStartingAndEndingListeners(arrowSVG);
+
+  arrowSVG.draggable(function(x, y) {
+    return manageDrag(arrowSVG, x, y, lo, lo.arrow1);
+  });
 }
 
+
+function dragArrow2 (lo, arrowSVG, arrowInfo ) {
+
+  addDragStartingAndEndingListeners(arrowSVG);
+
+  arrowSVG.draggable(function(x, y) {
+    return manageDrag(arrowSVG, x, y, lo, lo.arrow2);
+  });
+}
+
+
+ 
+  function manageDrag(arrowSVG, x, y, lo, arrowInfo) {
+
+    var leftX = arrowInfo.leftX;
+    var rightX = arrowInfo.rightX;
+    var linkWidth = ( rightX - leftX );
+    var side = arrowInfo.side;
+    var word = arrowInfo.word;
+
+    if (side == sides.LEFT) {
+      var xPos = (x - leftX) + arrowW; 
+      var percentage = xPos / (linkWidth/2);
+      var ux = x;
+
+      if (percentage < 0.0) {
+        percentage = 0.0;
+        ux = leftX - arrowW;
+      } else if (percentage > 2.0) {
+        percentage = 2.0;
+        ux = rightX - arrowW;
+      }
+    } else if (side == sides.RIGHT) { 
+
+      var xPos = linkWidth - ((x - leftX) + arrowW); 
+
+      var percentage = xPos / (linkWidth/2);
+      var ux = x;
+
+      if (percentage < 0.0) {
+        percentage = 0.0;
+        ux = rightX - arrowW;
+      } else if (percentage > 2.0) {
+        percentage = 2.0;
+        ux = leftX - arrowW;
+      }
+    }
+
+    if (word == lo.leftWord) {
+      lo.x1percent = percentage;
+    } else {
+      lo.x2percent = percentage;
+    }
+
+    updateLinks(lo);
+
+    redrawLinks(false);
+    
+    return { x:ux, y: arrowSVG.bbox().y }
+  }
+
+
+/*
 function dragArrow (arrow, link, word, side, leftX, rightX) {
 
   addDragStartingAndEndingListeners(arrow);
+
 
   arrow.draggable(function(x, y) {
 
     var linkWidth = ( (rightX) - (leftX) );
 
+     console.log(linkWidth);
+
+    
     if (side == sides.LEFT) {
       var xPos = (x - leftX) + arrowW; 
       //console.log("x = " + x + ", xPos = " + xPos);
@@ -260,11 +389,16 @@ function dragArrow (arrow, link, word, side, leftX, rightX) {
       link.x2percent = percentage;
     }
 
-    redrawLinks();
+    updateLinks(link);
 
+    redrawLinks();
+    
     return { x:ux, y: arrow.bbox().y }
+    
+    //return { x:x, y: arrow.bbox().y }
   });
 }
+*/
 
 function checkDragDirection(x) {
 
@@ -292,7 +426,7 @@ function setUpLeftHandleDraggable(leftHandle, rect, text, word, i) {
   
     updateWords();
   
-    redrawLinks();//actually - only redraw links that moving this word would affect + this row
+    redrawLinks(false);//actually - only redraw links that moving this word would affect + this row
     prevX = x;
     return returnVal;
   });
@@ -310,7 +444,7 @@ function setUpRightHandleDraggable(rightHandle, rect, text, word, i) {
 
        updateWords();
   
-    redrawLinks(); //actually - only redraw links that moving this word would affect + this row
+    redrawLinks(false); //actually - only redraw links that moving this word would affect + this row
     prevX = x;
     return returnVal;
   });
@@ -339,6 +473,7 @@ function checkIfCanDragLeftHandleLeft(x, y, word) {
     setWordToXWY(word, x, rw, y);
 
     var rv = checkIfCanMoveLeft(x, rw, y, word, true);
+    rv.y = word.y;
     return rv;
   }
 
@@ -349,6 +484,8 @@ function checkIfCanDragLeftHandleRight(x, y, word) {
     setWordToXWY(word, x, rw, y);
 
     var rv = checkIfCanMoveRight(x, rw, y, word, true);
+    rv.y = word.y;
+   
     return rv;
 }
 
@@ -376,8 +513,12 @@ function checkIfCanDragRightHandleLeft(x, y, word) {
     setWordToXWY(word, word.leftX, rw, y);
 
     var rv = checkIfCanMoveLeft(x - (rw - handleW), rw, y, word, false);
-    rv.x = word.leftX + rw - handleW;
+    //rv.x = word.leftX + rw - handleW;
+    rv.x = word.tempX + word.tempW - handleW;
+    rv.y = word.y;
+
     return rv;
+    //return {x, y:word.rightHandle.bbox().y};
   }
 
 
@@ -388,7 +529,12 @@ function checkIfCanDragRightHandleRight(x, y, word) {
     setWordToXWY(word, word.leftX, rw, y);
 
     var rv = checkIfCanMoveRight(x - (rw - handleW), rw, y, word, false);
-    rv.x = word.leftX + rw - handleW;
+    //rv.x = word.leftX + rw - handleW;
+   // rv.x = word.rightX - handleW;
+      rv.x = word.tempX + word.tempW - handleW;
+      rv.y = word.y;
+    // return {x, y:word.rightHandle.bbox().y};
+
     return rv;
 }
 
@@ -705,6 +851,8 @@ function checkIfSpaceToMoveDownARow(width, nextRow) {
 
 function moveWordDownARow(w) {
 
+  // console.log("in moveWordDownARow:, word row was... = " + w.row.idx);
+  
   var currentRowIdx = w.row.idx;
   var nextRowIdx = w.row.idx + 1;
   var w = rows[currentRowIdx].words.pop();
@@ -712,6 +860,7 @@ function moveWordDownARow(w) {
   w.row = rows[nextRowIdx];
   var nx = edgepadding;
   var ny = w.row.ry + w.row.rh - w.wh;
+
 
   moveWordToNewPosition(w, nx, ny);
 
@@ -760,19 +909,6 @@ function setUpWordDraggable(word) {
 
   addDragStartingAndEndingListeners(word.rectSVG);
 
-  /*
-     var aaa = function(x,y) {
-     rowOffsetWord = word;
-
-     var returnXY = dragWord(x, word.rect.y, word);
-
-     redrawLinks(); //actually - only redraw links that moving this word would affect + this row
-     prevX = x;
-
-     return returnXY;
-     }
-     */
-
   var dragEvent = word.rectSVG.draggable(function(x,y) { 
     //return aaa(x,y);
 
@@ -784,15 +920,12 @@ function setUpWordDraggable(word) {
 
     updateWords();
 
-    redrawLinks(); //actually - only redraw links that moving this word would affect + this row
+    redrawLinks(false); //actually - only redraw links that moving this word would affect + this row
     prevX = x;
 
     return returnXY;
 
   });
-
-  //var dragEvent = word.rectSVG.draggable(bbb, 1000);
-  //var dragEvent = bbb;
 
 }
 
@@ -828,8 +961,13 @@ function dragRow(x, y, row) {
     row.lineBottom.y(y + dragRectSide + dragRectMargin);
   }
 
+  row.ry = row.rect.y();
+  row.rh = row.rect.height();
+    
+
   for (var i = 0; i < row.words.length; i++) {
     setWordToY(row.words[i], row.lineBottom.bbox().y - row.words[i].rectSVG.height() );
+    updateLinksOfWord(row.words[i]);
   }
 
   row.baseHeight = row.lineBottom.y() - (textpaddingY*2) - texts.wordText.maxHeight;
@@ -841,8 +979,20 @@ function dragRow(x, y, row) {
     nextrow.rect.y(row.rect.bbox().y + row.rect.bbox().h + 5);
     nextrow.rect.height( nextrow.dragRect.bbox().y - y - (5));
 
+    nextrow.ry = nextrow.rect.y();
+    nextrow.rh = nextrow.rect.height();
+    
+
     nextrow.lineTop.y(row.rect.bbox().y + row.rect.bbox().h + 5);
+      
+    for (var i = 0; i < nextrow.words.length; i++) {
+      updateLinksOfWord(nextrow.words[i]);
+    }
   }
+
+  //redrawLinks();
+  //updateWords();
+  
 
   var returnVal = {x:row.dragRect.bbox().x, y:y}; 
 
@@ -865,7 +1015,7 @@ function setUpRowDraggable(row) {
 
   row.dragRect.draggable(function(x, y) {
     var returnVal = dragRow(x, y, row);
-    redrawLinks(); //actually - only redraw links that moving this word would affect + this row?
+    redrawLinks(false); //actually - only redraw links that moving this word would affect + this row?
 
     return returnVal;
   });
