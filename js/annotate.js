@@ -389,6 +389,7 @@ function traceBackToWordObj(link, type, word, attach) {
 }
 
 
+//TODO - should there be a global strategy for each class of link types? for the different styles of links? for each parent word/link? or for every single individual link??? E.g., could a work support links with different strategies, or would that become cluttered??
 function calcAttachPoints(link, strategy)  {
 
   var rootS, rootE;

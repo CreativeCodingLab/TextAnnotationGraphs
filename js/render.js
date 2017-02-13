@@ -228,9 +228,6 @@ function realignWords() {
       checkIfCanMoveRight(word.rectSVG.x(), word.rectSVG.width(), word.rectSVG.y(), word, false);
       word.update();
     }
-
-    
-    
   }
 
   updateWords();
@@ -245,7 +242,19 @@ function removeLastRow() {
   rows[rows.length-1].lineBottom.remove();
   rows[rows.length-1].dragRect.remove();
   rows.pop();
+
+  
+  changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
+
 }
+
+function changeSizeOfSVGPanel(w, h) {
+
+  svgWidth = w;
+  svgHeight = h;
+  draw.size(w, h);
+}
+
 
 function appendRow() {
 
@@ -264,6 +273,8 @@ function appendRow() {
   }
 
   drawRow(row);
+
+  changeSizeOfSVGPanel(window.innerWidth - 16, row.lineBottom.y() + 1);
 
 }
 

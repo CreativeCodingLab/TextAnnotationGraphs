@@ -146,6 +146,11 @@ drawWords(wordObjs);
 // 3. draw each of the links
 drawLinks(linkObjs);
 
+
+ changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
+
+
+
 var prevWidth = svgWidth;
 // init objects/listeners...
 window.onload = function() {
@@ -157,11 +162,16 @@ window.onload = function() {
 
       svgWidth = (window.innerWidth - 16) * 0.665;
 
-      draw.size(svgWidth, draw.height());
+      changeSizeOfSVGPanel(svgWidth, draw.height());
+
+      //draw.size(svgWidth, draw.height());
     }
     else {
       svgWidth = (window.innerWidth - 16)
-      draw.size(svgWidth, draw.height());
+      changeSizeOfSVGPanel(svgWidth, draw.height());
+
+
+     //   draw.size(svgWidth, draw.height());
 
     }
       

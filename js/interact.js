@@ -993,7 +993,6 @@ function dragRow(x, y, row) {
     nextrow.ry = nextrow.rect.y();
     nextrow.rh = nextrow.rect.height();
     
-
     nextrow.lineTop.y(row.rect.bbox().y + row.rect.bbox().h + 5);
       
     for (var i = 0; i < nextrow.words.length; i++) {
@@ -1003,6 +1002,12 @@ function dragRow(x, y, row) {
 
   //hmm... what about links that pass through the row, but aren't attached to any word on this row?
   updateAllLinks(); //this works for now
+
+
+  //update size of svg window if necessary
+  if (row.idx == rows.length - 1) {
+   changeSizeOfSVGPanel(window.innerWidth - 16, row.lineBottom.y() + 1)
+  }
 
   var returnVal = {x:row.dragRect.bbox().x, y:y}; 
 
