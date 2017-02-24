@@ -180,8 +180,11 @@ class Word {
       this.rect = this.rectSVG.bbox();
       
       this.text.x(this.tempX + (this.tempW/2) - (this.text.bbox().w / 2) ); 
-      this.tagtext.x(this.tempX + (this.tempW/2) - (this.tagtext.bbox().w / 2) ); 
-    
+      
+      if (this.tag != null) {
+        this.tagtext.x(this.tempX + (this.tempW/2) - (this.tagtext.bbox().w / 2) ); 
+      }
+
       this.leftX = this.tempX; 
       this.rightX = this.tempX + this.tempW;
 
