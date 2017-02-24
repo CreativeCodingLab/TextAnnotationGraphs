@@ -764,7 +764,22 @@ function moveWordToNewPosition(w, nx, ny) {
   w.underneathRect.y(ny);
 
   w.text.x(nx + (w.rect.w/2) - (w.text.bbox().w/2)  ); 
-  w.text.y(ny + textpaddingY);
+  w.text.y(ny + textpaddingY*2 - texts.wordText.descent);
+
+
+
+  //TODO - make these match original position - the Y pos for text is off for tags and words - why isn't the text descent needed here?? ny and w.wy should be (and is!) the same - but the text y pos is a few pixels off! 
+  //Looks like the entire row size jumps one pixel when adding a new row... think this may cause the 1 px differentce
+  w.tagtext.x(nx + (w.rect.w/2) - (w.tagtext.bbox().w/2)  ); 
+  w.tagtext.y(ny + textpaddingY/2);// - texts.tagText.descent);
+
+  console.log("ny = " + ny);
+  console.log("w.wy = " + w.wy);
+  console.log("w.text.y = " + w.text.y());
+
+
+
+
 
   var handley = ny + ( w.wh / 2 ) - ( handleH / 2 ); 
   w.leftHandle.x(nx);

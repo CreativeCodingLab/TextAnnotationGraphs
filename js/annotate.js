@@ -3,8 +3,8 @@ class Link {
     constructor(s, e, direction, style, textStr, textStyle) {
         this.s = s;
         this.e = e;
+        this.id = `(${this.s.id}, ${this.e.id})`;
         
-        //directions and types can be different things
         this.direction = direction; //see enums.directions
         this.style = style;
 
@@ -16,9 +16,11 @@ class Link {
         this.parentsR = [];
         this.h = 0; //which slot is it in
         this.lines = [];
-        this.id = `(${this.s.id}, ${this.e.id})`;
 
-        this.type = "LINK";
+        this.rootMinWord = null;
+        this.rootMaxWord = null;
+
+
         if (this.s instanceof Word) {
           this.ts = types.WORD;
         } else if (this.s instanceof Link) {
@@ -66,21 +68,10 @@ class Link {
         this.labelRectSVGs = [];
         this.labelTextSVGs = [];
        
-        //this.polyline = null;
-        //this.polylineSVG = null;
         this.label = null;
         this.labelRectSVG = null;
         this.labelTextSVG = null;
-       //this.arrow1SVG = null;
-        //this.arrow2SVG = null;
 
-  
-
-
-
-        //this.rootMinWord
-        //this.rootMaxWord
-        
       
     }
 
@@ -148,18 +139,20 @@ class Word {
         this.id = `(${this.val}, ${this.idx})`;
         this.percPos = 0.0; //this is used to indicate where along the row the word is positioned, used when resizing the browser's width, or when popping open a right panel.
 
-        this.type = "WORD";
-
         this.isSelected = false;
         this.isHovered = false;
         this.isDragging = false;
         
         //variables created in first render...
-        //this.row; //this is a row object, for num do: this.row.idx
+        //this.row; //this is a row object, for row num do: this.row.idx
         this.rectSVG = null; //the actual svg element 
         this.rect = null; //the bbox of the svg element
         this.underneathRect = null; //not clickable, but solid rect on which other word parts are placed (text, handles, clickable rect)
         this.text = null; //the svg text
+        this.tagtext = null; //the svg text for a tag
+
+        this.maxtextw = null; //either the word text width, or the tag text with, whichever is wider
+
         this.leftHandle = null; //the left draggable handle to resize word
         this.rightHandle = null; //the right draggable handle to resize word
          
@@ -186,6 +179,7 @@ class Word {
       this.rect = this.rectSVG.bbox();
       
       this.text.x(this.tempX + (this.tempW/2) - (this.text.bbox().w / 2) ); 
+      this.tagtext.x(this.tempX + (this.tempW/2) - (this.tagtext.bbox().w / 2) ); 
     
       this.leftX = this.tempX; 
       this.rightX = this.tempX + this.tempW;
