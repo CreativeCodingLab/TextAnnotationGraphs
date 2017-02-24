@@ -52,7 +52,7 @@ user-select: none;
 
 <script type="text/javascript">
 
-
+/* a lot of these global vars should be wrapped eventually */
 
 var debug = true;
 
@@ -133,27 +133,164 @@ var link2link_strategy = strategies.CLOSEST; //CLOSEST sometimes causes overlaps
 
 var rows = []; //list of Row object, each of those has a list of Word objects
 
-
-// 1. create Words and Links objects (in utils.js) */
-var wordObjs = createTestWords(15, 1, 15);
-
-//var linkObjs = createTestLinks(1,1,0); 
-var linkObjs = createTestLinks(4,4,4); 
-
-// 2. draw words and boxes around words
-drawWords(wordObjs);
-
-// 3. draw each of the links
-drawLinks(linkObjs);
-
-
- changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
+</script>
 
 
 
-var prevWidth = svgWidth;
+<script>
+
+/* these should eventually be made non-global too */
+var wordObjs = [], linkObjs = [];
+
 // init objects/listeners...
 window.onload = function() {
+  var prevWidth = svgWidth;
+
+
+
+  /* load JSON file */
+  var json = './data/angus-ex.json';
+
+  function loadJSON(path, callback) {
+      var httpRequest = new XMLHttpRequest();
+      httpRequest.onreadystatechange = function() {
+          if (httpRequest.readyState === 4) {
+              if (httpRequest.status === 200) {
+                  var data = JSON.parse(httpRequest.responseText);
+                  if (callback) callback(data);
+              }
+          }
+      };
+      httpRequest.open('GET', path);
+      httpRequest.send(); 
+  }
+
+  /* parse json file*/
+  loadJSON(json, parseData);
+
+  /** init words and links from json data
+   *  - first hierarchy:  documents--sentences--words (+associated syntax tags)
+   *  -                   edges connect parts of speech
+   *  - second hierarchy: events--paths | arguments--themes
+   */
+  function parseData(data) {
+
+    let datamap = {}; // map Word instances to indices in data
+
+    for (var i in data.documents) {
+        let doc = data.documents[i];
+
+        doc.sentences.forEach( function(sentence, j) {
+            // generate words
+            sentence.words.forEach( function(word, k) {
+                let idx = wordObjs.length;
+                let w = new Word(word, idx);
+                w.documentId = i;
+                w.syntaxData = {
+                  tag: sentence.tags[k],
+                  lemma: sentence.lemmas[k],
+                  entity: sentence.entities[k]
+                }
+                wordObjs.push(w);
+                datamap[i + '-' + j + '-' + k + '-' + word] = idx;
+            })
+
+            // create links from syntax info
+            let syntaxType = "stanford-collapsed"; /* "stanford-basic */
+            sentence.graphs[syntaxType].edges.forEach(function(edge) {
+
+                let sourceWord = sentence.words[edge.source],
+                    destinationWord = sentence.words[edge.destination];
+
+                let sourceIndex = datamap[i + '-' + j + '-' + edge.source + '-' + sourceWord],
+                    destinationIndex = datamap[i + '-' + j + '-' + edge.destination + '-' + destinationWord];
+
+                let style;
+                switch (edge.relation) {
+                  case 'nsubj':
+                    style = styles.gradientLine1; break;
+                  case 'dobj':
+                    style = styles.gradientLine2; break;
+                  default:
+                    style = styles.noneLine; break;
+                }
+
+                linkObjs.push( new Link(
+                  wordObjs[sourceIndex],
+                  wordObjs[destinationIndex], 
+                  sourceIndex < destinationIndex ? 1 : -1, 
+                  style, 
+                  edge.relation, 
+                  texts.linkText
+                ) );
+            })
+        })
+    }
+
+    // create links from event info
+    data.mentions.forEach((mention, i) => {
+        console.log('\tmention triggered by "' + mention.trigger.text + '"');
+        console.log('\tevent', mention.trigger.labels[0]);
+        console.log('\tid', mention.trigger.id);
+        console.log('\tinterval', mention.tokenInterval.start, mention.tokenInterval.end, '[range of words influenced by event)');
+
+        console.log('\n\targuments:');
+        for (var a in mention.arguments) {
+            console.log('\t\t' + a);
+
+            function listArguments(arg, count) {
+                let space = new Array(count).join('\t');
+                console.log(space + ' text', arg.text);
+                console.log(space + ' label', arg.labels[0]);
+                console.log(space + ' id', arg.id);
+                if (arg.arguments) {
+                    console.log(space + ' arguments:')
+                }
+                for (var i in arg.arguments) {
+                    console.log(space + '\t' + i);
+                    arg.arguments[i].forEach(l => listArguments(l, count+2));
+                }                    
+            }
+
+            mention.arguments[a].forEach(l => listArguments(l, 4));
+        }
+
+        console.log('\n\tpaths:');
+        for (var p in mention.paths) {
+            console.log('\t\t' + p);
+            for (var pathId in mention.paths[p]) {
+                console.log('\t\t\t id ' + pathId);
+                mention.paths[p][pathId].forEach(path => {
+                    let words = data.documents[mention.document].sentences[mention.sentence].words;
+                    console.log('\t\t\t\t edge', words[path.source] + ' -> ' + path.relation + ' -> ' + words[path.destination]);
+                })
+            }
+        }
+    })
+
+
+    linkObjs.sort(function(a, b) {
+      var d1 = Math.abs(a.s.idx - a.e.idx);
+      var d2 = Math.abs(b.s.idx - b.e.idx);
+
+      return d1 - d2; 
+    });
+
+    linkObjs.forEach(createLink);
+
+
+    // 2. draw words and boxes around words
+    drawWords(wordObjs);
+
+    // 3. draw each of the links
+    drawLinks(linkObjs);
+
+    changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
+
+  }
+
+
+  /* init graph layout object */
   var Panel = new GraphLayout();
 
   function svgResize() {
