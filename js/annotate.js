@@ -124,6 +124,7 @@ class Word {
     constructor(val, idx) {
         this.val = val;
         this.idx = idx;
+        this.tag = null;
         this.h = 0; //num slots
         this.ww = 0;
         this.wh = 0;

@@ -350,11 +350,12 @@ function setUpRowsAndWords(words) {
     word.row = row;
     word.tw = wh.w;
 
-    //TODO - check if word has an associated tag
-    if (twh.w > word.tw) {
-      word.tw = twh.w; //think tw is ONLY used for checking minWidth, so this should be ok
+    if (word.tag != null) {
+      if (twh.w > word.tw) {
+        word.tw = twh.w; //think tw is ONLY used for checking minWidth, so this should be ok
+      }
     }
-    
+
     word.th = texts.wordText.maxHeight; //guaranteed to be the same for all words
 
     x += wh.w + (textpaddingX*2) + wordpadding;
@@ -386,29 +387,36 @@ function setUpRowsAndWords(words) {
       word.h = 0; //the number of link levels is 0 for the word
 
       var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
-      var tagtextwh = getTextWidthAndHeight("TAGABCDEF", texts.tagText.style);
-  
-      //make sure that we are using the longest word to set the width (if a tag is present in this word)
       word.maxtextw = textwh.w;
-      if (tagtextwh.w > word.maxtextw) {
-        word.maxtextw = tagtextwh.w;
+ 
+      if (word.tag != null) {
+
+        var tagtextwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
+  
+        //make sure that we are using the longest word to set the width (if a tag is present in this word)
+        if (tagtextwh.w > word.maxtextw) {
+          word.maxtextw = tagtextwh.w;
+        }
+
       }
 
-       
       word.ww = word.maxtextw + (textpaddingX * 2);
       word.wx = x;
 
       word.wh = texts.wordText.maxHeight + textpaddingY*2; 
       word.wy = row.ry + row.rh - word.wh;
 
-      var tag_textwh = getTextWidthAndHeight("TAG", texts.tagText.style);
-      word.tww = word.maxtextw + (textpaddingX * 2);
-      word.twx = word.wx;
+      if (word.tag != null) {
+        var tag_textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
+        word.tww = word.maxtextw + (textpaddingX * 2);
+        word.twx = word.wx;
 
-      word.twh = texts.tagText.maxHeight + textpaddingY*2; 
-      word.twy = word.wy - word.twh;
+        word.twh = texts.tagText.maxHeight + textpaddingY*2; 
+        word.twy = word.wy - word.twh;
 
-       x += word.maxtextw + (textpaddingX*2) + wordpadding;
+      }
+      
+      x += word.maxtextw + (textpaddingX*2) + wordpadding;
 
 
       /*
@@ -453,88 +461,90 @@ function drawWord(word) {
 
    console.log("text.y = " + text.y());
 
-   var textwh = getTextWidthAndHeight("TAGABCDEF", texts.tagText.style);
-   var tagXPos = word.twx + (word.ww/2) - (textwh.w / 2);
+   if (word.tag != null) {
+     var textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
+     var tagXPos = word.twx + (word.ww/2) - (textwh.w / 2);
 
 
-   //add in tag text, IF the word has an associated tag
-   var tagtext = draw.text(function(add) {
+     //add in tag text, IF the word has an associated tag
+     var tagtext = draw.text(function(add) {
 
-    add.text("TAGABCDEF")
-    .y(word.wy + textpaddingY/2 - texts.tagText.descent)
-    .x(tagXPos)
-    .font(texts.tagText.style);
-  });
+       add.text(word.tag)
+       .y(word.wy + textpaddingY/2 - texts.tagText.descent)
+       .x(tagXPos)
+       .font(texts.tagText.style);
+     });
 
+   }
 
-  //this rect is invisible, but used for detecting mouseevents, as its drawn on top of the text+underneathRect (which provided the color+fill+stroke)
-  var rect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
+   //this rect is invisible, but used for detecting mouseevents, as its drawn on top of the text+underneathRect (which provided the color+fill+stroke)
+   var rect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
 
-  var leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
-
-
-  var rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
+   var leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
 
 
-  word.text = text;
-  word.tagtext = tagtext;
+   var rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
 
 
-  word.rectSVG = rect;
-  word.underneathRect = underneathRect;
-  word.rect = rect.bbox();
-  word.leftX = rect.bbox().x;
-  word.rightX = rect.bbox().x + rect.bbox().w;
-  word.leftHandle = leftHandle;
-  word.rightHandle = rightHandle;
-  word.percPos = (word.leftX-edgepadding) / (svgWidth-edgepadding*2);
-
-  setUpLeftHandleDraggable(leftHandle, rect, text, word, word.idx );
-  setUpRightHandleDraggable(rightHandle, rect, text, word, word.idx );
-
-  setUpWordDraggable(word); 
-  setupMouseOverInteractions(word);
-
-  rect.dblclick(function() {
-    word.isSelected = !word.isSelected;
-
-    if (word.isSelected) {
-      style = word.isHovered ? "hoverAndSelect" : "select";
-    }
-    else {
-      style = word.isHovered ? "hover" : "style";
-    }
-  underneathRect.style(styles.wordFill[style]);
-  });
+   word.text = text;
+   word.tagtext = tagtext;
 
 
-  //if (word.tag) {
-  //  drawTag(word);
-  //}
+   word.rectSVG = rect;
+   word.underneathRect = underneathRect;
+   word.rect = rect.bbox();
+   word.leftX = rect.bbox().x;
+   word.rightX = rect.bbox().x + rect.bbox().w;
+   word.leftHandle = leftHandle;
+   word.rightHandle = rightHandle;
+   word.percPos = (word.leftX-edgepadding) / (svgWidth-edgepadding*2);
+
+   setUpLeftHandleDraggable(leftHandle, rect, text, word, word.idx );
+   setUpRightHandleDraggable(rightHandle, rect, text, word, word.idx );
+
+   setUpWordDraggable(word); 
+   setupMouseOverInteractions(word);
+
+   rect.dblclick(function() {
+     word.isSelected = !word.isSelected;
+
+     if (word.isSelected) {
+       style = word.isHovered ? "hoverAndSelect" : "select";
+     }
+     else {
+       style = word.isHovered ? "hover" : "style";
+     }
+   underneathRect.style(styles.wordFill[style]);
+   });
+
+
+   //if (word.tag) {
+   //  drawTag(word);
+   //}
 
 }
 
 
 function drawTag(word) {
 
-     var textwh = getTextWidthAndHeight("TAGABCDEF", texts.tagText.style);
+  var textwh = getTextWidthAndHeight("TAGABCDEF", texts.tagText.style);
 
-     console.log("\n***\n");
-console.log("textwh.w = " + textwh.w);
-console.log("textwh.h = " + textwh.h);
-console.log("word.twx = " + word.twx);
-console.log("word.twy = " + word.twy);
-console.log("word.twh = " + word.twh);
+  console.log("\n***\n");
+  console.log("textwh.w = " + textwh.w);
+  console.log("textwh.h = " + textwh.h);
+  console.log("word.twx = " + word.twx);
+  console.log("word.twy = " + word.twy);
+  console.log("word.twh = " + word.twh);
 
 
 
-   var tagXPos = word.twx + (word.ww/2) - (textwh.w / 2);
+  var tagXPos = word.twx + (word.ww/2) - (textwh.w / 2);
 
 
   underneathTagRect = draw.rect( textwh.w + textpaddingX*2, word.twh ).x( tagXPos - textpaddingX ).y( word.twy ).style(styles.tagFill.style);
   //underneathTagRect = draw.rect( 100,100 ).x( 100 ).y( 100 ); //.style(styles.wordFill.style);
 
-   var text = draw.text(function(add) {
+  var text = draw.text(function(add) {
 
     add.text("TAGABCDEF")
     .y(word.twy + textpaddingY*2 - texts.wordText.descent)
