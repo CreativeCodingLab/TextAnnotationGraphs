@@ -84,7 +84,7 @@ var isDragging = false;
 
 var levelpadding = 16;
 var /*textpadding */ textpaddingX = 8;//12; //this is the x-padding within each word rect, between the text and the rectangle it's inside of
-var textpaddingY = 4;//texts.wordText.maxHeight / 2; //padding above and below text, between text and rectangle it's inside of
+var textpaddingY = 6;//texts.wordText.maxHeight / 2; //padding above and below text, between text and rectangle it's inside of
 var wordpadding = 4; //x padding between the rects containing words
 //var topMargin = 0;
 var edgepadding = 10; //padding between left side of svg canvas and where first word can be placed, and padding between right side of svg canvas and where last word on a row can fit (before popping over to next row)
@@ -104,7 +104,7 @@ var arrowMH = 5; //7; //4
 var arrowW = 3; //3
 
 var wordHeight = texts.wordText.maxHeight + (textpaddingY * 2); 
-var minWordWidth = getTextWidthAndHeight("i", texts.wordText.style).w + (handleW * 2);
+var minWordWidth = Math.max( getTextWidthAndHeight("i", texts.wordText.style).w + (handleW * 2), getTextWidthAndHeight("i", texts.tagText.style).w + (handleW * 2) );
 
 
 var evenRowsColor_selected = '#cdcdff';
@@ -135,10 +135,10 @@ var rows = []; //list of Row object, each of those has a list of Word objects
 
 
 // 1. create Words and Links objects (in utils.js) */
-var wordObjs = createTestWords(15, 1, 15);
+var wordObjs = createTestWords(3, 1, 15);
 
 //var linkObjs = createTestLinks(1,1,0); 
-var linkObjs = createTestLinks(4,4,4); 
+var linkObjs = createTestLinks(1,1,1); 
 
 // 2. draw words and boxes around words
 drawWords(wordObjs);

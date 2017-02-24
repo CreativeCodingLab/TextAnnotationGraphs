@@ -360,6 +360,13 @@ function setupStyles(svg) {
   styleArr.wordFill.selecting('#fcc', 1.0, new LineStyle('#c99', 1));
   styleArr.wordFill.hoveringAndSelecting('#fcc', 1.0/*, new LineStyle('#000000', 1)*/);
 
+
+  styleArr.tagFill = new FillStyle('#00ffff', 1.0, new LineStyle('#000', 1) );
+  styleArr.tagFill.hovering('#ff0000', 1.0/*, new LineStyle('#000000', 1)*/);
+  styleArr.tagFill.selecting('#fcc', 1.0, new LineStyle('#c99', 1));
+  styleArr.tagFill.hoveringAndSelecting('#fcc', 1.0/*, new LineStyle('#000000', 1)*/);
+
+
   styleArr.labelEvenFill = new FillStyle(evenRowsColor, 1.0);
   styleArr.labelOddFill = new FillStyle(oddRowsColor, 1.0);
 
@@ -381,6 +388,7 @@ function setupTexts(svg) {
 
   textArr.wordText = new TextStyle('Brown, BrownPro, futura, helvetica', 12, new FillStyle('#444'));
   textArr.linkText = new TextStyle('Brown, BrownPro, futura, helvetica', 10, new FillStyle('#888'));
+  textArr.tagText = new TextStyle('Brown, BrownPro, futura, helvetica', 12, new FillStyle('#888'));
 
   return textArr; 
 }
