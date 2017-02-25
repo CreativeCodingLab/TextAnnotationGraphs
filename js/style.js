@@ -388,7 +388,7 @@ function setupTexts(svg) {
 
   textArr.wordText = new TextStyle('Brown, BrownPro, futura, helvetica', 12, new FillStyle('#444'));
   textArr.linkText = new TextStyle('Brown, BrownPro, futura, helvetica', 10, new FillStyle('#888'));
-  textArr.tagText = new TextStyle('Brown, BrownPro, futura, helvetica', 12, new FillStyle('#888'));
+  textArr.tagText = new TextStyle('Brown, BrownPro, futura, helvetica', 10, new FillStyle('#888'));
 
   return textArr; 
 }

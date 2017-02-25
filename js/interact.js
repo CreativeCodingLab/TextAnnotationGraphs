@@ -764,7 +764,7 @@ function moveWordToNewPosition(w, nx, ny) {
   w.underneathRect.y(ny);
 
   w.text.x(nx + (w.rect.w/2) - (w.text.bbox().w/2)  ); 
-  w.text.y(ny + textpaddingY*2 - texts.wordText.descent);
+  w.text.y(ny + textpaddingY*2); // - texts.wordText.descent);
 
 
 
@@ -1039,7 +1039,11 @@ function setWordToY(word, wy) {
   word.underneathRect.y(wy);  
   word.leftHandle.y(wy);  
   word.rightHandle.y(wy);  
-  word.text.y(word.rect.y + textpaddingY); 
+  word.text.y(word.rect.y + textpaddingY*2);
+  
+ if (word.tag != null) { 
+  word.tagtext.y(word.rect.y + textpaddingY/2); 
+ }
 }
 
 function setUpRowDraggable(row) {

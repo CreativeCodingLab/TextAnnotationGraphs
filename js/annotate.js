@@ -200,8 +200,9 @@ class Word {
       drawWord(this);
     }
 
+   
     getMinWidth() {
-      return Math.max(minWordWidth, this.tw);
+      return Math.max(minWordWidth, this.maxtextw);
     }
 
     /* must return a value less than row width - edgepaddings, else will try to reposition long words forever! */
