@@ -88,6 +88,8 @@ var textpaddingY = 6;//texts.wordText.maxHeight / 2; //padding above and below t
 var wordpadding = 4; //x padding between the rects containing words
 //var topMargin = 0;
 var edgepadding = 10; //padding between left side of svg canvas and where first word can be placed, and padding between right side of svg canvas and where last word on a row can fit (before popping over to next row)
+var rowpadding = 30;
+
 var hideLinkLinesPercentage = 3.0; //percentage at which links and arrows are hidden
 var hideLinkTextPercentage = 7.0; //percentage at which words are link words are hidden
 
@@ -135,10 +137,10 @@ var rows = []; //list of Row object, each of those has a list of Word objects
 
 
 // 1. create Words and Links objects (in utils.js) */
-var wordObjs = createTestWords(20, 1, 15);
+var wordObjs = createTestWords(10, 1, 15);
 
 //var linkObjs = createTestLinks(1,1,0); 
-var linkObjs = createTestLinks(4,4,4); 
+var linkObjs = createTestLinks(2,2,2); 
 
 // 2. draw words and boxes around words
 drawWords(wordObjs);

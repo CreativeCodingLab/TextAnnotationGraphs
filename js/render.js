@@ -204,7 +204,6 @@ function recalculateRows(percChange) {
 
   realignWords();
 
-
 }
 
 
@@ -243,9 +242,7 @@ function removeLastRow() {
   rows[rows.length-1].dragRect.remove();
   rows.pop();
 
-  
   changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
-
 }
 
 function changeSizeOfSVGPanel(w, h) {
@@ -263,7 +260,7 @@ function appendRow() {
 
   row.maxSlots = 0;
 
-  row.ry = 5 + rows[row.idx - 1].rect.bbox().y + rows[row.idx - 1].rect.bbox().h;
+  row.ry = rowpadding/2 + rows[row.idx - 1].rect.bbox().y + rows[row.idx - 1].rect.bbox().h;
   row.rh = rows[row.idx - 1].rect.bbox().h; 
 
   if (row.idx % 2 == 0) {
@@ -319,13 +316,31 @@ function setUpRowsAndWords(words) {
 
   var rowNum = 0;
   var row;
+  var x = 0;
 
+  //loop through each Word and figure out its Row, x position, and width
   for (var i = 0; i < words.length; i++) {
 
-    var wh = getTextWidthAndHeight(wordObjs[i].val, texts.wordText.style);
-    var twh = getTextWidthAndHeight("TAGABCDEF", texts.tagText.style);
+    var word = words[i];
+ 
+    var wh = getTextWidthAndHeight(word.val, texts.wordText.style);
 
-    if (i == 0) {
+    //calculate the width of the Word
+    word.tw = wh.w;
+    word.maxtextw = wh.w;
+    
+      if (word.tag != null) {
+      var twh = getTextWidthAndHeight(word.tag, texts.tagText.style);
+      
+      if (twh.w > word.tw) {
+        word.tw = twh.w; //think tw is ONLY used for checking minWidth, so this should be ok
+        word.maxtextw = twh.w;
+      }
+    }
+   
+    //what row will this Word belong to?
+    
+    if (i == 0) { //if first word, then obviously in first row
 
       rowNum = 0;
       row = new Row(rowNum);
@@ -334,7 +349,7 @@ function setUpRowsAndWords(words) {
 
       x = edgepadding;
 
-    } else if (x + wh.w + (textpaddingX*2) + edgepadding > svgWidth) {
+    } else if (x + word.tw + (textpaddingX*2) + edgepadding > svgWidth) { //if would be wider than the screen width, then start a new row
 
       rowNum++;
       row = new Row(rowNum);
@@ -344,34 +359,37 @@ function setUpRowsAndWords(words) {
       x = edgepadding;
     }
 
-    var word = words[i];
     row.words.push(word);
     row.maxSlots = Math.max(row.maxSlots, getHeightForWord(word));
     word.row = row;
-    word.tw = wh.w;
-
-    if (word.tag != null) {
-      if (twh.w > word.tw) {
-        word.tw = twh.w; //think tw is ONLY used for checking minWidth, so this should be ok
-      }
-    }
-
     word.th = texts.wordText.maxHeight; //guaranteed to be the same for all words
 
-    x += wh.w + (textpaddingX*2) + wordpadding;
+    //calculate x position and width of the Word
+    word.wx = x;
+    word.ww = word.tw + (textpaddingX * 2);
+
+
+    if (word.tag != null) {
+      word.tww = word.ww; //maxtextw + (textpaddingX * 2);
+      word.twx = word.wx;
+    }
+
+    x += word.ww + wordpadding;
   }
 
+
+  // now that we've assign each word to a row, figure out the height of the row (which is based on the maximum slots that the links attached to Words in the row occupy (or links that pass over those words). 
   for (var i = 0; i < rows.length; i++) {
 
     var row = rows[i];
 
     if (i == 0) {
-      row.ry = 5;
+      row.ry = rowpadding / 2;
     } else {
-      row.ry = 5 + rows[row.idx - 1].ry + rows[row.idx - 1].rh;
+      row.ry = rowpadding / 2 + rows[row.idx - 1].ry + rows[row.idx - 1].rh;
     }
 
-    row.rh = 10 + ((textpaddingY * 2) + texts.wordText.maxHeight) + (levelpadding * row.maxSlots);
+    row.rh = rowpadding + ((textpaddingY * 2) + texts.wordText.maxHeight) + (levelpadding * row.maxSlots);
 
     if (row.idx % 2 == 0) {
       row.color = evenRowsColor;
@@ -379,70 +397,24 @@ function setUpRowsAndWords(words) {
       row.color = oddRowsColor;
     }
 
-    var x = edgepadding;
     for (var ii = 0; ii < row.words.length; ii++) {
-
       var word = row.words[ii];
 
-      word.h = 0; //the number of link levels is 0 for the word
-
-      var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
-      word.maxtextw = textwh.w;
- 
-      if (word.tag != null) {
-
-        var tagtextwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
-  
-        //make sure that we are using the longest word to set the width (if a tag is present in this word)
-        if (tagtextwh.w > word.maxtextw) {
-          word.maxtextw = tagtextwh.w;
-        }
-
-      }
-
-      word.ww = word.maxtextw + (textpaddingX * 2);
-      word.wx = x;
-
+      word.h = 0; //the number of link levels is 0 for the word itself
       word.wh = texts.wordText.maxHeight + textpaddingY*2; 
       word.wy = row.ry + row.rh - word.wh;
 
       if (word.tag != null) {
         var tag_textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
-        word.tww = word.maxtextw + (textpaddingX * 2);
-        word.twx = word.wx;
-
         word.twh = texts.tagText.maxHeight + textpaddingY*2; 
         word.twy = word.wy - word.twh;
-
       }
-      
-      x += word.maxtextw + (textpaddingX*2) + wordpadding;
 
-
-      /*
-      word.ww = textwh.w + (textpaddingX * 2);
-      word.wx = x;
-
-      word.wh = texts.wordText.maxHeight + textpaddingY*2; 
-      word.wy = row.ry + row.rh - word.wh;
-
-      var tag_textwh = getTextWidthAndHeight("TAG", texts.tagText.style);
-      word.tww = tag_textwh.w + (textpaddingX * 2);
-      word.twx = word.wx;
-
-      word.twh = texts.tagText.maxHeight + textpaddingY*2; 
-      word.twy = word.wy - word.twh;
-     
-      x += textwh.w + (textpaddingX*2) + wordpadding;
-     */
-
-
-
-           row.baseHeight = word.wy; //that is, where the top of the word is in the row.
-
+      row.baseHeight = word.wy; //that is, where the top of the word is in the row.
     }
   }
 }
+
 
 function drawWord(word) {
 
@@ -459,101 +431,63 @@ function drawWord(word) {
   });
 
 
-   console.log("text.y = " + text.y());
+  if (word.tag != null) {
+    var textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
+    var tagXPos = word.twx + (word.ww/2) - (textwh.w / 2);
 
-   if (word.tag != null) {
-     var textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
-     var tagXPos = word.twx + (word.ww/2) - (textwh.w / 2);
+    //add in tag text, if the word has an associated tag
+    var tagtext = draw.text(function(add) {
 
+      add.text(word.tag)
+      .y(word.wy + textpaddingY/2) // - texts.tagText.descent)
+      .x(tagXPos)
+      .font(texts.tagText.style);
+    });
+  }
 
-     //add in tag text, IF the word has an associated tag
-     var tagtext = draw.text(function(add) {
+  //this rect is invisible, but used for detecting mouseevents, as its drawn on top of the text+underneathRect (which provided the color+fill+stroke)
+  var rect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
 
-       add.text(word.tag)
-       .y(word.wy + textpaddingY/2) // - texts.tagText.descent)
-       .x(tagXPos)
-       .font(texts.tagText.style);
-     });
-
-   }
-
-   //this rect is invisible, but used for detecting mouseevents, as its drawn on top of the text+underneathRect (which provided the color+fill+stroke)
-   var rect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
-
-   var leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
+  var leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
 
 
-   var rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
+  var rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
 
 
-   word.text = text;
-   word.tagtext = tagtext;
+  word.text = text;
+  word.tagtext = tagtext;
 
+  word.rectSVG = rect;
+  word.underneathRect = underneathRect;
+  word.rect = rect.bbox();
+  word.leftX = rect.bbox().x;
+  word.rightX = rect.bbox().x + rect.bbox().w;
+  word.leftHandle = leftHandle;
+  word.rightHandle = rightHandle;
+  word.percPos = (word.leftX-edgepadding) / (svgWidth-edgepadding*2);
 
-   word.rectSVG = rect;
-   word.underneathRect = underneathRect;
-   word.rect = rect.bbox();
-   word.leftX = rect.bbox().x;
-   word.rightX = rect.bbox().x + rect.bbox().w;
-   word.leftHandle = leftHandle;
-   word.rightHandle = rightHandle;
-   word.percPos = (word.leftX-edgepadding) / (svgWidth-edgepadding*2);
+  //set up mouse interactions
+  setUpLeftHandleDraggable(leftHandle, rect, text, word, word.idx );
+  setUpRightHandleDraggable(rightHandle, rect, text, word, word.idx );
 
-   setUpLeftHandleDraggable(leftHandle, rect, text, word, word.idx );
-   setUpRightHandleDraggable(rightHandle, rect, text, word, word.idx );
+  setUpWordDraggable(word); 
+  setupMouseOverInteractions(word);
 
-   setUpWordDraggable(word); 
-   setupMouseOverInteractions(word);
+  rect.dblclick(function() {
+    word.isSelected = !word.isSelected;
 
-   rect.dblclick(function() {
-     word.isSelected = !word.isSelected;
-
-     if (word.isSelected) {
-       style = word.isHovered ? "hoverAndSelect" : "select";
-     }
-     else {
-       style = word.isHovered ? "hover" : "style";
-     }
-   underneathRect.style(styles.wordFill[style]);
-   });
-
-
-   //if (word.tag) {
-   //  drawTag(word);
-   //}
-
-}
-
-
-function drawTag(word) {
-
-  var textwh = getTextWidthAndHeight("TAGABCDEF", texts.tagText.style);
-
-  console.log("\n***\n");
-  console.log("textwh.w = " + textwh.w);
-  console.log("textwh.h = " + textwh.h);
-  console.log("word.twx = " + word.twx);
-  console.log("word.twy = " + word.twy);
-  console.log("word.twh = " + word.twh);
-
-
-
-  var tagXPos = word.twx + (word.ww/2) - (textwh.w / 2);
-
-
-  underneathTagRect = draw.rect( textwh.w + textpaddingX*2, word.twh ).x( tagXPos - textpaddingX ).y( word.twy ).style(styles.tagFill.style);
-  //underneathTagRect = draw.rect( 100,100 ).x( 100 ).y( 100 ); //.style(styles.wordFill.style);
-
-  var text = draw.text(function(add) {
-
-    add.text("TAGABCDEF")
-    .y(word.twy + textpaddingY*2 - texts.wordText.descent)
-    .x(tagXPos)
-    .font(texts.tagText.style);
+    if (word.isSelected) {
+      style = word.isHovered ? "hoverAndSelect" : "select";
+    }
+    else {
+      style = word.isHovered ? "hover" : "style";
+    }
+  underneathRect.style(styles.wordFill[style]);
   });
 
 
 }
+
 
 
 var _linkLabels = [];
@@ -672,7 +606,7 @@ function drawAllLinks() {
     }
   }
 
-  //interactions are for an array of polylines, eg when links are multi-rows. TODO
+  //interactions are for an array of polylines, eg when links are multi-rows. TODO add back in the link interactions - also link labels?
 
 }
 
@@ -749,26 +683,6 @@ function drawAllLinkLabels() {
 
 
 }
-
-/*
-   var linkLabel = _linkLabels[i];
-   var rect = linkLabel.rect;
-   var text = linkLabel.text;
-
-
-   label.rect( rect.w, rect.h ).x( rect.x ).y( rect.y ).style( rect.style ); 
-   label.text( text.text ).x( text.x ).y( text.y ).font( text.style );
-   */
-//AGF - not sure what this code is needed for... maybe to add interactions later?
-/*
-   if (link.labelRect) {
-   link.labelRect.push(label);
-   }
-   else {
-   link.labelRect = [label];
-   }
-   */
-
 
 
 /** redraws all links that have been marked as needsUpdate = true, OR by passing in a boolean of true to indicate that the window has resized **/
@@ -993,7 +907,6 @@ function calculateMiddleRow (i, rowNum, link, percentagePadding, linkStyles  ) {
   }
 
   calculateLinkLabels(i, rowNum, (p2x+p3x) / 2, p2y, link, (percentagePadding < hideLinkTextPercentage));
-
 
 }
 
