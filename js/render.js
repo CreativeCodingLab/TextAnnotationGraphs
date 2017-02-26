@@ -67,7 +67,7 @@ function checkIfNeedToResizeWords(row) {
   var totalW = 0;
   for (var ii = 0; ii < row.words.length; ii++) {
     var word = row.words[ii];
-    totalW += word.rectSVG.width();
+    totalW += word.aboveRect.width();
   }
 
   if (totalW > svgWidth - (edgepadding*2)) {
@@ -102,9 +102,9 @@ function recalculateRows(percChange) {
       var word = row.words[ii];
 
       //first try to expand or shrink size of words - but no smaller than the word's min width
-      var nw = Math.max( Math.min(word.getMaxWidth(), word.rectSVG.width() * percChange), word.getMinWidth() );
+      var nw = Math.max( Math.min(word.getMaxWidth(), word.aboveRect.width() * percChange), word.getMinWidth() );
 
-      //var nw = Math.max(word.getMinWidth(), word.rectSVG.width() * percChange);
+      //var nw = Math.max(word.getMinWidth(), word.aboveRect.width() * percChange);
       //nw = Math.max(nw, word.getMaxWidth());
 
       var nx = edgepadding + (word.percPos * (svgWidth-edgepadding*2));
@@ -157,8 +157,8 @@ function recalculateRows(percChange) {
           }
 
           newArray.sort(function(a, b) {
-            var d1 = a.rectSVG.width() - a.getMinWidth();
-            var d2 = b.rectSVG.width() - b.getMinWidth();
+            var d1 = a.aboveRect.width() - a.getMinWidth();
+            var d2 = b.aboveRect.width() - b.getMinWidth();
             return d1 - d2; 
           });
 
@@ -170,10 +170,10 @@ function recalculateRows(percChange) {
 
             var minW = word.getMinWidth();
 
-            if (word.rectSVG.width() - pixelsPerWord < minW) {
+            if (word.aboveRect.width() - pixelsPerWord < minW) {
 
-              var minus = word.rectSVG.width() - minW;
-              setWordToXW(word, word.rectSVG.x(), minW);
+              var minus = word.aboveRect.width() - minW;
+              setWordToXW(word, word.aboveRect.x(), minW);
               word.update();
 
                 console.log("ii = " + ii + ": can't shrink by " +  pixelsPerWord + ", so shrinking by much as possible = " + minus);
@@ -182,7 +182,7 @@ function recalculateRows(percChange) {
               resizeByHowMuch -= minus;
               pixelsPerWord = resizeByHowMuch / numWords; 
             } else {
-              setWordToXW(word, word.rectSVG.x(), word.rectSVG.width() - pixelsPerWord);
+              setWordToXW(word, word.aboveRect.x(), word.aboveRect.width() - pixelsPerWord);
               word.update();
               numWords--;
               resizeByHowMuch -= pixelsPerWord;
@@ -216,7 +216,7 @@ function realignWords() {
     //may not use the move left, might be odd when it jumps up instead of down...
     for (var ii = row.words.length-1; ii >= 0 ; ii--) {
       var word = row.words[ii];
-      checkIfCanMoveLeft(word.rectSVG.x(), word.rectSVG.width(), word.rectSVG.y(), word, true);
+      checkIfCanMoveLeft(word.aboveRect.x(), word.aboveRect.width(), word.aboveRect.y(), word, true);
       word.update();
     }
     
@@ -224,7 +224,7 @@ function realignWords() {
 
     for (var ii = 0; ii < row.words.length; ii++) {
       var word = row.words[ii];
-      checkIfCanMoveRight(word.rectSVG.x(), word.rectSVG.width(), word.rectSVG.y(), word, false);
+      checkIfCanMoveRight(word.aboveRect.x(), word.aboveRect.width(), word.aboveRect.y(), word, false);
       word.update();
     }
   }
@@ -418,11 +418,11 @@ function setUpRowsAndWords(words) {
 
 function drawWord(word) {
 
-  var underneathRect = draw.rect( word.ww, word.wh ).x( word.wx ).y( word.wy ).style(styles.wordFill.style);
+  word.underneathRect = draw.rect( word.ww, word.wh ).x( word.wx ).y( word.wy ).style(styles.wordFill.style);
 
   var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
 
-  var text = draw.text(function(add) {
+  word.text = draw.text(function(add) {
 
     add.text(word.val)
     .y(word.wy + textpaddingY*2) // - texts.wordText.descent)
@@ -436,7 +436,7 @@ function drawWord(word) {
     var tagXPos = word.twx + (word.ww/2) - (textwh.w / 2);
 
     //add in tag text, if the word has an associated tag
-    var tagtext = draw.text(function(add) {
+    word.tagtext = draw.text(function(add) {
 
       add.text(word.tag)
       .y(word.wy + textpaddingY/2) // - texts.tagText.descent)
@@ -446,34 +446,27 @@ function drawWord(word) {
   }
 
   //this rect is invisible, but used for detecting mouseevents, as its drawn on top of the text+underneathRect (which provided the color+fill+stroke)
-  var rect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
+  word.aboveRect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
 
-  var leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
-
-
-  var rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
+  word.leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
 
 
-  word.text = text;
-  word.tagtext = tagtext;
+  word.rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
 
-  word.rectSVG = rect;
-  word.underneathRect = underneathRect;
-  word.rect = rect.bbox();
-  word.leftX = rect.bbox().x;
-  word.rightX = rect.bbox().x + rect.bbox().w;
-  word.leftHandle = leftHandle;
-  word.rightHandle = rightHandle;
+
+  word.bbox = word.aboveRect.bbox();
+  word.leftX = word.aboveRect.bbox().x;
+  word.rightX = word.aboveRect.bbox().x + word.aboveRect.bbox().w;
   word.percPos = (word.leftX-edgepadding) / (svgWidth-edgepadding*2);
 
-  //set up mouse interactions
-  setUpLeftHandleDraggable(leftHandle, rect, text, word, word.idx );
-  setUpRightHandleDraggable(rightHandle, rect, text, word, word.idx );
 
+  //set up mouse interactions
+  setUpLeftHandleDraggable(word);
+  setUpRightHandleDraggable(word); 
   setUpWordDraggable(word); 
   setupMouseOverInteractions(word);
 
-  rect.dblclick(function() {
+  word.aboveRect.dblclick(function() {
     word.isSelected = !word.isSelected;
 
     if (word.isSelected) {
@@ -482,9 +475,8 @@ function drawWord(word) {
     else {
       style = word.isHovered ? "hover" : "style";
     }
-  underneathRect.style(styles.wordFill[style]);
+  word.underneathRect.style(styles.wordFill[style]);
   });
-
 
 }
 

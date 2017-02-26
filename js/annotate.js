@@ -146,8 +146,8 @@ class Word {
         
         //variables created in first render...
         //this.row; //this is a row object, for row num do: this.row.idx
-        this.rectSVG = null; //the actual svg element 
-        this.rect = null; //the bbox of the svg element
+        this.aboveRect = null; //the actual svg element 
+        this.bbox = null; //the bbox of the svg element
         this.underneathRect = null; //not clickable, but solid rect on which other word parts are placed (text, handles, clickable rect)
         this.text = null; //the svg text
         this.tagtext = null; //the svg text for a tag
@@ -171,13 +171,13 @@ class Word {
     update() {
       
     //  console.log("\n***\nin update X = " + this.tempX + ", Y = " + this.tempY + ", W = " + this.tempW );
-      this.rectSVG.x(this.tempX);
-      this.rectSVG.width(this.tempW);
+      this.aboveRect.x(this.tempX);
+      this.aboveRect.width(this.tempW);
      
       this.underneathRect.x(this.tempX);
       this.underneathRect.width(this.tempW);
 
-      this.rect = this.rectSVG.bbox();
+      this.bbox = this.aboveRect.bbox();
       
       this.text.x(this.tempX + (this.tempW/2) - (this.text.bbox().w / 2) ); 
       
