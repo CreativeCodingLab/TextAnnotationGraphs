@@ -947,7 +947,7 @@ function dragRow(x, y, row) {
 
   if (row.idx < rows.length - 1) {
 
-    nextY = (rows[row.idx + 1].lineBottom.bbox().y - wordHeight ) - (dragRectSide + dragRectMargin) - 5 ;
+    nextY = (rows[row.idx + 1].lineBottom.bbox().y - wordHeight ) - (dragRectSide + dragRectMargin) - rowpadding/2 ;
 
     if (y > nextY) {
       nextRowTooSmall = true;
@@ -957,7 +957,7 @@ function dragRow(x, y, row) {
   //check that this row is not smaller than the word size in the row
 
   if (inc + dragRectSide + dragRectMargin < wordHeight) {
-    row.bbox.height(wordHeight);
+    row.rect.height(wordHeight);
     y = row.rect.bbox().y + row.rect.bbox().h - (dragRectSide + dragRectMargin);
     row.lineBottom.y(y + dragRectSide + dragRectMargin);
   } else if (row.idx < rows.length - 1 && nextRowTooSmall == true) { //check that this row is not expanding so large that it is bigger than the next row's smallest size
@@ -984,13 +984,13 @@ function dragRow(x, y, row) {
   if (row.idx < rows.length - 1) {
 
     var nextrow = rows[row.idx + 1];
-    nextrow.rect.y(row.rect.bbox().y + row.rect.bbox().h + 5);
-    nextrow.rect.height( nextrow.dragRect.bbox().y - y - (5));
+    nextrow.rect.y(row.rect.bbox().y + row.rect.bbox().h + rowpadding/2);
+    nextrow.rect.height( nextrow.dragRect.bbox().y - y - (rowpadding/2));
 
     nextrow.ry = nextrow.rect.y();
     nextrow.rh = nextrow.rect.height();
     
-    nextrow.lineTop.y(row.rect.bbox().y + row.rect.bbox().h + 5);
+    nextrow.lineTop.y(row.rect.bbox().y + row.rect.bbox().h + rowpadding/2);
       
     for (var i = 0; i < nextrow.words.length; i++) {
       //updateLinksOfWord(nextrow.words[i]);
