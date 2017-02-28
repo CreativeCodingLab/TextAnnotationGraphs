@@ -88,6 +88,8 @@ var textpaddingY = 6;//texts.wordText.maxHeight / 2; //padding above and below t
 var wordpadding = 4; //x padding between the rects containing words
 //var topMargin = 0;
 var edgepadding = 10; //padding between left side of svg canvas and where first word can be placed, and padding between right side of svg canvas and where last word on a row can fit (before popping over to next row)
+var rowpadding = 30;
+
 var hideLinkLinesPercentage = 3.0; //percentage at which links and arrows are hidden
 var hideLinkTextPercentage = 7.0; //percentage at which words are link words are hidden
 
@@ -128,8 +130,8 @@ var linkStrokeOpacity_selected = 1.0;
 var attachmentMargin = 0.1; //percentage value
 
 var word2word_strategy = strategies.FARTHEST;
-var word2link_strategy = strategies.CLOSEST; 
-var link2link_strategy = strategies.CLOSEST; //CLOSEST sometimes causes overlaps - need to be a bit more rigorous when assigning slots - don't assign any slots that have the potential to overlap (when dragged manually)? - or let the buyer beware that this could happen - they can always move out of the way - right now it won't automatically overlap, but won't prevent a user from doing it. 
+var word2link_strategy = strategies.FARTHEST; 
+var link2link_strategy = strategies.FARTHEST; //CLOSEST sometimes causes overlaps - need to be a bit more rigorous when assigning slots - don't assign any slots that have the potential to overlap (when dragged manually)? - or let the buyer beware that this could happen - they can always move out of the way - right now it won't automatically overlap, but won't prevent a user from doing it. 
 
 var rows = []; //list of Row object, each of those has a list of Word objects
 

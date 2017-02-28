@@ -31,15 +31,15 @@ function mclick(myrect, word){
 
 
 function setupMouseOverInteractions(word) {
-  word.rectSVG.mouseover( function() { mover(word) }  );
-  word.rectSVG.mouseout( function() { mout(word) }  );
+  word.aboveRect.mouseover( function() { mover(word) }  );
+  word.aboveRect.mouseout( function() { mout(word) }  );
   word.leftHandle.mouseover( function() { mover(word) }  );
   word.leftHandle.mouseout( function() { mout(word) }  );
 
   word.rightHandle.mouseover( function() { mover(word) }  );
   word.rightHandle.mouseout( function() { mout(word) }  );
 
-   word.rectSVG.mousemove( function() {  
+   word.aboveRect.mousemove( function() {  
    //  console.log("touchleave!");  
    }  );
   
@@ -255,19 +255,6 @@ function addDragStartingAndEndingListeners(elem) {
     prevX = -1;
     console.log("dragEnd B - isDragging = " + isDragging);
 
-    if (dragElem instanceof Word) { //also check if x,y has changed, since even a click in place will trigger a dragEnd, which we don't want 
-   
-      //dragElem.leftHandle.style(styles.handleFill.style);
-      //dragElem.rightHandle.style(styles.handleFill.style);
-    
-      //realignWords(); //overkill? this is kind of a hack - shouldn't need it - but right now sometimes words get stuck off a row when moving words to the right... not sure why, shouldn't happen!
-
-     //redrawLinks(true);
-
-      dragElem = null;
-
-    
-    }
 
   })
 
@@ -418,17 +405,15 @@ function checkDragDirection(x) {
    return dragDir;
 }
 
-function setUpLeftHandleDraggable(leftHandle, rect, text, word, i) {
+function setUpLeftHandleDraggable(word) {
 
-  addDragStartingAndEndingListeners(leftHandle);
+  addDragStartingAndEndingListeners(word.leftHandle);
 
-  leftHandle.draggable(function(x, y) {
+  word.leftHandle.draggable(function(x, y) {
     rowOffsetWord = word;
 
-    var returnVal = dragLeftHandle(x, leftHandle.bbox().y, word);
+    var returnVal = dragLeftHandle(x, word.leftHandle.bbox().y, word);
     
-    //console.log("in leftHandle.draggable");
-  
     updateWords();
   
     redrawLinks(false);//actually - only redraw links that moving this word would affect + this row
@@ -437,15 +422,14 @@ function setUpLeftHandleDraggable(leftHandle, rect, text, word, i) {
   });
 }
 
-function setUpRightHandleDraggable(rightHandle, rect, text, word, i) {
+function setUpRightHandleDraggable(word) {
 
-  addDragStartingAndEndingListeners(rightHandle);
+  addDragStartingAndEndingListeners(word.rightHandle);
 
-  rightHandle.draggable(function(x, y) {
+  word.rightHandle.draggable(function(x, y) {
     rowOffsetWord = word;
 
-    var returnVal = dragRightHandle(x, rightHandle.bbox().y, word);
-    //console.log("in rightHandle.draggable");
+    var returnVal = dragRightHandle(x, word.rightHandle.bbox().y, word);
 
        updateWords();
   
@@ -456,8 +440,6 @@ function setUpRightHandleDraggable(rightHandle, rect, text, word, i) {
 }
 
 function dragLeftHandle(x, y, word) {
-
-  dragElem = word; //is this being used? TODO remove if not
 
   var dragDir = checkDragDirection(x);
 
@@ -497,9 +479,6 @@ function checkIfCanDragLeftHandleRight(x, y, word) {
 
 
 function dragRightHandle(x, y, word) {
-
-  dragElem = word;
-
 
   var dragDir = checkDragDirection(x);
 
@@ -566,8 +545,8 @@ function checkIfCanMoveRight(x, w, y, word, adjustWidth) {
       prevWordX = prevWord.tempX;
       prevWordW = prevWord.tempW;
     } else {
-      prevWordX = prevWord.rect.x;
-      prevWordW = prevWord.rect.w;
+      prevWordX = prevWord.bbox.x;
+      prevWordW = prevWord.bbox.w;
     }
 
     //make sure our X val isn't *before* the rightX of the previous word
@@ -631,12 +610,12 @@ function checkIfCanMoveRight(x, w, y, word, adjustWidth) {
       nextWordX = nextWord.tempX;
       nextWordW = nextWord.tempW;
     } else {
-      nextWordX = nextWord.rect.x;
-      nextWordW = nextWord.rect.w;
+      nextWordX = nextWord.bbox.x;
+      nextWordW = nextWord.bbox.w;
     }
 
     if (rx + w > nextWordX) { //then need to push the next word
-      checkIfCanMoveRight(rx + w, nextWordW, nextWord.rectSVG.y(), nextWord, false);
+      checkIfCanMoveRight(rx + w, nextWordW, nextWord.aboveRect.y(), nextWord, false);
     }
   }
 
@@ -653,8 +632,8 @@ function checkIfCanMoveRight(x, w, y, word, adjustWidth) {
         prevWordX = prevWord.tempX;
         prevWordW = prevWord.tempW;
       } else {
-        prevWordX = prevWord.rect.x;
-        prevWordW = prevWord.rect.w;
+        prevWordX = prevWord.bbox.x;
+        prevWordW = prevWord.bbox.w;
       }
 
       checkIfCanMoveRight(prevWordX, prevWordW, y, prevWord, false);
@@ -684,7 +663,7 @@ function checkIfCanMoveLeft(x, w, y, word, adjustWidth) {
         }
 
         rx = svgWidth - edgepadding - w;
-        ry = word.rect.y;
+        ry = word.bbox.y;
 
         //refire this checkIfCanMoveLeft, since it will push words on the previous row out of the way, if needed -- may break up this method into little pieces so can fire something more granular
         checkIfCanMoveLeft(rx, w, y, word, false);
@@ -707,8 +686,8 @@ function checkIfCanMoveLeft(x, w, y, word, adjustWidth) {
       prevWordX = prevWord.tempX;
       prevWordW = prevWord.tempW;
     } else {
-      prevWordX = prevWord.rect.x;
-      prevWordW = prevWord.rect.w;
+      prevWordX = prevWord.bbox.x;
+      prevWordW = prevWord.bbox.w;
     }
 
     if (rx < prevWordX + prevWordW) {
@@ -749,29 +728,32 @@ function checkIfCanMoveLeft(x, w, y, word, adjustWidth) {
 function moveWordToNewPosition(w, nx, ny) {
 
   w.tempX = nx;
-  w.tempW = w.rect.w;
+  w.tempW = w.bbox.w;
   
-  w.rectSVG.x(nx);
-  w.rectSVG.y(ny);
+  w.aboveRect.x(nx);
+  w.aboveRect.y(ny);
 
-  w.rect = w.rectSVG.bbox();
+  w.bbox = w.aboveRect.bbox();
   w.leftX = nx; 
-  w.rightX = nx + w.rect.w;
+  w.rightX = nx + w.bbox.w;
 
   w.percPos = (w.leftX-edgepadding) / (svgWidth-edgepadding*2);
 
   w.underneathRect.x(nx);
   w.underneathRect.y(ny);
 
-  w.text.x(nx + (w.rect.w/2) - (w.text.bbox().w/2)  ); 
-  w.text.y(ny + textpaddingY*2 - texts.wordText.descent);
+  w.text.x(nx + (w.bbox.w/2) - (w.text.bbox().w/2)  ); 
+  w.text.y(ny + textpaddingY*2); // - texts.wordText.descent);
 
 
 
   //TODO - make these match original position - the Y pos for text is off for tags and words - why isn't the text descent needed here?? ny and w.wy should be (and is!) the same - but the text y pos is a few pixels off! 
   //Looks like the entire row size jumps one pixel when adding a new row... think this may cause the 1 px differentce
-  w.tagtext.x(nx + (w.rect.w/2) - (w.tagtext.bbox().w/2)  ); 
-  w.tagtext.y(ny + textpaddingY/2);// - texts.tagText.descent);
+  
+  if (w.tag != null) {
+    w.tagtext.x(nx + (w.bbox.w/2) - (w.tagtext.bbox().w/2)  ); 
+    w.tagtext.y(ny + textpaddingY/2);// - texts.tagText.descent);
+  }
 
   console.log("ny = " + ny);
   console.log("w.wy = " + w.wy);
@@ -802,16 +784,15 @@ function setWordToXW(word, xval, wval) {
 }
 
 function dragWord(x, y, word) {
-  dragElem = word; 
 
   var dragDir = checkDragDirection(x);
 
   if (dragDir == directions.BACKWARD) {
-    return checkIfCanMoveLeft(x + rowOffsetX, word.rectSVG.width(), y, word, false);
+    return checkIfCanMoveLeft(x + rowOffsetX, word.aboveRect.bbox().width, y, word, false);
   } else if (dragDir == directions.FORWARD) {
-    return checkIfCanMoveRight(x + rowOffsetX, word.rectSVG.width(), y, word, false);
+    return checkIfCanMoveRight(x + rowOffsetX, word.aboveRect.bbox().width, y, word, false);
   } else {
-    return {x:word.rectSVG.bbox().x, y:word.rectSVG.bbox().y};
+    return {x:word.aboveRect.bbox().x, y:word.aboveRect.bbox().y};
   }
 }
 
@@ -821,7 +802,7 @@ function checkIfSpaceToMoveUpARow(width, prevRow) {
 
   for (var i = prevRow.words.length - 1; i >= 0; i--) {
     prevWord = prevRow.words[i];
-    cw += prevWord.rect.w;
+    cw += prevWord.bbox.w;
 
     if (cw > rowWidth) {
 
@@ -831,7 +812,7 @@ function checkIfSpaceToMoveUpARow(width, prevRow) {
 
       var pw = 0;
       for (var ii = i; ii >= 0; ii--) {
-        pw += prevWord.rect.w;
+        pw += prevWord.bbox.w;
       }
 
       return checkIfSpaceToMoveUpARow(pw, rows[prevRow.idx - 1]);
@@ -851,7 +832,7 @@ function checkIfSpaceToMoveDownARow(width, nextRow) {
   //how many words on the next row would have to move forward for this word to fit on the next row?
   for (var i = 0; i < nextRow.words.length; i++) {
     nextWord = nextRow.words[i];
-    cw += nextWord.rect.w;
+    cw += nextWord.bbox.w;
 
     if (cw > rowWidth) {
       //console.log("no, width doesn't fit on this row #... " + nextRow.idx);
@@ -862,7 +843,7 @@ function checkIfSpaceToMoveDownARow(width, nextRow) {
 
       var nw = 0;
       for (var ii = i; ii < nextRow.words.length; ii++) {
-        nw += nextWord.rect.w;
+        nw += nextWord.bbox.w;
       }
 
       return checkIfSpaceToMoveDownARow(nw, rows[nextRow.idx + 1]);
@@ -912,7 +893,7 @@ function moveWordUpARow(w) {
   if (w.needsUpdate) {
     nx = svgWidth - edgepadding - w.tempW;
   } else {
-    nx = svgWidth - edgepadding - (w.rightX - w.leftX); //w.rectSVG.width();
+    nx = svgWidth - edgepadding - (w.rightX - w.leftX); //w.aboveRect.width();
   }
 
   moveWordToNewPosition(w, nx, ny);
@@ -933,14 +914,14 @@ function moveWordUpARow(w) {
 
 function setUpWordDraggable(word) {
 
-  addDragStartingAndEndingListeners(word.rectSVG);
+  addDragStartingAndEndingListeners(word.aboveRect);
 
-  var dragEvent = word.rectSVG.draggable(function(x,y) { 
+  var dragEvent = word.aboveRect.draggable(function(x,y) { 
     //return aaa(x,y);
 
     rowOffsetWord = word;
 
-    var returnXY = dragWord(x, word.rect.y, word);
+    var returnXY = dragWord(x, word.bbox.y, word);
 
     //console.log("in word.draggable");
 
@@ -958,6 +939,7 @@ function setUpWordDraggable(word) {
 function dragRow(x, y, row) {
 
   var prevY = row.rect.bbox().y;
+  //var prevY = row.bbox.y;
   var inc = y - prevY;
 
   var nextRowTooSmall = false;
@@ -965,7 +947,7 @@ function dragRow(x, y, row) {
 
   if (row.idx < rows.length - 1) {
 
-    nextY = (rows[row.idx + 1].lineBottom.bbox().y - wordHeight ) - (dragRectSide + dragRectMargin) - 5 ;
+    nextY = (rows[row.idx + 1].lineBottom.bbox().y - wordHeight ) - (dragRectSide + dragRectMargin) - rowpadding/2 ;
 
     if (y > nextY) {
       nextRowTooSmall = true;
@@ -992,7 +974,7 @@ function dragRow(x, y, row) {
     
 
   for (var i = 0; i < row.words.length; i++) {
-    setWordToY(row.words[i], row.lineBottom.bbox().y - row.words[i].rectSVG.height() );
+    setWordToY(row.words[i], row.lineBottom.bbox().y - row.words[i].aboveRect.height() );
     //updateLinksOfWord(row.words[i]);
   }
 
@@ -1002,13 +984,13 @@ function dragRow(x, y, row) {
   if (row.idx < rows.length - 1) {
 
     var nextrow = rows[row.idx + 1];
-    nextrow.rect.y(row.rect.bbox().y + row.rect.bbox().h + 5);
-    nextrow.rect.height( nextrow.dragRect.bbox().y - y - (5));
+    nextrow.rect.y(row.rect.bbox().y + row.rect.bbox().h + rowpadding/2);
+    nextrow.rect.height( nextrow.dragRect.bbox().y - y - (rowpadding/2));
 
     nextrow.ry = nextrow.rect.y();
     nextrow.rh = nextrow.rect.height();
     
-    nextrow.lineTop.y(row.rect.bbox().y + row.rect.bbox().h + 5);
+    nextrow.lineTop.y(row.rect.bbox().y + row.rect.bbox().h + rowpadding/2);
       
     for (var i = 0; i < nextrow.words.length; i++) {
       //updateLinksOfWord(nextrow.words[i]);
@@ -1031,12 +1013,16 @@ function dragRow(x, y, row) {
 
 
 function setWordToY(word, wy) {
-  word.rectSVG.y(wy);
-  word.rect = word.rectSVG.bbox();
+  word.aboveRect.y(wy);
+  word.bbox = word.aboveRect.bbox();
   word.underneathRect.y(wy);  
   word.leftHandle.y(wy);  
   word.rightHandle.y(wy);  
-  word.text.y(word.rect.y + textpaddingY); 
+  word.text.y(word.bbox.y + textpaddingY*2);
+  
+ if (word.tag != null) { 
+  word.tagtext.y(word.bbox.y + textpaddingY/2); 
+ }
 }
 
 function setUpRowDraggable(row) {

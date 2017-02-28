@@ -3,7 +3,16 @@ function createTestWords(numWords, minLength, maxLength) {
   var ws = [];
   for (var i = 0; i < numWords; i++) {
 
-    ws.push(new Word(getRandomString(minLength, maxLength), i));
+    var w = new Word(getRandomString(minLength, maxLength), i); 
+    
+    if (Math.random() < 0.5) {
+      w.tag = getRandomString(3,10);
+    }
+    
+
+    ws.push(w);
+
+    
     //ws.push(new Word(getLetterString(i, minLength, maxLength), i));
   }
 

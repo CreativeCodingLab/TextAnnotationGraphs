@@ -124,6 +124,7 @@ class Word {
     constructor(val, idx) {
         this.val = val;
         this.idx = idx;
+        this.tag = null;
         this.h = 0; //num slots
         this.ww = 0;
         this.wh = 0;
@@ -145,8 +146,8 @@ class Word {
         
         //variables created in first render...
         //this.row; //this is a row object, for row num do: this.row.idx
-        this.rectSVG = null; //the actual svg element 
-        this.rect = null; //the bbox of the svg element
+        this.aboveRect = null; //the actual svg element 
+        this.bbox = null; //the bbox of the svg element
         this.underneathRect = null; //not clickable, but solid rect on which other word parts are placed (text, handles, clickable rect)
         this.text = null; //the svg text
         this.tagtext = null; //the svg text for a tag
@@ -170,17 +171,20 @@ class Word {
     update() {
       
     //  console.log("\n***\nin update X = " + this.tempX + ", Y = " + this.tempY + ", W = " + this.tempW );
-      this.rectSVG.x(this.tempX);
-      this.rectSVG.width(this.tempW);
+      this.aboveRect.x(this.tempX);
+      this.aboveRect.width(this.tempW);
      
       this.underneathRect.x(this.tempX);
       this.underneathRect.width(this.tempW);
 
-      this.rect = this.rectSVG.bbox();
+      this.bbox = this.aboveRect.bbox();
       
       this.text.x(this.tempX + (this.tempW/2) - (this.text.bbox().w / 2) ); 
-      this.tagtext.x(this.tempX + (this.tempW/2) - (this.tagtext.bbox().w / 2) ); 
-    
+      
+      if (this.tag != null) {
+        this.tagtext.x(this.tempX + (this.tempW/2) - (this.tagtext.bbox().w / 2) ); 
+      }
+
       this.leftX = this.tempX; 
       this.rightX = this.tempX + this.tempW;
 
@@ -196,8 +200,9 @@ class Word {
       drawWord(this);
     }
 
+   
     getMinWidth() {
-      return Math.max(minWordWidth, this.tw);
+      return Math.max(minWordWidth, this.maxtextw);
     }
 
     /* must return a value less than row width - edgepaddings, else will try to reposition long words forever! */
