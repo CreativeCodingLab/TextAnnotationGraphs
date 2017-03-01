@@ -106,7 +106,7 @@ class FillStyle {
 
 class ArrowStyle {
   constructor(xoff, yoff, shapeFunc, fillStyle) {
-    console.log("in ArrowStyle constructor");
+    // console.log("in ArrowStyle constructor");
     this.xoff = xoff;
     this.yoff = yoff;
 

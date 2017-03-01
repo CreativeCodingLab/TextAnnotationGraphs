@@ -101,7 +101,7 @@ class Row {
    }
 
     draw() {
-      console.log(" in Row " + this.idx + " about to call drawRow");
+      //console.log(" in Row " + this.idx + " about to call drawRow");
       drawRow(this);
     }
 
@@ -170,7 +170,7 @@ class Word {
     //take temp values and update actual svg values
     update() {
       
-    //  console.log("\n***\nin update X = " + this.tempX + ", Y = " + this.tempY + ", W = " + this.tempW );
+    ////  console.log("\n***\nin update X = " + this.tempX + ", Y = " + this.tempY + ", W = " + this.tempW );
       this.aboveRect.x(this.tempX);
       this.aboveRect.width(this.tempW);
      
@@ -196,7 +196,7 @@ class Word {
     
 
     draw() {
-      //console.log(" in Word " + this.val + " about to call drawWord");
+      ////console.log(" in Word " + this.val + " about to call drawWord");
       drawWord(this);
     }
 
@@ -215,7 +215,7 @@ class Word {
     }
 
     static testMe(val) {
-      console.log(" in Word, static testMe, val = " + val);
+      //console.log(" in Word, static testMe, val = " + val);
       return '' + val + ''  + val;
 
     }
@@ -228,9 +228,9 @@ function checkSlotAvailabity(num, slotArr) {
 
   if (debug) {
     if (slotArr.indexOf(num) < 0) {
-      //console.log("slot " + num + " not found..." );
+      ////console.log("slot " + num + " not found..." );
     } else {
-      //console.log("slot " + num + " found! index = " + slotArr.indexOf(num));
+      ////console.log("slot " + num + " found! index = " + slotArr.indexOf(num));
     }
   }
 
@@ -268,7 +268,7 @@ function checkAndUpdateWordToWordSlots(link, startSlot) { //, minWord, minSide, 
             break;
           }
         }
-        //console.log("looking for slot " + x + " in right side of " + wordObjs[i].val);
+        ////console.log("looking for slot " + x + " in right side of " + wordObjs[i].val);
 
         if (checkSlotAvailabity(x, wordObjs[i].slotsR)) {
           slotIsAvailable = false;
@@ -341,7 +341,7 @@ function checkAndUpdateWordToWordSlots(link, startSlot) { //, minWord, minSide, 
     }
 
   } else {
-    //console.log("error: couldn't find any slot available out of 100 slots!");
+    ////console.log("error: couldn't find any slot available out of 100 slots!");
   }
 
   debugSlots();
@@ -355,14 +355,14 @@ function traceBackToWordObj(link, type, word, attach) {
   var retVal = {w: -1, s: -1};
 
   if (type == types.WORD) { 
-    // console.log("in traceback, node is a word, wordObj.val = " + word.val + ", attachSide = " + attach);
+    //// console.log("in traceback, node is a word, wordObj.val = " + word.val + ", attachSide = " + attach);
 
     retVal.w = word;
     retVal.s = attach;
     return retVal;
 
   } else {
-   // console.log("in traceback, node is a link, wordObj.val, attachSide = " + attach);
+   //// console.log("in traceback, node is a link, wordObj.val, attachSide = " + attach);
 
     var nextLink = word;
     var nextType, nextWord, nextAttach;  
@@ -381,7 +381,7 @@ function traceBackToWordObj(link, type, word, attach) {
     
     }
 
-   // console.log("now going to traceback... link: " + nextLink + ", nextType: " + nextType + " nextWord " + nextWord.val + ", nextAttach: " + nextAttach);
+   //// console.log("now going to traceback... link: " + nextLink + ", nextType: " + nextType + " nextWord " + nextWord.val + ", nextAttach: " + nextAttach);
     
     return traceBackToWordObj(nextLink, nextType, nextWord, nextAttach);
   }
@@ -395,35 +395,35 @@ function calcAttachPoints(link, strategy)  {
 
   if (link.ts == types.WORD) {
     rootS = link.leftWord.idx;
-    console.log("rootS = " + link.leftWord.id);
+    //console.log("rootS = " + link.leftWord.id);
 
   } else {
     rootS = link.leftWord.rootMinWord.idx;
-    console.log("rootS = " + link.leftWord.rootMinWord.id);
+    //console.log("rootS = " + link.leftWord.rootMinWord.id);
 
   }
 
   if (link.te == types.WORD) {
     rootE = link.rightWord.idx;
-    console.log("rootE = " + link.rightWord.id);
+    //console.log("rootE = " + link.rightWord.id);
 
   } else {
     rootE = link.rightWord.rootMaxWord.idx;
-    console.log("rootE = " + link.rightWord.rootMaxWord.id);
+    //console.log("rootE = " + link.rightWord.rootMaxWord.id);
   }
 
   if (strategy == strategies.CLOSEST) {
 
-    console.log("" + link.id + " strategy = CLOSEST");
+    //console.log("" + link.id + " strategy = CLOSEST");
 
     if (rootS < rootE) {
-      console.log("rootS < rootE (" +rootS +" < " + rootE +")");
+      //console.log("rootS < rootE (" +rootS +" < " + rootE +")");
       link.leftWord.nr += 1;
       link.rightWord.nl += 1;
       link.leftAttach = sides.RIGHT;
       link.rightAttach  = sides.LEFT; 
     } else {
-      console.log("rootS >= rootE (" +rootS +" >= " + rootE +")");
+      //console.log("rootS >= rootE (" +rootS +" >= " + rootE +")");
 
       link.leftWord.nl += 1;
       link.rightWord.nr += 1;
@@ -435,7 +435,7 @@ function calcAttachPoints(link, strategy)  {
 
     }
   } else if (strategy == strategies.FARTHEST) {
-    console.log("" + link.id + " strategy = FARTHEST");
+    //console.log("" + link.id + " strategy = FARTHEST");
 
 
     if (rootS < rootE) {
@@ -503,7 +503,7 @@ function flipIfNecessary(link) {
      )
   {
     
-    console.log("YES, " + link.id + " needs to flip!");
+    //console.log("YES, " + link.id + " needs to flip!");
 
     flip(link);
 
@@ -548,8 +548,8 @@ function createLink(link) {
 
   flipIfNecessary( link );
 
-  //console.log("printing link... " + link.id);
-  //console.log(link);
+  ////console.log("printing link... " + link.id);
+  ////console.log(link);
 
   //what slot is open? (ie figure out y position)
   link.h = checkAndUpdateWordToWordSlots(link, checkSlotAt); 
@@ -557,30 +557,30 @@ function createLink(link) {
 
   //testing attaching the PARENT link to each child..
 
-  //console.log("attaching the PARENT link to each child"); 
-  //console.log("leftWord = " + link.leftWord.id);
-  //console.log("rightWord = " + link.rightWord.id);
+  ////console.log("attaching the PARENT link to each child"); 
+  ////console.log("leftWord = " + link.leftWord.id);
+  ////console.log("rightWord = " + link.rightWord.id);
 
   //explicitly link parents of link (i.e., links that attach to this link)
   //if (link.leftAttach == 0) {
   if (link.leftAttach == sides.LEFT) {
-    //console.log(link.leftWord);
-    //console.log(link.leftWord.parentsL);
+    ////console.log(link.leftWord);
+    ////console.log(link.leftWord.parentsL);
     link.leftWord.parentsL.push(link);
   } else if (link.leftAttach == sides.RIGHT) {
-    //console.log(link.leftWord);
-    //console.log(link.leftWord.parentsR);
+    ////console.log(link.leftWord);
+    ////console.log(link.leftWord.parentsR);
     link.leftWord.parentsR.push(link);
   }
 
   //if (link.rightAttach == 0) {
   if (link.rightAttach == sides.LEFT) {
-    //console.log(link.rightWord);
-    //console.log(link.rightWord.parentsL);
+    ////console.log(link.rightWord);
+    ////console.log(link.rightWord.parentsL);
     link.rightWord.parentsL.push(link);
   } else if (link.rightAttach == sides.RIGHT) {
-    //console.log(link.rightWord);
-    //console.log(link.rightWord.parentsR);
+    ////console.log(link.rightWord);
+    ////console.log(link.rightWord.parentsR);
     link.rightWord.parentsR.push(link);
   }
 }

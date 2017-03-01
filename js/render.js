@@ -19,13 +19,61 @@ function drawWords(words) {
   }
 }
 
+// update the text and tag text of an existing word on the graph
+function redrawWords(words) {
+  words.forEach(function(word) {
+
+    if (word.text) {
+      word.text.remove();
+    }
+
+    var textw = 0, tagtextw = 0;
+    word.text = draw.text(function(add) {
+      var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
+      textw = textwh.w;
+
+      add.text(word.val)
+      .y(word.wy + textpaddingY*2) // - texts.wordText.descent)
+      .x(word.wx + (word.ww/2) - (textwh.w / 2))
+      .font(texts.wordText.style);
+    });
+
+
+    if (word.tagtext) {
+      word.tagtext.remove();
+    }
+
+    if (word.tag != null) {
+      tagtextwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
+      tagtextw = tagtextwh.w;
+      var tagXPos = word.twx + (word.ww/2) - (tagtextwh.w / 2);
+
+      //add in tag text, if the word has an associated tag
+      word.tagtext = draw.text(function(add) {
+
+        add.text(word.tag)
+        .y(word.wy + textpaddingY/2) // - texts.tagText.descent)
+        .x(tagXPos)
+        .font(texts.tagText.style);
+      });
+    }
+    word.maxtextw = Math.max(textw, tagtextw);
+
+    // rearrange
+    word.aboveRect.front();
+    word.leftHandle.front();
+    word.rightHandle.front();
+    realignWords();
+  });
+}
+
 
 //gets max slot number to be assigned to this word
 function getHeightForWord(word) {
     
   var maxH = 0;
 
-  //console.log("in getHeightForWord " + word.toString());
+  ////console.log("in getHeightForWord " + word.toString());
   for (var ii = 0; ii < word.slotsL.length; ii++) {
     maxH = Math.max(maxH, word.slotsL[ii]);
   }
@@ -34,7 +82,7 @@ function getHeightForWord(word) {
     maxH = Math.max(maxH, word.slotsR[ii]);
   }
 
-  //console.log("returning largest slot for this word = " + maxH );
+  ////console.log("returning largest slot for this word = " + maxH );
   return maxH;
 }
 
@@ -81,11 +129,11 @@ function checkIfNeedToResizeWords(row) {
 function recalculateRows(percChange) {
 
   
-  //console.log("\n\nin recalculateRows()");
+  ////console.log("\n\nin recalculateRows()");
   for (var i = 0; i < rows.length; i++) {
     
     var row = rows[i];
-    //console.log("\t) row #" + row.idx);
+    ////console.log("\t) row #" + row.idx);
 
     row.rect.width(draw.width());
 
@@ -119,25 +167,25 @@ function recalculateRows(percChange) {
     
     if (!everythingFits) { 
 
-      console.log("row " + row + ": nope, not everything fits!");
+      //console.log("row " + row + ": nope, not everything fits!");
 
       var resizeByHowMuch = checkIfNeedToResizeWords(row);
 
       if (resizeByHowMuch == 0) {
-         console.log("great, we just need to push words around");
+         //console.log("great, we just need to push words around");
       } else {
-         console.log("hmm... need to shrink the words if we can, by " + resizeByHowMuch);
-         console.log("is this possible?");
+         //console.log("hmm... need to shrink the words if we can, by " + resizeByHowMuch);
+         //console.log("is this possible?");
 
         var wordsFitInRow = true;
 
         if (row.getMinWidth() > (svgWidth - edgepadding*2)) {
-          console.log("words will not fit in row! have to adjust...");
+          //console.log("words will not fit in row! have to adjust...");
           wordsFitInRow = false;
         } 
 
         if (!wordsFitInRow) {
-           console.log("not possible... need to hop rows or make new row");
+           //console.log("not possible... need to hop rows or make new row");
 
           //we'll make all minimum width for now
           for (var ii = row.words.length-1; ii >= 0 ; ii--) {
@@ -147,7 +195,7 @@ function recalculateRows(percChange) {
           }
 
         } else {
-          console.log("yep! it's possbile");
+          //console.log("yep! it's possbile");
           //which words can shrink? and by how much?
 
           //copy words in row to a temp array, which we'll sort by room left
@@ -176,7 +224,7 @@ function recalculateRows(percChange) {
               setWordToXW(word, word.aboveRect.x(), minW);
               word.update();
 
-                console.log("ii = " + ii + ": can't shrink by " +  pixelsPerWord + ", so shrinking by much as possible = " + minus);
+                //console.log("ii = " + ii + ": can't shrink by " +  pixelsPerWord + ", so shrinking by much as possible = " + minus);
 
               numWords--;
               resizeByHowMuch -= minus;
@@ -186,7 +234,7 @@ function recalculateRows(percChange) {
               word.update();
               numWords--;
               resizeByHowMuch -= pixelsPerWord;
-              console.log("ii = " + ii + ": shrinking by pixelsPerWord = " +  pixelsPerWord);
+              //console.log("ii = " + ii + ": shrinking by pixelsPerWord = " +  pixelsPerWord);
             }
           }
         }
@@ -195,7 +243,7 @@ function recalculateRows(percChange) {
       //realignWords();
       
     } else { 
-      console.log("everything fits!");
+      //console.log("everything fits!");
     }
 
     
@@ -555,20 +603,20 @@ function drawAllLinks() {
 
     var lo = linkObjs[i];
 
-    //console.log("lo.numLineSegments = " + lo.numLineSegments + " and lo.polylineSVGs.length = " + lo.polylineSVGs.length);
-    //console.log(lo.polylineSVGs);
+    ////console.log("lo.numLineSegments = " + lo.numLineSegments + " and lo.polylineSVGs.length = " + lo.polylineSVGs.length);
+    ////console.log(lo.polylineSVGs);
 
     if (lo.numLineSegments != lo.polylineSVGs.length) {
       if (lo.numLineSegments < lo.polylineSVGs.length) {
         //need to remove the old SVGs
-        //console.log("REMOVING SVG");
+        ////console.log("REMOVING SVG");
         for (var ii = lo.numLineSegments; ii < lo.polylineSVGs.length; ii++) {
           lo.polylineSVGs[ii].remove();
           lo.polylineSVGs.splice(ii,1);
         }
       } else if (lo.numLineSegments > lo.polylineSVGs.length) {
         //need to add new SVGs
-        //console.log("ADDING SVG");
+        ////console.log("ADDING SVG");
         for (var ii = lo.polylineSVGs.length; ii < lo.numLineSegments; ii++) {
           lo.polylineSVGs[ii] = null;
         }
@@ -681,7 +729,7 @@ function redrawLinks(forceRedrawingAll) { //force redraw of all when resizing wi
 
   Object.keys(linkObjs).forEach(function(key) {
     if (linkObjs[key].needsUpdate || forceRedrawingAll == true) {
-      //console.log(" link #" + key + " needsUpdate");
+      ////console.log(" link #" + key + " needsUpdate");
       drawLink(linkObjs[key]);
       linkObjs[key].needsUpdate = false;
     }
@@ -767,10 +815,10 @@ function getLinkStyles(link, xpts) {
         ep = 1.0;
         //sx = totalLength;
         //sx += lastLength;
-        //console.log("does sx = totalLength? : " + sx + " = " + totalLength); //yep!
+        ////console.log("does sx = totalLength? : " + sx + " = " + totalLength); //yep!
       }
 
-      //console.log("in getLinkStyles : i = " + i + ", sp/ep = " + sp + ", " + ep);
+      ////console.log("in getLinkStyles : i = " + i + ", sp/ep = " + sp + ", " + ep);
       /*
       //Older way - simpler, but doesn't take into account total lenghth of link, so for instance, for a link with three rows, the middle row would always look the same, regardless of where the start and end were, but I think it looks nice when the gradient gives you a hint about how long the link is, especially to help differentiate other long links
       var sp = ((i) / link.numLineSegments) - 0.1;

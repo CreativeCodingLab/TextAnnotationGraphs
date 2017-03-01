@@ -3,12 +3,42 @@
 
 <!-- turns off text selection for svg canvas -->
 <style>
+body {
+  margin:0;
+  -moz-osx-font-smoothing:grayscale;
+  -webkit-font-smoothing:antialiased;
+}
+
 svg text {
-cursor: default;
--webkit-user-select: none;
--moz-user-select: none;
--ms-user-select: none;
-user-select: none;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#header {
+  position:absolute;
+  top:0;
+  left:0;
+  background:#333;
+  color:white;
+  width:calc( 100% - 20px );
+  padding:10px;
+}
+
+#drawing {
+  margin-top:30px;
+}
+
+button {
+  background:white;
+  border:none;
+  outline:none;
+}
+
+button.active {
+  background:#ff8;
 }
 
 .split-left {width:66.5%; overflow:hidden;}
@@ -30,6 +60,12 @@ user-select: none;
 </head>
 
 <body>
+
+<div id="header">
+  <input type="file">
+  <button class="active" id="POS">POS</button>
+  <button id="BIO">BIO</button>
+</div>
 
 <div id="drawing">
 
@@ -144,9 +180,23 @@ var wordObjs = [], linkObjs = [];
 
 // init objects/listeners...
 window.onload = function() {
-  var prevWidth = svgWidth;
 
-
+  // init buttons
+  const State = {
+    annotationStyle: document.querySelector('button.active').id,
+    setAnnotationStyle: function(type) {
+      this.annotationStyle = type;
+    }
+  };
+  const buttons = document.querySelectorAll('#header button');
+  buttons.forEach(function(clickableButton) {
+    clickableButton.onclick = function() {
+      buttons.forEach(button => {
+        button.classList.toggle('active', button == this);
+      })
+      State.setAnnotationStyle(this.id);
+    }
+  });
 
   /* load JSON file */
   var json = './data/angus-ex.json';
@@ -174,6 +224,7 @@ window.onload = function() {
    *  - second hierarchy: events--paths | arguments--themes
    */
   function parseData(data) {
+    console.log(data);
 
     let datamap = {}; // map Word instances to indices in data
 
@@ -191,6 +242,7 @@ window.onload = function() {
                   lemma: sentence.lemmas[k],
                   entity: sentence.entities[k]
                 }
+                w.tag = w.syntaxData.tag;
                 wordObjs.push(w);
                 datamap[i + '-' + j + '-' + k + '-' + word] = idx;
             })
@@ -292,6 +344,7 @@ window.onload = function() {
 
   /* init graph layout object */
   var Panel = new GraphLayout();
+  var prevWidth = svgWidth;
 
   function svgResize() {
     var w, widthPercChange; 
@@ -311,7 +364,7 @@ window.onload = function() {
      //   draw.size(svgWidth, draw.height());
 
     }
-      
+
     widthPercChange = svgWidth / prevWidth;
     prevWidth = svgWidth;
     //console.log("\nwidthPercChange = " + widthPercChange);
