@@ -75,7 +75,13 @@ class Link {
       
     }
 
-    
+    removeSVGs() {
+     this.polylineSVGs.forEach(svg => svg.remove());
+     this.labelRectSVGs.forEach(svg => svg.remove());
+     this.labelTextSVGs.forEach(svg => svg.remove());
+     this.arrow1Style.path.remove();
+     this.arrow2Style.path.remove();
+    }
 
     toString() {
         return this.id; 
