@@ -70,7 +70,7 @@ button.active {
 <div id="drawing">
 
 </div>
- 
+
 
 <script src="libs/d3.min.js"></script>
 <script src="libs/svg.js"></script>
@@ -311,7 +311,7 @@ window.onload = function() {
           var link = {
             sourceId: mention.arguments.controller.map(arg => arg.id),
             destinationId: [{
-              name: "controlled",
+              name: mention.displayLabel,
               id: mention.arguments.controlled.map(arg => arg.id)
             }],
             label: mention.displayLabel,
@@ -333,7 +333,7 @@ window.onload = function() {
               sourceId: null,
               destinationId: null,
               words: wordDataArray.slice(start, end),
-              label: mention.trigger.labels[0],
+              label: mention.displayLabel,
               id: mention.trigger.id,
               charOffset: mention.trigger.characterStartOffset,
               type: mention.trigger.type
@@ -437,7 +437,7 @@ window.onload = function() {
                   destinationData.object,
                   ltr ? 1 : -1, 
                   style,
-                  link.label,
+                  destination.name,
                   texts.linkText
                 );
 
