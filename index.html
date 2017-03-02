@@ -190,7 +190,7 @@ window.onload = function() {
         wordObjs.forEach(w => w.tag = w.data.syntaxData.tag);
       }
       else {
-        wordObjs.forEach(w => w.tag = '');
+        wordObjs.forEach(w => w.tag = w.data.bioData.tag);
       }
       redrawWords(wordObjs);
     }
@@ -251,6 +251,9 @@ window.onload = function() {
             charLocationInSentence: sentence.startOffsets[k],
             syntaxData: {
               tag: sentence.tags[k]
+            },
+            bioData: {
+              tag: ''
             }
           };
 
@@ -292,6 +295,7 @@ window.onload = function() {
             words: wordDataArray.slice(start, end),
             label: mention.displayLabel,
             id: mention.id,
+            charOffset: mention.characterStartOffset,
             type: mention.type
           };
           mentionDataArray.push(link);
@@ -306,12 +310,13 @@ window.onload = function() {
           }
           var link = {
             sourceId: mention.arguments.controller.map(arg => arg.id),
-            destinationId: {
+            destinationId: [{
               name: "controlled",
               id: mention.arguments.controlled.map(arg => arg.id)
-            },
+            }],
             label: mention.displayLabel,
             id: mention.id,
+            charOffset: mention.characterStartOffset,
             type: mention.type
           };
 
@@ -319,12 +324,29 @@ window.onload = function() {
           return link;
         case "CorefEventMention":
           // has a trigger & argument(s)
+
+          if (mention.trigger.type == "TextBoundMention") {
+            let start = wordDataMap[[mention.trigger.document, mention.trigger.sentence, mention.trigger.tokenInterval.start].join('-')];
+            let end = wordDataMap[[mention.trigger.document, mention.trigger.sentence, mention.trigger.tokenInterval.end].join('-')];
+
+            var link = {
+              sourceId: null,
+              destinationId: null,
+              words: wordDataArray.slice(start, end),
+              label: mention.trigger.labels[0],
+              id: mention.trigger.id,
+              charOffset: mention.trigger.characterStartOffset,
+              type: mention.trigger.type
+            };
+            mentionDataArray.push(link);
+          }
           var link = {
             sourceId: [mention.trigger.id],
             destinationId: Object.keys(mention.arguments).map(key => {
 
               return {
                 name: key,
+                charOffset: mention.characterStartOffset,
                 id: mention.arguments[key].map(arg => arg.id)
               }
 
@@ -344,7 +366,9 @@ window.onload = function() {
 
     // done parsing into semi-flat datasets...
 
-    console.log(wordDataArray, syntaxDataArray, mentionDataArray);
+    console.log('words',wordDataArray);
+    console.log('pos',syntaxDataArray);
+    console.log('events',mentionDataArray);
 
     wordDataArray.forEach(function(word) {
       let idx = wordObjs.length;
@@ -355,6 +379,8 @@ window.onload = function() {
       else {
         w.tag = '';
       }
+      // create circular reference between data object and Word instance
+      word.object = w;
       w.data = word;
       wordObjs.push(w);
     })
@@ -362,22 +388,84 @@ window.onload = function() {
     linkObjs = [];
     if (State.annotationStyle == 'POS') {
       // syntaxDataArray.forEach
-    }
-    else {
+    // }
+    // else {
       mentionDataArray.forEach(function(link) {
+        if (link.words) {
 
-      })
+          // TODO: bundle words in a textbound annotation
+          let linkObject = new Link(
+            link.words[0].object,
+            link.words[link.words.length-1].object,
+            directions.NONE,
+            styles.simpleLine,
+            link.label,
+            texts.linkText
+          );
+
+          // create circular reference to link and data
+          linkObject.data = link;
+          link.object = linkObject;
+          linkObjs.push( linkObject );
+          createLink(linkObject);
+        }
+        else {
+          // TODO: bundle links
+          link.sourceId.forEach(function(source) {
+            link.destinationId.forEach(function(destination) {
+
+              let sourceData = mentionDataArray.find(l => l.id == source);
+              let destinationData = mentionDataArray.find(l => l.id == destination.id);
+
+              let ltr = sourceData.charOffset < destinationData.charOffset;
+              let style;
+              switch (link.label) {
+                case "Positive_regulation":
+                  style = ltr ? styles.gradientLine2 : styles.gradientLine2r;
+                  break;
+                case "Negative_regulation":
+                  style = ltr ? styles.gradientLine1 : styles.gradientLine1r;
+                  break;
+                default:
+                  style = styles.noneLine;
+                  break;
+              }
+
+              if (sourceData.object && destinationData.object) {
+                let linkObject = new Link(
+                  sourceData.object,
+                  destinationData.object,
+                  ltr ? 1 : -1, 
+                  style,
+                  link.label,
+                  texts.linkText
+                );
+
+                // create circular reference to link and data
+                linkObject.data = link;
+                link.object = linkObject;
+                linkObjs.push( linkObject );
+                createLink(linkObject);
+              }
+              else {
+                console.log(':(')
+              }
+
+
+            });
+          });
+        }
+      });
     }
-
 
     // draw
-    linkObjs.sort(function(a, b) {
-      var d1 = Math.abs(a.s.idx - a.e.idx);
-      var d2 = Math.abs(b.s.idx - b.e.idx);
+    // linkObjs.sort(function(a, b) {
+    //   var d1 = Math.abs(a.s.idx - a.e.idx);
+    //   var d2 = Math.abs(b.s.idx - b.e.idx);
 
-      return d1 - d2; 
-    });
-    linkObjs.forEach(createLink);
+    //   return d1 - d2; 
+    // });
+    // linkObjs.forEach(createLink);
 
     drawWords(wordObjs);
     drawLinks(linkObjs);
