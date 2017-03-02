@@ -3,8 +3,8 @@ class Link {
     constructor(s, e, direction, style, textStr, textStyle) {
         this.s = s;
         this.e = e;
+        this.id = `(${this.s.id}, ${this.e.id})`;
         
-        //directions and types can be different things
         this.direction = direction; //see enums.directions
         this.style = style;
 
@@ -16,9 +16,11 @@ class Link {
         this.parentsR = [];
         this.h = 0; //which slot is it in
         this.lines = [];
-        this.id = `(${this.s.id}, ${this.e.id})`;
 
-        this.type = "LINK";
+        this.rootMinWord = null;
+        this.rootMaxWord = null;
+
+
         if (this.s instanceof Word) {
           this.ts = types.WORD;
         } else if (this.s instanceof Link) {
@@ -66,21 +68,10 @@ class Link {
         this.labelRectSVGs = [];
         this.labelTextSVGs = [];
        
-        //this.polyline = null;
-        //this.polylineSVG = null;
         this.label = null;
         this.labelRectSVG = null;
         this.labelTextSVG = null;
-       //this.arrow1SVG = null;
-        //this.arrow2SVG = null;
 
-  
-
-
-
-        //this.rootMinWord
-        //this.rootMaxWord
-        
       
     }
 
@@ -110,7 +101,7 @@ class Row {
    }
 
     draw() {
-      console.log(" in Row " + this.idx + " about to call drawRow");
+      //console.log(" in Row " + this.idx + " about to call drawRow");
       drawRow(this);
     }
 
@@ -133,6 +124,7 @@ class Word {
     constructor(val, idx) {
         this.val = val;
         this.idx = idx;
+        this.tag = null;
         this.h = 0; //num slots
         this.ww = 0;
         this.wh = 0;
@@ -148,18 +140,20 @@ class Word {
         this.id = `(${this.val}, ${this.idx})`;
         this.percPos = 0.0; //this is used to indicate where along the row the word is positioned, used when resizing the browser's width, or when popping open a right panel.
 
-        this.type = "WORD";
-
         this.isSelected = false;
         this.isHovered = false;
         this.isDragging = false;
         
         //variables created in first render...
-        //this.row; //this is a row object, for num do: this.row.idx
-        this.rectSVG = null; //the actual svg element 
-        this.rect = null; //the bbox of the svg element
+        //this.row; //this is a row object, for row num do: this.row.idx
+        this.aboveRect = null; //the actual svg element 
+        this.bbox = null; //the bbox of the svg element
         this.underneathRect = null; //not clickable, but solid rect on which other word parts are placed (text, handles, clickable rect)
         this.text = null; //the svg text
+        this.tagtext = null; //the svg text for a tag
+
+        this.maxtextw = null; //either the word text width, or the tag text with, whichever is wider
+
         this.leftHandle = null; //the left draggable handle to resize word
         this.rightHandle = null; //the right draggable handle to resize word
          
@@ -176,17 +170,21 @@ class Word {
     //take temp values and update actual svg values
     update() {
       
-    //  console.log("\n***\nin update X = " + this.tempX + ", Y = " + this.tempY + ", W = " + this.tempW );
-      this.rectSVG.x(this.tempX);
-      this.rectSVG.width(this.tempW);
+    ////  console.log("\n***\nin update X = " + this.tempX + ", Y = " + this.tempY + ", W = " + this.tempW );
+      this.aboveRect.x(this.tempX);
+      this.aboveRect.width(this.tempW);
      
       this.underneathRect.x(this.tempX);
       this.underneathRect.width(this.tempW);
 
-      this.rect = this.rectSVG.bbox();
+      this.bbox = this.aboveRect.bbox();
       
       this.text.x(this.tempX + (this.tempW/2) - (this.text.bbox().w / 2) ); 
-    
+      
+      if (this.tag != null) {
+        this.tagtext.x(this.tempX + (this.tempW/2) - (this.tagtext.bbox().w / 2) ); 
+      }
+
       this.leftX = this.tempX; 
       this.rightX = this.tempX + this.tempW;
 
@@ -198,12 +196,13 @@ class Word {
     
 
     draw() {
-      //console.log(" in Word " + this.val + " about to call drawWord");
+      ////console.log(" in Word " + this.val + " about to call drawWord");
       drawWord(this);
     }
 
+   
     getMinWidth() {
-      return Math.max(minWordWidth, this.tw);
+      return Math.max(minWordWidth, this.maxtextw);
     }
 
     /* must return a value less than row width - edgepaddings, else will try to reposition long words forever! */
@@ -216,7 +215,7 @@ class Word {
     }
 
     static testMe(val) {
-      console.log(" in Word, static testMe, val = " + val);
+      //console.log(" in Word, static testMe, val = " + val);
       return '' + val + ''  + val;
 
     }
@@ -229,9 +228,9 @@ function checkSlotAvailabity(num, slotArr) {
 
   if (debug) {
     if (slotArr.indexOf(num) < 0) {
-      //console.log("slot " + num + " not found..." );
+      ////console.log("slot " + num + " not found..." );
     } else {
-      //console.log("slot " + num + " found! index = " + slotArr.indexOf(num));
+      ////console.log("slot " + num + " found! index = " + slotArr.indexOf(num));
     }
   }
 
@@ -269,7 +268,7 @@ function checkAndUpdateWordToWordSlots(link, startSlot) { //, minWord, minSide, 
             break;
           }
         }
-        //console.log("looking for slot " + x + " in right side of " + wordObjs[i].val);
+        ////console.log("looking for slot " + x + " in right side of " + wordObjs[i].val);
 
         if (checkSlotAvailabity(x, wordObjs[i].slotsR)) {
           slotIsAvailable = false;
@@ -342,7 +341,7 @@ function checkAndUpdateWordToWordSlots(link, startSlot) { //, minWord, minSide, 
     }
 
   } else {
-    //console.log("error: couldn't find any slot available out of 100 slots!");
+    ////console.log("error: couldn't find any slot available out of 100 slots!");
   }
 
   debugSlots();
@@ -356,14 +355,14 @@ function traceBackToWordObj(link, type, word, attach) {
   var retVal = {w: -1, s: -1};
 
   if (type == types.WORD) { 
-    // console.log("in traceback, node is a word, wordObj.val = " + word.val + ", attachSide = " + attach);
+    //// console.log("in traceback, node is a word, wordObj.val = " + word.val + ", attachSide = " + attach);
 
     retVal.w = word;
     retVal.s = attach;
     return retVal;
 
   } else {
-   // console.log("in traceback, node is a link, wordObj.val, attachSide = " + attach);
+   //// console.log("in traceback, node is a link, wordObj.val, attachSide = " + attach);
 
     var nextLink = word;
     var nextType, nextWord, nextAttach;  
@@ -382,7 +381,7 @@ function traceBackToWordObj(link, type, word, attach) {
     
     }
 
-   // console.log("now going to traceback... link: " + nextLink + ", nextType: " + nextType + " nextWord " + nextWord.val + ", nextAttach: " + nextAttach);
+   //// console.log("now going to traceback... link: " + nextLink + ", nextType: " + nextType + " nextWord " + nextWord.val + ", nextAttach: " + nextAttach);
     
     return traceBackToWordObj(nextLink, nextType, nextWord, nextAttach);
   }
@@ -396,35 +395,35 @@ function calcAttachPoints(link, strategy)  {
 
   if (link.ts == types.WORD) {
     rootS = link.leftWord.idx;
-    console.log("rootS = " + link.leftWord.id);
+    //console.log("rootS = " + link.leftWord.id);
 
   } else {
     rootS = link.leftWord.rootMinWord.idx;
-    console.log("rootS = " + link.leftWord.rootMinWord.id);
+    //console.log("rootS = " + link.leftWord.rootMinWord.id);
 
   }
 
   if (link.te == types.WORD) {
     rootE = link.rightWord.idx;
-    console.log("rootE = " + link.rightWord.id);
+    //console.log("rootE = " + link.rightWord.id);
 
   } else {
     rootE = link.rightWord.rootMaxWord.idx;
-    console.log("rootE = " + link.rightWord.rootMaxWord.id);
+    //console.log("rootE = " + link.rightWord.rootMaxWord.id);
   }
 
   if (strategy == strategies.CLOSEST) {
 
-    console.log("" + link.id + " strategy = CLOSEST");
+    //console.log("" + link.id + " strategy = CLOSEST");
 
     if (rootS < rootE) {
-      console.log("rootS < rootE (" +rootS +" < " + rootE +")");
+      //console.log("rootS < rootE (" +rootS +" < " + rootE +")");
       link.leftWord.nr += 1;
       link.rightWord.nl += 1;
       link.leftAttach = sides.RIGHT;
       link.rightAttach  = sides.LEFT; 
     } else {
-      console.log("rootS >= rootE (" +rootS +" >= " + rootE +")");
+      //console.log("rootS >= rootE (" +rootS +" >= " + rootE +")");
 
       link.leftWord.nl += 1;
       link.rightWord.nr += 1;
@@ -436,7 +435,7 @@ function calcAttachPoints(link, strategy)  {
 
     }
   } else if (strategy == strategies.FARTHEST) {
-    console.log("" + link.id + " strategy = FARTHEST");
+    //console.log("" + link.id + " strategy = FARTHEST");
 
 
     if (rootS < rootE) {
@@ -504,7 +503,7 @@ function flipIfNecessary(link) {
      )
   {
     
-    console.log("YES, " + link.id + " needs to flip!");
+    //console.log("YES, " + link.id + " needs to flip!");
 
     flip(link);
 
@@ -549,8 +548,8 @@ function createLink(link) {
 
   flipIfNecessary( link );
 
-  //console.log("printing link... " + link.id);
-  //console.log(link);
+  ////console.log("printing link... " + link.id);
+  ////console.log(link);
 
   //what slot is open? (ie figure out y position)
   link.h = checkAndUpdateWordToWordSlots(link, checkSlotAt); 
@@ -558,30 +557,30 @@ function createLink(link) {
 
   //testing attaching the PARENT link to each child..
 
-  //console.log("attaching the PARENT link to each child"); 
-  //console.log("leftWord = " + link.leftWord.id);
-  //console.log("rightWord = " + link.rightWord.id);
+  ////console.log("attaching the PARENT link to each child"); 
+  ////console.log("leftWord = " + link.leftWord.id);
+  ////console.log("rightWord = " + link.rightWord.id);
 
   //explicitly link parents of link (i.e., links that attach to this link)
   //if (link.leftAttach == 0) {
   if (link.leftAttach == sides.LEFT) {
-    //console.log(link.leftWord);
-    //console.log(link.leftWord.parentsL);
+    ////console.log(link.leftWord);
+    ////console.log(link.leftWord.parentsL);
     link.leftWord.parentsL.push(link);
   } else if (link.leftAttach == sides.RIGHT) {
-    //console.log(link.leftWord);
-    //console.log(link.leftWord.parentsR);
+    ////console.log(link.leftWord);
+    ////console.log(link.leftWord.parentsR);
     link.leftWord.parentsR.push(link);
   }
 
   //if (link.rightAttach == 0) {
   if (link.rightAttach == sides.LEFT) {
-    //console.log(link.rightWord);
-    //console.log(link.rightWord.parentsL);
+    ////console.log(link.rightWord);
+    ////console.log(link.rightWord.parentsL);
     link.rightWord.parentsL.push(link);
   } else if (link.rightAttach == sides.RIGHT) {
-    //console.log(link.rightWord);
-    //console.log(link.rightWord.parentsR);
+    ////console.log(link.rightWord);
+    ////console.log(link.rightWord.parentsR);
     link.rightWord.parentsR.push(link);
   }
 }

@@ -19,13 +19,36 @@ function drawWords(words) {
   }
 }
 
+// update the text and tag text of an existing word on the graph
+function redrawWords(words) {
+  words.forEach(function(word) {
+
+    if (word.text) {
+      word.text.text(word.val);
+    }
+
+    if (word.tagtext != null) {
+      word.tagtext.text(word.tag || '');
+    }
+
+    // TODO: redefine maxtextw
+    // word.maxtextw = Math.max(textw, tagtextw);
+
+    // rearrange
+    word.aboveRect.front();
+    word.leftHandle.front();
+    word.rightHandle.front();
+    realignWords();
+  });
+}
+
 
 //gets max slot number to be assigned to this word
 function getHeightForWord(word) {
     
   var maxH = 0;
 
-  //console.log("in getHeightForWord " + word.toString());
+  ////console.log("in getHeightForWord " + word.toString());
   for (var ii = 0; ii < word.slotsL.length; ii++) {
     maxH = Math.max(maxH, word.slotsL[ii]);
   }
@@ -34,7 +57,7 @@ function getHeightForWord(word) {
     maxH = Math.max(maxH, word.slotsR[ii]);
   }
 
-  //console.log("returning largest slot for this word = " + maxH );
+  ////console.log("returning largest slot for this word = " + maxH );
   return maxH;
 }
 
@@ -67,7 +90,7 @@ function checkIfNeedToResizeWords(row) {
   var totalW = 0;
   for (var ii = 0; ii < row.words.length; ii++) {
     var word = row.words[ii];
-    totalW += word.rectSVG.width();
+    totalW += word.aboveRect.width();
   }
 
   if (totalW > svgWidth - (edgepadding*2)) {
@@ -81,11 +104,11 @@ function checkIfNeedToResizeWords(row) {
 function recalculateRows(percChange) {
 
   
-  //console.log("\n\nin recalculateRows()");
+  ////console.log("\n\nin recalculateRows()");
   for (var i = 0; i < rows.length; i++) {
     
     var row = rows[i];
-    //console.log("\t) row #" + row.idx);
+    ////console.log("\t) row #" + row.idx);
 
     row.rect.width(draw.width());
 
@@ -102,9 +125,9 @@ function recalculateRows(percChange) {
       var word = row.words[ii];
 
       //first try to expand or shrink size of words - but no smaller than the word's min width
-      var nw = Math.max( Math.min(word.getMaxWidth(), word.rectSVG.width() * percChange), word.getMinWidth() );
+      var nw = Math.max( Math.min(word.getMaxWidth(), word.aboveRect.width() * percChange), word.getMinWidth() );
 
-      //var nw = Math.max(word.getMinWidth(), word.rectSVG.width() * percChange);
+      //var nw = Math.max(word.getMinWidth(), word.aboveRect.width() * percChange);
       //nw = Math.max(nw, word.getMaxWidth());
 
       var nx = edgepadding + (word.percPos * (svgWidth-edgepadding*2));
@@ -119,25 +142,25 @@ function recalculateRows(percChange) {
     
     if (!everythingFits) { 
 
-      console.log("row " + row + ": nope, not everything fits!");
+      //console.log("row " + row + ": nope, not everything fits!");
 
       var resizeByHowMuch = checkIfNeedToResizeWords(row);
 
       if (resizeByHowMuch == 0) {
-         console.log("great, we just need to push words around");
+         //console.log("great, we just need to push words around");
       } else {
-         console.log("hmm... need to shrink the words if we can, by " + resizeByHowMuch);
-         console.log("is this possible?");
+         //console.log("hmm... need to shrink the words if we can, by " + resizeByHowMuch);
+         //console.log("is this possible?");
 
         var wordsFitInRow = true;
 
         if (row.getMinWidth() > (svgWidth - edgepadding*2)) {
-          console.log("words will not fit in row! have to adjust...");
+          //console.log("words will not fit in row! have to adjust...");
           wordsFitInRow = false;
         } 
 
         if (!wordsFitInRow) {
-           console.log("not possible... need to hop rows or make new row");
+           //console.log("not possible... need to hop rows or make new row");
 
           //we'll make all minimum width for now
           for (var ii = row.words.length-1; ii >= 0 ; ii--) {
@@ -147,7 +170,7 @@ function recalculateRows(percChange) {
           }
 
         } else {
-          console.log("yep! it's possbile");
+          //console.log("yep! it's possbile");
           //which words can shrink? and by how much?
 
           //copy words in row to a temp array, which we'll sort by room left
@@ -157,8 +180,8 @@ function recalculateRows(percChange) {
           }
 
           newArray.sort(function(a, b) {
-            var d1 = a.rectSVG.width() - a.getMinWidth();
-            var d2 = b.rectSVG.width() - b.getMinWidth();
+            var d1 = a.aboveRect.width() - a.getMinWidth();
+            var d2 = b.aboveRect.width() - b.getMinWidth();
             return d1 - d2; 
           });
 
@@ -170,23 +193,23 @@ function recalculateRows(percChange) {
 
             var minW = word.getMinWidth();
 
-            if (word.rectSVG.width() - pixelsPerWord < minW) {
+            if (word.aboveRect.width() - pixelsPerWord < minW) {
 
-              var minus = word.rectSVG.width() - minW;
-              setWordToXW(word, word.rectSVG.x(), minW);
+              var minus = word.aboveRect.width() - minW;
+              setWordToXW(word, word.aboveRect.x(), minW);
               word.update();
 
-                console.log("ii = " + ii + ": can't shrink by " +  pixelsPerWord + ", so shrinking by much as possible = " + minus);
+                //console.log("ii = " + ii + ": can't shrink by " +  pixelsPerWord + ", so shrinking by much as possible = " + minus);
 
               numWords--;
               resizeByHowMuch -= minus;
               pixelsPerWord = resizeByHowMuch / numWords; 
             } else {
-              setWordToXW(word, word.rectSVG.x(), word.rectSVG.width() - pixelsPerWord);
+              setWordToXW(word, word.aboveRect.x(), word.aboveRect.width() - pixelsPerWord);
               word.update();
               numWords--;
               resizeByHowMuch -= pixelsPerWord;
-              console.log("ii = " + ii + ": shrinking by pixelsPerWord = " +  pixelsPerWord);
+              //console.log("ii = " + ii + ": shrinking by pixelsPerWord = " +  pixelsPerWord);
             }
           }
         }
@@ -195,7 +218,7 @@ function recalculateRows(percChange) {
       //realignWords();
       
     } else { 
-      console.log("everything fits!");
+      //console.log("everything fits!");
     }
 
     
@@ -203,7 +226,6 @@ function recalculateRows(percChange) {
   } //end loop rows
 
   realignWords();
-
 
 }
 
@@ -217,7 +239,7 @@ function realignWords() {
     //may not use the move left, might be odd when it jumps up instead of down...
     for (var ii = row.words.length-1; ii >= 0 ; ii--) {
       var word = row.words[ii];
-      checkIfCanMoveLeft(word.rectSVG.x(), word.rectSVG.width(), word.rectSVG.y(), word, true);
+      checkIfCanMoveLeft(word.aboveRect.x(), word.aboveRect.width(), word.aboveRect.y(), word, true);
       word.update();
     }
     
@@ -225,7 +247,7 @@ function realignWords() {
 
     for (var ii = 0; ii < row.words.length; ii++) {
       var word = row.words[ii];
-      checkIfCanMoveRight(word.rectSVG.x(), word.rectSVG.width(), word.rectSVG.y(), word, false);
+      checkIfCanMoveRight(word.aboveRect.x(), word.aboveRect.width(), word.aboveRect.y(), word, false);
       word.update();
     }
   }
@@ -243,9 +265,7 @@ function removeLastRow() {
   rows[rows.length-1].dragRect.remove();
   rows.pop();
 
-  
   changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
-
 }
 
 function changeSizeOfSVGPanel(w, h) {
@@ -263,7 +283,7 @@ function appendRow() {
 
   row.maxSlots = 0;
 
-  row.ry = 5 + rows[row.idx - 1].rect.bbox().y + rows[row.idx - 1].rect.bbox().h;
+  row.ry = rowpadding/2 + rows[row.idx - 1].rect.bbox().y + rows[row.idx - 1].rect.bbox().h;
   row.rh = rows[row.idx - 1].rect.bbox().h; 
 
   if (row.idx % 2 == 0) {
@@ -319,12 +339,31 @@ function setUpRowsAndWords(words) {
 
   var rowNum = 0;
   var row;
+  var x = 0;
 
+  //loop through each Word and figure out its Row, x position, and width
   for (var i = 0; i < words.length; i++) {
 
-    var wh = getTextWidthAndHeight(wordObjs[i].val, texts.wordText.style);
+    var word = words[i];
+ 
+    var wh = getTextWidthAndHeight(word.val, texts.wordText.style);
 
-    if (i == 0) {
+    //calculate the width of the Word
+    word.tw = wh.w;
+    word.maxtextw = wh.w;
+    
+      if (word.tag != null) {
+      var twh = getTextWidthAndHeight(word.tag, texts.tagText.style);
+      
+      if (twh.w > word.tw) {
+        word.tw = twh.w; //think tw is ONLY used for checking minWidth, so this should be ok
+        word.maxtextw = twh.w;
+      }
+    }
+   
+    //what row will this Word belong to?
+    
+    if (i == 0) { //if first word, then obviously in first row
 
       rowNum = 0;
       row = new Row(rowNum);
@@ -333,7 +372,7 @@ function setUpRowsAndWords(words) {
 
       x = edgepadding;
 
-    } else if (x + wh.w + (textpaddingX*2) + edgepadding > svgWidth) {
+    } else if (x + word.tw + (textpaddingX*2) + edgepadding > svgWidth) { //if would be wider than the screen width, then start a new row
 
       rowNum++;
       row = new Row(rowNum);
@@ -343,27 +382,37 @@ function setUpRowsAndWords(words) {
       x = edgepadding;
     }
 
-    var word = words[i];
     row.words.push(word);
     row.maxSlots = Math.max(row.maxSlots, getHeightForWord(word));
     word.row = row;
-    word.tw = wh.w;
     word.th = texts.wordText.maxHeight; //guaranteed to be the same for all words
 
-    x += wh.w + (textpaddingX*2) + wordpadding;
+    //calculate x position and width of the Word
+    word.wx = x;
+    word.ww = word.tw + (textpaddingX * 2);
+
+
+    if (word.tag != null) {
+      word.tww = word.ww; //maxtextw + (textpaddingX * 2);
+      word.twx = word.wx;
+    }
+
+    x += word.ww + wordpadding;
   }
 
+
+  // now that we've assign each word to a row, figure out the height of the row (which is based on the maximum slots that the links attached to Words in the row occupy (or links that pass over those words). 
   for (var i = 0; i < rows.length; i++) {
 
     var row = rows[i];
 
     if (i == 0) {
-      row.ry = 5;
+      row.ry = rowpadding / 2;
     } else {
-      row.ry = 5 + rows[row.idx - 1].ry + rows[row.idx - 1].rh;
+      row.ry = rowpadding / 2 + rows[row.idx - 1].ry + rows[row.idx - 1].rh;
     }
 
-    row.rh = 10 + ((textpaddingY * 2) + texts.wordText.maxHeight) + (levelpadding * row.maxSlots);
+    row.rh = rowpadding + ((textpaddingY * 2) + texts.wordText.maxHeight) + (levelpadding * row.maxSlots);
 
     if (row.idx % 2 == 0) {
       row.color = evenRowsColor;
@@ -371,69 +420,76 @@ function setUpRowsAndWords(words) {
       row.color = oddRowsColor;
     }
 
-    var x = edgepadding;
     for (var ii = 0; ii < row.words.length; ii++) {
-
       var word = row.words[ii];
 
-      word.h = 0; //the number of link levels is 0 for the word
-
-      var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
-      word.ww = textwh.w + (textpaddingX * 2);
-      word.wx = x;
-
+      word.h = 0; //the number of link levels is 0 for the word itself
       word.wh = texts.wordText.maxHeight + textpaddingY*2; 
       word.wy = row.ry + row.rh - word.wh;
 
-      x += textwh.w + (textpaddingX*2) + wordpadding;
+      if (word.tag != null) {
+        var tag_textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
+        word.twh = texts.tagText.maxHeight + textpaddingY*2; 
+        word.twy = word.wy - word.twh;
+      }
 
       row.baseHeight = word.wy; //that is, where the top of the word is in the row.
-
     }
   }
 }
 
+
 function drawWord(word) {
 
-  var underneathRect = draw.rect( word.ww, word.wh ).x( word.wx ).y( word.wy ).style(styles.wordFill.style);
+  word.underneathRect = draw.rect( word.ww, word.wh ).x( word.wx ).y( word.wy ).style(styles.wordFill.style);
 
   var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
 
-  var text = draw.text(function(add) {
+  word.text = draw.text(function(add) {
 
     add.text(word.val)
-    .y(word.wy + textpaddingY - texts.wordText.descent)
+    .y(word.wy + textpaddingY*2) // - texts.wordText.descent)
     .x(word.wx + (word.ww/2) - (textwh.w / 2))
     .font(texts.wordText.style);
   });
 
+
+  if (word.tag != null) {
+    var textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
+    var tagXPos = word.twx + (word.ww/2) - (textwh.w / 2);
+
+    //add in tag text, if the word has an associated tag
+    word.tagtext = draw.text(function(add) {
+
+      add.text(word.tag)
+      .y(word.wy + textpaddingY/2) // - texts.tagText.descent)
+      .x(tagXPos)
+      .font(texts.tagText.style);
+    });
+  }
+
   //this rect is invisible, but used for detecting mouseevents, as its drawn on top of the text+underneathRect (which provided the color+fill+stroke)
-  var rect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
+  word.aboveRect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
 
-  var leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
-
-
-  var rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
+  word.leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
 
 
+  word.rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
 
-  word.text = text;
-  word.rectSVG = rect;
-  word.underneathRect = underneathRect;
-  word.rect = rect.bbox();
-  word.leftX = rect.bbox().x;
-  word.rightX = rect.bbox().x + rect.bbox().w;
-  word.leftHandle = leftHandle;
-  word.rightHandle = rightHandle;
+
+  word.bbox = word.aboveRect.bbox();
+  word.leftX = word.aboveRect.bbox().x;
+  word.rightX = word.aboveRect.bbox().x + word.aboveRect.bbox().w;
   word.percPos = (word.leftX-edgepadding) / (svgWidth-edgepadding*2);
 
-  setUpLeftHandleDraggable(leftHandle, rect, text, word, word.idx );
-  setUpRightHandleDraggable(rightHandle, rect, text, word, word.idx );
 
+  //set up mouse interactions
+  setUpLeftHandleDraggable(word);
+  setUpRightHandleDraggable(word); 
   setUpWordDraggable(word); 
   setupMouseOverInteractions(word);
 
-  rect.dblclick(function() {
+  word.aboveRect.dblclick(function() {
     word.isSelected = !word.isSelected;
 
     if (word.isSelected) {
@@ -442,10 +498,10 @@ function drawWord(word) {
     else {
       style = word.isHovered ? "hover" : "style";
     }
-  underneathRect.style(styles.wordFill[style]);
+  word.underneathRect.style(styles.wordFill[style]);
   });
-}
 
+}
 
 
 var _linkLabels = [];
@@ -522,20 +578,20 @@ function drawAllLinks() {
 
     var lo = linkObjs[i];
 
-    //console.log("lo.numLineSegments = " + lo.numLineSegments + " and lo.polylineSVGs.length = " + lo.polylineSVGs.length);
-    //console.log(lo.polylineSVGs);
+    ////console.log("lo.numLineSegments = " + lo.numLineSegments + " and lo.polylineSVGs.length = " + lo.polylineSVGs.length);
+    ////console.log(lo.polylineSVGs);
 
     if (lo.numLineSegments != lo.polylineSVGs.length) {
       if (lo.numLineSegments < lo.polylineSVGs.length) {
         //need to remove the old SVGs
-        //console.log("REMOVING SVG");
+        ////console.log("REMOVING SVG");
         for (var ii = lo.numLineSegments; ii < lo.polylineSVGs.length; ii++) {
           lo.polylineSVGs[ii].remove();
           lo.polylineSVGs.splice(ii,1);
         }
       } else if (lo.numLineSegments > lo.polylineSVGs.length) {
         //need to add new SVGs
-        //console.log("ADDING SVG");
+        ////console.log("ADDING SVG");
         for (var ii = lo.polylineSVGs.length; ii < lo.numLineSegments; ii++) {
           lo.polylineSVGs[ii] = null;
         }
@@ -564,7 +620,7 @@ function drawAllLinks() {
     }
   }
 
-  //interactions are for an array of polylines, eg when links are multi-rows. TODO
+  //interactions are for an array of polylines, eg when links are multi-rows. TODO add back in the link interactions - also link labels?
 
 }
 
@@ -642,33 +698,13 @@ function drawAllLinkLabels() {
 
 }
 
-/*
-   var linkLabel = _linkLabels[i];
-   var rect = linkLabel.rect;
-   var text = linkLabel.text;
-
-
-   label.rect( rect.w, rect.h ).x( rect.x ).y( rect.y ).style( rect.style ); 
-   label.text( text.text ).x( text.x ).y( text.y ).font( text.style );
-   */
-//AGF - not sure what this code is needed for... maybe to add interactions later?
-/*
-   if (link.labelRect) {
-   link.labelRect.push(label);
-   }
-   else {
-   link.labelRect = [label];
-   }
-   */
-
-
 
 /** redraws all links that have been marked as needsUpdate = true, OR by passing in a boolean of true to indicate that the window has resized **/
 function redrawLinks(forceRedrawingAll) { //force redraw of all when resizing window
 
   Object.keys(linkObjs).forEach(function(key) {
     if (linkObjs[key].needsUpdate || forceRedrawingAll == true) {
-      //console.log(" link #" + key + " needsUpdate");
+      ////console.log(" link #" + key + " needsUpdate");
       drawLink(linkObjs[key]);
       linkObjs[key].needsUpdate = false;
     }
@@ -754,10 +790,10 @@ function getLinkStyles(link, xpts) {
         ep = 1.0;
         //sx = totalLength;
         //sx += lastLength;
-        //console.log("does sx = totalLength? : " + sx + " = " + totalLength); //yep!
+        ////console.log("does sx = totalLength? : " + sx + " = " + totalLength); //yep!
       }
 
-      //console.log("in getLinkStyles : i = " + i + ", sp/ep = " + sp + ", " + ep);
+      ////console.log("in getLinkStyles : i = " + i + ", sp/ep = " + sp + ", " + ep);
       /*
       //Older way - simpler, but doesn't take into account total lenghth of link, so for instance, for a link with three rows, the middle row would always look the same, regardless of where the start and end were, but I think it looks nice when the gradient gives you a hint about how long the link is, especially to help differentiate other long links
       var sp = ((i) / link.numLineSegments) - 0.1;
@@ -885,7 +921,6 @@ function calculateMiddleRow (i, rowNum, link, percentagePadding, linkStyles  ) {
   }
 
   calculateLinkLabels(i, rowNum, (p2x+p3x) / 2, p2y, link, (percentagePadding < hideLinkTextPercentage));
-
 
 }
 
