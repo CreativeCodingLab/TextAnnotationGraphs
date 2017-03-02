@@ -186,6 +186,13 @@ window.onload = function() {
     annotationStyle: document.querySelector('button.active').id,
     setAnnotationStyle: function(type) {
       this.annotationStyle = type;
+      if (type === "POS") {
+        wordObjs.forEach(w => w.tag = w.data.syntaxData.tag);
+      }
+      else {
+        wordObjs.forEach(w => w.tag = '');
+      }
+      redrawWords(wordObjs);
     }
   };
   const buttons = document.querySelectorAll('#header button');
@@ -224,117 +231,155 @@ window.onload = function() {
    *  - second hierarchy: events--paths | arguments--themes
    */
   function parseData(data) {
-    console.log(data);
-
-    let datamap = {}; // map Word instances to indices in data
+    let wordDataArray = [];
+    let wordDataMap = {};
+    let syntaxDataArray = [];
+    let mentionDataArray = [];
 
     for (var i in data.documents) {
-        let doc = data.documents[i];
+      let doc = data.documents[i];
 
-        doc.sentences.forEach( function(sentence, j) {
-            // generate words
-            sentence.words.forEach( function(word, k) {
-                let idx = wordObjs.length;
-                let w = new Word(word, idx);
-                w.documentId = i;
-                w.syntaxData = {
-                  tag: sentence.tags[k],
-                  lemma: sentence.lemmas[k],
-                  entity: sentence.entities[k]
-                }
-                w.tag = w.syntaxData.tag;
-                wordObjs.push(w);
-                datamap[i + '-' + j + '-' + k + '-' + word] = idx;
-            })
+      doc.sentences.forEach(function(sentence, j) {
+        // parse word data
+        let sentenceData = sentence.words.map(function(word, k) {
 
-            // create links from syntax info
-            let syntaxType = "stanford-collapsed"; /* "stanford-basic */
-            sentence.graphs[syntaxType].edges.forEach(function(edge) {
+          let wordDataObject = {
+            text: word,
+            documentId: i,
+            sentenceId: j,
+            locationInSentence: k,
+            charLocationInSentence: sentence.startOffsets[k],
+            syntaxData: {
+              tag: sentence.tags[k]
+            }
+          };
 
-                let sourceWord = sentence.words[edge.source],
-                    destinationWord = sentence.words[edge.destination];
+          wordDataMap[[i,j,k].join('-')] = wordDataArray.length;
+          wordDataArray.push(wordDataObject);
+          return wordDataObject
+        });
 
-                let sourceIndex = datamap[i + '-' + j + '-' + edge.source + '-' + sourceWord],
-                    destinationIndex = datamap[i + '-' + j + '-' + edge.destination + '-' + destinationWord];
+        // create POS links
+        sentence.graphs["stanford-collapsed"].edges.forEach(function(edge) {
+          syntaxDataArray.push({
+            destination: sentenceData[edge.destination],
+            label: edge.relation,
+            type: edge.relation,
+            source: sentenceData[edge.source]
+          })
+        });
 
-                let style;
-                switch (edge.relation) {
-                  case 'nsubj':
-                    style = styles.gradientLine1; break;
-                  case 'dobj':
-                    style = styles.gradientLine2; break;
-                  default:
-                    style = styles.noneLine; break;
-                }
-
-                linkObjs.push( new Link(
-                  wordObjs[sourceIndex],
-                  wordObjs[destinationIndex], 
-                  sourceIndex < destinationIndex ? 1 : -1, 
-                  style, 
-                  edge.relation, 
-                  texts.linkText
-                ) );
-            })
-        })
+      })
     }
 
-    // create links from event info
-    data.mentions.forEach((mention, i) => {
-        console.log('\tmention triggered by "' + mention.trigger.text + '"');
-        console.log('\tevent', mention.trigger.labels[0]);
-        console.log('\tid', mention.trigger.id);
-        console.log('\tinterval', mention.tokenInterval.start, mention.tokenInterval.end, '[range of words influenced by event)');
-
-        console.log('\n\targuments:');
-        for (var a in mention.arguments) {
-            console.log('\t\t' + a);
-
-            function listArguments(arg, count) {
-                let space = new Array(count).join('\t');
-                console.log(space + ' text', arg.text);
-                console.log(space + ' label', arg.labels[0]);
-                console.log(space + ' id', arg.id);
-                if (arg.arguments) {
-                    console.log(space + ' arguments:')
-                }
-                for (var i in arg.arguments) {
-                    console.log(space + '\t' + i);
-                    arg.arguments[i].forEach(l => listArguments(l, count+2));
-                }                    
-            }
-
-            mention.arguments[a].forEach(l => listArguments(l, 4));
+    // flatten data.mentions array
+    let printMention = function(mention, i) {
+      if (mention.arguments) {
+        for (var j in mention.arguments) {
+          mention.arguments[j] = mention.arguments[j].map(printMention)
         }
+      }
 
-        console.log('\n\tpaths:');
-        for (var p in mention.paths) {
-            console.log('\t\t' + p);
-            for (var pathId in mention.paths[p]) {
-                console.log('\t\t\t id ' + pathId);
-                mention.paths[p][pathId].forEach(path => {
-                    let words = data.documents[mention.document].sentences[mention.sentence].words;
-                    console.log('\t\t\t\t edge', words[path.source] + ' -> ' + path.relation + ' -> ' + words[path.destination]);
-                })
-            }
-        }
+      switch (mention.type) {
+        case "CorefTextBoundMention":
+          // has text(s) only
+          let start = wordDataMap[[mention.document, mention.sentence, mention.tokenInterval.start].join('-')];
+          let end = wordDataMap[[mention.document, mention.sentence, mention.tokenInterval.end].join('-')];
+
+          var link = {
+            sourceId: null,
+            destinationId: null,
+            words: wordDataArray.slice(start, end),
+            label: mention.displayLabel,
+            id: mention.id,
+            type: mention.type
+          };
+          mentionDataArray.push(link);
+          return link;
+        case "CorefRelationMention":
+          // has argument(s)
+          // hard-coded the property --- need better data to parse this correctly
+
+          let keys = Object.keys(mention.arguments);
+          if (keys.length != 2 || !mention.arguments.controlled || !mention.arguments.controller) {
+            console.log("bad data parse: check CorefRelationMention", mention.arguments);
+          }
+          var link = {
+            sourceId: mention.arguments.controller.map(arg => arg.id),
+            destinationId: {
+              name: "controlled",
+              id: mention.arguments.controlled.map(arg => arg.id)
+            },
+            label: mention.displayLabel,
+            id: mention.id,
+            type: mention.type
+          };
+
+          mentionDataArray.push(link);
+          return link;
+        case "CorefEventMention":
+          // has a trigger & argument(s)
+          var link = {
+            sourceId: [mention.trigger.id],
+            destinationId: Object.keys(mention.arguments).map(key => {
+
+              return {
+                name: key,
+                id: mention.arguments[key].map(arg => arg.id)
+              }
+
+            }),
+            label: mention.displayLabel,
+            id: mention.id,
+            type: mention.type
+          };
+          mentionDataArray.push(link);
+          return link;
+        default:
+          console.log("invalid type", mention.type);
+          break;
+      }
+    }
+    data.mentions.forEach(printMention);
+
+    // done parsing into semi-flat datasets...
+
+    console.log(wordDataArray, syntaxDataArray, mentionDataArray);
+
+    wordDataArray.forEach(function(word) {
+      let idx = wordObjs.length;
+      let w = new Word(word.text, idx);
+      if (State.annotationStyle == 'POS') {
+        w.tag = word.syntaxData.tag
+      }
+      else {
+        w.tag = '';
+      }
+      w.data = word;
+      wordObjs.push(w);
     })
 
+    linkObjs = [];
+    if (State.annotationStyle == 'POS') {
+      // syntaxDataArray.forEach
+    }
+    else {
+      mentionDataArray.forEach(function(link) {
 
+      })
+    }
+
+
+    // draw
     linkObjs.sort(function(a, b) {
       var d1 = Math.abs(a.s.idx - a.e.idx);
       var d2 = Math.abs(b.s.idx - b.e.idx);
 
       return d1 - d2; 
     });
-
     linkObjs.forEach(createLink);
 
-
-    // 2. draw words and boxes around words
     drawWords(wordObjs);
-
-    // 3. draw each of the links
     drawLinks(linkObjs);
 
     changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);

@@ -24,40 +24,15 @@ function redrawWords(words) {
   words.forEach(function(word) {
 
     if (word.text) {
-      word.text.remove();
+      word.text.text(word.val);
     }
 
-    var textw = 0, tagtextw = 0;
-    word.text = draw.text(function(add) {
-      var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
-      textw = textwh.w;
-
-      add.text(word.val)
-      .y(word.wy + textpaddingY*2) // - texts.wordText.descent)
-      .x(word.wx + (word.ww/2) - (textwh.w / 2))
-      .font(texts.wordText.style);
-    });
-
-
-    if (word.tagtext) {
-      word.tagtext.remove();
+    if (word.tagtext != null) {
+      word.tagtext.text(word.tag || '');
     }
 
-    if (word.tag != null) {
-      tagtextwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
-      tagtextw = tagtextwh.w;
-      var tagXPos = word.twx + (word.ww/2) - (tagtextwh.w / 2);
-
-      //add in tag text, if the word has an associated tag
-      word.tagtext = draw.text(function(add) {
-
-        add.text(word.tag)
-        .y(word.wy + textpaddingY/2) // - texts.tagText.descent)
-        .x(tagXPos)
-        .font(texts.tagText.style);
-      });
-    }
-    word.maxtextw = Math.max(textw, tagtextw);
+    // TODO: redefine maxtextw
+    // word.maxtextw = Math.max(textw, tagtextw);
 
     // rearrange
     word.aboveRect.front();
