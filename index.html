@@ -63,14 +63,14 @@ button.active {
 
 <div id="header">
   <input type="file">
-  <button class="active" id="POS">POS</button>
-  <button id="BIO">BIO</button>
+  <button id="POS">POS</button>
+  <button class="active" id="REACH">REACH</button>
 </div>
 
 <div id="drawing">
 
 </div>
- 
+
 
 <script src="libs/d3.min.js"></script>
 <script src="libs/svg.js"></script>
@@ -181,6 +181,9 @@ var wordObjs = [], linkObjs = [];
 // init objects/listeners...
 window.onload = function() {
 
+  function generateLinksPOS(){};
+  function generateLinksREACH(){};
+
   // init buttons
   const State = {
     annotationStyle: document.querySelector('button.active').id,
@@ -188,11 +191,14 @@ window.onload = function() {
       this.annotationStyle = type;
       if (type === "POS") {
         wordObjs.forEach(w => w.tag = w.data.syntaxData.tag);
+        generateLinksPOS();
       }
       else {
         wordObjs.forEach(w => w.tag = w.data.bioData.tag);
+        generateLinksREACH();
       }
       redrawWords(wordObjs);
+      redrawLinks(true);
     }
   };
   const buttons = document.querySelectorAll('#header button');
@@ -311,7 +317,7 @@ window.onload = function() {
           var link = {
             sourceId: mention.arguments.controller.map(arg => arg.id),
             destinationId: [{
-              name: "controlled",
+              name: mention.displayLabel,
               id: mention.arguments.controlled.map(arg => arg.id)
             }],
             label: mention.displayLabel,
@@ -333,7 +339,7 @@ window.onload = function() {
               sourceId: null,
               destinationId: null,
               words: wordDataArray.slice(start, end),
-              label: mention.trigger.labels[0],
+              label: mention.displayLabel,
               id: mention.trigger.id,
               charOffset: mention.trigger.characterStartOffset,
               type: mention.trigger.type
@@ -385,11 +391,58 @@ window.onload = function() {
       wordObjs.push(w);
     })
 
-    linkObjs = [];
-    if (State.annotationStyle == 'POS') {
-      // syntaxDataArray.forEach
-    // }
-    // else {
+    function clearLinkObjs() {
+      linkObjs.forEach(link => link.removeSVGs());
+      linkObjs = [];
+
+      wordObjs.forEach(word => {
+        word.slotsL = [];
+        word.slotsR = [];
+        word.parentsL = [];
+        word.parentsR = [];
+      })
+    }
+
+    generateLinksPOS = function() {
+      clearLinkObjs();
+      syntaxDataArray.forEach(link => {
+        let ltr = link.source.locationInSentence < link.destination.locationInSentence;
+        let style;
+        switch (link.label) {
+          case "nsubj":
+            style = ltr ? styles.gradientLine2 : styles.gradientLine2r;
+            break;
+          case "dobj":
+            style = ltr ? styles.gradientLine1 : styles.gradientLine1r;
+            break;
+          case "det":
+            style = styles.simpleLine;
+            break;
+          default:
+            style = styles.noneLine;
+            break;
+        }
+
+
+        let linkObject = new Link(
+          link.source.object,
+          link.destination.object,
+          ltr ? 1 : -1,
+          style,
+          link.label,
+          texts.linkText
+        );
+
+        // create circular reference to link and data
+        linkObject.data = link;
+        link.object = linkObject;
+        linkObjs.push( linkObject );
+        createLink(linkObject);
+      })
+    }
+
+    generateLinksREACH = function() {
+      clearLinkObjs();
       mentionDataArray.forEach(function(link) {
         if (link.words) {
 
@@ -437,7 +490,7 @@ window.onload = function() {
                   destinationData.object,
                   ltr ? 1 : -1, 
                   style,
-                  link.label,
+                  destination.name,
                   texts.linkText
                 );
 
@@ -458,15 +511,9 @@ window.onload = function() {
       });
     }
 
+
     // draw
-    // linkObjs.sort(function(a, b) {
-    //   var d1 = Math.abs(a.s.idx - a.e.idx);
-    //   var d2 = Math.abs(b.s.idx - b.e.idx);
-
-    //   return d1 - d2; 
-    // });
-    // linkObjs.forEach(createLink);
-
+    generateLinksREACH();
     drawWords(wordObjs);
     drawLinks(linkObjs);
 
