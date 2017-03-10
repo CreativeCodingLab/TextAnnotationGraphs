@@ -42,8 +42,10 @@ button.active {
 }
 
 .split-left {width:66.5%; overflow:hidden;}
-.split-right {transform:translateX(0) !important;}
+.split-right {transform:translateX(0) !important; overflow: auto;}
+
 .node { cursor: pointer; }
+
 #graph {
     transition:transform 200ms ease;
     transform:translateX(100%);
@@ -53,6 +55,7 @@ button.active {
     position:fixed;
     top:0;
     right:0;
+    overflow: auto;
 }
 
 </style>
@@ -78,6 +81,7 @@ button.active {
 <script src="libs/lodash.js"></script>
 <script src="libs/chroma.min.js"></script>
 
+<script src="js/staircase.js"></script>
 <script src="js/GraphLayout.js"></script>
 <script src="js/enums.js"></script>
 <script src="js/style.js"></script>
@@ -523,7 +527,8 @@ window.onload = function() {
 
 
   /* init graph layout object */
-  var Panel = new GraphLayout();
+  var Panel = new Staircase();
+  //var Panel = new GraphLayout();
   var prevWidth = svgWidth;
 
   function svgResize() {
@@ -570,7 +575,17 @@ window.onload = function() {
             Panel.open();
             svgResize();
           }
-          Panel.graph(wordObjs.filter(word => word.isSelected));
+
+          //Panel.graph(wordObjs.filter(word => word.isSelected));
+
+          // Staircase
+          // When one or more words are selected, how to capture the change?
+          // Should I do like below -- draw a normal graph (with full list
+          // of words) then handle the selected words after that?
+          Panel.graph(wordObjs, linkObjs);
+          var selectedWords = wordObjs.filter(word => word.isSelected);
+          Panel.updateGraph(selectedWords);
+
           break;
         default:
           break;
