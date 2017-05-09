@@ -130,17 +130,19 @@ var linkStrokeOpacity_selected = 1.0;
 var attachmentMargin = 0.1; //percentage value
 
 var word2word_strategy = strategies.FARTHEST;
-var word2link_strategy = strategies.FARTHEST; 
+var word2link_strategy = strategies.CLOSEST; 
 var link2link_strategy = strategies.FARTHEST; //CLOSEST sometimes causes overlaps - need to be a bit more rigorous when assigning slots - don't assign any slots that have the potential to overlap (when dragged manually)? - or let the buyer beware that this could happen - they can always move out of the way - right now it won't automatically overlap, but won't prevent a user from doing it. 
 
 var rows = []; //list of Row object, each of those has a list of Word objects
 
 
 // 1. create Words and Links objects (in utils.js) */
-var wordObjs = createTestWords(10, 1, 15);
+var wordObjs = createTestWords(4, 10, 10);
 
-//var linkObjs = createTestLinks(1,1,0); 
-var linkObjs = createTestLinks(2,2,2); 
+//var linkObjs = createTestLinks(3,3,3); 
+//var linkObjs = createTestLinks(1,0,0); 
+var linkObjs = createTestMultiLinks(1); 
+
 
 // 2. draw words and boxes around words
 drawWords(wordObjs);
