@@ -170,17 +170,26 @@ var linkStrokeOpacity_selected = 1.0;
 var attachmentMargin = 0.1; //percentage value
 
 var word2word_strategy = strategies.FARTHEST;
-var word2link_strategy = strategies.FARTHEST; 
+var word2link_strategy = strategies.CLOSEST; 
 var link2link_strategy = strategies.FARTHEST; //CLOSEST sometimes causes overlaps - need to be a bit more rigorous when assigning slots - don't assign any slots that have the potential to overlap (when dragged manually)? - or let the buyer beware that this could happen - they can always move out of the way - right now it won't automatically overlap, but won't prevent a user from doing it. 
 
 var rows = []; //list of Row object, each of those has a list of Word objects
 
-</script>
 
-<script>
+// 1. create Words and Links objects (in utils.js) */
+var wordObjs = createTestWords(4, 10, 10);
+
+//var linkObjs = createTestLinks(3,3,3); 
+//var linkObjs = createTestLinks(1,0,0); 
+var linkObjs = createTestMultiLinks(1); 
+
 
 /* these should eventually be made non-global too */
+
+/*
+
 var wordObjs = [], linkObjs = [];
+
 
 // init objects/listeners...
 window.onload = function() {
@@ -215,7 +224,7 @@ window.onload = function() {
     }
   });
 
-  /* load JSON file */
+  //// load JSON file 
   var json = './data/angus-ex.json';
 
   function loadJSON(path, callback) {
@@ -232,14 +241,14 @@ window.onload = function() {
       httpRequest.send(); 
   }
 
-  /* parse json file*/
+  ///// parse json file
   loadJSON(json, parseData);
 
-  /** init words and links from json data
-   *  - first hierarchy:  documents--sentences--words (+associated syntax tags)
-   *  -                   edges connect parts of speech
-   *  - second hierarchy: events--paths | arguments--themes
-   */
+  // init words and links from json data
+   //  - first hierarchy:  documents--sentences--words (+associated syntax tags)
+   //  -                   edges connect parts of speech
+   //  - second hierarchy: events--paths | arguments--themes
+   //
   function parseData(data) {
     let wordDataArray = [];
     let wordDataMap = {};
@@ -518,12 +527,13 @@ window.onload = function() {
 
     // draw
     generateLinksREACH();
+    */
     drawWords(wordObjs);
     drawLinks(linkObjs);
 
     changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
 
-  }
+  // }
 
 
   /* init graph layout object */
@@ -598,7 +608,7 @@ window.onload = function() {
   }
 
   window.onresize = _.debounce(resize, 300);
-}
+// }
 
 </script>
 

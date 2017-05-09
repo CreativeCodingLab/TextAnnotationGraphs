@@ -130,6 +130,12 @@ function getAttachedLinks(e, arr) {
     getAttachedLinks(e.parentsL[i], arr);
   }
 
+   for (var i = 0; i < e.parentsC.length; i++) {
+
+    arr.push(e.parentsC[i]);
+    getAttachedLinks(e.parentsC[i], arr);
+  }
+
   for (var i = 0; i < e.parentsR.length; i++) {
 
     arr.push(e.parentsR[i]);
@@ -261,119 +267,140 @@ function addDragStartingAndEndingListeners(elem) {
 }
 
 
+
+function dragArrow (lo, arrowIdx, arrowSVG ) {
+
+  addDragStartingAndEndingListeners(arrowSVG);
+
+  arrowSVG.draggable(function(x, y) {
+    return manageDrag(arrowSVG, x, y, lo, lo.arrows[arrowIdx], arrowIdx);
+  });
+}
+
+
+/*
 function dragArrow1 (lo, arrowSVG, arrowInfo ) {
 
   addDragStartingAndEndingListeners(arrowSVG);
 
   arrowSVG.draggable(function(x, y) {
-    return manageDrag(arrowSVG, x, y, lo, lo.arrow1);
+    return manageDrag(arrowSVG, x, y, lo, lo.arrows[0]);
   });
 }
-
 
 function dragArrow2 (lo, arrowSVG, arrowInfo ) {
 
   addDragStartingAndEndingListeners(arrowSVG);
 
   arrowSVG.draggable(function(x, y) {
-    return manageDrag(arrowSVG, x, y, lo, lo.arrow2);
+    return manageDrag(arrowSVG, x, y, lo, lo.arrows[lo.words.length - 1]);
   });
+}
+*/
+
+
+function manageDrag(arrowSVG, x, y, lo, arrowInfo, arrowIdx) {
+
+  var leftX = arrowInfo.leftX;
+  var rightX = arrowInfo.rightX;
+  var linkWidth = ( rightX - leftX );
+  var side = arrowInfo.side;
+  var word = arrowInfo.word;
+
+//  if (side == sides.LEFT) {
+    var xPos = (x - leftX) + arrowW; 
+    var percentage = xPos / (linkWidth/1);
+    var ux = x;
+
+    if (percentage < 0.0) {
+      console.log("AAA");
+      percentage = 0.0;
+      ux = leftX - arrowW;
+    } else if (percentage > 1.0) {
+      console.log("BBB");
+      percentage = 1.0;
+      ux = rightX - arrowW;
+    }
+/* 
+} else if (side == sides.RIGHT) { 
+
+    var xPos = linkWidth - ((x - leftX) + arrowW); 
+
+    var percentage = xPos / (linkWidth/1);
+    var ux = x;
+
+    if (percentage < 0.0) {
+      console.log("CCC");
+      percentage = 0.0;
+      ux = rightX - arrowW;
+    } else if (percentage > 1.0) {
+      console.log("DDD");
+      percentage = 1.0;
+      ux = leftX - arrowW;
+    }
+  }
+
+  if (word == lo.leftWord) {
+    lo.arrowXPercents[0] = percentage;
+  } else {
+    lo.arrowXPercents[lo.words.length - 1] = percentage;
+  }
+*/
+
+console.log("percentage for arrowIdx ("+arrowIdx+") = " + percentage);
+    lo.arrowXPercents[arrowIdx] = percentage;
+ 
+  updateLinks(lo);
+
+  redrawLinks(false);
+  //redrawLinks(true);
+
+  return { x:ux, y: arrowSVG.bbox().y }
 }
 
 
- 
-  function manageDrag(arrowSVG, x, y, lo, arrowInfo) {
-
-    var leftX = arrowInfo.leftX;
-    var rightX = arrowInfo.rightX;
-    var linkWidth = ( rightX - leftX );
-    var side = arrowInfo.side;
-    var word = arrowInfo.word;
-
-    if (side == sides.LEFT) {
-      var xPos = (x - leftX) + arrowW; 
-      var percentage = xPos / (linkWidth/2);
-      var ux = x;
-
-      if (percentage < 0.0) {
-        percentage = 0.0;
-        ux = leftX - arrowW;
-      } else if (percentage > 2.0) {
-        percentage = 2.0;
-        ux = rightX - arrowW;
-      }
-    } else if (side == sides.RIGHT) { 
-
-      var xPos = linkWidth - ((x - leftX) + arrowW); 
-
-      var percentage = xPos / (linkWidth/2);
-      var ux = x;
-
-      if (percentage < 0.0) {
-        percentage = 0.0;
-        ux = rightX - arrowW;
-      } else if (percentage > 2.0) {
-        percentage = 2.0;
-        ux = leftX - arrowW;
-      }
-    }
-
-    if (word == lo.leftWord) {
-      lo.x1percent = percentage;
-    } else {
-      lo.x2percent = percentage;
-    }
-
-    updateLinks(lo);
-
-    redrawLinks(false);
-    
-    return { x:ux, y: arrowSVG.bbox().y }
-  }
-
-
 /*
-function dragArrow (arrow, link, word, side, leftX, rightX) {
+   function dragArrow (arrow, link, word, side, leftX, rightX) {
 
-  addDragStartingAndEndingListeners(arrow);
+   addDragStartingAndEndingListeners(arrow);
 
 
-  arrow.draggable(function(x, y) {
+   arrow.draggable(function(x, y) {
 
-    var linkWidth = ( (rightX) - (leftX) );
+   var linkWidth = ( (rightX) - (leftX) );
 
-     console.log(linkWidth);
+   console.log(linkWidth);
 
-    
-    if (side == sides.LEFT) {
-      var xPos = (x - leftX) + arrowW; 
-      //console.log("x = " + x + ", xPos = " + xPos);
 
-      var percentage = xPos / (linkWidth/2);
-      var ux = x;
+   if (side == sides.LEFT) {
+   var xPos = (x - leftX) + arrowW; 
+//console.log("x = " + x + ", xPos = " + xPos);
 
-      if (percentage < 0.0) {
-        percentage = 0.0;
-        ux = leftX - arrowW;
-      } else if (percentage > 2.0) {
-        percentage = 2.0;
-        ux = leftX - arrowW + (linkWidth/2);
-      }
-    } else if (side == sides.RIGHT) { 
+var percentage = xPos / (linkWidth/2);
+var ux = x;
 
-      var xPos = linkWidth - ((x - leftX) + arrowW); 
+if (percentage < 0.0) {
+percentage = 0.0;
+ux = leftX - arrowW;
+} else if (percentage > 2.0) {
+percentage = 2.0;
+ux = leftX - arrowW + (linkWidth/2);
+}
+} else if (side == sides.RIGHT) { 
 
-      var percentage = xPos / (linkWidth/2);
-      var ux = x;
+var xPos = linkWidth - ((x - leftX) + arrowW); 
 
-      if (percentage < 0.0) {
-        percentage = 0.0;
-        ux = leftX - arrowW;
-      } else if (percentage > 2.0) {
-        percentage = 2.0;
-        ux = leftX - arrowW + (linkWidth);
-      }
-    }
+var percentage = xPos / (linkWidth/2);
+var ux = x;
+
+if (percentage < 0.0) {
+percentage = 0.0;
+ux = leftX - arrowW;
+} else if (percentage > 2.0) {
+percentage = 2.0;
+ux = leftX - arrowW + (linkWidth);
+}
+}
 
     if (word == link.leftWord) {
       link.x1percent = percentage;
@@ -954,7 +981,7 @@ function dragRow(x, y, row) {
     }
   }
 
-  //check that this row is not smaller than the word size in the row
+  //check that this row height is not smaller than the max word height in the row
 
   if (inc + dragRectSide + dragRectMargin < wordHeight) {
     row.rect.height(wordHeight);

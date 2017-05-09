@@ -1,38 +1,65 @@
 
 class Link {
-    constructor(s, e, direction, style, textStr, textStyle) {
-        this.s = s;
-        this.e = e;
-        this.id = `(${this.s.id}, ${this.e.id})`;
-        
-        this.direction = direction; //see enums.directions
+    constructor(wordArr, directionArr, style, textStr, textStyle) {
+      
+        this.words = wordArr; //words (or links) that this link links to
+        this.arrowDirections = directionArr;
+
+        //this.direction = direction; //see enums.directions
         this.style = style;
 
         this.textStr = textStr;
         this.textStyle = textStyle;
         this.textWH = getTextWidthAndHeight(this.textStr, this.textStyle.style)
 
-        this.parentsL = [];
-        this.parentsR = [];
-        this.h = 0; //which slot is it in
-        this.lines = [];
+        this.parentsL = []; //who connects to me and is attached to my left side
+        this.parentsR = []; //who connects to me and is attached to my right side
+        this.parentsC = []; //who connects to me and is attached to the center (ie, for multilinks)
+
+        this.h = 0; //which slot does this link occupy
+
+        //this.lines = []; //don't think this is being used... double check then remove
 
         this.rootMinWord = null;
         this.rootMaxWord = null;
 
+     
+        this.arrows = [];
+        this.arrowStyles = [];
+        this.arrowXPercents = [];
 
-        if (this.s instanceof Word) {
-          this.ts = types.WORD;
-        } else if (this.s instanceof Link) {
-          this.ts = types.LINK;
+        for (var i = 0; i < this.arrowDirections.length; i++) {
+          if (this.arrowDirections[i] == directions.FORWARD) {
+
+            this.arrowStyles[i] = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#0000ff', 0.5));
+          } else if (this.arrowDirections[i] == directions.BACKWARD) {
+          
+            this.arrowStyles[i] = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#00ff00', 0.5));
+     
+          } else {
+            this.arrowStyles[i] = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#ff0000', 0.5));
+          }
+ 
         }
 
-        if (this.e instanceof Word) {
-          this.te = types.WORD;
-        } else if (this.e instanceof Link) {
-          this.te = types.LINK;
-        }       
+        /*
+        if (this.direction == directions.FORWARD) {
+          this.arrowStyles[0] = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
+          this.arrowStyles[this.words.length - 1] = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#000000', 1.0));
+        } else if (this.direction == directions.BACKWARD) {
+          this.arrowStyles[0] = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#000000', 1.0)); 
+          this.arrowStyles[this.words.length - 1]  = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
+        } else if (this.direction == directions.BOTH) {
+          this.arrowStyles[0] = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#000000', 1.0)); 
+          this.arrowStyles[this.words.length - 1]  = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#000000', 1.0)); 
+        } else { //NONE
+          this.arrowStyles[0] = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
+          this.arrowStyles[this.words.length - 1]  = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
+        }
+        */
 
+
+        /*
         this.arrow1Style; 
         this.arrow2Style;
 
@@ -42,7 +69,6 @@ class Link {
         if (this.direction == directions.FORWARD) {
           this.arrow1Style = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
           this.arrow2Style = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#000000', 1.0));
-;
         } else if (this.direction == directions.BACKWARD) {
           this.arrow1Style = new ArrowStyle(0, -1, downArrowPath, new FillStyle('#000000', 1.0)); 
           this.arrow2Style = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
@@ -54,16 +80,15 @@ class Link {
           this.arrow2Style = new ArrowStyle(0, -3, circleArrowPath, new FillStyle('#000000', 1.0));
         }
 
-        
         this.x1percent = 0.0;
         this.x2percent = 0.0;
-
+        */
 
         this.needsUpdate = true;
 
         this.numLineSegments = 0;
         this.polylines = [];
-        this.polylineSVGs = []; //null;
+        this.polylineSVGs = [];
         this.labels = [];
         this.labelRectSVGs = [];
         this.labelTextSVGs = [];
@@ -71,10 +96,9 @@ class Link {
         this.label = null;
         this.labelRectSVG = null;
         this.labelTextSVG = null;
-
-      
     }
 
+    //KLEE's function..
     removeSVGs() {
      this.polylineSVGs.forEach(svg => svg.remove());
      this.labelRectSVGs.forEach(svg => svg.remove());
@@ -82,91 +106,130 @@ class Link {
      this.arrow1Style.path.remove();
      this.arrow2Style.path.remove();
     }
+    //end KLEE
+
 
     toString() {
         return this.id; 
+    }
+    
+
+    setStartAndEnd() {
+
+        this.leftWord = this.words[0];
+        this.rightWord = this.words[this.words.length - 1];
+        this.id = `(${this.leftWord.id}, ${this.rightWord.id})`;
+
+
+        if (this.leftWord instanceof Word) {
+          this.leftType = types.WORD;
+        } else if (this.leftWord instanceof Link) {
+          this.leftType = types.LINK;
+        }
+
+        if (this.rightWord instanceof Word) {
+          this.rightType = types.WORD;
+        } else if (this.rightWord instanceof Link) {
+          this.rightType = types.LINK;
+        }       
+
+        //these get set based on the layout strategy (closet or farthest), in calcAttachPoints()
+        this.leftAttach = null;
+        this.rightAttach = null;
+
     }
 }
 
 class Row {
-   constructor(idx) {
-        this.idx = idx;
-        this.words = [];
-        this.rh = 0;
-        this.ry = 0;
-        this.isSelected = false;
-        this.baseHeight = 0;
-        this.maxSlots = 0;
-        this.id = `(${this.idx})`;
+  constructor(idx) {
+    this.idx = idx;
+    this.words = [];
+    this.rh = 0;
+    this.ry = 0;
+    this.isSelected = false;
+    this.baseHeight = 0;
+    this.maxSlots = 0;
+    this.id = `(${this.idx})`;
 
-        //svg elements
-        this.rect = null;
-        this.lineTop = null;
-        this.lineBottom = null
-        this.dragRect = null;
-   }
+    //svg elements
+    this.rect = null;
+    this.lineTop = null;
+    this.lineBottom = null
+      this.dragRect = null;
+  }
 
-    draw() {
+
+  draw() {
       //console.log(" in Row " + this.idx + " about to call drawRow");
       drawRow(this);
     }
 
-    getMinWidth() {
-      
-      var w = 0;
-      for (var i = 0; i < this.words.length; i++) {
-        w += this.words[i].getMinWidth();
-      }
+  getMinWidth() {
 
-      return w;
+    var w = 0;
+    for (var i = 0; i < this.words.length; i++) {
+      w += this.words[i].getMinWidth();
     }
 
-    toString() {
-        return this.id; 
-    }
+    return w;
+  }
+
+  toString() {
+    return this.id; 
+  }
 }
 
 class Word {
-    constructor(val, idx) {
-        this.val = val;
-        this.idx = idx;
-        this.tag = null;
-        this.h = 0; //num slots
-        this.ww = 0;
-        this.wh = 0;
-        this.wx = 0;
-        this.wy = 0;
-        this.slotsL = [];
-        this.slotsR = [];
-        this.parentsL = [];
-        this.parentsR = [];
-        this.lines = []; 
-        this.tw = 0; //width of text part of word, used also to determine minimum size of word rect
-        this.th = 0;
-        this.id = `(${this.val}, ${this.idx})`;
-        this.percPos = 0.0; //this is used to indicate where along the row the word is positioned, used when resizing the browser's width, or when popping open a right panel.
+  constructor(val, idx) {
+    this.val = val;
+    this.idx = idx;
+    this.id = `(${this.val}, ${this.idx})`;
 
-        this.isSelected = false;
-        this.isHovered = false;
-        this.isDragging = false;
-        
-        //variables created in first render...
-        //this.row; //this is a row object, for row num do: this.row.idx
-        this.aboveRect = null; //the actual svg element 
-        this.bbox = null; //the bbox of the svg element
-        this.underneathRect = null; //not clickable, but solid rect on which other word parts are placed (text, handles, clickable rect)
-        this.text = null; //the svg text
-        this.tagtext = null; //the svg text for a tag
+    this.tag = null;
+    this.h = 0; //num slots
 
-        this.maxtextw = null; //either the word text width, or the tag text with, whichever is wider
+    this.ww = 0;
+    this.wh = 0;
+    this.wx = 0;
+    this.wy = 0;
 
-        this.leftHandle = null; //the left draggable handle to resize word
-        this.rightHandle = null; //the right draggable handle to resize word
+    this.slotsL = []; //all the slots that links attached the left side of this word occupy
+    this.slotsR = [];  //all the slots that links attached the left side of this word occupy
+
+    this.parentsL = [];  //who connects to me and is attached to my left side
+    this.parentsR = [];  //who connects to me and is attached to my right side
+    this.parentsC = []; //who connects to me and is attached to the center (ie, for multilinks)
+
+
+
+    //this.lines = [];  //don't this is used, double check then remove!
+
+    this.tw = 0; //width of text part of word, used also to determine minimum size of word rect
+    this.th = 0;
+
+    this.percPos = 0.0; //this is used to indicate where along the row the word is positioned, used when resizing the browser's width, or when popping open a right panel.
+
+    this.isSelected = false;
+    this.isHovered = false;
+    this.isDragging = false;
+
+    //variables created in first render...
+    this.row = null; //this is a row object, for row num do: this.row.idx
+    this.aboveRect = null; //the top level, clickable rect 
+    this.bbox = null; //the bbox of the clickable rect
+    this.underneathRect = null; //solid rect on which other word parts are placed (text, handles, clickable rect)
+    this.text = null; //the svg text
+    this.tagtext = null; //the svg text for a tag
+
+    this.maxtextw = null; //either the word text width, or the tag text with, whichever is wider
+
+    this.leftHandle = null; //the left draggable handle to resize word
+    this.rightHandle = null; //the right draggable handle to resize word
          
-        
         //used for calculating positions during drag
         //this.needsUpdate = true;
-     
+    
+       //these values are set during mouse interactions, and then used to update any words+links all at once (helps with speed of SVG calculation/rendering 
         this.tempX = 0.0;
         this.tempW = 0.0;
         this.tempY = 0.0;
@@ -200,18 +263,16 @@ class Word {
       this.rightHandle.x(this.rightX - handleW);
     }
     
-
     draw() {
       ////console.log(" in Word " + this.val + " about to call drawWord");
       drawWord(this);
     }
 
-   
-    getMinWidth() {
+    getMinWidth() { //min width is the maximum of: the word text, the tag text, or the size of the two handles + a little bit
       return Math.max(minWordWidth, this.maxtextw);
     }
 
-    /* must return a value less than row width - edgepaddings, else will try to reposition long words forever! */
+    //getMaxWidth() must return a value less than row width - edgepaddings, else will try to reposition long words forever!!!
     getMaxWidth() {
       return (this.row.rect.width() - (edgepadding*2)) / 3.1; 
     }
@@ -228,8 +289,6 @@ class Word {
 }
 
 
-
-
 function checkSlotAvailabity(num, slotArr) {
 
   if (debug) {
@@ -241,7 +300,6 @@ function checkSlotAvailabity(num, slotArr) {
   }
 
   if (slotArr.indexOf(num) >= 0) { return true; } else { return false; }
-
 }
 
 
@@ -375,13 +433,15 @@ function traceBackToWordObj(link, type, word, attach) {
 
     if (attach == sides.LEFT) { //left
 
-      nextType = nextLink.ts;
+      //nextType = nextLink.ts;
+      nextType = nextLink.leftType;
       nextWord = nextLink.leftWord;
       nextAttach = nextLink.leftAttach;
     
     } else { // right
      
-      nextType = nextLink.te;
+      //nextType = nextLink.te;
+      nextType = nextLink.rightType;
       nextWord = nextLink.rightWord;
       nextAttach = nextLink.rightAttach;
     
@@ -394,12 +454,12 @@ function traceBackToWordObj(link, type, word, attach) {
 }
 
 
-//TODO - should there be a global strategy for each class of link types? for the different styles of links? for each parent word/link? or for every single individual link??? E.g., could a work support links with different strategies, or would that become cluttered??
+//TODO - should there be a global strategy for each class of link types? for the different styles of links? for each parent word/link? or for every single individual link??? E.g., could a word support links with different strategies, or would that become cluttered??
 function calcAttachPoints(link, strategy)  {
 
   var rootS, rootE;
 
-  if (link.ts == types.WORD) {
+  if (link.leftType == types.WORD) {
     rootS = link.leftWord.idx;
     //console.log("rootS = " + link.leftWord.id);
 
@@ -409,7 +469,7 @@ function calcAttachPoints(link, strategy)  {
 
   }
 
-  if (link.te == types.WORD) {
+  if (link.rightType == types.WORD) {
     rootE = link.rightWord.idx;
     //console.log("rootE = " + link.rightWord.id);
 
@@ -418,7 +478,22 @@ function calcAttachPoints(link, strategy)  {
     //console.log("rootE = " + link.rightWord.rootMaxWord.id);
   }
 
+  //link.leftWord.nr += 1;
+  //link.rightWord.nl += 1;
+
+/* KLEE <<<<<<< HEAD
   if (strategy == strategies.CLOSEST) {
+    console.log("" + link.id + " strategy = CLOSEST");
+    console.log("rootS < rootE (" +rootS +" < " + rootE +")");
+    link.leftAttach = sides.RIGHT;
+    link.rightAttach  = sides.LEFT; 
+  
+  } else if (strategy == strategies.FARTHEST) {
+    console.log("" + link.id + " strategy = FARTHEST");
+    link.leftAttach  = sides.LEFT;
+    link.rightAttach = sides.RIGHT;
+  }
+//end KLEE */
 
     //console.log("" + link.id + " strategy = CLOSEST");
 
@@ -440,22 +515,15 @@ function calcAttachPoints(link, strategy)  {
       //  link.rightAttach  = sides.LEFT; 
 
     }
-  } else if (strategy == strategies.FARTHEST) {
+  // } else if (strategy == strategies.FARTHEST) {
     //console.log("" + link.id + " strategy = FARTHEST");
 
-
-    if (rootS < rootE) {
-      link.leftWord.nl += 1;
-      link.rightWord.nr += 1;
-      link.leftAttach  = sides.LEFT;
-      link.rightAttach = sides.RIGHT;
-    } else {
-      link.leftWord.nr += 1;
-      link.rightWord.nl += 1;
-      link.leftAttach  = sides.RIGHT;
-      link.rightAttach = sides.LEFT; 
-    }
+  /*
+  //now handle middle attachment points...
+  for (var i = 1; i < link.words.length - 1; i++) {
+    link.words[i].nm += 1;
   }
+  */
 
 }
 
@@ -473,32 +541,28 @@ function flip(link) {
   link.rootMinSide = link.rootMaxSide;
   link.rootMaxSide = tmp;
 
-  tmp = link.ts;
-  link.ts = link.te;
-  link.te = tmp;
+  tmp = link.leftType;
+  link.leftType = link.rightType;
+  link.rightType = tmp;
 
   tmp = link.leftWord;
   link.leftWord = link.rightWord;
   link.rightWord = tmp;
 
 
-  tmp = link.s;
-  link.s = link.e;
-  link.e = tmp;
 
+  tmp = link.leftAttach;
+  link.leftAttach = link.rightAttach;
+  link.rightAttach = tmp;
+  /*
+     tmp = link.x1percent;
+     link.x1percent = link.x2percent;
+     link.x2percent = tmp;
 
-    tmp = link.leftAttach;
-    link.leftAttach = link.rightAttach;
-    link.rightAttach = tmp;
-    /*
-   tmp = link.x1percent;
-   link.x1percent = link.x2percent;
-   link.x2percent = tmp;
-
-   tmp = link.leftX;
-   link.leftX = link.rightX;
-   link.rightX = tmp;
-*/
+     tmp = link.leftX;
+     link.leftX = link.rightX;
+     link.rightX = tmp;
+     */
 }
 
 function flipIfNecessary(link) {
@@ -512,47 +576,90 @@ function flipIfNecessary(link) {
     //console.log("YES, " + link.id + " needs to flip!");
 
     flip(link);
-
-    
   } 
 }
 
 
+function sortLinkWords(link) {
+
+  console.log("\n\n***\nUNSORTED!");
+
+  for (var i = 0; i < link.words.length; i++) {
+    var w = link.words[i];
+
+    if (w instanceof Word) {
+      w.rootIdx = w.idx;
+    } else {
+      w.rootIdx = Math.floor((w.rootMinWord.idx + w.rootMaxWord.idx) / 2)
+    }
+
+    console.log(i + ": " + w + ", rootIdx = " + w.rootIdx);
+
+
+  }
+
+  link.words.sort(function(a, b) {
+
+    var d1 = Math.abs(a.rootIdx);
+    var d2 = Math.abs(b.rootIdx);
+
+    return d1 - d2; 
+  });
+
+   console.log("\n\n***\nSORTED!");
+  for (var i = 0; i < link.words.length; i++) {
+
+       var w = link.words[i];
+ 
+
+    console.log(i + ": " + w + ", rootIdx = " + w.rootIdx);
+
+
+
+  }
+
+}
+
 function createLink(link) {
 
-  link.leftWord = link.s;
-  link.rightWord = link.e;
+
+  sortLinkWords(link);
+  link.setStartAndEnd();
+
+ // link.leftWord = link.s; //the leftWord could be a Word or a Link
+ // link.rightWord = link.e; //the rightWord could be a Word or a Link
 
   //calculate attachment points to child links
 
 
-  if (link.ts == types.WORD && link.te == types.WORD) {
+  if (link.leftType == types.WORD && link.rightType == types.WORD) {
     calcAttachPoints(link, word2word_strategy);
-  } else if (link.ts == types.LINK && link.te == types.LINK) {
+  } else if (link.leftType == types.LINK && link.rightType == types.LINK) {
     calcAttachPoints(link, link2link_strategy);
   } else { 
     calcAttachPoints(link, word2link_strategy);
   }
-  
+
 
   //calculate attachment points to root
   var checkSlotAt = 1;
   var minWord, minSide, maxWord, maxSide;
 
-  var rootWordAndSide = traceBackToWordObj(link, link.ts, link.leftWord, link.leftAttach);
+  var rootWordAndSide = traceBackToWordObj(link, link.leftType, link.leftWord, link.leftAttach);
   link.rootMinWord = rootWordAndSide.w;
   link.rootMinSide = rootWordAndSide.s;
 
   checkSlotAt = Math.max(checkSlotAt, link.leftWord.h + 1);
 
-  var rootWordAndSide = traceBackToWordObj(link, link.te, link.rightWord, link.rightAttach);
+  var rootWordAndSide = traceBackToWordObj(link, link.rightType, link.rightWord, link.rightAttach);
   link.rootMaxWord = rootWordAndSide.w;
   link.rootMaxSide = rootWordAndSide.s;
 
   checkSlotAt = Math.max(checkSlotAt, link.rightWord.h + 1); //minimum height to start checking
   //set checkSlotAt to 1 if you want to be able to connect from underneath
 
-  flipIfNecessary( link );
+  /* not sure if we need this, now that we're sorting ahead of time! */
+  //flipIfNecessary( link );
 
   ////console.log("printing link... " + link.id);
   ////console.log(link);
@@ -568,7 +675,6 @@ function createLink(link) {
   ////console.log("rightWord = " + link.rightWord.id);
 
   //explicitly link parents of link (i.e., links that attach to this link)
-  //if (link.leftAttach == 0) {
   if (link.leftAttach == sides.LEFT) {
     ////console.log(link.leftWord);
     ////console.log(link.leftWord.parentsL);
@@ -579,7 +685,6 @@ function createLink(link) {
     link.leftWord.parentsR.push(link);
   }
 
-  //if (link.rightAttach == 0) {
   if (link.rightAttach == sides.LEFT) {
     ////console.log(link.rightWord);
     ////console.log(link.rightWord.parentsL);
@@ -589,75 +694,154 @@ function createLink(link) {
     ////console.log(link.rightWord.parentsR);
     link.rightWord.parentsR.push(link);
   }
+
+  //determine middle words links...
+  for (var i = 1; i < link.words.length - 1; i++) {
+    var middleWord = link.words[i];
+    middleWord.parentsC.push(link)
+  }
+
 }
 
-function determineParentLinkOffsets(word, side, parentLinks) {
+function determineParentLinkOffsets(word, side, parentLinks, totalAttachmentPoints, offsetIdx) {
+
+  console.log("in determineParentLinkOffsets, word = " + word.toString() +", checking side " + side);
 
   var linkStartingHere = [];
   var linksEndingHere = [];
 
   for (var i = 0; i < parentLinks.length; i++) {
 
-    if (parentLinks[i].leftWord == word) { //then this is the start of the link 
-      linkStartingHere.push(parentLinks[i]);
-    } else { //then this is the end of the link
-      linksEndingHere.push(parentLinks[i]);
+    for (var ii = 0; ii < parentLinks[i].words.length; ii++) {
+
+      if (parentLinks[i].words[ii] == word) {
+        linkStartingHere.push( {link:parentLinks[i], word:word, idx:ii} );
+      }
+
     }
+    /*
+       if (parentLinks[i].leftWord == word) { //then this is the start of the link 
+       linkStartingHere.push(parentLinks[i]);
+       } else if (parentLinks[i].rightWord == word ) { //then this is the end of the link
+       linksEndingHere.push(parentLinks[i]);
+       } else { //is a middle link, so must be a link ending here
+       linksEndingHere.push(parentLinks[i]);
+       }
+       */
   }
 
-  var pinc = (1.0 - (attachmentMargin)) / (parentLinks.length);
-  var poff = attachmentMargin;
+  //console.log("offsetIdx = " + offsetIdx);
 
-  //var xoff = 0; 
-
-  if (side == sides.LEFT) {
-   
-    linksEndingHere.sort(function(a, b) {
-     return (a.h - b.h); 
-    } );
-
-    for (var ii = 0; ii < linksEndingHere.length; ii++) {
-      //linksEndingHere[ii].x2offset = xoff++;
-      linksEndingHere[ii].x2percent = poff;
-      poff += pinc;
-    }
-
-    linkStartingHere.sort(function(a, b) {
-      return (b.h - a.h); 
-    });
-
-    for (var ii = 0; ii < linkStartingHere.length; ii++) {
-      //linkStartingHere[ii].x1offset = xoff++;
-      linkStartingHere[ii].x1percent = poff;
-      poff += pinc;
-    }
+  var pinc, poff;
+  if (totalAttachmentPoints <= 1) {
+    console.log("here totalAttachmentPoints = " + totalAttachmentPoints);
+    pinc = 0.5;
+    poff = 0.5; //attachmentMargin + (pinc * offsetIdx);
 
   } else {
+    pinc = ((1.0 - (attachmentMargin*2))*1.0)  / (totalAttachmentPoints - 1);
+    poff = attachmentMargin + (pinc * offsetIdx);
 
-    linkStartingHere.sort(function(a, b) {
-      return (a.h - b.h); 
-    });
+  }
+  console.log("poff = " + poff);
 
-    for (var ii = 0; ii < linkStartingHere.length; ii++) {
-      //linkStartingHere[ii].x1offset = xoff++;
-      linkStartingHere[ii].x1percent = poff;
+
+  for (var i = 0; i < linkStartingHere.length; i++) {
+    var lshL = linkStartingHere[i].link;
+    var lshW = linkStartingHere[i].word;
+    var lshI = linkStartingHere[i].idx;
+
+    console.log("linkStartingHere = " + linkStartingHere[i].toString());
+    console.log(linkStartingHere[i]);
+    console.log("lshL = " + lshL.toString());
+    console.log("lshW = " + lshW.toString());
+    console.log("lshI = " + lshI);
+
+    console.log(lshL.arrowXPercents);
+
+    lshL.arrowXPercents[lshI] = poff;
+    poff += pinc;
+  }
+
+
+  /*
+     if (side == sides.LEFT) {
+
+     console.log("in sides.LEFT");
+
+     linksEndingHere.sort(function(a, b) {
+     return (a.h - b.h); //need to think about how these are sorted...
+     } );
+
+     for (var ii = 0; ii < linksEndingHere.length; ii++) {
+     console.log("linksEndingHere = " + linksEndingHere[ii].toString());
+     linksEndingHere[ii].arrowXPercents[linksEndingHere[ii].words.length - 1] = poff;
+
+     poff += pinc;
+     }
+
+     linkStartingHere.sort(function(a, b) {
+     return (a.h - b.h); 
+     });
+
+     for (var ii = 0; ii < linkStartingHere.length; ii++) {
+     console.log("linkStartingHere = " + linkStartingHere[ii].toString());
+     linkStartingHere[ii].arrowXPercents[0] = poff;
+     poff += pinc;
+     }
+
+
+     } else if (side == sides.RIGHT) {
+
+     console.log("in sides.RIGHT");
+
+
+     linkStartingHere.sort(function(a, b) {
+     return (a.h - b.h); 
+     });
+
+     for (var ii = 0; ii < linkStartingHere.length; ii++) {
+     console.log("linkStartingHere = " + linkStartingHere[ii].toString());
+
+     linkStartingHere[ii].arrowXPercents[0]  = poff;
+     poff += pinc;
+     }
+
+     linksEndingHere.sort(function(a, b) {
+     return (b.h - a.h); 
+     } );
+
+    for (var ii = 0; ii < linksEndingHere.length; ii++) {
+          console.log("linksEndingHere = " + linksEndingHere[ii].toString());
+   
+      linksEndingHere[ii].arrowXPercents[linksEndingHere[ii].words.length - 1] = poff;
       poff += pinc;
-    
     }
+  } else if (side == sides.CENTER) {
 
-    linksEndingHere.sort(function(a, b) {
+    console.log("in sides.CENTER");
+
+    //there are no linksStartingHere if its in the center, only linksEndingHere
+
+     linksEndingHere.sort(function(a, b) {
       return (b.h - a.h); 
     } );
 
     for (var ii = 0; ii < linksEndingHere.length; ii++) {
-      //linksEndingHere[ii].x2offset = xoff++;
-      linksEndingHere[ii].x2percent = poff;
+
+      console.log("sides.CENTER: linksEndingHere["+ii+"] = " + linksEndingHere[ii].toString());
+      
+      linksEndingHere[ii].arrowXPercents[linksEndingHere[ii].words.length - 1] = poff;
       poff += pinc;
     }
+
+
   }
+  */
 }
 
 function arrangeOffsetValsForAttachmentPoints(words) {
+
 
   //actually strategy isn't important here, it's the *direction* the attached link is heading...
   // if heading left-to-right, then higher attached links should be to the left
@@ -666,9 +850,23 @@ function arrangeOffsetValsForAttachmentPoints(words) {
   // For instance, if left side of word, then links that END on the left side will be first (or could be), with sorting from min to max height, *then* links that START on the left side will be next, with sorting from max to min height.
 
   for (var w = 0; w < words.length; w++) {
-    
-    determineParentLinkOffsets(words[w], sides.LEFT, words[w].parentsL);
-    determineParentLinkOffsets(words[w], sides.RIGHT, words[w].parentsR);
+
+    console.log("w = " + w + ", word: " + words[w].toString());
+
+    var totalAttachmentPoints = words[w].parentsL.length + words[w].parentsR.length + words[w].parentsC.length;
+   
+    if ( words[w].parentsL.length > 0 ) {
+      determineParentLinkOffsets(words[w], sides.LEFT, words[w].parentsL, totalAttachmentPoints, 0 );
+    }
+    //console.log("center links' offsetIdx = " + words[w].parentsL.length);
+
+    if ( words[w].parentsC.length > 0 ) {
+     determineParentLinkOffsets(words[w], sides.CENTER, words[w].parentsC, totalAttachmentPoints, words[w].parentsL.length );
+    }
+
+    if ( words[w].parentsR.length > 0 ) {
+      determineParentLinkOffsets(words[w], sides.RIGHT, words[w].parentsR, totalAttachmentPoints, words[w].parentsL.length + words[w].parentsC.length);
+    }
   }
 
 }
