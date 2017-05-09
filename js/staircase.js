@@ -10,7 +10,6 @@ class Staircase {
         document.body.appendChild(this.div);
 
         // dimensions & properties
-        //this.bounds = this.div.getBoundingClientRect();
         var boundingClientRect = this.div.getBoundingClientRect();
 
         // Extend the viewport
@@ -19,17 +18,22 @@ class Staircase {
             bottom: boundingClientRect.bottom,
             left: boundingClientRect.left,
             right: boundingClientRect.right,
-            width: boundingClientRect.width * 5,
-            height: boundingClientRect.height * 5
+            width: boundingClientRect.width,
+            height: boundingClientRect.height
         };
 
         // d3 dom references
         this.svg = d3.select('#graph')
                     .append('svg')
-                    .attr('width', this.bounds.width)
-                    .attr('height', this.bounds.height)
-                    .style("overflow", "scroll")
+                    .attr('width', this.bounds.width*2)
+                    .attr('height', this.bounds.height*2)
+                    //.attr("preserveAspectRatio", "xMinYMin meet")
+                    //.attr("viewBox", "0 0 " + this.bounds.width + " " + this.bounds.height)
+                    .style("overflow", "auto")
                     ;
+
+        console.log(this.bounds);
+        console.log(this.svg);
 
         // zoom
         var zoom = d3.zoom().scaleExtent([1, 5])
@@ -66,8 +70,10 @@ class Staircase {
         this.wordLength = new Array();
         this.wordMaxLength = 0;
 
+        this.fontSize = 8;
+
         // Margin (top and left) for a word in a box
-        this.margin = 20;
+        this.margin = this.fontSize*1.5;
 
         // All steps that create this staircase
         this.steps = new Array();
@@ -105,21 +111,23 @@ class Staircase {
     }
 
     graph(wordObjs, linkObjs) {
-        // generate a tree structure from the given list of words
-        this.generateData(wordObjs);
+        if (this.data.length == 0) {
+            // generate a tree structure from the given list of words
+            this.generateData(wordObjs);
 
-        var maxLength = this.getMaxLength();
-        this.wordMaxLength = maxLength[0]; 
-        this.excerptMaxLength = maxLength[1];
+            var maxLength = this.getMaxLength();
+            this.wordMaxLength = maxLength[0]; 
+            this.excerptMaxLength = maxLength[1];
 
-        // draw nodes
-        this.drawNodes();
+            // draw nodes
+            this.drawNodes();
 
-        // draw links
-        this.drawLinks();
+            // draw links
+            this.drawLinks();
 
-        // set force simulation
-        this.updateGraph([]);
+            // set force simulation
+            this.updateGraph([]);
+        }
     }
 
     // Create a tree from given data
