@@ -515,7 +515,7 @@ function calcAttachPoints(link, strategy)  {
       //  link.rightAttach  = sides.LEFT; 
 
     }
-  } else if (strategy == strategies.FARTHEST) {
+  // } else if (strategy == strategies.FARTHEST) {
     //console.log("" + link.id + " strategy = FARTHEST");
 
   /*
