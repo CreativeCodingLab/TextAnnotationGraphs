@@ -3,12 +3,42 @@
 
 <!-- turns off text selection for svg canvas -->
 <style>
+body {
+  margin:0;
+  -moz-osx-font-smoothing:grayscale;
+  -webkit-font-smoothing:antialiased;
+}
+
 svg text {
-cursor: default;
--webkit-user-select: none;
--moz-user-select: none;
--ms-user-select: none;
-user-select: none;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#header {
+  position:absolute;
+  top:0;
+  left:0;
+  background:#333;
+  color:white;
+  width:calc( 100% - 20px );
+  padding:10px;
+}
+
+#drawing {
+  margin-top:30px;
+}
+
+button {
+  background:white;
+  border:none;
+  outline:none;
+}
+
+button.active {
+  background:#ff8;
 }
 
 .split-left {width:66.5%; overflow:hidden;}
@@ -31,10 +61,16 @@ user-select: none;
 
 <body>
 
+<div id="header">
+  <input type="file">
+  <button id="POS">POS</button>
+  <button class="active" id="REACH">REACH</button>
+</div>
+
 <div id="drawing">
 
 </div>
- 
+
 
 <script src="libs/d3.min.js"></script>
 <script src="libs/svg.js"></script>
@@ -52,7 +88,7 @@ user-select: none;
 
 <script type="text/javascript">
 
-
+/* a lot of these global vars should be wrapped eventually */
 
 var debug = true;
 
@@ -144,21 +180,361 @@ var wordObjs = createTestWords(4, 10, 10);
 var linkObjs = createTestMultiLinks(1); 
 
 
-// 2. draw words and boxes around words
-drawWords(wordObjs);
+/* these should eventually be made non-global too */
 
-// 3. draw each of the links
-drawLinks(linkObjs);
+/*
 
-
- changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
+var wordObjs = [], linkObjs = [];
 
 
-
-var prevWidth = svgWidth;
 // init objects/listeners...
 window.onload = function() {
+
+  function generateLinksPOS(){};
+  function generateLinksREACH(){};
+
+  // init buttons
+  const State = {
+    annotationStyle: document.querySelector('button.active').id,
+    setAnnotationStyle: function(type) {
+      this.annotationStyle = type;
+      if (type === "POS") {
+        wordObjs.forEach(w => w.tag = w.data.syntaxData.tag);
+        generateLinksPOS();
+      }
+      else {
+        wordObjs.forEach(w => w.tag = w.data.bioData.tag);
+        generateLinksREACH();
+      }
+      redrawWords(wordObjs);
+      redrawLinks(true);
+    }
+  };
+  const buttons = document.querySelectorAll('#header button');
+  buttons.forEach(function(clickableButton) {
+    clickableButton.onclick = function() {
+      buttons.forEach(button => {
+        button.classList.toggle('active', button == this);
+      })
+      State.setAnnotationStyle(this.id);
+    }
+  });
+
+  //// load JSON file 
+  var json = './data/angus-ex.json';
+
+  function loadJSON(path, callback) {
+      var httpRequest = new XMLHttpRequest();
+      httpRequest.onreadystatechange = function() {
+          if (httpRequest.readyState === 4) {
+              if (httpRequest.status === 200) {
+                  var data = JSON.parse(httpRequest.responseText);
+                  if (callback) callback(data);
+              }
+          }
+      };
+      httpRequest.open('GET', path);
+      httpRequest.send(); 
+  }
+
+  ///// parse json file
+  loadJSON(json, parseData);
+
+  // init words and links from json data
+   //  - first hierarchy:  documents--sentences--words (+associated syntax tags)
+   //  -                   edges connect parts of speech
+   //  - second hierarchy: events--paths | arguments--themes
+   //
+  function parseData(data) {
+    let wordDataArray = [];
+    let wordDataMap = {};
+    let syntaxDataArray = [];
+    let mentionDataArray = [];
+
+    for (var i in data.documents) {
+      let doc = data.documents[i];
+
+      doc.sentences.forEach(function(sentence, j) {
+        // parse word data
+        let sentenceData = sentence.words.map(function(word, k) {
+
+          let wordDataObject = {
+            text: word,
+            documentId: i,
+            sentenceId: j,
+            locationInSentence: k,
+            charLocationInSentence: sentence.startOffsets[k],
+            syntaxData: {
+              tag: sentence.tags[k]
+            },
+            bioData: {
+              tag: ''
+            }
+          };
+
+          wordDataMap[[i,j,k].join('-')] = wordDataArray.length;
+          wordDataArray.push(wordDataObject);
+          return wordDataObject
+        });
+
+        // create POS links
+        sentence.graphs["stanford-collapsed"].edges.forEach(function(edge) {
+          syntaxDataArray.push({
+            destination: sentenceData[edge.destination],
+            label: edge.relation,
+            type: edge.relation,
+            source: sentenceData[edge.source]
+          })
+        });
+
+      })
+    }
+
+    // flatten data.mentions array
+    let printMention = function(mention, i) {
+      if (mention.arguments) {
+        for (var j in mention.arguments) {
+          mention.arguments[j] = mention.arguments[j].map(printMention)
+        }
+      }
+
+      switch (mention.type) {
+        case "CorefTextBoundMention":
+          // has text(s) only
+          let start = wordDataMap[[mention.document, mention.sentence, mention.tokenInterval.start].join('-')];
+          let end = wordDataMap[[mention.document, mention.sentence, mention.tokenInterval.end].join('-')];
+
+          var link = {
+            sourceId: null,
+            destinationId: null,
+            words: wordDataArray.slice(start, end),
+            label: mention.displayLabel,
+            id: mention.id,
+            charOffset: mention.characterStartOffset,
+            type: mention.type
+          };
+          mentionDataArray.push(link);
+          return link;
+        case "CorefRelationMention":
+          // has argument(s)
+          // hard-coded the property --- need better data to parse this correctly
+
+          let keys = Object.keys(mention.arguments);
+          if (keys.length != 2 || !mention.arguments.controlled || !mention.arguments.controller) {
+            console.log("bad data parse: check CorefRelationMention", mention.arguments);
+          }
+          var link = {
+            sourceId: mention.arguments.controller.map(arg => arg.id),
+            destinationId: [{
+              name: mention.displayLabel,
+              id: mention.arguments.controlled.map(arg => arg.id)
+            }],
+            label: mention.displayLabel,
+            id: mention.id,
+            charOffset: mention.characterStartOffset,
+            type: mention.type
+          };
+
+          mentionDataArray.push(link);
+          return link;
+        case "CorefEventMention":
+          // has a trigger & argument(s)
+
+          if (mention.trigger.type == "TextBoundMention") {
+            let start = wordDataMap[[mention.trigger.document, mention.trigger.sentence, mention.trigger.tokenInterval.start].join('-')];
+            let end = wordDataMap[[mention.trigger.document, mention.trigger.sentence, mention.trigger.tokenInterval.end].join('-')];
+
+            var link = {
+              sourceId: null,
+              destinationId: null,
+              words: wordDataArray.slice(start, end),
+              label: mention.displayLabel,
+              id: mention.trigger.id,
+              charOffset: mention.trigger.characterStartOffset,
+              type: mention.trigger.type
+            };
+            mentionDataArray.push(link);
+          }
+          var link = {
+            sourceId: [mention.trigger.id],
+            destinationId: Object.keys(mention.arguments).map(key => {
+
+              return {
+                name: key,
+                charOffset: mention.characterStartOffset,
+                id: mention.arguments[key].map(arg => arg.id)
+              }
+
+            }),
+            label: mention.displayLabel,
+            id: mention.id,
+            type: mention.type
+          };
+          mentionDataArray.push(link);
+          return link;
+        default:
+          console.log("invalid type", mention.type);
+          break;
+      }
+    }
+    data.mentions.forEach(printMention);
+
+    // done parsing into semi-flat datasets...
+
+    console.log('words',wordDataArray);
+    console.log('pos',syntaxDataArray);
+    console.log('events',mentionDataArray);
+
+    wordDataArray.forEach(function(word) {
+      let idx = wordObjs.length;
+      let w = new Word(word.text, idx);
+      if (State.annotationStyle == 'POS') {
+        w.tag = word.syntaxData.tag
+      }
+      else {
+        w.tag = '';
+      }
+      // create circular reference between data object and Word instance
+      word.object = w;
+      w.data = word;
+      wordObjs.push(w);
+    })
+
+    function clearLinkObjs() {
+      linkObjs.forEach(link => link.removeSVGs());
+      linkObjs = [];
+
+      wordObjs.forEach(word => {
+        word.slotsL = [];
+        word.slotsR = [];
+        word.parentsL = [];
+        word.parentsR = [];
+      })
+    }
+
+    generateLinksPOS = function() {
+      clearLinkObjs();
+      syntaxDataArray.forEach(link => {
+        let ltr = link.source.locationInSentence < link.destination.locationInSentence;
+        let style;
+        switch (link.label) {
+          case "nsubj":
+            style = ltr ? styles.gradientLine2 : styles.gradientLine2r;
+            break;
+          case "dobj":
+            style = ltr ? styles.gradientLine1 : styles.gradientLine1r;
+            break;
+          case "det":
+            style = styles.simpleLine;
+            break;
+          default:
+            style = styles.noneLine;
+            break;
+        }
+
+
+        let linkObject = new Link(
+          link.source.object,
+          link.destination.object,
+          ltr ? 1 : -1,
+          style,
+          link.label,
+          texts.linkText
+        );
+
+        // create circular reference to link and data
+        linkObject.data = link;
+        link.object = linkObject;
+        linkObjs.push( linkObject );
+        createLink(linkObject);
+      })
+    }
+
+    generateLinksREACH = function() {
+      clearLinkObjs();
+      mentionDataArray.forEach(function(link) {
+        if (link.words) {
+
+          // TODO: bundle words in a textbound annotation
+          let linkObject = new Link(
+            link.words[0].object,
+            link.words[link.words.length-1].object,
+            directions.NONE,
+            styles.simpleLine,
+            link.label,
+            texts.linkText
+          );
+
+          // create circular reference to link and data
+          linkObject.data = link;
+          link.object = linkObject;
+          linkObjs.push( linkObject );
+          createLink(linkObject);
+        }
+        else {
+          // TODO: bundle links
+          link.sourceId.forEach(function(source) {
+            link.destinationId.forEach(function(destination) {
+
+              let sourceData = mentionDataArray.find(l => l.id == source);
+              let destinationData = mentionDataArray.find(l => l.id == destination.id);
+
+              let ltr = sourceData.charOffset < destinationData.charOffset;
+              let style;
+              switch (link.label) {
+                case "Positive_regulation":
+                  style = ltr ? styles.gradientLine2 : styles.gradientLine2r;
+                  break;
+                case "Negative_regulation":
+                  style = ltr ? styles.gradientLine1 : styles.gradientLine1r;
+                  break;
+                default:
+                  style = styles.noneLine;
+                  break;
+              }
+
+              if (sourceData.object && destinationData.object) {
+                let linkObject = new Link(
+                  sourceData.object,
+                  destinationData.object,
+                  ltr ? 1 : -1, 
+                  style,
+                  destination.name,
+                  texts.linkText
+                );
+
+                // create circular reference to link and data
+                linkObject.data = link;
+                link.object = linkObject;
+                linkObjs.push( linkObject );
+                createLink(linkObject);
+              }
+              else {
+                console.log(':(')
+              }
+
+
+            });
+          });
+        }
+      });
+    }
+
+
+    // draw
+    generateLinksREACH();
+    */
+    drawWords(wordObjs);
+    drawLinks(linkObjs);
+
+    changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
+
+  }
+
+
+  /* init graph layout object */
   var Panel = new GraphLayout();
+  var prevWidth = svgWidth;
 
   function svgResize() {
     var w, widthPercChange; 
@@ -178,7 +554,7 @@ window.onload = function() {
      //   draw.size(svgWidth, draw.height());
 
     }
-      
+
     widthPercChange = svgWidth / prevWidth;
     prevWidth = svgWidth;
     //console.log("\nwidthPercChange = " + widthPercChange);

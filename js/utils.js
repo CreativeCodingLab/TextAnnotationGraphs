@@ -194,7 +194,7 @@ function createTestLinks(numWord2WordLinks, numWord2LinkLinks, numLink2LinkLinks
 
   Object.keys(ls).forEach(function(key) {
 
-    //console.log(ls[key].toString());
+    ////console.log(ls[key].toString());
     createLink(ls[key]);
     });
 
@@ -229,7 +229,7 @@ function getTextWidthAndHeight(word, fs) {
   textbbox = text2.bbox();
   text2.remove();
 
-  //console.log("w / h = " + textbbox.w + ", " + textbbox.h);
+  ////console.log("w / h = " + textbbox.w + ", " + textbbox.h);
   return {w:textbbox.w, h:textbbox.h};
 }
 
@@ -239,7 +239,7 @@ function getMaxTextHeightForFont(str, fs) {
   textbbox = t.bbox();
   t.remove();
 
-  //console.log("in getMaxTextHeightForFont, y = " + textbbox.y + ", y2 = " + textbbox.y2);
+  ////console.log("in getMaxTextHeightForFont, y = " + textbbox.y + ", y2 = " + textbbox.y2);
   return textbbox.h;
 }
 
@@ -249,7 +249,7 @@ function getDescentForFont(str, fs) {
   textbbox = t.bbox();
   t.remove();
 
-  //console.log("in getMaxTextHeightForFont, y = " + textbbox.y + ", y2 = " + textbbox.y2);
+  ////console.log("in getMaxTextHeightForFont, y = " + textbbox.y + ", y2 = " + textbbox.y2);
   return textbbox.y;
 }
 
@@ -257,9 +257,9 @@ function getDescentForFont(str, fs) {
 function printLink(link) {
 
   if (debug) {
-    console.log("----- \nprinting link ["+ link.id + "]: ");
-    console.log(link);
-    console.log("-----");
+    //console.log("----- \nprinting link ["+ link.id + "]: ");
+    //console.log(link);
+    //console.log("-----");
   }
 }
 
@@ -267,16 +267,16 @@ function debugSlots() {
   // var debug = false;
   if (debug) {
     for (var i = 0; i < wordObjs.length; i++) {
-      console.log("slots taken for word " + wordObjs[i].val + " :");
+      //console.log("slots taken for word " + wordObjs[i].val + " :");
 
-      console.log("   L");
+      //console.log("   L");
       for (var ii = 0; ii < wordObjs[i].slotsL.length; ii++) {
-        console.log(wordObjs[i].slotsL[ii]);
+        //console.log(wordObjs[i].slotsL[ii]);
       }
 
-      console.log("   R");
+      //console.log("   R");
       for (var ii = 0; ii < wordObjs[i].slotsR.length; ii++) {
-        console.log(wordObjs[i].slotsR[ii]);
+        //console.log(wordObjs[i].slotsR[ii]);
       }   
     }
   }
@@ -295,7 +295,7 @@ function swapVals(vals){
 
   vals = {a:tmpB, b:tmpA}
 
-  //console.log("    in swap, a = " + vals.a.id + ", b = " + vals.b.id);
+  ////console.log("    in swap, a = " + vals.a.id + ", b = " + vals.b.id);
 
 
 

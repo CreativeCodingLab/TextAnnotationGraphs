@@ -106,7 +106,7 @@ class FillStyle {
 
 class ArrowStyle {
   constructor(xoff, yoff, shapeFunc, fillStyle) {
-    console.log("in ArrowStyle constructor");
+    // console.log("in ArrowStyle constructor");
     this.xoff = xoff;
     this.yoff = yoff;
 
@@ -320,8 +320,13 @@ function setupStyles(svg) {
   var styleArr = {};
 
   var ng_f = new LinearGradient(svg, '#ffff00', '#ff00ff');
-  var ng_b = new LinearGradient(svg, '#00ff00', '#0000ff');
+  var ng_f2 = new LinearGradient(svg, '#ff00ff', '#ffff00');
 
+  var ng_b = new LinearGradient(svg, '#00ff00', '#0000ff');
+  var ng_b2 = new LinearGradient(svg, '#0000ff', '#00ff00');
+
+  // var ng_f2 = new LinearGradient(svg, '#fc0', '#f88');
+  // var ng_b2 = new LinearGradient(svg, '#f88', '#fc0');
 
   //this is how you create a linear gradient, which can be used for fills and strokes (and can also be applied to text fills and strokes)
   //var ng_f = new LinearGradient(draw, (stop) => { stop.at(0, '#f00'); stop.at(1.0, '#00f') } );
@@ -335,17 +340,23 @@ function setupStyles(svg) {
   styleArr.gradientLine1 = new LineStyle(ng_f, 4, 0.5); 
   styleArr.gradientLine1.hovering(ng_f, 8, 0.5); 
 
+  styleArr.gradientLine1r = new LineStyle(ng_f2, 4, 0.5);
+  styleArr.gradientLine1r.hovering(ng_f2, 8, 0.5);
+
   styleArr.gradientLine2 = new LineStyle(ng_b, 4, 0.5);
   styleArr.gradientLine2.hovering(ng_b, 8, 0.5);
+
+  styleArr.gradientLine2r = new LineStyle(ng_b2, 4, 0.5);
+  styleArr.gradientLine2r.hovering(ng_b2, 8, 0.5);
 
   styleArr.bothLine = new LineStyle("#ff0000", 1, 0.5, "2,5,2");
   styleArr.bothLine.hovering("#ff0000", 4, 0.5, "2,5,2");
 
   styleArr.noneLine = new LineStyle("#0000ff", 1, 0.5, "2,2");
-  styleArr.noneLine.hovering("#0000ff", 4, 0.5, "2,2");
+  styleArr.noneLine.hovering("#0000ff", 2, 0.5, "2,2");
 
-  styleArr.simpleLine = new LineStyle("#000000", 4, 0.5);
-  styleArr.simpleLine.hovering("#000000", 8, 0.5);
+  styleArr.simpleLine = new LineStyle("#000000", 2, 0.5);
+  styleArr.simpleLine.hovering("#000000", 4, 0.5);
 
   styleArr.hiddenLine = new LineStyle("#ffffff", 6, 0.0);
 
