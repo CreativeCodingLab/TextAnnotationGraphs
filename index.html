@@ -62,9 +62,13 @@ button.active {
 <body>
 
 <div id="header">
-  <input type="file">
-  <button id="POS">POS</button>
-  <button class="active" id="REACH">REACH</button>
+  <select>
+    <option>-- select dataset --</option>
+    <option>data1</option>
+    <option>data2</option>
+    <option>paragraph</option>
+    <option>passage</option>
+  </select>
 </div>
 
 <div id="drawing">
@@ -165,6 +169,15 @@ window.onload = function() {
           break;
       }
     }, false);
+
+  var parser = new Parser();
+  document.querySelector('select').onchange = function() {
+    if (this.selectedIndex > 0) {
+      parser.readJson(`./data/data${this.selectedIndex}.json`, function() {
+        console.log('hey',parser);
+      });
+    }
+  }
 
   function resize() {
     svgResize();
