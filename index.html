@@ -62,7 +62,8 @@ button.active {
 <body>
 
 <div id="header">
-  <select>
+  <button id="random">random graph</button>
+  <select id="dataset">
     <option>-- select dataset --</option>
     <option>data1</option>
     <option>data2</option>
@@ -173,7 +174,8 @@ window.onload = function() {
     if (this.selectedIndex > 0) {
       parser.readJson(`./data/data${this.selectedIndex}.json`, function() {
         console.log(parser);
-        resetDrawing();
+        var words = parser.tokens.map((token, i) => new Word(token, i));
+        resetDrawing(words, []);
       });
     }
   };
@@ -181,10 +183,7 @@ window.onload = function() {
   function resetDrawing(words, links) {
     draw.clear();
     rowGroup = draw.group();
-    [groupAllElements, linkG, textG, arrowG].forEach(group => {
-      if (group) { group.clear(); }
-      group = undefined;
-    });
+    groupAllElements = linkG = textG = arrowG = undefined;
     dragElem = null;
     isDragging = false;
     rowOffsetX = 0;
@@ -192,7 +191,7 @@ window.onload = function() {
     prevX = -1;
 
     rows = [];
-    wordObjs = words || createTestWords(4, 10, 10);
+    wordObjs = words || createTestWords(5, 6, 10);
     linkObjs = links || createTestMultiLinks(1);
     drawWords(wordObjs);
     drawLinks(linkObjs);
@@ -206,7 +205,8 @@ window.onload = function() {
   }
 
   document.addEventListener('keydown', handleKeyDown, false);
-  document.querySelector('select').onchange = changeDataset;
+  document.getElementById('random').onclick = resetDrawing.bind(this, null, null);
+  document.getElementById('dataset').onchange = changeDataset;
   window.onresize = _.debounce(resize, 300);
 
 };
