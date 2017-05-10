@@ -49,7 +49,6 @@ function setupMouseOverInteractions(word) {
 function mover(word){
   // console.log("in mover for " + word.val);
 
-  
   word.isHovered = true;
 
   if (word.isSelected) {
@@ -255,7 +254,7 @@ function addDragStartingAndEndingListeners(elem) {
       mout(rowOffsetWord);
     }
 
-    rowOffsetX = 0;
+    Config.rowOffsetX = 0;
     rowOffsetWord = null;
 
     prevX = -1;
@@ -308,23 +307,23 @@ function manageDrag(arrowSVG, x, y, lo, arrowInfo, arrowIdx) {
   var word = arrowInfo.word;
 
 //  if (side == sides.LEFT) {
-    var xPos = (x - leftX) + arrowW; 
+    var xPos = (x - leftX) + Config.arrowW; 
     var percentage = xPos / (linkWidth/1);
     var ux = x;
 
     if (percentage < 0.0) {
       console.log("AAA");
       percentage = 0.0;
-      ux = leftX - arrowW;
+      ux = leftX - Config.arrowW;
     } else if (percentage > 1.0) {
       console.log("BBB");
       percentage = 1.0;
-      ux = rightX - arrowW;
+      ux = rightX - Config.arrowW;
     }
 /* 
 } else if (side == sides.RIGHT) { 
 
-    var xPos = linkWidth - ((x - leftX) + arrowW); 
+    var xPos = linkWidth - ((x - leftX) + Config.arrowW); 
 
     var percentage = xPos / (linkWidth/1);
     var ux = x;
@@ -332,11 +331,11 @@ function manageDrag(arrowSVG, x, y, lo, arrowInfo, arrowIdx) {
     if (percentage < 0.0) {
       console.log("CCC");
       percentage = 0.0;
-      ux = rightX - arrowW;
+      ux = rightX - Config.arrowW;
     } else if (percentage > 1.0) {
       console.log("DDD");
       percentage = 1.0;
-      ux = leftX - arrowW;
+      ux = leftX - Config.arrowW;
     }
   }
 
@@ -373,7 +372,7 @@ console.log("percentage for arrowIdx ("+arrowIdx+") = " + percentage);
 
 
    if (side == sides.LEFT) {
-   var xPos = (x - leftX) + arrowW; 
+   var xPos = (x - leftX) + Config.arrowW; 
 //console.log("x = " + x + ", xPos = " + xPos);
 
 var percentage = xPos / (linkWidth/2);
@@ -381,24 +380,24 @@ var ux = x;
 
 if (percentage < 0.0) {
 percentage = 0.0;
-ux = leftX - arrowW;
+ux = leftX - Config.arrowW;
 } else if (percentage > 2.0) {
 percentage = 2.0;
-ux = leftX - arrowW + (linkWidth/2);
+ux = leftX - Config.arrowW + (linkWidth/2);
 }
 } else if (side == sides.RIGHT) { 
 
-var xPos = linkWidth - ((x - leftX) + arrowW); 
+var xPos = linkWidth - ((x - leftX) + Config.arrowW); 
 
 var percentage = xPos / (linkWidth/2);
 var ux = x;
 
 if (percentage < 0.0) {
 percentage = 0.0;
-ux = leftX - arrowW;
+ux = leftX - Config.arrowW;
 } else if (percentage > 2.0) {
 percentage = 2.0;
-ux = leftX - arrowW + (linkWidth);
+ux = leftX - Config.arrowW + (linkWidth);
 }
 }
 
@@ -471,9 +470,9 @@ function dragLeftHandle(x, y, word) {
   var dragDir = checkDragDirection(x);
 
   if (dragDir == directions.BACKWARD) {
-    return checkIfCanDragLeftHandleLeft(x + rowOffsetX, y, word);
+    return checkIfCanDragLeftHandleLeft(x + Config.rowOffsetX, y, word);
   } else if (dragDir == directions.FORWARD) {
-    return checkIfCanDragLeftHandleRight(x + rowOffsetX, y, word);
+    return checkIfCanDragLeftHandleRight(x + Config.rowOffsetX, y, word);
   } else {
     return {x:word.leftHandle.bbox().x, y:word.leftHandle.bbox().y};
   }
@@ -510,22 +509,22 @@ function dragRightHandle(x, y, word) {
   var dragDir = checkDragDirection(x);
 
   if (dragDir == directions.BACKWARD) {
-    return checkIfCanDragRightHandleLeft(x + rowOffsetX, y, word);
+    return checkIfCanDragRightHandleLeft(x + Config.rowOffsetX, y, word);
   } else if (dragDir == directions.FORWARD) {
-    return checkIfCanDragRightHandleRight(x + rowOffsetX, y, word);
+    return checkIfCanDragRightHandleRight(x + Config.rowOffsetX, y, word);
   } else {
     return {x:word.rightHandle.bbox().x, y:word.rightHandle.bbox().y};
   }
 }
 
 function checkIfCanDragRightHandleLeft(x, y, word) {
-    var rw = Math.max( Math.min(word.getMaxWidth(), (x - word.leftX + handleW)), word.getMinWidth() );
+    var rw = Math.max( Math.min(word.getMaxWidth(), (x - word.leftX + Config.handleW)), word.getMinWidth() );
 
     setWordToXW(word, word.leftX, rw);
 
-    var rv = checkIfCanMoveLeft(x - (rw - handleW), rw, y, word, false);
-    //rv.x = word.leftX + rw - handleW;
-    rv.x = word.tempX + word.tempW - handleW;
+    var rv = checkIfCanMoveLeft(x - (rw - Config.handleW), rw, y, word, false);
+    //rv.x = word.leftX + rw - Config.handleW;
+    rv.x = word.tempX + word.tempW - Config.handleW;
     rv.y = word.y;
 
     return rv;
@@ -535,14 +534,14 @@ function checkIfCanDragRightHandleLeft(x, y, word) {
 
 function checkIfCanDragRightHandleRight(x, y, word) {
 
-    var rw = Math.max( Math.min(word.getMaxWidth(), (x - word.leftX + handleW) ), word.getMinWidth() );
+    var rw = Math.max( Math.min(word.getMaxWidth(), (x - word.leftX + Config.handleW) ), word.getMinWidth() );
 
     setWordToXW(word, word.leftX, rw);
 
-    var rv = checkIfCanMoveRight(x - (rw - handleW), rw, y, word, false);
-    //rv.x = word.leftX + rw - handleW;
-   // rv.x = word.rightX - handleW;
-      rv.x = word.tempX + word.tempW - handleW;
+    var rv = checkIfCanMoveRight(x - (rw - Config.handleW), rw, y, word, false);
+    //rv.x = word.leftX + rw - Config.handleW;
+   // rv.x = word.rightX - Config.handleW;
+      rv.x = word.tempX + word.tempW - Config.handleW;
       rv.y = word.y;
     // return {x, y:word.rightHandle.bbox().y};
 
@@ -584,10 +583,10 @@ function checkIfCanMoveRight(x, w, y, word, adjustWidth) {
       w = origXW - rx;
     } 
   } else {
-    //make sure our X val isn't *before* the leftmost edgepadding
-    if (x < edgepadding) {
+    //make sure our X val isn't *before* the leftmost Config.edgePadding
+    if (x < Config.edgePadding) {
       var origXW = word.rightX;
-      rx = edgepadding;
+      rx = Config.edgePadding;
       w = origXW - rx;
     } 
   }
@@ -602,7 +601,7 @@ function checkIfCanMoveRight(x, w, y, word, adjustWidth) {
   if (posInRow == word.row.words.length - 1) {
 
     //did i hit the right side of the row?
-    if (x+w > svgWidth - (edgepadding)) {
+    if (x+w > Config.svgWidth - (Config.edgePadding)) {
 
       if (word.row.idx == rows.length - 1 ) { //then we're on the last row
         appendRow();
@@ -612,7 +611,7 @@ function checkIfCanMoveRight(x, w, y, word, adjustWidth) {
 
       //handle drag offset if i am dragging this word
       if (word == rowOffsetWord) {
-        rowOffsetX -= (svgWidth - (2*edgepadding) - (w) );
+        Config.rowOffsetX -= (Config.svgWidth - (2*Config.edgePadding) - (w) );
       }
 
       rx = vals.x;
@@ -679,24 +678,24 @@ function checkIfCanMoveLeft(x, w, y, word, adjustWidth) {
   if (posInRow == 0) {
 
     //did i hit the left side of the row?
-    if (x < edgepadding) {
+    if (x < Config.edgePadding) {
 
       if (word.row.idx > 0 && checkIfSpaceToMoveUpARow(w, rows[word.row.idx - 1]) == true) {
         moveWordUpARow(word);
 
         //handle drag offset if i am dragging this word
         if (word == rowOffsetWord) {
-          rowOffsetX += (svgWidth - (2*edgepadding) - (w) );
+          Config.rowOffsetX += (Config.svgWidth - (2*Config.edgePadding) - (w) );
         }
 
-        rx = svgWidth - edgepadding - w;
+        rx = Config.svgWidth - Config.edgePadding - w;
         ry = word.bbox.y;
 
         //refire this checkIfCanMoveLeft, since it will push words on the previous row out of the way, if needed -- may break up this method into little pieces so can fire something more granular
         checkIfCanMoveLeft(rx, w, y, word, false);
 
       } else {
-        rx = edgepadding; //on top row, so can't move left of left margin
+        rx = Config.edgePadding; //on top row, so can't move left of left margin
       }
     }
   }
@@ -764,13 +763,13 @@ function moveWordToNewPosition(w, nx, ny) {
   w.leftX = nx; 
   w.rightX = nx + w.bbox.w;
 
-  w.percPos = (w.leftX-edgepadding) / (svgWidth-edgepadding*2);
+  w.percPos = (w.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
 
   w.underneathRect.x(nx);
   w.underneathRect.y(ny);
 
   w.text.x(nx + (w.bbox.w/2) - (w.text.bbox().w/2)  ); 
-  w.text.y(ny + textpaddingY*2); // - texts.wordText.descent);
+  w.text.y(ny + Config.textPaddingY*2); // - texts.wordText.descent);
 
 
 
@@ -779,7 +778,7 @@ function moveWordToNewPosition(w, nx, ny) {
   
   if (w.tag != null) {
     w.tagtext.x(nx + (w.bbox.w/2) - (w.tagtext.bbox().w/2)  ); 
-    w.tagtext.y(ny + textpaddingY/2);// - texts.tagText.descent);
+    w.tagtext.y(ny + Config.textPaddingY/2);// - texts.tagText.descent);
   }
 
   console.log("ny = " + ny);
@@ -790,11 +789,11 @@ function moveWordToNewPosition(w, nx, ny) {
 
 
 
-  var handley = ny + ( w.wh / 2 ) - ( handleH / 2 ); 
+  var handley = ny + ( w.wh / 2 ) - ( Config.handleH / 2 ); 
   w.leftHandle.x(nx);
   w.leftHandle.y(handley);
 
-  w.rightHandle.x( w.rightX - handleW );
+  w.rightHandle.x( w.rightX - Config.handleW );
   w.rightHandle.y(handley);
 
   w.needsUpdate = true;
@@ -815,9 +814,9 @@ function dragWord(x, y, word) {
   var dragDir = checkDragDirection(x);
 
   if (dragDir == directions.BACKWARD) {
-    return checkIfCanMoveLeft(x + rowOffsetX, word.aboveRect.bbox().width, y, word, false);
+    return checkIfCanMoveLeft(x + Config.rowOffsetX, word.aboveRect.bbox().width, y, word, false);
   } else if (dragDir == directions.FORWARD) {
-    return checkIfCanMoveRight(x + rowOffsetX, word.aboveRect.bbox().width, y, word, false);
+    return checkIfCanMoveRight(x + Config.rowOffsetX, word.aboveRect.bbox().width, y, word, false);
   } else {
     return {x:word.aboveRect.bbox().x, y:word.aboveRect.bbox().y};
   }
@@ -825,7 +824,7 @@ function dragWord(x, y, word) {
 
 function checkIfSpaceToMoveUpARow(width, prevRow) {
   var cw = width;
-  var rowWidth = svgWidth - (edgepadding*2);
+  var rowWidth = Config.svgWidth - (Config.edgePadding*2);
 
   for (var i = prevRow.words.length - 1; i >= 0; i--) {
     prevWord = prevRow.words[i];
@@ -854,7 +853,7 @@ function checkIfSpaceToMoveUpARow(width, prevRow) {
 function checkIfSpaceToMoveDownARow(width, nextRow) {
 
   var cw = width;
-  var rowWidth = svgWidth - (edgepadding*2);
+  var rowWidth = Config.svgWidth - (Config.edgePadding*2);
 
   //how many words on the next row would have to move forward for this word to fit on the next row?
   for (var i = 0; i < nextRow.words.length; i++) {
@@ -892,7 +891,7 @@ function moveWordDownARow(w) {
   var w = rows[currentRowIdx].words.pop();
   rows[nextRowIdx].words.unshift(w);
   w.row = rows[nextRowIdx];
-  var nx = edgepadding;
+  var nx = Config.edgePadding;
   var ny = w.row.ry + w.row.rh - w.wh;
 
 
@@ -918,9 +917,9 @@ function moveWordUpARow(w) {
   var ny = w.row.ry + w.row.rh - w.wh;
 
   if (w.needsUpdate) {
-    nx = svgWidth - edgepadding - w.tempW;
+    nx = Config.svgWidth - Config.edgePadding - w.tempW;
   } else {
-    nx = svgWidth - edgepadding - (w.rightX - w.leftX); //w.aboveRect.width();
+    nx = Config.svgWidth - Config.edgePadding - (w.rightX - w.leftX); //w.aboveRect.width();
   }
 
   moveWordToNewPosition(w, nx, ny);
@@ -974,7 +973,7 @@ function dragRow(x, y, row) {
 
   if (row.idx < rows.length - 1) {
 
-    nextY = (rows[row.idx + 1].lineBottom.bbox().y - wordHeight ) - (dragRectSide + dragRectMargin) - rowpadding/2 ;
+    nextY = (rows[row.idx + 1].lineBottom.bbox().y - Config.wordHeight ) - (Config.dragRectSide + Config.dragRectMargin) - Config.rowPadding/2 ;
 
     if (y > nextY) {
       nextRowTooSmall = true;
@@ -983,17 +982,17 @@ function dragRow(x, y, row) {
 
   //check that this row height is not smaller than the max word height in the row
 
-  if (inc + dragRectSide + dragRectMargin < wordHeight) {
-    row.rect.height(wordHeight);
-    y = row.rect.bbox().y + row.rect.bbox().h - (dragRectSide + dragRectMargin);
-    row.lineBottom.y(y + dragRectSide + dragRectMargin);
+  if (inc + Config.dragRectSide + Config.dragRectMargin < Config.wordHeight) {
+    row.rect.height(Config.wordHeight);
+    y = row.rect.bbox().y + row.rect.bbox().h - (Config.dragRectSide + Config.dragRectMargin);
+    row.lineBottom.y(y + Config.dragRectSide + Config.dragRectMargin);
   } else if (row.idx < rows.length - 1 && nextRowTooSmall == true) { //check that this row is not expanding so large that it is bigger than the next row's smallest size
     y = nextY; 
-    row.lineBottom.y(y + dragRectSide + dragRectMargin );
-    row.rect.height((y - prevY) + dragRectSide + dragRectMargin);
+    row.lineBottom.y(y + Config.dragRectSide + Config.dragRectMargin );
+    row.rect.height((y - prevY) + Config.dragRectSide + Config.dragRectMargin);
   } else { //this y val is fine
-    row.rect.height(inc + dragRectSide + dragRectMargin);
-    row.lineBottom.y(y + dragRectSide + dragRectMargin);
+    row.rect.height(inc + Config.dragRectSide + Config.dragRectMargin);
+    row.lineBottom.y(y + Config.dragRectSide + Config.dragRectMargin);
   }
 
   row.ry = row.rect.y();
@@ -1005,19 +1004,19 @@ function dragRow(x, y, row) {
     //updateLinksOfWord(row.words[i]);
   }
 
-  row.baseHeight = row.lineBottom.y() - (textpaddingY*2) - texts.wordText.maxHeight;
+  row.baseHeight = row.lineBottom.y() - (Config.textPaddingY*2) - texts.wordText.maxHeight;
 
 
   if (row.idx < rows.length - 1) {
 
     var nextrow = rows[row.idx + 1];
-    nextrow.rect.y(row.rect.bbox().y + row.rect.bbox().h + rowpadding/2);
-    nextrow.rect.height( nextrow.dragRect.bbox().y - y - (rowpadding/2));
+    nextrow.rect.y(row.rect.bbox().y + row.rect.bbox().h + Config.rowPadding/2);
+    nextrow.rect.height( nextrow.dragRect.bbox().y - y - (Config.rowPadding/2));
 
     nextrow.ry = nextrow.rect.y();
     nextrow.rh = nextrow.rect.height();
     
-    nextrow.lineTop.y(row.rect.bbox().y + row.rect.bbox().h + rowpadding/2);
+    nextrow.lineTop.y(row.rect.bbox().y + row.rect.bbox().h + Config.rowPadding/2);
       
     for (var i = 0; i < nextrow.words.length; i++) {
       //updateLinksOfWord(nextrow.words[i]);
@@ -1045,10 +1044,10 @@ function setWordToY(word, wy) {
   word.underneathRect.y(wy);  
   word.leftHandle.y(wy);  
   word.rightHandle.y(wy);  
-  word.text.y(word.bbox.y + textpaddingY*2);
+  word.text.y(word.bbox.y + Config.textPaddingY*2);
   
  if (word.tag != null) { 
-  word.tagtext.y(word.bbox.y + textpaddingY/2); 
+  word.tagtext.y(word.bbox.y + Config.textPaddingY/2); 
  }
 }
 

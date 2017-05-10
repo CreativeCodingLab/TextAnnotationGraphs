@@ -378,11 +378,11 @@ function setupStyles(svg) {
   styleArr.tagFill.hoveringAndSelecting('#fcc', 1.0/*, new LineStyle('#000000', 1)*/);
 
 
-  styleArr.labelEvenFill = new FillStyle(evenRowsColor, 1.0);
-  styleArr.labelOddFill = new FillStyle(oddRowsColor, 1.0);
+  styleArr.labelEvenFill = new FillStyle(Config.evenRowsColor, 1.0);
+  styleArr.labelOddFill = new FillStyle(Config.oddRowsColor, 1.0);
 
-  styleArr.rowRectEvenFill = new FillStyle(evenRowsColor, 1.0);
-  styleArr.rowRectOddFill = new FillStyle(oddRowsColor, 1.0);
+  styleArr.rowRectEvenFill = new FillStyle(Config.evenRowsColor, 1.0);
+  styleArr.rowRectOddFill = new FillStyle(Config.oddRowsColor, 1.0);
   styleArr.rowLineStroke = new LineStyle("#555555", 0.5, 1.0);
   styleArr.rowDragRectFill = new FillStyle('#000');
 

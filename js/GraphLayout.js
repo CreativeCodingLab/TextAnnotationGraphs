@@ -25,7 +25,7 @@ class GraphLayout {
 
         // selected words to generate graph around
         this.words = [];
-        this.distanceFromRoot = 30; // default value for max dist from root
+        this.maxDepth = 30; // default value for max dist from root
         this.data = {
             flat: {},
             anchors: [],
@@ -34,14 +34,6 @@ class GraphLayout {
 
         // force simulation
         this.simulation = d3.forceSimulation()
-            .force('link', d3.forceLink().id(d => d.id))
-            .force('collision', d3.forceCollide(d => {
-                return d.role === "link-anchor" ? 0 : 20;
-            }))
-            .force('charge', d3.forceManyBody()
-                .strength(d => d.role === "link-anchor" ? 0 : -30)
-                .distanceMax(100)
-            )
             .force('center', d3.forceCenter( 0,0 ));
     }
 
@@ -75,9 +67,10 @@ class GraphLayout {
         if (this.words.length === words.length && 
             this.words.every((w,i) => words[i] === w)) { return; }
         else { this.words = words; }
-
         this.generateData();
         console.log('data', this.data);
+
+        return;
 
         // draw nodes
         this.drawNodes();
@@ -90,102 +83,57 @@ class GraphLayout {
     }
 
     generateData() {
-        // flatten nodes/links within a given distance of selected words
-        var d = this.data.flat = {};
+        console.log(this.words);
+        const d = this.data.flat = {};
+        const maxDepth = this.maxDepth;
         this.words.forEach(root => {
-            var maxDepth = this.distanceFromRoot;
             function addToDataset(node,depth) {
                 if (depth > maxDepth) { return; } // done
                 if (d[node.id] && d[node.id].depth <= depth) { // skip
                     return;
                 }
 
-                if (node.type === "WORD") {
+                if (node instanceof Word) {
                     d[node.id] = {
                         id: node.id,
                         depth: depth,
                         data: node
                     }
                 }
-                else if (node.type === "LINK") {
+                else if (node instanceof Link) {
                     d[node.id] = {
                         id: node.id,
                         depth: depth,
                         data: node
                     }
                     // recurse to start/endpoint
-                    if (node.s) { addToDataset(node.s, depth + 1); }
-                    if (node.e) { addToDataset(node.e, depth + 1); }
+                    if (node.words) {
+                        node.words.forEach(anchor => addToDataset(anchor, depth + 1));
+                    }
                 }
                 // recurse to adjacent links
-                var links = [].concat( node.parentsL, node.parentsR );
+                var links = [].concat( node.parentsL, node.parentsC, node.parentsR );
                 links.forEach(l => addToDataset(l, depth + 1));
             }
             addToDataset(root, 0);
         });
 
         // sort flat data into nodes and links
-        var a = this.data.anchors = [];
-        var l = this.data.links = [];
+        const a = this.data.anchors = [];
+        const l = this.data.links = [];
 
-        for (var i in d) {
-            if (d[i].data.type === "WORD") {
-                d[i].role = "word";
-                a.push(d[i]);
+        for (var datum in d) {
+            if (d[datum].data instanceof Word) {
+                a.push(d[datum]);
             }
             else {
-                d[i].stops = [];
-                d[i].role = "link";
-                l.push(d[i]);
+                l.push(d[datum]);
             }
         }
 
-        // identify anchors (endpoints of links): can be words or other links
-        function getAnchorPoint(node) {
-            if (d[node.id]) {
-                if (d[node.id].role === "word") {
-                    return d[node.id];
-                }
-                else {
-                    // create anchor point along link
-                    var linkAnchor = {
-                        id: node.id,
-                        data: node,
-                        role: "link-anchor",
-                        link: d[node.id]
-                    };
-                    linkAnchor.link.stops.push(linkAnchor); // circular ref
-                    a.push(linkAnchor);
-                    return linkAnchor;
-                }
-            }
-            else {
-                // endpoint not in range of data
-                var emptyNode = {
-                    id: node.id,
-                    data:node,
-                    role: "nil"
-                };
-                a.push(emptyNode);
-                return emptyNode;
-            }            
-        }
+        console.log(a, l);
 
-        l.forEach(link => {
-            var s = link.data.s,
-                e = link.data.e;
 
-            link.source = getAnchorPoint(s);
-            link.target = getAnchorPoint(e);
-        });
-
-        // evenly space stops on initialization
-        l.forEach(link => {
-            var tmax = link.stops.length + 1;
-            link.stops.forEach((stop,i) => {
-                stop.t = (i + 1)/tmax;
-            })
-        })
     }//end generateData()
 
     drawNodes() {
@@ -202,126 +150,18 @@ class GraphLayout {
                 d.fy = d.y;
             })
             .on('drag', function(d) {
-                if (d.role !== "link-anchor") {
-                    d.fx += d3.event.dx,
-                    d.fy += d3.event.dy;                        
-                }
-                else {
-                    // get distance to source/target
-                    var nsDx = d.link.source.x - d.x,
-                        nsDy = d.link.source.y - d.y,
-                        ntDx = d.link.target.x - d.x,
-                        ntDy = d.link.target.y - d.y,
-
-                        esDx = d.link.source.x - d3.event.x,
-                        esDy = d.link.source.y - d3.event.y,
-                        etDx = d.link.target.x - d3.event.x,
-                        etDy = d.link.target.y - d3.event.y;
-
-                    var nodeDistanceToSource = nsDx*nsDx + nsDy*nsDy,
-                        nodeDistanceToTarget = ntDx*ntDx + ntDy*ntDy,
-                        dragDistanceToSource = esDx*esDx + esDy*esDy,
-                        dragDistanceToTarget = etDx*etDx + etDy*etDy;
-
-                    var direction = 0;
-                    if (dragDistanceToSource < nodeDistanceToSource) {
-                        direction = -0.01;
-                    }
-                    else if (dragDistanceToTarget < nodeDistanceToTarget) {
-                        direction = 0.01;
-                    }
-                    else {
-                        direction = dragDistanceToSource<dragDistanceToTarget ?
-                            -0.01 : 0.01;
-                    }
-                    d.t = Math.max(Math.min(d.t + direction, 0.9), 0.1);
-                }
+                d.fx += d3.event.dx,
+                d.fy += d3.event.dy;
             })
             .on('end', (d) => {
                 if (!d3.event.active) {
                     sim.alphaTarget(0);
                 }
-                if (d.role !== "link-anchor") {
-                    d.fx = d.fy = null;
-                }
             });
 
         // data entry/merge
-        var nodeGroup = this.nodes.selectAll('.node-group')
-            .data(this.data.anchors);
-
-        nodeGroup.exit().remove();
-        var nodeEnter = nodeGroup.enter().append('g')
-            .attr('class','node-group')
-            .attr("transform", () => {
-                return 'translate(' + this.bounds.width/2 + ',' + this.bounds.height/2 + ')';
-            });
-
-        nodeEnter.append('circle')
-            .attr('class','node');
-        var label = nodeEnter.append('g')
-            .attr('class','node-label')
-            .attr('pointer-events','none')
-            .attr('transform','translate(10,-5)');
-        label.append('text')
-            .style('font-size','0.8em')
-            .attr('text-anchor','start');
-        label.append('rect')
-            .attr('rx',1)
-            .attr('ry',1)
-            .attr('fill', '#fafaea')
-            .attr('stroke','#cacabc');
-
-        nodeGroup = nodeGroup.merge(nodeEnter);
-        nodeGroup
-            .classed('node-word', d => d.role === 'word')
-            .on('mouseover', (d) => {
-                function mouseoverWord(word) {
-                    // TODO: link back to word in "drawing" svg
-
-                }
-                if (d.role === "word") { mouseoverWord( d.data ); }
-                console.log('moused over',d)
-            })
-            .on('mouseout', (d) => {
-                function mouseoutWord(word) {
-
-                }
-            })
-            .call(drag);
-
-        // draw circle
-        var node = nodeGroup.selectAll('.node')
-            .data(d => [d])
-            .attr('r',(d) => d.role === 'word' ? 7 : 4)
-            .attr('stroke', 'rgba(0,0,0,0.2)')
-            .attr('fill',(d) => {
-                if (d.role !== 'word') {
-                    return 'transparent';
-                }
-                else {
-                    return colors((d.depth+2)/10);
-                }
-            });
-
-        // draw text label
-        label = nodeGroup.selectAll('.node-label')
-            .raise()
-            .data(d => [d]);
-
-        label.select('text')
-            .text(d => d.role === "word" ? d.data.val : '')
-            .attr('x',5);
-        label.select('rect')
-            .style('display', d => d.role === "word" ? "block" : "none")
-            .attr('width', function() {
-                return this.parentNode.getElementsByTagName('text')[0].getBBox().width + 10;
-            })
-            .attr('height','1.5em')
-            .attr('y','-1em')
-            .lower();
-
-        this.nodes.selectAll('.node-word').raise();
+        // var nodeGroup = this.nodes.selectAll('.node-group')
+        //     .data(this.data.anchors);
     }
 
     drawLinks() {
@@ -354,38 +194,9 @@ class GraphLayout {
 
         function tick() {
           node
-            .datum(d => { 
-                if (d.role === "link-anchor") {
-                    // get position of link-anchor on line
-                    var target = d.link.target,
-                        source = d.link.source;
-
-                    var dx = target.x - source.x,
-                        dy = target.y - source.y,
-                        dr = Math.sqrt( dx * dx + dy * dy);
-
-                    if (dr === 0) { 
-                        d.fx = target.x,
-                        d.fy = target.y;
-                        return d; 
-                    }
-
-                    var sin60 = Math.sqrt(3)/2;
-                    var cx = source.x + dx * 0.5 - dy * sin60,
-                        cy = source.y + dy * 0.5 + dx * sin60;
-
-                    var acos = Math.acos( (source.x - cx)/dr ),
-                        asin = Math.asin( (source.y - cy)/dr );
-
-                    var theta = (asin < 0) ? -acos : acos;
-
-                    d.fx = cx + dr*Math.cos(theta + Math.PI/3 * d.t),
-                    d.fy = cy + dr*Math.sin(theta + Math.PI/3 * d.t);
-                }
-                else {
-                    d.x = clampX(d.x);
-                    d.y = clampY(d.y);
-                }
+            .datum(d => {
+                d.x = clampX(d.x);
+                d.y = clampY(d.y);
                 return d; 
             })
             .attr("transform", (d) => {
@@ -395,7 +206,6 @@ class GraphLayout {
           link
             .attr('d', arrowPath);
 
-
           function arrowPath(d,i) {
             var target = d.target,
                 source = d.source;
@@ -403,10 +213,6 @@ class GraphLayout {
             var dx = target.x - source.x,
                 dy = target.y - source.y,
                 dr = Math.sqrt( dx * dx + dy * dy);
-
-            // if (target.role === "link-anchor" || source.role === "link-anchor") {
-            //     dr /= 2;
-            // }
 
             return  "M" + source.x + "," + source.y +
                 "A" + dr + "," + dr + " 0 0,1 " +
@@ -417,8 +223,6 @@ class GraphLayout {
         this.simulation
             .nodes(this.data.anchors)
             .on('tick', tick);
-
-        // this.simulation.force('link').links(this.data.links);
 
         if (this.simulation.alpha() < 0.1) {
             this.simulation.alpha(0.3).restart();

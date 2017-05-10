@@ -256,7 +256,7 @@ function getDescentForFont(str, fs) {
 
 function printLink(link) {
 
-  if (debug) {
+  if (Config.debug) {
     //console.log("----- \nprinting link ["+ link.id + "]: ");
     //console.log(link);
     //console.log("-----");
@@ -265,7 +265,7 @@ function printLink(link) {
 
 function debugSlots() {
   // var debug = false;
-  if (debug) {
+  if (Config.debug) {
     for (var i = 0; i < wordObjs.length; i++) {
       //console.log("slots taken for word " + wordObjs[i].val + " :");
 
