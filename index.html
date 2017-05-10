@@ -129,10 +129,10 @@ drawLinks(linkObjs);
 changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
 
 window.onload = function() {
-  /* init graph layout object */
   var Panel = new GraphLayout();
-  var prevWidth = Config.svgWidth;
+  var parser = new Parser();
 
+  var prevWidth = Config.svgWidth;
   function svgResize() {
     var widthPercChange; 
     if (Panel.isOpen) {
@@ -147,43 +147,68 @@ window.onload = function() {
     recalculateRows(widthPercChange); //makes sure that the words fit in the current width, else makes new rows  
   }
 
-  document.addEventListener('keydown',
-    function(e) {
-      var key = e.keyCode || e.which;
-      // console.log('keycode',key);
-      switch(key) {
-        case 37:          // left arrow
-          if (Panel.isOpen) {
-            Panel.close();
-            svgResize();
-          }
-          break;
-        case 39:          // right arrow
-          if (!Panel.isOpen) {
-            Panel.open();
-            svgResize();
-          }
-          Panel.graph(wordObjs.filter(word => word.isSelected));
-          break;
-        default:
-          break;
-      }
-    }, false);
-
-  var parser = new Parser();
-  document.querySelector('select').onchange = function() {
+  function handleKeyDown(e) {
+    var key = e.keyCode || e.which;
+    // console.log('keycode',key);
+    switch(key) {
+      case 37:          // left arrow
+        if (Panel.isOpen) {
+          Panel.close();
+          svgResize();
+        }
+        break;
+      case 39:          // right arrow
+        if (!Panel.isOpen) {
+          Panel.open();
+          svgResize();
+        }
+        Panel.graph(wordObjs.filter(word => word.isSelected));
+        break;
+      default:
+        break;
+    }
+  };
+  
+  function changeDataset() {
     if (this.selectedIndex > 0) {
       parser.readJson(`./data/data${this.selectedIndex}.json`, function() {
-        console.log('hey',parser);
+        console.log(parser);
+        resetDrawing();
       });
     }
+  };
+
+  function resetDrawing(words, links) {
+    draw.clear();
+    rowGroup = draw.group();
+    [groupAllElements, linkG, textG, arrowG].forEach(group => {
+      if (group) { group.clear(); }
+      group = undefined;
+    });
+    dragElem = null;
+    isDragging = false;
+    rowOffsetX = 0;
+    rowOffsetWord = null;
+    prevX = -1;
+
+    rows = [];
+    wordObjs = words || createTestWords(4, 10, 10);
+    linkObjs = links || createTestMultiLinks(1);
+    drawWords(wordObjs);
+    drawLinks(linkObjs);
+    if (Panel.isOpen) { Panel.close(); }
+    changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
   }
 
   function resize() {
     svgResize();
     Panel.resize();
   }
+
+  document.addEventListener('keydown', handleKeyDown, false);
+  document.querySelector('select').onchange = changeDataset;
   window.onresize = _.debounce(resize, 300);
+
 };
 
 </script>
