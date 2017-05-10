@@ -26,7 +26,6 @@ const Config = {
     oddRowsColor_selected: '#bbbbff',
     dragRectSide: 8,
     dragRectMargin: 1,
-    rowOffsetX: 0,
     dragDir: 0,
     linkStrokeThickness: 1.5,
     linkStrokeColor: '#cc9999',

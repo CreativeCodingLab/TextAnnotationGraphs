@@ -254,7 +254,7 @@ function addDragStartingAndEndingListeners(elem) {
       mout(rowOffsetWord);
     }
 
-    Config.rowOffsetX = 0;
+    rowOffsetX = 0;
     rowOffsetWord = null;
 
     prevX = -1;
@@ -470,9 +470,9 @@ function dragLeftHandle(x, y, word) {
   var dragDir = checkDragDirection(x);
 
   if (dragDir == directions.BACKWARD) {
-    return checkIfCanDragLeftHandleLeft(x + Config.rowOffsetX, y, word);
+    return checkIfCanDragLeftHandleLeft(x + rowOffsetX, y, word);
   } else if (dragDir == directions.FORWARD) {
-    return checkIfCanDragLeftHandleRight(x + Config.rowOffsetX, y, word);
+    return checkIfCanDragLeftHandleRight(x + rowOffsetX, y, word);
   } else {
     return {x:word.leftHandle.bbox().x, y:word.leftHandle.bbox().y};
   }
@@ -509,9 +509,9 @@ function dragRightHandle(x, y, word) {
   var dragDir = checkDragDirection(x);
 
   if (dragDir == directions.BACKWARD) {
-    return checkIfCanDragRightHandleLeft(x + Config.rowOffsetX, y, word);
+    return checkIfCanDragRightHandleLeft(x + rowOffsetX, y, word);
   } else if (dragDir == directions.FORWARD) {
-    return checkIfCanDragRightHandleRight(x + Config.rowOffsetX, y, word);
+    return checkIfCanDragRightHandleRight(x + rowOffsetX, y, word);
   } else {
     return {x:word.rightHandle.bbox().x, y:word.rightHandle.bbox().y};
   }
@@ -611,7 +611,7 @@ function checkIfCanMoveRight(x, w, y, word, adjustWidth) {
 
       //handle drag offset if i am dragging this word
       if (word == rowOffsetWord) {
-        Config.rowOffsetX -= (Config.svgWidth - (2*Config.edgePadding) - (w) );
+        rowOffsetX -= (Config.svgWidth - (2*Config.edgePadding) - (w) );
       }
 
       rx = vals.x;
@@ -685,7 +685,7 @@ function checkIfCanMoveLeft(x, w, y, word, adjustWidth) {
 
         //handle drag offset if i am dragging this word
         if (word == rowOffsetWord) {
-          Config.rowOffsetX += (Config.svgWidth - (2*Config.edgePadding) - (w) );
+          rowOffsetX += (Config.svgWidth - (2*Config.edgePadding) - (w) );
         }
 
         rx = Config.svgWidth - Config.edgePadding - w;
@@ -814,9 +814,9 @@ function dragWord(x, y, word) {
   var dragDir = checkDragDirection(x);
 
   if (dragDir == directions.BACKWARD) {
-    return checkIfCanMoveLeft(x + Config.rowOffsetX, word.aboveRect.bbox().width, y, word, false);
+    return checkIfCanMoveLeft(x + rowOffsetX, word.aboveRect.bbox().width, y, word, false);
   } else if (dragDir == directions.FORWARD) {
-    return checkIfCanMoveRight(x + Config.rowOffsetX, word.aboveRect.bbox().width, y, word, false);
+    return checkIfCanMoveRight(x + rowOffsetX, word.aboveRect.bbox().width, y, word, false);
   } else {
     return {x:word.aboveRect.bbox().x, y:word.aboveRect.bbox().y};
   }

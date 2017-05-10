@@ -106,7 +106,7 @@ Config.handleH = texts.wordText.maxHeight + (Config.textPaddingY * 2);
 Config.wordHeight = texts.wordText.maxHeight + (Config.textPaddingY * 2); 
 Config.minWordWidth = Math.max( getTextWidthAndHeight("i", texts.wordText.style).w + (Config.handleW * 2), getTextWidthAndHeight("i", texts.tagText.style).w + (Config.handleW * 2) );
 
-
+var rowOffsetX = 0;
 var rowOffsetWord = null;
 var prevX = -1;
 
@@ -130,31 +130,17 @@ window.onload = function() {
   var prevWidth = Config.svgWidth;
 
   function svgResize() {
-    var w, widthPercChange; 
+    var widthPercChange; 
     if (Panel.isOpen) {
-
-      svgWidth = (window.innerWidth - 16) * 0.665;
-
-      changeSizeOfSVGPanel(svgWidth, draw.height());
-
-      //draw.size(svgWidth, draw.height());
+      Config.svgWidth = (window.innerWidth - 16) * 0.665;
     }
     else {
-      svgWidth = (window.innerWidth - 16)
-      changeSizeOfSVGPanel(svgWidth, draw.height());
-
-
-     //   draw.size(svgWidth, draw.height());
-
+      Config.svgWidth = (window.innerWidth - 16)
     }
-
-    widthPercChange = svgWidth / prevWidth;
-    prevWidth = svgWidth;
-    //console.log("\nwidthPercChange = " + widthPercChange);
-
-
-    recalculateRows(widthPercChange); //makes sure that the words fit in the current width, else makes new rows
-  
+    changeSizeOfSVGPanel(Config.svgWidth, draw.height());
+    widthPercChange = Config.svgWidth / prevWidth;
+    prevWidth = Config.svgWidth;
+    recalculateRows(widthPercChange); //makes sure that the words fit in the current width, else makes new rows  
   }
 
   document.addEventListener('keydown',
