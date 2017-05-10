@@ -257,10 +257,10 @@ class Word {
       this.leftX = this.tempX; 
       this.rightX = this.tempX + this.tempW;
 
-      this.percPos = (this.leftX-edgepadding) / (svgWidth-edgepadding*2);
+      this.percPos = (this.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
 
       this.leftHandle.x(this.tempX);
-      this.rightHandle.x(this.rightX - handleW);
+      this.rightHandle.x(this.rightX - Config.handleW);
     }
     
     draw() {
@@ -269,12 +269,12 @@ class Word {
     }
 
     getMinWidth() { //min width is the maximum of: the word text, the tag text, or the size of the two handles + a little bit
-      return Math.max(minWordWidth, this.maxtextw);
+      return Math.max(Config.minWordWidth, this.maxtextw);
     }
 
-    //getMaxWidth() must return a value less than row width - edgepaddings, else will try to reposition long words forever!!!
+    //getMaxWidth() must return a value less than row width - Config.edgePaddings, else will try to reposition long words forever!!!
     getMaxWidth() {
-      return (this.row.rect.width() - (edgepadding*2)) / 3.1; 
+      return (this.row.rect.width() - (Config.edgePadding*2)) / 3.1; 
     }
 
     toString() {
@@ -291,7 +291,7 @@ class Word {
 
 function checkSlotAvailabity(num, slotArr) {
 
-  if (debug) {
+  if (Config.debug) {
     if (slotArr.indexOf(num) < 0) {
       ////console.log("slot " + num + " not found..." );
     } else {
@@ -633,11 +633,11 @@ function createLink(link) {
 
 
   if (link.leftType == types.WORD && link.rightType == types.WORD) {
-    calcAttachPoints(link, word2word_strategy);
+    calcAttachPoints(link, Config.word2word_strategy);
   } else if (link.leftType == types.LINK && link.rightType == types.LINK) {
-    calcAttachPoints(link, link2link_strategy);
+    calcAttachPoints(link, Config.link2link_strategy);
   } else { 
-    calcAttachPoints(link, word2link_strategy);
+    calcAttachPoints(link, Config.word2link_strategy);
   }
 
 
@@ -736,11 +736,11 @@ function determineParentLinkOffsets(word, side, parentLinks, totalAttachmentPoin
   if (totalAttachmentPoints <= 1) {
     console.log("here totalAttachmentPoints = " + totalAttachmentPoints);
     pinc = 0.5;
-    poff = 0.5; //attachmentMargin + (pinc * offsetIdx);
+    poff = 0.5; //Config.attachmentMargin + (pinc * offsetIdx);
 
   } else {
-    pinc = ((1.0 - (attachmentMargin*2))*1.0)  / (totalAttachmentPoints - 1);
-    poff = attachmentMargin + (pinc * offsetIdx);
+    pinc = ((1.0 - (Config.attachmentMargin*2))*1.0)  / (totalAttachmentPoints - 1);
+    poff = Config.attachmentMargin + (pinc * offsetIdx);
 
   }
   console.log("poff = " + poff);

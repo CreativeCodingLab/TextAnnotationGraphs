@@ -75,7 +75,7 @@ function checkIfEverythingFits(row) {
       }
 
       if (ii == row.words.length - 1) {
-        if (word.rightX > (svgWidth - edgepadding) ) {
+        if (word.rightX > (Config.svgWidth - Config.edgePadding) ) {
           return false;
         }
       }
@@ -93,8 +93,8 @@ function checkIfNeedToResizeWords(row) {
     totalW += word.aboveRect.width();
   }
 
-  if (totalW > svgWidth - (edgepadding*2)) {
-    return totalW - (svgWidth - (edgepadding*2));
+  if (totalW > Config.svgWidth - (Config.edgePadding*2)) {
+    return totalW - (Config.svgWidth - (Config.edgePadding*2));
   }
 
   return 0;
@@ -115,7 +115,7 @@ function recalculateRows(percChange) {
     row.lineTop.plot(0, row.ry, draw.width(), row.ry);
     row.lineBottom.plot(0, row.ry+row.rh, draw.width(), row.ry+row.rh);
 
-    row.dragRect.x(draw.width() - (dragRectSide+dragRectMargin));
+    row.dragRect.x(draw.width() - (Config.dragRectSide+Config.dragRectMargin));
 
     //first pass at resizing   
 
@@ -130,7 +130,7 @@ function recalculateRows(percChange) {
       //var nw = Math.max(word.getMinWidth(), word.aboveRect.width() * percChange);
       //nw = Math.max(nw, word.getMaxWidth());
 
-      var nx = edgepadding + (word.percPos * (svgWidth-edgepadding*2));
+      var nx = Config.edgePadding + (word.percPos * (Config.svgWidth-Config.edgePadding*2));
 
       setWordToXW(word, nx, nw);
       word.update();
@@ -154,7 +154,7 @@ function recalculateRows(percChange) {
 
         var wordsFitInRow = true;
 
-        if (row.getMinWidth() > (svgWidth - edgepadding*2)) {
+        if (row.getMinWidth() > (Config.svgWidth - Config.edgePadding*2)) {
           //console.log("words will not fit in row! have to adjust...");
           wordsFitInRow = false;
         } 
@@ -270,8 +270,8 @@ function removeLastRow() {
 
 function changeSizeOfSVGPanel(w, h) {
 
-  svgWidth = w;
-  svgHeight = h;
+  Config.svgWidth = w;
+  Config.svgHeight = h;
   draw.size(w, h);
 }
 
@@ -283,13 +283,13 @@ function appendRow() {
 
   row.maxSlots = 0;
 
-  row.ry = rowpadding/2 + rows[row.idx - 1].rect.bbox().y + rows[row.idx - 1].rect.bbox().h;
+  row.ry = Config.rowPadding/2 + rows[row.idx - 1].rect.bbox().y + rows[row.idx - 1].rect.bbox().h;
   row.rh = rows[row.idx - 1].rect.bbox().h; 
 
   if (row.idx % 2 == 0) {
-    row.color = evenRowsColor;
+    row.color = Config.evenRowsColor;
   } else {
-    row.color = oddRowsColor;
+    row.color = Config.oddRowsColor;
   }
 
   drawRow(row);
@@ -300,7 +300,7 @@ function appendRow() {
 
 function drawRow(row) {
 
-  row.rect = rowGroup.rect(svgWidth,row.rh).x(0).y(row.ry);
+  row.rect = rowGroup.rect(Config.svgWidth,row.rh).x(0).y(row.ry);
 
   if (row.idx % 2 == 0) {
     row.rect.style(styles.rowRectEvenFill.style);
@@ -308,13 +308,13 @@ function drawRow(row) {
     row.rect.style(styles.rowRectOddFill.style); 
   }
 
-  row.lineTop = rowGroup.line(0, row.ry, svgWidth, row.ry).style(styles.rowLineStroke.style);
-  row.lineBottom = rowGroup.line(0, row.ry+row.rh, svgWidth, row.ry+row.rh).style(styles.rowLineStroke.style);
+  row.lineTop = rowGroup.line(0, row.ry, Config.svgWidth, row.ry).style(styles.rowLineStroke.style);
+  row.lineBottom = rowGroup.line(0, row.ry+row.rh, Config.svgWidth, row.ry+row.rh).style(styles.rowLineStroke.style);
 
-  row.dragRect = rowGroup.rect(dragRectSide,dragRectSide).x(svgWidth - (dragRectSide+dragRectMargin)).y(row.ry + row.rh - (dragRectSide+dragRectMargin)).style(styles.rowDragRectFill.style);
+  row.dragRect = rowGroup.rect(Config.dragRectSide,Config.dragRectSide).x(Config.svgWidth - (Config.dragRectSide+Config.dragRectMargin)).y(row.ry + row.rh - (Config.dragRectSide+Config.dragRectMargin)).style(styles.rowDragRectFill.style);
 
 
-  row.baseHeight = row.lineBottom.y() - (textpaddingY*2) - texts.wordText.maxHeight;
+  row.baseHeight = row.lineBottom.y() - (Config.textPaddingY*2) - texts.wordText.maxHeight;
 
   setUpRowDraggable(row);
 }
@@ -370,16 +370,16 @@ function setUpRowsAndWords(words) {
       rows.push(row);
       row.maxSlots = 0;
 
-      x = edgepadding;
+      x = Config.edgePadding;
 
-    } else if (x + word.tw + (textpaddingX*2) + edgepadding > svgWidth) { //if would be wider than the screen width, then start a new row
+    } else if (x + word.tw + (Config.textPaddingX*2) + Config.edgePadding > Config.svgWidth) { //if would be wider than the screen width, then start a new row
 
       rowNum++;
       row = new Row(rowNum);
       rows.push(row);
       row.maxSlots = 0;
 
-      x = edgepadding;
+      x = Config.edgePadding;
     }
 
     row.words.push(word);
@@ -389,15 +389,15 @@ function setUpRowsAndWords(words) {
 
     //calculate x position and width of the Word
     word.wx = x;
-    word.ww = word.tw + (textpaddingX * 2);
+    word.ww = word.tw + (Config.textPaddingX * 2);
 
 
     if (word.tag != null) {
-      word.tww = word.ww; //maxtextw + (textpaddingX * 2);
+      word.tww = word.ww; //maxtextw + (Config.textPaddingX * 2);
       word.twx = word.wx;
     }
 
-    x += word.ww + wordpadding;
+    x += word.ww + Config.wordPadding;
   }
 
 
@@ -407,29 +407,29 @@ function setUpRowsAndWords(words) {
     var row = rows[i];
 
     if (i == 0) {
-      row.ry = rowpadding / 2;
+      row.ry = Config.rowPadding / 2;
     } else {
-      row.ry = rowpadding / 2 + rows[row.idx - 1].ry + rows[row.idx - 1].rh;
+      row.ry = Config.rowPadding / 2 + rows[row.idx - 1].ry + rows[row.idx - 1].rh;
     }
 
-    row.rh = rowpadding + ((textpaddingY * 2) + texts.wordText.maxHeight) + (levelpadding * row.maxSlots);
+    row.rh = Config.rowPadding + ((Config.textPaddingY * 2) + texts.wordText.maxHeight) + (Config.levelPadding * row.maxSlots);
 
     if (row.idx % 2 == 0) {
-      row.color = evenRowsColor;
+      row.color = Config.evenRowsColor;
     } else {
-      row.color = oddRowsColor;
+      row.color = Config.oddRowsColor;
     }
 
     for (var ii = 0; ii < row.words.length; ii++) {
       var word = row.words[ii];
 
       word.h = 0; //the number of link levels is 0 for the word itself
-      word.wh = texts.wordText.maxHeight + textpaddingY*2; 
+      word.wh = texts.wordText.maxHeight + Config.textPaddingY*2; 
       word.wy = row.ry + row.rh - word.wh;
 
       if (word.tag != null) {
         var tag_textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
-        word.twh = texts.tagText.maxHeight + textpaddingY*2; 
+        word.twh = texts.tagText.maxHeight + Config.textPaddingY*2; 
         word.twy = word.wy - word.twh;
       }
 
@@ -448,7 +448,7 @@ function drawWord(word) {
   word.text = draw.text(function(add) {
 
     add.text(word.val)
-    .y(word.wy + textpaddingY*2) // - texts.wordText.descent)
+    .y(word.wy + Config.textPaddingY*2) // - texts.wordText.descent)
     .x(word.wx + (word.ww/2) - (textwh.w / 2))
     .font(texts.wordText.style);
   });
@@ -462,7 +462,7 @@ function drawWord(word) {
     word.tagtext = draw.text(function(add) {
 
       add.text(word.tag)
-      .y(word.wy + textpaddingY/2) // - texts.tagText.descent)
+      .y(word.wy + Config.textPaddingY/2) // - texts.tagText.descent)
       .x(tagXPos)
       .font(texts.tagText.style);
     });
@@ -471,16 +471,16 @@ function drawWord(word) {
   //this rect is invisible, but used for detecting mouseevents, as its drawn on top of the text+underneathRect (which provided the color+fill+stroke)
   word.aboveRect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
 
-  word.leftHandle = draw.rect(handleW, handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
+  word.leftHandle = draw.rect(Config.handleW, Config.handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) ).style(styles.handleFill.style);
 
 
-  word.rightHandle = draw.rect(handleW,handleH).x(word.wx + word.ww - (handleW)).y( word.wy + (word.wh / 2 ) - (handleH / 2) ).style(styles.handleFill.style);
+  word.rightHandle = draw.rect(Config.handleW,Config.handleH).x(word.wx + word.ww - (Config.handleW)).y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) ).style(styles.handleFill.style);
 
 
   word.bbox = word.aboveRect.bbox();
   word.leftX = word.aboveRect.bbox().x;
   word.rightX = word.aboveRect.bbox().x + word.aboveRect.bbox().w;
-  word.percPos = (word.leftX-edgepadding) / (svgWidth-edgepadding*2);
+  word.percPos = (word.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
 
 
   //set up mouse interactions
@@ -908,10 +908,10 @@ function getLinkStyles(link, xpts) {
 
   var middleLength = 0;
   if (link.numLineSegments > 2) {
-    middleLength = (svgWidth-edgepadding*2) * (link.numLineSegments - 2);
+    middleLength = (Config.svgWidth-Config.edgePadding*2) * (link.numLineSegments - 2);
   }
-  var firstLength = (svgWidth-edgepadding) - left;
-  var lastLength = right - edgepadding;
+  var firstLength = (Config.svgWidth-Config.edgePadding) - left;
+  var lastLength = right - Config.edgePadding;
   var totalLength = firstLength + middleLength + lastLength;
 
   var sx = 0.0;
@@ -929,9 +929,9 @@ function getLinkStyles(link, xpts) {
         sx += firstLength;
       } else if (i > 0 && i < link.numLineSegments - 1) {
         sp = sx / totalLength;
-        ep = (sx + (svgWidth-edgepadding*2)) / totalLength;
+        ep = (sx + (Config.svgWidth-Config.edgePadding*2)) / totalLength;
 
-        sx += (svgWidth-edgepadding*2);
+        sx += (Config.svgWidth-Config.edgePadding*2);
       } else {
         sp = sx / totalLength;
         ep = 1.0;
@@ -1041,7 +1041,7 @@ function calculateOnlyRow(rowNum, link, percentagePadding, xPositions, linkStyle
 
   link.polylines[0] = {polyline: pathline, style: lineStyle};
 
-  if (percentagePadding < hideLinkLinesPercentage) { //only bother drawing links if there's room in the row
+  if (percentagePadding < Config.hideLinkLinesPercentage) { //only bother drawing links if there's room in the row
     link.polylines[0].visibility = false;
     
     for (var i = 0; i < xPositions.length; i++) {
@@ -1063,7 +1063,7 @@ function calculateOnlyRow(rowNum, link, percentagePadding, xPositions, linkStyle
     //setupLineInteractions(link); //only can interact with them if they are visible
   }
 
-   calculateLinkLabels(0, rowNum, (xL + xR) / 2, yPos, link, (percentagePadding < hideLinkTextPercentage));
+   calculateLinkLabels(0, rowNum, (xL + xR) / 2, yPos, link, (percentagePadding < Config.hideLinkTextPercentage));
 
  
   link.linesLeftX.push(xL); 
@@ -1087,7 +1087,7 @@ function calculateStartRow(idx, rowNum, link, percentagePadding, xPositions, lin
   });
   
   var xL = arrowPos[0].x ; 
-  var xR = svgWidth; 
+  var xR = Config.svgWidth; 
 
 
   //can there be a start row with NO arrows??
@@ -1113,7 +1113,7 @@ function calculateStartRow(idx, rowNum, link, percentagePadding, xPositions, lin
  
   //storeLeftArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
 
-  if (percentagePadding < hideLinkLinesPercentage) { 
+  if (percentagePadding < Config.hideLinkLinesPercentage) { 
     link.polylines[idx].visibility = false;
     for (var i = 0; i < xPositions.length; i++) {
       var wordIdx = xPositions[i].wordIdx;
@@ -1133,7 +1133,7 @@ function calculateStartRow(idx, rowNum, link, percentagePadding, xPositions, lin
     //setupLineInteractions(link); //only can interact with them if they are visible
   }
 
-  calculateLinkLabels(idx, rowNum, (xL + xR)/2, yPos, link, (percentagePadding < hideLinkTextPercentage));
+  calculateLinkLabels(idx, rowNum, (xL + xR)/2, yPos, link, (percentagePadding < Config.hideLinkTextPercentage));
 }
 
 
@@ -1148,7 +1148,7 @@ function calculateMiddleRow (idx, rowNum, link, percentagePadding, xPositions, l
   });
   
   var xL = 0; //xPositions[0];
-  var xR = svgWidth; //xPositions[link.words.length - 1];
+  var xR = Config.svgWidth; //xPositions[link.words.length - 1];
 
    var pathline = 'M '+ (xL-10) + ' ' + (yPos-10) + 
     ' L ' + xL + ' ' +  yPos + 
@@ -1176,7 +1176,7 @@ function calculateMiddleRow (idx, rowNum, link, percentagePadding, xPositions, l
 
   link.polylines[idx] = {polyline: pathline, style: linkStyles[idx]};
 
-  if (percentagePadding < hideLinkLinesPercentage) { 
+  if (percentagePadding < Config.hideLinkLinesPercentage) { 
     link.polylines[idx].visibility = false;
      for (var i = 0; i < xPositions.length; i++) {
       var wordIdx = xPositions[i].wordIdx;
@@ -1193,7 +1193,7 @@ function calculateMiddleRow (idx, rowNum, link, percentagePadding, xPositions, l
     //setupLineInteractions(link); //only can interact with them if they are visible
   }
 
-  calculateLinkLabels(idx, rowNum, (xL+xR) / 2, yPos, link, (percentagePadding < hideLinkTextPercentage));
+  calculateLinkLabels(idx, rowNum, (xL+xR) / 2, yPos, link, (percentagePadding < Config.hideLinkTextPercentage));
 
 }
 
@@ -1279,7 +1279,7 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
  
   //storeRightArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link));
 
-  if (percentagePadding < hideLinkLinesPercentage) { //only bother drawing links if there's room in the row
+  if (percentagePadding < Config.hideLinkLinesPercentage) { //only bother drawing links if there's room in the row
     link.polylines[idx].visibility = false;
 
      for (var i = 0; i < xPositions.length; i++) {
@@ -1309,7 +1309,7 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
     //setupLineInteractions(link); //only can interact with them if they are visible
   }
 
-  calculateLinkLabels(idx, rowNum, (xL+xR) / 2, yPos, link, (percentagePadding < hideLinkTextPercentage));
+  calculateLinkLabels(idx, rowNum, (xL+xR) / 2, yPos, link, (percentagePadding < Config.hideLinkTextPercentage));
 }
 
 

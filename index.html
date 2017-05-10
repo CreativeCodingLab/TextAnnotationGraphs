@@ -42,10 +42,8 @@ button.active {
 }
 
 .split-left {width:66.5%; overflow:hidden;}
-.split-right {transform:translateX(0) !important; overflow: auto;}
-
+.split-right {transform:translateX(0) !important;}
 .node { cursor: pointer; }
-
 #graph {
     transition:transform 200ms ease;
     transform:translateX(100%);
@@ -55,7 +53,6 @@ button.active {
     position:fixed;
     top:0;
     right:0;
-    overflow: auto;
 }
 
 </style>
@@ -65,9 +62,14 @@ button.active {
 <body>
 
 <div id="header">
-  <input type="file">
-  <button id="POS">POS</button>
-  <button class="active" id="REACH">REACH</button>
+  <button id="random">random graph</button>
+  <select id="dataset">
+    <option>-- select dataset --</option>
+    <option>data1</option>
+    <option>data2</option>
+    <option>paragraph</option>
+    <option>passage</option>
+  </select>
 </div>
 
 <div id="drawing">
@@ -81,9 +83,10 @@ button.active {
 <script src="libs/lodash.js"></script>
 <script src="libs/chroma.min.js"></script>
 
-<script src="js/staircase.js"></script>
-<script src="js/GraphLayout.js"></script>
 <script src="js/enums.js"></script>
+<script src="js/config.js"></script>
+<script src="js/parser.js"></script>
+<script src="js/GraphLayout.js"></script>
 <script src="js/style.js"></script>
 <script src="js/annotate.js"></script>
 <script src="js/render.js"></script>
@@ -93,88 +96,26 @@ button.active {
 <script type="text/javascript">
 
 /* a lot of these global vars should be wrapped eventually */
-
-var debug = true;
-
-var svgWidth = window.innerWidth - 16;
-var svgHeight = 1000;
-
-
-
-var evenRowsColor = '#efeff4';
-var oddRowsColor = '#dddddf';
-var rowEdgeColor = 'transparent';
-
-//var draw = SVG('drawing').size('100%', '100%');
-var draw = SVG('drawing').size(svgWidth, svgHeight)
-            // .attr('viewBox', '0 0 ' + svgWidth + ' ' + svgHeight);
-
+var draw = SVG('drawing').size(Config.svgWidth, Config.svgHeight);
 var rowGroup = draw.group();
 var groupAllElements;
 var linkG, textG, arrowG;
-
-//var gradientDefGroup = draw.defs().group();
+var dragElem = null;
+var isDragging = false;
 
 var styles = setupStyles(draw); //creates an associative array of whatever styles you want to make use of later
 
 var texts = setupTexts(draw); //creates an associate array of whatever text you want to use. Currently using 'texts.wordText' and 'texts.linkText', and using style, maxHeight, and descent to layout text
 
-var dragElem = null;
-var isDragging = false;
-
-var levelpadding = 16;
-var /*textpadding */ textpaddingX = 8;//12; //this is the x-padding within each word rect, between the text and the rectangle it's inside of
-var textpaddingY = 6;//texts.wordText.maxHeight / 2; //padding above and below text, between text and rectangle it's inside of
-var wordpadding = 4; //x padding between the rects containing words
-//var topMargin = 0;
-var edgepadding = 10; //padding between left side of svg canvas and where first word can be placed, and padding between right side of svg canvas and where last word on a row can fit (before popping over to next row)
-var rowpadding = 30;
-
-var hideLinkLinesPercentage = 3.0; //percentage at which links and arrows are hidden
-var hideLinkTextPercentage = 7.0; //percentage at which words are link words are hidden
-
-
-
-var handleW = 10;
-var handleH = texts.wordText.maxHeight + (textpaddingY * 2);
-var handleColor = '#ff0000';
-var handleOpacity= 0.1;
-
-//should be able to remove these hardcoded vals - moved this logic to style.js, arrow functions. Looks like intereact.js dragArrow still uses them, should be able to remove...
-var arrowH = 5; //9;
-var arrowMH = 5; //7; //4
-var arrowW = 3; //3
-
-var wordHeight = texts.wordText.maxHeight + (textpaddingY * 2); 
-var minWordWidth = Math.max( getTextWidthAndHeight("i", texts.wordText.style).w + (handleW * 2), getTextWidthAndHeight("i", texts.tagText.style).w + (handleW * 2) );
-
-
-var evenRowsColor_selected = '#cdcdff';
-var oddRowsColor_selected = '#bbbbff';
-var dragRectSide = 8;
-var dragRectMargin = 1;
+Config.handleH = texts.wordText.maxHeight + (Config.textPaddingY * 2);
+Config.wordHeight = texts.wordText.maxHeight + (Config.textPaddingY * 2); 
+Config.minWordWidth = Math.max( getTextWidthAndHeight("i", texts.wordText.style).w + (Config.handleW * 2), getTextWidthAndHeight("i", texts.tagText.style).w + (Config.handleW * 2) );
 
 var rowOffsetX = 0;
 var rowOffsetWord = null;
-var dragDir = directions.NONE;
 var prevX = -1;
 
-var linkStrokeThickness = 1.5;
-var linkStrokeColor = '#cc9999';
-var linkStrokeOpacity = 1.0;
-
-var linkStrokeThickness_selected = 1.5;
-var linkStrokeColor_selected = '#449944';
-var linkStrokeOpacity_selected = 1.0;
-
-var attachmentMargin = 0.1; //percentage value
-
-var word2word_strategy = strategies.FARTHEST;
-var word2link_strategy = strategies.CLOSEST; 
-var link2link_strategy = strategies.FARTHEST; //CLOSEST sometimes causes overlaps - need to be a bit more rigorous when assigning slots - don't assign any slots that have the potential to overlap (when dragged manually)? - or let the buyer beware that this could happen - they can always move out of the way - right now it won't automatically overlap, but won't prevent a user from doing it. 
-
 var rows = []; //list of Row object, each of those has a list of Word objects
-
 
 // 1. create Words and Links objects (in utils.js) */
 var wordObjs = createTestWords(4, 10, 10);
@@ -183,432 +124,92 @@ var wordObjs = createTestWords(4, 10, 10);
 //var linkObjs = createTestLinks(1,0,0); 
 var linkObjs = createTestMultiLinks(1); 
 
+drawWords(wordObjs);
+drawLinks(linkObjs);
 
-/* these should eventually be made non-global too */
+changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
 
-/*
-
-var wordObjs = [], linkObjs = [];
-
-
-// init objects/listeners...
 window.onload = function() {
+  var Panel = new GraphLayout();
+  var parser = new Parser();
 
-  function generateLinksPOS(){};
-  function generateLinksREACH(){};
-
-  // init buttons
-  const State = {
-    annotationStyle: document.querySelector('button.active').id,
-    setAnnotationStyle: function(type) {
-      this.annotationStyle = type;
-      if (type === "POS") {
-        wordObjs.forEach(w => w.tag = w.data.syntaxData.tag);
-        generateLinksPOS();
-      }
-      else {
-        wordObjs.forEach(w => w.tag = w.data.bioData.tag);
-        generateLinksREACH();
-      }
-      redrawWords(wordObjs);
-      redrawLinks(true);
-    }
-  };
-  const buttons = document.querySelectorAll('#header button');
-  buttons.forEach(function(clickableButton) {
-    clickableButton.onclick = function() {
-      buttons.forEach(button => {
-        button.classList.toggle('active', button == this);
-      })
-      State.setAnnotationStyle(this.id);
-    }
-  });
-
-  //// load JSON file 
-  var json = './data/angus-ex.json';
-
-  function loadJSON(path, callback) {
-      var httpRequest = new XMLHttpRequest();
-      httpRequest.onreadystatechange = function() {
-          if (httpRequest.readyState === 4) {
-              if (httpRequest.status === 200) {
-                  var data = JSON.parse(httpRequest.responseText);
-                  if (callback) callback(data);
-              }
-          }
-      };
-      httpRequest.open('GET', path);
-      httpRequest.send(); 
-  }
-
-  ///// parse json file
-  loadJSON(json, parseData);
-
-  // init words and links from json data
-   //  - first hierarchy:  documents--sentences--words (+associated syntax tags)
-   //  -                   edges connect parts of speech
-   //  - second hierarchy: events--paths | arguments--themes
-   //
-  function parseData(data) {
-    let wordDataArray = [];
-    let wordDataMap = {};
-    let syntaxDataArray = [];
-    let mentionDataArray = [];
-
-    for (var i in data.documents) {
-      let doc = data.documents[i];
-
-      doc.sentences.forEach(function(sentence, j) {
-        // parse word data
-        let sentenceData = sentence.words.map(function(word, k) {
-
-          let wordDataObject = {
-            text: word,
-            documentId: i,
-            sentenceId: j,
-            locationInSentence: k,
-            charLocationInSentence: sentence.startOffsets[k],
-            syntaxData: {
-              tag: sentence.tags[k]
-            },
-            bioData: {
-              tag: ''
-            }
-          };
-
-          wordDataMap[[i,j,k].join('-')] = wordDataArray.length;
-          wordDataArray.push(wordDataObject);
-          return wordDataObject
-        });
-
-        // create POS links
-        sentence.graphs["stanford-collapsed"].edges.forEach(function(edge) {
-          syntaxDataArray.push({
-            destination: sentenceData[edge.destination],
-            label: edge.relation,
-            type: edge.relation,
-            source: sentenceData[edge.source]
-          })
-        });
-
-      })
-    }
-
-    // flatten data.mentions array
-    let printMention = function(mention, i) {
-      if (mention.arguments) {
-        for (var j in mention.arguments) {
-          mention.arguments[j] = mention.arguments[j].map(printMention)
-        }
-      }
-
-      switch (mention.type) {
-        case "CorefTextBoundMention":
-          // has text(s) only
-          let start = wordDataMap[[mention.document, mention.sentence, mention.tokenInterval.start].join('-')];
-          let end = wordDataMap[[mention.document, mention.sentence, mention.tokenInterval.end].join('-')];
-
-          var link = {
-            sourceId: null,
-            destinationId: null,
-            words: wordDataArray.slice(start, end),
-            label: mention.displayLabel,
-            id: mention.id,
-            charOffset: mention.characterStartOffset,
-            type: mention.type
-          };
-          mentionDataArray.push(link);
-          return link;
-        case "CorefRelationMention":
-          // has argument(s)
-          // hard-coded the property --- need better data to parse this correctly
-
-          let keys = Object.keys(mention.arguments);
-          if (keys.length != 2 || !mention.arguments.controlled || !mention.arguments.controller) {
-            console.log("bad data parse: check CorefRelationMention", mention.arguments);
-          }
-          var link = {
-            sourceId: mention.arguments.controller.map(arg => arg.id),
-            destinationId: [{
-              name: mention.displayLabel,
-              id: mention.arguments.controlled.map(arg => arg.id)
-            }],
-            label: mention.displayLabel,
-            id: mention.id,
-            charOffset: mention.characterStartOffset,
-            type: mention.type
-          };
-
-          mentionDataArray.push(link);
-          return link;
-        case "CorefEventMention":
-          // has a trigger & argument(s)
-
-          if (mention.trigger.type == "TextBoundMention") {
-            let start = wordDataMap[[mention.trigger.document, mention.trigger.sentence, mention.trigger.tokenInterval.start].join('-')];
-            let end = wordDataMap[[mention.trigger.document, mention.trigger.sentence, mention.trigger.tokenInterval.end].join('-')];
-
-            var link = {
-              sourceId: null,
-              destinationId: null,
-              words: wordDataArray.slice(start, end),
-              label: mention.displayLabel,
-              id: mention.trigger.id,
-              charOffset: mention.trigger.characterStartOffset,
-              type: mention.trigger.type
-            };
-            mentionDataArray.push(link);
-          }
-          var link = {
-            sourceId: [mention.trigger.id],
-            destinationId: Object.keys(mention.arguments).map(key => {
-
-              return {
-                name: key,
-                charOffset: mention.characterStartOffset,
-                id: mention.arguments[key].map(arg => arg.id)
-              }
-
-            }),
-            label: mention.displayLabel,
-            id: mention.id,
-            type: mention.type
-          };
-          mentionDataArray.push(link);
-          return link;
-        default:
-          console.log("invalid type", mention.type);
-          break;
-      }
-    }
-    data.mentions.forEach(printMention);
-
-    // done parsing into semi-flat datasets...
-
-    console.log('words',wordDataArray);
-    console.log('pos',syntaxDataArray);
-    console.log('events',mentionDataArray);
-
-    wordDataArray.forEach(function(word) {
-      let idx = wordObjs.length;
-      let w = new Word(word.text, idx);
-      if (State.annotationStyle == 'POS') {
-        w.tag = word.syntaxData.tag
-      }
-      else {
-        w.tag = '';
-      }
-      // create circular reference between data object and Word instance
-      word.object = w;
-      w.data = word;
-      wordObjs.push(w);
-    })
-
-    function clearLinkObjs() {
-      linkObjs.forEach(link => link.removeSVGs());
-      linkObjs = [];
-
-      wordObjs.forEach(word => {
-        word.slotsL = [];
-        word.slotsR = [];
-        word.parentsL = [];
-        word.parentsR = [];
-      })
-    }
-
-    generateLinksPOS = function() {
-      clearLinkObjs();
-      syntaxDataArray.forEach(link => {
-        let ltr = link.source.locationInSentence < link.destination.locationInSentence;
-        let style;
-        switch (link.label) {
-          case "nsubj":
-            style = ltr ? styles.gradientLine2 : styles.gradientLine2r;
-            break;
-          case "dobj":
-            style = ltr ? styles.gradientLine1 : styles.gradientLine1r;
-            break;
-          case "det":
-            style = styles.simpleLine;
-            break;
-          default:
-            style = styles.noneLine;
-            break;
-        }
-
-
-        let linkObject = new Link(
-          link.source.object,
-          link.destination.object,
-          ltr ? 1 : -1,
-          style,
-          link.label,
-          texts.linkText
-        );
-
-        // create circular reference to link and data
-        linkObject.data = link;
-        link.object = linkObject;
-        linkObjs.push( linkObject );
-        createLink(linkObject);
-      })
-    }
-
-    generateLinksREACH = function() {
-      clearLinkObjs();
-      mentionDataArray.forEach(function(link) {
-        if (link.words) {
-
-          // TODO: bundle words in a textbound annotation
-          let linkObject = new Link(
-            link.words[0].object,
-            link.words[link.words.length-1].object,
-            directions.NONE,
-            styles.simpleLine,
-            link.label,
-            texts.linkText
-          );
-
-          // create circular reference to link and data
-          linkObject.data = link;
-          link.object = linkObject;
-          linkObjs.push( linkObject );
-          createLink(linkObject);
-        }
-        else {
-          // TODO: bundle links
-          link.sourceId.forEach(function(source) {
-            link.destinationId.forEach(function(destination) {
-
-              let sourceData = mentionDataArray.find(l => l.id == source);
-              let destinationData = mentionDataArray.find(l => l.id == destination.id);
-
-              let ltr = sourceData.charOffset < destinationData.charOffset;
-              let style;
-              switch (link.label) {
-                case "Positive_regulation":
-                  style = ltr ? styles.gradientLine2 : styles.gradientLine2r;
-                  break;
-                case "Negative_regulation":
-                  style = ltr ? styles.gradientLine1 : styles.gradientLine1r;
-                  break;
-                default:
-                  style = styles.noneLine;
-                  break;
-              }
-
-              if (sourceData.object && destinationData.object) {
-                let linkObject = new Link(
-                  sourceData.object,
-                  destinationData.object,
-                  ltr ? 1 : -1, 
-                  style,
-                  destination.name,
-                  texts.linkText
-                );
-
-                // create circular reference to link and data
-                linkObject.data = link;
-                link.object = linkObject;
-                linkObjs.push( linkObject );
-                createLink(linkObject);
-              }
-              else {
-                console.log(':(')
-              }
-
-
-            });
-          });
-        }
-      });
-    }
-
-
-    // draw
-    generateLinksREACH();
-    */
-    drawWords(wordObjs);
-    drawLinks(linkObjs);
-
-    changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
-
-  // }
-
-
-  /* init graph layout object */
-  var Panel = new Staircase();
-  //var Panel = new GraphLayout();
-  var prevWidth = svgWidth;
-
+  var prevWidth = Config.svgWidth;
   function svgResize() {
-    var w, widthPercChange; 
+    var widthPercChange; 
     if (Panel.isOpen) {
-
-      svgWidth = (window.innerWidth - 16) * 0.665;
-
-      changeSizeOfSVGPanel(svgWidth, draw.height());
-
-      //draw.size(svgWidth, draw.height());
+      Config.svgWidth = (window.innerWidth - 16) * 0.665;
     }
     else {
-      svgWidth = (window.innerWidth - 16)
-      changeSizeOfSVGPanel(svgWidth, draw.height());
-
-
-     //   draw.size(svgWidth, draw.height());
-
+      Config.svgWidth = (window.innerWidth - 16)
     }
-
-    widthPercChange = svgWidth / prevWidth;
-    prevWidth = svgWidth;
-    //console.log("\nwidthPercChange = " + widthPercChange);
-
-
-    recalculateRows(widthPercChange); //makes sure that the words fit in the current width, else makes new rows
-  
+    changeSizeOfSVGPanel(Config.svgWidth, draw.height());
+    widthPercChange = Config.svgWidth / prevWidth;
+    prevWidth = Config.svgWidth;
+    recalculateRows(widthPercChange); //makes sure that the words fit in the current width, else makes new rows  
   }
 
-  document.addEventListener('keydown',
-    function(e) {
-      var key = e.keyCode || e.which;
-      // console.log('keycode',key);
-      switch(key) {
-        case 37:          // left arrow
-          if (Panel.isOpen) {
-            Panel.close();
-            svgResize();
-          }
-          break;
-        case 39:          // right arrow
-          if (!Panel.isOpen) {
-            Panel.open();
-            svgResize();
-          }
+  function handleKeyDown(e) {
+    var key = e.keyCode || e.which;
+    // console.log('keycode',key);
+    switch(key) {
+      case 37:          // left arrow
+        if (Panel.isOpen) {
+          Panel.close();
+          svgResize();
+        }
+        break;
+      case 39:          // right arrow
+        if (!Panel.isOpen) {
+          Panel.open();
+          svgResize();
+        }
+        Panel.graph(wordObjs.filter(word => word.isSelected));
+        break;
+      default:
+        break;
+    }
+  };
+  
+  function changeDataset() {
+    if (this.selectedIndex > 0) {
+      parser.readJson(`./data/data${this.selectedIndex}.json`, function() {
+        console.log(parser);
+        var words = parser.tokens.map((token, i) => new Word(token, i));
+        resetDrawing(words, []);
+      });
+    }
+  };
 
-          //Panel.graph(wordObjs.filter(word => word.isSelected));
+  function resetDrawing(words, links) {
+    draw.clear();
+    rowGroup = draw.group();
+    groupAllElements = linkG = textG = arrowG = undefined;
+    dragElem = null;
+    isDragging = false;
+    rowOffsetX = 0;
+    rowOffsetWord = null;
+    prevX = -1;
 
-          // Staircase
-          // When one or more words are selected, how to capture the change?
-          // Should I do like below -- draw a normal graph (with full list
-          // of words) then handle the selected words after that?
-          Panel.graph(wordObjs, linkObjs);
-          var selectedWords = wordObjs.filter(word => word.isSelected);
-          Panel.updateGraph(selectedWords);
-
-          break;
-        default:
-          break;
-      }
-    }, false);
+    rows = [];
+    wordObjs = words || createTestWords(5, 6, 10);
+    linkObjs = links || createTestMultiLinks(1);
+    drawWords(wordObjs);
+    drawLinks(linkObjs);
+    if (Panel.isOpen) { Panel.close(); }
+    changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
+  }
 
   function resize() {
     svgResize();
     Panel.resize();
   }
 
+  document.addEventListener('keydown', handleKeyDown, false);
+  document.getElementById('random').onclick = resetDrawing.bind(this, null, null);
+  document.getElementById('dataset').onchange = changeDataset;
   window.onresize = _.debounce(resize, 300);
-// }
+
+};
 
 </script>
 

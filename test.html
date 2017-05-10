@@ -1,0 +1,448 @@
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+<script>
+var data = {
+   "eventData": {
+      "comments": [
+         [
+            "E3",
+            "FoundByRule",
+            "Positive_regulation_syntax_1_verb"
+         ],
+         [
+            "R1",
+            "FoundByRule",
+            "Phosphorylation_syntax_1a_noun + toRelationMention"
+         ],
+         [
+            "T3",
+            "FoundByRule",
+            "ner-gene_or_gene_product-entities"
+         ],
+         [
+            "T2",
+            "FoundByRule",
+            "ner-gene_or_gene_product-entities"
+         ],
+         [
+            "T4",
+            "FoundByRule",
+            "ner-gene_or_gene_product-entities"
+         ],
+         [
+            "E1",
+            "FoundByRule",
+            "Ubiquitination_syntax_1a_noun"
+         ],
+         [
+            "E2",
+            "FoundByRule",
+            "Phosphorylation_syntax_1a_noun"
+         ]
+      ],
+      "entities": [
+         [
+            "T2",
+            "Gene_or_gene_product",
+            [[
+               "31",
+               "34"
+            ]]
+         ],
+         [
+            "T3",
+            "Gene_or_gene_product",
+            [[
+               "23",
+               "27"
+            ]]
+         ],
+         [
+            "T4",
+            "Gene_or_gene_product",
+            [[
+               "66",
+               "69"
+            ]]
+         ]
+      ],
+      "attributes": [],
+      "text": "The phosphorylation of Hdm2 by MK2 promotes the ubiquitination of p53.",
+      "relations": [[
+         "R1",
+         "Positive_regulation",
+         [
+            [
+               "Controlled",
+               "E2"
+            ],
+            [
+               "Controller",
+               "T2"
+            ]
+         ]
+      ]],
+      "triggers": [
+         [
+            "T5",
+            "Ubiquitination",
+            [[
+               "48",
+               "62"
+            ]]
+         ],
+         [
+            "T6",
+            "Phosphorylation",
+            [[
+               "4",
+               "19"
+            ]]
+         ],
+         [
+            "T1",
+            "Positive_regulation",
+            [[
+               "35",
+               "43"
+            ]]
+         ]
+      ],
+      "events": [
+         [
+            "E1",
+            "T5",
+            [[
+               "Theme",
+               "T4"
+            ]]
+         ],
+         [
+            "E2",
+            "T6",
+            [[
+               "Theme",
+               "T3"
+            ]]
+         ],
+         [
+            "E3",
+            "T1",
+            [
+               [
+                  "Controlled",
+                  "E1"
+               ],
+               [
+                  "Controller",
+                  "E2"
+               ]
+            ]
+         ]
+      ]
+   },
+   "syntaxData": {
+      "comments": [],
+      "entities": [
+         [
+            "T1",
+            "IN",
+            [[
+               "20",
+               "22"
+            ]]
+         ],
+         [
+            "T2",
+            "DT",
+            [[
+               "0",
+               "3"
+            ]]
+         ],
+         [
+            "T3",
+            "NN",
+            [[
+               "66",
+               "69"
+            ]]
+         ],
+         [
+            "T4",
+            "IN",
+            [[
+               "63",
+               "65"
+            ]]
+         ],
+         [
+            "T5",
+            "DT",
+            [[
+               "44",
+               "47"
+            ]]
+         ],
+         [
+            "T6",
+            "NN",
+            [[
+               "23",
+               "27"
+            ]]
+         ],
+         [
+            "T7",
+            "NN",
+            [[
+               "31",
+               "34"
+            ]]
+         ],
+         [
+            "T8",
+            "NN",
+            [[
+               "48",
+               "62"
+            ]]
+         ],
+         [
+            "T9",
+            "IN",
+            [[
+               "28",
+               "30"
+            ]]
+         ],
+         [
+            "T10",
+            ".",
+            [[
+               "69",
+               "70"
+            ]]
+         ],
+         [
+            "T11",
+            "NN",
+            [[
+               "4",
+               "19"
+            ]]
+         ],
+         [
+            "T12",
+            "VBZ",
+            [[
+               "35",
+               "43"
+            ]]
+         ]
+      ],
+      "attributes": [],
+      "text": "The phosphorylation of Hdm2 by MK2 promotes the ubiquitination of p53.",
+      "relations": [
+         [
+            "R1",
+            "det",
+            [
+               [
+                  "governor",
+                  "T11"
+               ],
+               [
+                  "dependent",
+                  "T2"
+               ]
+            ]
+         ],
+         [
+            "R2",
+            "prep_of",
+            [
+               [
+                  "governor",
+                  "T11"
+               ],
+               [
+                  "dependent",
+                  "T6"
+               ]
+            ]
+         ],
+         [
+            "R3",
+            "prep_by",
+            [
+               [
+                  "governor",
+                  "T6"
+               ],
+               [
+                  "dependent",
+                  "T7"
+               ]
+            ]
+         ],
+         [
+            "R4",
+            "nsubj",
+            [
+               [
+                  "governor",
+                  "T12"
+               ],
+               [
+                  "dependent",
+                  "T11"
+               ]
+            ]
+         ],
+         [
+            "R5",
+            "dobj",
+            [
+               [
+                  "governor",
+                  "T12"
+               ],
+               [
+                  "dependent",
+                  "T8"
+               ]
+            ]
+         ],
+         [
+            "R6",
+            "det",
+            [
+               [
+                  "governor",
+                  "T8"
+               ],
+               [
+                  "dependent",
+                  "T5"
+               ]
+            ]
+         ],
+         [
+            "R7",
+            "prep_of",
+            [
+               [
+                  "governor",
+                  "T8"
+               ],
+               [
+                  "dependent",
+                  "T3"
+               ]
+            ]
+         ]
+      ],
+      "triggers": [],
+      "events": []
+   }
+};
+
+function parseString() {
+    const text = data.syntaxData.text;
+    const entities = data.syntaxData.entities
+        .map(x => x[2][0])
+        .sort((a, b) => a[0] - b[0])
+        .map(interval => text.substring(interval[0], interval[1]));
+    console.log(text);
+    console.log(entities);
+}
+
+var e = data.eventData;
+
+function parseEventData() {
+    console.log('\n');
+    parseEntities();
+    parseRelations();
+    parseTriggers();
+    parseEvents();
+    // parseComments();
+}
+
+function parseEntities() {
+    console.log("Parsing Entities...");
+    var entities = e.entities.map(arr => {
+        return {
+            id: arr[0],
+            type: arr[1],
+            interval: arr[2][0],
+            string: e.text.substring(arr[2][0][0], arr[2][0][1])
+        };
+    }).forEach(entity => console.log('\t',entity));
+}
+
+function parseRelations() {
+    console.log("Parsing Relations...");
+    var relations = e.relations.map(arr => {
+        return {
+            id: arr[0],
+            type: arr[1],
+            arguments: arr[2].map(argument => {
+                return {
+                    id: argument[1],
+                    type: argument[0]
+                };
+            })
+        };
+    }).forEach(relation => console.log('\t',relation));
+}
+
+function parseTriggers() {
+    console.log("Parsing Triggers...");
+    var relations = e.triggers.map(arr => {
+        return {
+            id: arr[0],
+            type: arr[1],
+            interval: arr[2][0],
+            string: e.text.substring(arr[2][0][0], arr[2][0][1])
+        };
+    }).forEach(trigger => console.log('\t',trigger));
+}
+
+function parseEvents() {
+    console.log("Parsing Events...");
+    var relations = e.events.map(arr => {
+        return {
+            id: arr[0],
+            trigger: arr[1],
+            arguments: arr[2].map(argument => {
+                return {
+                    id: argument[1],
+                    type: argument[0]
+                };
+            })
+        };
+    }).forEach(event => console.log('\t',event));
+}
+
+function parseComments() {
+    console.log("Parsing Comments...");
+    var relations = e.comments.map(arr => {
+        return {
+            id: arr[0],
+            type: arr[1],
+            comment: arr[2]
+        };
+    }).forEach(comment => console.log('\t',comment));
+
+}
+
+
+parseString();
+parseEventData();
+</script>
+</body>
+</html>
