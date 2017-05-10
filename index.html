@@ -173,9 +173,14 @@ window.onload = function() {
   function changeDataset() {
     if (this.selectedIndex > 0) {
       parser.readJson(`./data/data${this.selectedIndex}.json`, function() {
-        console.log(parser);
         var words = parser.tokens.map((token, i) => new Word(token, i));
+        [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
+          if (words[el.tokenIndex]) {
+            words[el.tokenIndex].tag = el.type;
+          }
+        });
         resetDrawing(words, []);
+        console.log(parser);
       });
     }
   };
@@ -184,11 +189,12 @@ window.onload = function() {
     draw.clear();
     rowGroup = draw.group();
     groupAllElements = linkG = textG = arrowG = undefined;
-    dragElem = null;
     isDragging = false;
     rowOffsetX = 0;
     rowOffsetWord = null;
     prevX = -1;
+    styles = setupStyles(draw); //creates an associative array of whatever     
+    dragElem = null;
 
     rows = [];
     wordObjs = words || createTestWords(5, 6, 10);

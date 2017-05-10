@@ -39,10 +39,15 @@ class Parser {
   parseData(data) {
     /* first get string tokens from the syntaxData */
     this.text = data.syntaxData.text;
+
+    const offsets = {};
     this.tokens = data.syntaxData.entities
       .map(x => x[2][0])
       .sort((a, b) => a[0] - b[0])
-      .map(interval => this.text.substring(interval[0], interval[1]));
+      .map((interval, i) => {
+        offsets[interval[0]] = i;
+        return this.text.substring(interval[0], interval[1]);
+      });
 
     /* parse the event data: entities, triggers, events, and relations */
     const e = data.eventData;
@@ -50,7 +55,7 @@ class Parser {
           return {
               id: arr[0],
               type: arr[1],
-              interval: arr[2][0],
+              tokenIndex: offsets[arr[2][0][0]],
               string: e.text.substring(arr[2][0][0], arr[2][0][1])
           };
       });
@@ -59,7 +64,7 @@ class Parser {
           return {
               id: arr[0],
               type: arr[1],
-              interval: arr[2][0],
+              tokenIndex: offsets[arr[2][0][0]],
               string: e.text.substring(arr[2][0][0], arr[2][0][1])
           };
       });
