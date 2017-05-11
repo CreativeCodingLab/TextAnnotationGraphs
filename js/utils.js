@@ -112,7 +112,6 @@ function createTestMultiLinks(numWord2WordLinks) {
     return d1 - d2; 
   });
 */
-
 Object.keys(ls).forEach(function(key) {
 
     //console.log(ls[key].toString());
