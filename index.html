@@ -173,32 +173,118 @@ window.onload = function() {
   function changeDataset() {
     if (this.selectedIndex > 0) {
       parser.readJson(`./data/data${this.selectedIndex}.json`, function() {
-        var words = parser.tokens.map((token, i) => new Word(token, i));
+
+        // construct word objects and tags from tokens, entities, and triggers
+        const words = parser.tokens.map((token, i) => new Word(token, i));
+
         [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
           if (words[el.tokenIndex]) {
             words[el.tokenIndex].tag = el.type;
+            words[el.tokenIndex].eventId = el.id;
           }
         });
-        resetDrawing(words, []);
-        console.log(parser);
+        wordObjs = words;
+
+        // construct links from events and relations
+        const links = [];
+        parser.data.events.forEach(evt => {
+          const trigger = words.find(word => word.eventId === evt.trigger);
+
+          // create a link between the trigger and each of its arguments
+          evt.arguments.map(arg => {
+            let anchor;
+            switch (arg.id.charAt(0)) {
+              case 'E':
+                anchor = links.find(link => link.eventId === arg.id);
+                break;
+              case 'T': 
+                anchor = words.find(word => word.eventId === arg.id);
+                break;
+              default:
+                console.log('unhandled argument type', arg);
+                break;
+            }
+
+            // style the arrow
+            const ltr = arg.type === 'Controlled';
+            const direction = ltr ? [1, -1] : [-1, 1];
+            const arrowType = arg.type === 'Theme' ? styles.simpleLine : ltr ? styles.gradientLine1 : styles.gradientLine1r;
+
+            // create link
+            const link = new Link(
+              [trigger, anchor],
+              direction,
+              arrowType,
+              arg.type,
+              texts.linkText
+            );
+            link.eventId = evt.id;
+
+            // push link to link array
+            links.push(link);
+            createLink(link);
+
+          });//evt.argument.map
+        });//parser.data.events.forEach
+
+        parser.data.relations.forEach(rel => {
+          let ltr = true;
+          const arguments = rel.arguments.map((arg, i) => {
+            let anchor;
+            switch (arg.id.charAt(0)) {
+              case 'E':
+                anchor = links.find(link => link.eventId === arg.id);
+                break;
+              case 'T': 
+                anchor = words.find(word => word.eventId === arg.id);
+                break;
+              default:
+                console.log('unhandled argument type', arg);
+                break;
+            }
+            if (arg.type === 'Controlled' && i > 0) {
+              ltr = false;
+            }
+            return anchor;
+          });
+
+          // create link
+          const link = new Link(
+            arguments,
+            ltr ? [-1, 1] : [1, -1],
+            ltr ? styles.gradientLine2 : styles.gradientLine2r,
+            rel.type,
+            texts.linkText
+          );
+
+          // push link to link array
+          links.push(link);
+          createLink(link);
+        });
+
+        resetDrawing(words, links);
       });
     }
   };
 
   function resetDrawing(words, links) {
-    draw.clear();
+    draw.children().forEach(child => {
+      if (child.type !== 'defs') {
+        child.remove();
+      }
+    });
     rowGroup = draw.group();
     groupAllElements = linkG = textG = arrowG = undefined;
     isDragging = false;
     rowOffsetX = 0;
     rowOffsetWord = null;
     prevX = -1;
-    styles = setupStyles(draw); //creates an associative array of whatever     
     dragElem = null;
 
     rows = [];
     wordObjs = words || createTestWords(5, 6, 10);
     linkObjs = links || createTestMultiLinks(1);
+    // linkObjs.forEach(link => link.style = styles[link.style]);
     drawWords(wordObjs);
     drawLinks(linkObjs);
     if (Panel.isOpen) { Panel.close(); }

@@ -582,7 +582,7 @@ function flipIfNecessary(link) {
 
 function sortLinkWords(link) {
 
-  console.log("\n\n***\nUNSORTED!");
+  console.log("\n\n***\nUNSORTED!", link, link.words);
 
   for (var i = 0; i < link.words.length; i++) {
     var w = link.words[i];
