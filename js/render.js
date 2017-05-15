@@ -509,6 +509,7 @@ var _links = [];
 var _arrows = [];
 
 function drawLinks(ls) {
+  Config.redraw = 0;
   arrangeOffsetValsForAttachmentPoints(linkObjs); 
   arrangeOffsetValsForAttachmentPoints(wordObjs); 
 
@@ -524,7 +525,7 @@ function drawLinks(ls) {
   Object.keys(ls).forEach(function(key) {
     drawLink(ls[key]);
   });
-
+  
   drawAllLinks();
   drawAllLinkLabels();
   drawAllArrows();
