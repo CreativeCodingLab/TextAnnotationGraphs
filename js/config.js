@@ -36,5 +36,6 @@ const Config = {
     attachmentMargin: 0.1,
     word2word_strategy: strategies.FARTHEST,
     word2link_strategy: strategies.CLOSEST, 
-    link2link_strategy: strategies.FARTHEST //CLOSEST sometimes causes overlaps - need to be a bit more rigorous when assigning slots - don't assign any slots that have the potential to overlap (when dragged manually)? - or let the buyer beware that this could happen - they can always move out of the way - right now it won't automatically overlap, but won't prevent a user from doing it. 
+    link2link_strategy: strategies.FARTHEST, //CLOSEST sometimes causes overlaps - need to be a bit more rigorous when assigning slots - don't assign any slots that have the potential to overlap (when dragged manually)? - or let the buyer beware that this could happen - they can always move out of the way - right now it won't automatically overlap, but won't prevent a user from doing it. 
+    redraw: 0
 };
