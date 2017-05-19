@@ -1,0 +1,190 @@
+<html>
+<head>
+
+<style>
+body {
+  margin:0;
+  -moz-osx-font-smoothing:grayscale;
+  -webkit-font-smoothing:antialiased;
+}
+
+svg text {
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#header {
+  position:absolute;
+  top:0;
+  left:0;
+  background:#333;
+  color:white;
+  width:calc( 100% - 20px );
+  padding:10px;
+}
+
+#drawing {
+  margin-top:30px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="header">
+  <button id="random">random graph</button>
+  <select id="dataset">
+    <option>-- select dataset --</option>
+    <option>data1</option>
+    <option>data2</option>
+    <option>paragraph</option>
+    <option>passage</option>
+  </select>
+</div>
+
+<div id="drawing">
+</div>
+
+
+<script src="libs/d3.min.js"></script>
+<script src="libs/svg.js"></script>
+<script src="libs/svg.draggable.js"></script>
+<script src="libs/lodash.js"></script>
+<script src="libs/chroma.min.js"></script>
+
+<script src="js/enums.js"></script>
+<script src="js/config.js"></script>
+<script src="js/parser.js"></script>
+<script src="js/GraphLayout.js"></script>
+<script src="js/style.js"></script>
+<script src="js/annotate.js"></script>
+<script src="js/render.js"></script>
+<script src="js/interact.js"></script>
+<script src="js/utils.js"></script>
+<!--script src="js/staircase.js"></script-->
+
+<script type="text/javascript">
+window.onload = function() {
+  console.log("Page is loaded...");
+  var parser = new Parser();
+
+  // Add svg to the div
+  var svg = d3.select("#drawing")
+              .append("svg")
+                .attr("width", "1000%")
+                .attr("height", "1000%")
+              //.append("g")
+              //  .attr("transform", "translate(20, 20)")
+              ;
+  console.log(svg);
+  var width = svg.attr("width"),
+      height = svg.attr("height");
+  console.log(width, height);
+  
+  function changeData() {
+    console.log("Changing dataset...");
+
+    if (this.selectedIndex > 0) {
+      console.log("A dataset is selected...");
+
+      parser.readJson(`./data/data${this.selectedIndex}.json`, function() {
+        // construct word objects and tags from tokens, entities, and triggers
+        console.log("Constructing words...");
+        const words = parser.tokens.map((token, i) => new Word(token, i));
+
+        [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
+          if (words[el.tokenIndex]) {
+            words[el.tokenIndex].tag = el.type;
+            words[el.tokenIndex].eventId = el.id;
+          }
+        });
+        wordObjs = words;
+
+        //console.log(words[1]);
+        //console.log(words[1].val + ", " + words[1].tag);
+        svg.selectAll("rect")
+            .data(words)
+            .enter().each(function(d,i) {
+              svg.append("rect")
+                  .attr("width", 100)
+                  .attr("height", 100)
+                  .attr("x", 100*i)
+                  .attr("y", 100*i)
+                  .style("fill", "#ffffff")
+                  .style("stroke", "#000000")
+                  .style("stroke-width", 1);
+                  ;
+
+              svg.append("text")
+                  .text(words[i].val)
+                  .attr("text-anchor", "middle")
+                  .attr("alignment-baseline","central")
+                  .attr("x", 100*i)
+                  .attr("y", 100*i)
+                  .attr("font-family", "helvetica")
+                  .attr("font-size", "10px")
+                  .attr("fill", "black")
+                  .attr("opacity", "0.5")
+                  ;
+            })
+
+
+        // construct links from events and relations
+        console.log("Constructing links...");
+        const links = [];
+        parser.data.events.forEach(evt => {
+          const trigger = words.find(word => word.eventId === evt.trigger);
+
+          // create a link between the trigger and each of its arguments
+          evt.arguments.map(arg => {
+            let anchor;
+            switch (arg.id.charAt(0)) {
+              case 'E':
+                anchor = links.find(link => link.eventId === arg.id);
+                break;
+              case 'T': 
+                anchor = words.find(word => word.eventId === arg.id);
+                break;
+              default:
+                console.log('unhandled argument type', arg);
+                break;
+            }
+
+            /*
+            // style the arrow
+            const ltr = arg.type === 'Controlled';
+            const direction = ltr ? [1, -1] : [-1, 1];
+            const arrowType = arg.type === 'Theme' ? styles.simpleLine : ltr ? styles.gradientLine1 : styles.gradientLine1r;
+
+            
+            // create link
+            const link = new Link(
+              [trigger, anchor],
+              direction,
+              arrowType,
+              arg.type,
+              texts.linkText
+            );
+            link.eventId = evt.id;
+
+            // push link to link array
+            links.push(link);
+            */
+          })
+          
+        })
+
+      });
+    }
+  }
+
+  document.getElementById('dataset').onchange = changeData;
+}
+</script>
+
+</body>
