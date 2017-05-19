@@ -248,7 +248,7 @@ function getDescentForFont(str, fs) {
   textbbox = t.bbox();
   t.remove();
 
-  ////console.log("in getMaxTextHeightForFont, y = " + textbbox.y + ", y2 = " + textbbox.y2);
+  console.log("in getMaxTextHeightForFont, y = " + textbbox.y + ", y2 = " + textbbox.y2);
   return textbbox.y;
 }
 

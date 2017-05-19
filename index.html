@@ -171,6 +171,7 @@ window.onload = function() {
   };
   
   function changeDataset() {
+    Config.redraw = 0;
     if (this.selectedIndex > 0) {
       parser.readJson(`./data/data${this.selectedIndex}.json`, function() {
 

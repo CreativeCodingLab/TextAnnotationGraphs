@@ -509,6 +509,7 @@ var _links = [];
 var _arrows = [];
 
 function drawLinks(ls) {
+  Config.redraw = 0;
   arrangeOffsetValsForAttachmentPoints(linkObjs); 
   arrangeOffsetValsForAttachmentPoints(wordObjs); 
 
@@ -524,7 +525,7 @@ function drawLinks(ls) {
   Object.keys(ls).forEach(function(key) {
     drawLink(ls[key]);
   });
-
+  
   drawAllLinks();
   drawAllLinkLabels();
   drawAllArrows();
@@ -769,6 +770,7 @@ function redrawLinks(forceRedrawingAll) { //force redraw of all when resizing wi
   Object.keys(linkObjs).forEach(function(key) {
     if (linkObjs[key].needsUpdate || forceRedrawingAll == true) {
       ////console.log(" link #" + key + " needsUpdate");
+      Config.redraw = 1;
       drawLink(linkObjs[key]);
       linkObjs[key].needsUpdate = false;
     }
@@ -1316,6 +1318,7 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
 function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
 
   var style;
+  var text;
 
   if (rowNum % 2 == 0) {
     style = styles.labelEvenFill.style;
@@ -1326,12 +1329,20 @@ function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
   var twh = link.textWH;
 
   var rect = {x: (x - 2 - twh.w/2), y: (y - link.textStyle.maxHeight/2), w: (twh.w + 4), h: link.textStyle.maxHeight, style:style};
-  var text = {text: link.textStr, x: (x - twh.w/2), y: (y - link.textStyle.maxHeight/2 - link.textStyle.descent), style: (link.textStyle.style), visibility:true};
+
+
+  if (Config.redraw) { 
+    text = {text: link.textStr, x: (x - twh.w/2), y: (y - link.textStyle.maxHeight/2), style: (link.textStyle.style), visibility:true};
+  }
+  else {
+    text = {text: link.textStr, x: (x - twh.w/2), y: (y - link.textStyle.maxHeight/2 - link.textStyle.descent), style: (link.textStyle.style), visibility:true};
+  }
 
   console.log(" in calculateLinkLabels, idx = " + idx + ", rowNum = " + rowNum + ", rect = ");
   console.log(rect);
   console.log(" in calculateLinkLabels, text = ");
   console.log(text);
+  console.log(link.textStyle.descent)
 
   link.labels[idx] = {rect:rect, text:text};
 
