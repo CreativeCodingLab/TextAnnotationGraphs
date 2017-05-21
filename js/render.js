@@ -767,9 +767,10 @@ function drawAllLinkLabels() {
 /** redraws all links that have been marked as needsUpdate = true, OR by passing in a boolean of true to indicate that the window has resized **/
 function redrawLinks(forceRedrawingAll) { //force redraw of all when resizing window
 
+console.log("inredraw links:" + forceRedrawingAll);
   Object.keys(linkObjs).forEach(function(key) {
     if (linkObjs[key].needsUpdate || forceRedrawingAll == true) {
-      ////console.log(" link #" + key + " needsUpdate");
+      console.log(" link #" + key + " needsUpdate");
       Config.redraw = 1;
       drawLink(linkObjs[key]);
       linkObjs[key].needsUpdate = false;
@@ -1079,7 +1080,7 @@ function calculateOnlyRow(rowNum, link, percentagePadding, xPositions, linkStyle
 
 function calculateStartRow(idx, rowNum, link, percentagePadding, xPositions, linkStyles ) {
   console.log("in calculateStartRow - " + link.toString());
-
+  console.log("link height:" + link.h);
   var yPos = rows[rowNum].baseHeight - link.h * percentagePadding;
 
   var arrowPos = storeOnlyArrows(rowNum, yPos, link, xPositions);
@@ -1367,7 +1368,7 @@ function drawLink(link) {
 
   link.linesLeftX = [];
   link.linesRightX = [];
-
+  
   var minRow = link.rootMinWord.row.idx;
   var maxRow = link.rootMaxWord.row.idx;
 
@@ -1413,6 +1414,8 @@ function drawLink(link) {
       calculateMiddleRow(rowNum, i, link, percentagePadding, rowAttachXPos, linkStyles); 
     }
   }
+  
+
 }
 
 

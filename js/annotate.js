@@ -306,7 +306,7 @@ function checkSlotAvailabity(num, slotArr) {
 //type: 1 = word; 2 = link
 function checkAndUpdateWordToWordSlots(link, startSlot) { //, minWord, minSide, maxWord, maxSide) {
   var wo1, wo2, side1, side2; 
-
+  console.log("in checkandupdatewordtowordslots");
   wo1 = link.rootMinWord;
   wo2 = link.rootMaxWord;
   side1 = link.rootMinSide;

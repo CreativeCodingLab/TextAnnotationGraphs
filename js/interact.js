@@ -84,6 +84,7 @@ function updateAllLinks() {
   }
 }
 
+
 function updateLinks(link) {
 
     var arr = [link];
@@ -95,6 +96,17 @@ function updateLinks(link) {
     }
 
  
+}
+
+function updateLinkRow(row) {  
+  for (let item of linkObjs) {
+    let minRow = item.rootMinWord.row.idx;
+    let maxRow = item.rootMaxWord.row.idx;
+    if( row >= minRow || maxRow >= row )
+    {
+      item.needsUpdate = true;
+    }   
+  }
 }
 
 
@@ -441,7 +453,7 @@ function setUpLeftHandleDraggable(word) {
     var returnVal = dragLeftHandle(x, word.leftHandle.bbox().y, word);
     
     updateWords();
-  
+    
     redrawLinks(false);//actually - only redraw links that moving this word would affect + this row
     prevX = x;
     return returnVal;
@@ -901,6 +913,7 @@ function moveWordDownARow(w) {
     calculateMaxSlotForRow(rows[i]);
   }
 
+  updateLinkRow(nextRowIdx);
   return {x:nx, y:ny};
 }
 
@@ -933,6 +946,7 @@ function moveWordUpARow(w) {
     calculateMaxSlotForRow(rows[i]);
   }
 
+  updateLinkRow(nextRowIdx);
   return {x:nx, y:ny};
 
 }
