@@ -767,7 +767,7 @@ function drawAllLinkLabels() {
 /** redraws all links that have been marked as needsUpdate = true, OR by passing in a boolean of true to indicate that the window has resized **/
 function redrawLinks(forceRedrawingAll) { //force redraw of all when resizing window
 
-console.log("inredraw links:" + forceRedrawingAll);
+console.log("\n\n***\n\n in redraw links:" + forceRedrawingAll);
   Object.keys(linkObjs).forEach(function(key) {
     if (linkObjs[key].needsUpdate || forceRedrawingAll == true) {
       console.log(" link #" + key + " needsUpdate");
@@ -789,13 +789,22 @@ function getLeftXForWord(word, link) {
   if (word instanceof Word) { //is a word
     return word.leftX;
   } else { //is a link
-    if (link.leftAttach == sides.LEFT) {
-      return word.linesLeftX[0];
-    } else if (link.leftAttach == sides.RIGHT){
-      return word.linesLeftX[0];
-   
+    if (determineSide(link) == swapside.YES) {
+      if (link.leftAttach == sides.RIGHT) {
+        return word.linesLeftX[0];
+      } else if (link.leftAttach == sides.LEFT){
+        return word.linesLeftX[0];
+      }
+    }
+    else {
+      if (link.leftAttach == sides.LEFT) {
+        return word.linesLeftX[0];
+      } else if (link.leftAttach == sides.RIGHT){
+        return word.linesLeftX[0];
+      }
+    }
+    
    //   return word.linesLeftX[word.numLineSegments-1];
-    } 
   }
 }
 
@@ -803,11 +812,20 @@ function getRightXForWord(word, link) {
   if (word instanceof Word) { //is a word
     return word.rightX;
   } else { //is a link
-    if (link.leftAttach == sides.LEFT) {
-      return word.linesRightX[0];
-    } else if (link.leftAttach == sides.RIGHT) {
-      return word.linesRightX[0];
-   //    return word.linesRightX[word.numLineSegments-1];
+    if (determineSide(link) == swapside.YES) {
+      if (link.leftAttach == sides.RIGHT) {
+        return word.linesRightX[0];
+      } else if (link.leftAttach == sides.LEFT) {
+        return word.linesRightX[0];
+    //    return word.linesRightX[word.numLineSegments-1];
+      }
+    }
+    else{
+      if (link.leftAttach == sides.LEFT) {
+        return word.linesLeftX[0];
+      } else if (link.leftAttach == sides.RIGHT){
+        return word.linesLeftX[0];
+      }
     }
   }
 }
@@ -982,15 +1000,17 @@ function getLinkStyles(link, xpts) {
 function storeOnlyArrows(rowNum, y1, link, xPositions) {
   
   arrowPos = [];
-
+  console.log("xPos Length: " + xPositions.length);
   for (var i = 0; i < xPositions.length; i++) {  
   
     var wordIdx = xPositions[i].wordIdx;
     var xpos = xPositions[i].xpos;
     var ypos;
 
+
     var w = link.words[wordIdx];
-    
+    console.log("\n\n *** \n\n in storeOnlyArrows \n word: " + link.words[wordIdx]);
+    console.log("\nxPos: " + xPositions[i].xpos);    
     
     if (w instanceof Word ) { // && w.row.idx == rowNum) {
       ypos = w.bbox.y;
@@ -1004,12 +1024,13 @@ function storeOnlyArrows(rowNum, y1, link, xPositions) {
     }
 
     arrowPos.push( {x:xpos, y:ypos} );
-    
+    console.log("arrowPosPush: " + arrowPos);
    //link.leftAttach == sides.RIGHT; 
    //link.rightAttach == sides.RIGHT; 
-    storeArrow(wordIdx, xpos, ypos, link, w, link.leftAttach, getLeftXForWord(w, link), getRightXForWord(w, link) ); 
+    storeArrow(wordIdx, xpos, ypos, link, w, link.rightAttach, getLeftXForWord(w, link), getRightXForWord(w, link) ); 
   }
 
+  console.log("arrowPos: " + arrowPos);
   return arrowPos;
 }
 
@@ -1112,7 +1133,7 @@ function calculateStartRow(idx, rowNum, link, percentagePadding, xPositions, lin
 
   console.log("START link.polylines[i] style = " + linkStyles[idx] );
 
-   //storeArrow(0, p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
+  //storeArrow(0, p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
  
   //storeLeftArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
 
@@ -1209,7 +1230,6 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
   var yPos = rows[rowNum].baseHeight - link.h * percentagePadding;
 
   var arrowPos = storeOnlyArrows(rowNum, yPos, link, xPositions);
-
   arrowPos.sort(function(a, b) {
     return a.x - b.x; 
   });
@@ -1372,6 +1392,14 @@ function drawLink(link) {
   var minRow = link.rootMinWord.row.idx;
   var maxRow = link.rootMaxWord.row.idx;
 
+  console.log("minWord: " + link.rootMinWord);
+  console.log("minRow: " + link.rootMinWord.row.idx);
+  
+  /* Object.keys(linkObjs).forEach(function(key) {
+    console.log("link minWord: " + linkObjs[key].rootMinWord);
+    console.log("link minRow: " + linkObjs[key].rootMinWord.row);
+  });
+  */
   link.numLineSegments = (maxRow - minRow)+1;
 
   var linkStyles;
@@ -1396,20 +1424,20 @@ function drawLink(link) {
     var percentagePadding = availableHeight / (rows[i].maxSlots + 1);
 
     if (i == minRow && minRow == maxRow) { //ONLY ROW
-      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, i, link);
+      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, i, link, rowtypes.ONLY);
 
       calculateOnlyRow(minRow, link, percentagePadding, rowAttachXPos, linkStyles); 
     } else if (i == minRow) { //FIRST ROW
 
-      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, minRow, link, -1);
+      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, minRow, link, rowtypes.START);
 
       calculateStartRow(rowNum, i, link, percentagePadding, rowAttachXPos, linkStyles);
     } else if (i == maxRow) { //LAST ROW
 
-      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, maxRow, link, 1);
+      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, maxRow, link, rowtypes.END);
       calculateEndRow(rowNum, i, link, percentagePadding, rowAttachXPos, linkStyles); 
     } else { //MIDDLE ROW
-      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, i, link);
+      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, i, link, rowtypes.MIDDLE);
 
       calculateMiddleRow(rowNum, i, link, percentagePadding, rowAttachXPos, linkStyles); 
     }
@@ -1420,19 +1448,38 @@ function drawLink(link) {
 
 
 
-function filterXPositionsForOnlyThisRow(attachmentXPositions, row, link, which) {
-
+function filterXPositionsForOnlyThisRow(attachmentXPositions, row, link, type) {
+  // type: 
+  // 0 only/middle
+  // 1 start
+  // 2 end
   var rowAttachXPos = [];
-
+  //console.log("attachmentXPositions: " + attachmentXPositions.length);
   for (var aaa = 0; aaa < attachmentXPositions.length; aaa++) {
+    
     if (link.words[aaa] instanceof Link) {
 
       console.log("rootMinWord = " + link.words[aaa].rootMinWord.toString());
       console.log("rootMaxWord = " + link.words[aaa].rootMaxWord.toString());
-
-      if (link.words[aaa].rootMinWord.row.idx == row) {
-        rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
+      //console.log("link idx: " + link.words[aaa].rootMinWord.row.idx + " row: " + row);
+      if (type == rowtypes.END|| type == rowtypes.START) {
+        if (link.words[aaa].nearestConnectedMinWord.row.idx == row) {
+          console.log("linkaaa: " + link.words[aaa].rootMinWord );
+          rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
+        }
+        else if (link.words[aaa].rootMinWord.row.idx == row ) {
+          rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
+          console.log("linkaaa: " + link.words[aaa].rootMinWord);
+        } 
+      }
+      else if (link.words[aaa].rootMinWord.row.idx == row ) {
+          rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
+          console.log("linkaaa: " + link.words[aaa].rootMinWord);
       } 
+      else if (type == rowtypes.START) {
+
+
+      }
 
     } else if (link.words[aaa] instanceof Word) {
 
@@ -1441,12 +1488,14 @@ function filterXPositionsForOnlyThisRow(attachmentXPositions, row, link, which) 
       }
     }
   }
-
+  //console.log("rowAttachXpos: " + rowAttachXPos);
   return rowAttachXPos; 
 }
 
 
+
 function storeArrow(idx, x, y, link, word, side, leftX, rightX) {
+  console.log("\n *** in storedArrow \n x: " + x + " y: " + y + " word: " + word );
   link.arrows[idx] = {x:x, y:y, link:link, word:word, side:side, leftX:leftX, rightX: rightX, visibility:true};
 }
 
@@ -1467,11 +1516,20 @@ function getLeftXForLeftWord(link) {
   if (link.leftType == types.WORD) {
     return link.leftWord.leftX;
   } else { //link
-    if (link.leftAttach == sides.LEFT) {
-      return link.leftWord.linesLeftX[0];
-    } else if (link.leftAttach == sides.RIGHT){
-      return link.leftWord.linesLeftX[link.leftWord.numLineSegments-1];
-    }
+    if (determineSide(link) == swapside.YES) {
+      if (link.leftAttach == sides.RIGHT) {
+        return link.leftWord.linesLeftX[0];
+      } else if (link.leftAttach == sides.LEFT){
+        return link.leftWord.linesLeftX[link.leftWord.numLineSegments-1];
+      }
+    } 
+    else {
+      if (link.leftAttach == sides.LEFT) {
+        return link.leftWord.linesLeftX[0];
+      } else if (link.leftAttach == sides.RIGHT){
+        return link.leftWord.linesLeftX[link.leftWord.numLineSegments-1];
+      }
+    }      
   }
 }
 
@@ -1479,10 +1537,19 @@ function getRightXForLeftWord(link) {
   if (link.leftType == types.WORD) {
     return link.leftWord.rightX;
   } else { //link
-    if (link.leftAttach == sides.LEFT) {
-      return link.leftWord.linesRightX[0];
-    } else if (link.leftAttach == sides.RIGHT) {
-      return link.leftWord.linesRightX[link.leftWord.numLineSegments-1];
+    if (determineSide(link) == swapside.YES) {
+      if (link.leftAttach == sides.RIGHT) {
+        return link.leftWord.linesRightX[0];
+      }   else if (link.leftAttach == sides.LEFT) {
+        return link.leftWord.linesRightX[link.leftWord.numLineSegments-1];
+      }
+    }
+    else {
+      if (link.leftAttach == sides.LEFT) {
+        return link.leftWord.linesRightX[0];
+      } else if (link.leftAttach == sides.RIGHT) {
+        return link.leftWord.linesRightX[link.leftWord.numLineSegments-1];
+      }
     }
   }
 }
@@ -1491,10 +1558,19 @@ function getLeftXForRightWord(link) {
   if (link.rightType == types.WORD) {
     return link.rightWord.leftX;
   } else { //link
-    if (link.rightAttach == sides.LEFT) {
-      return link.rightWord.linesLeftX[0];
-    } else if (link.rightAttach == sides.RIGHT) {
-      return link.rightWord.linesLeftX[link.rightWord.numLineSegments-1];
+    if (determineSide(link) == swapside.YES) {
+      if (link.rightAttach == sides.RIGHT) {
+        return link.rightWord.linesLeftX[0];
+      } else if (link.rightAttach == sides.LEFT) {
+        return link.rightWord.linesLeftX[link.rightWord.numLineSegments-1];
+      }
+    }
+    else {
+      if (link.rightAttach == sides.LEFT) {
+        return link.rightWord.linesLeftX[0];
+      } else if (link.rightAttach == sides.RIGHT) {
+        return link.rightWord.linesLeftX[link.rightWord.numLineSegments-1];
+      }
     }
   }
 }
@@ -1503,10 +1579,19 @@ function getRightXForRightWord(link) {
   if (link.rightType == types.WORD) {
     return link.rightWord.rightX;
   } else { //link
-    if (link.rightAttach == sides.LEFT) {
-      return link.rightWord.linesRightX[0];
-    } else if (link.rightAttach == sides.RIGHT) {
-      return link.rightWord.linesRightX[link.rightWord.numLineSegments-1];
+    if (determineSide(link) == swapside.YES) {
+      if (link.rightAttach == sides.RIGHT) {
+        return link.rightWord.linesRightX[0];
+      } else if (link.rightAttach == sides.LEFT) {
+        return link.rightWord.linesRightX[link.rightWord.numLineSegments-1];
+      }
+    }
+    else {
+      if (link.rightAttach == sides.LEFT) {
+        return link.rightWord.linesLeftX[0];
+      } else if (link.rightAttach == sides.RIGHT) {
+        return link.rightWord.linesLeftX[link.rightWord.numLineSegments-1];
+      }
     }
   }
 }
