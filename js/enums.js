@@ -22,4 +22,8 @@ var strategies = {
   FARTHEST: 1,
 };
 
+var swapside = {
+  YES: 1,
+  NO: 0
+};
 

@@ -120,6 +120,9 @@ class Link {
         this.rightWord = this.words[this.words.length - 1];
         this.id = `(${this.leftWord.id}, ${this.rightWord.id})`;
 
+        console.log("\n\n *** \n\n in setStartAndEnd");
+        console.log("leftWord: " + this.leftWord);
+        console.log("rightWord: " + this.rightWord);
 
         if (this.leftWord instanceof Word) {
           this.leftType = types.WORD;
@@ -419,10 +422,11 @@ function traceBackToWordObj(link, type, word, attach) {
   var retVal = {w: -1, s: -1};
 
   if (type == types.WORD) { 
-    //// console.log("in traceback, node is a word, wordObj.val = " + word.val + ", attachSide = " + attach);
+    console.log("in traceback, node is a word, wordObj.val = " + word.val + ", attachSide = " + attach);
 
     retVal.w = word;
     retVal.s = attach;
+
     return retVal;
 
   } else {
@@ -431,52 +435,81 @@ function traceBackToWordObj(link, type, word, attach) {
     var nextLink = word;
     var nextType, nextWord, nextAttach;  
 
-    if (attach == sides.LEFT) { //left
+    console.log("nextLinkleft: " + nextLink.leftWord);
+    console.log("nextLinkleft: " + nextLink.rightWord);
+    if (determineSide(link) == swapside.YES) {
+      if (attach == sides.RIGHT) { //left
 
-      //nextType = nextLink.ts;
-      nextType = nextLink.leftType;
-      nextWord = nextLink.leftWord;
-      nextAttach = nextLink.leftAttach;
-    
-    } else { // right
-     
-      //nextType = nextLink.te;
-      nextType = nextLink.rightType;
-      nextWord = nextLink.rightWord;
-      nextAttach = nextLink.rightAttach;
-    
+        //nextType = nextLink.ts;
+        nextType = nextLink.leftType;
+        nextWord = nextLink.leftWord;
+        nextAttach = nextLink.leftAttach;
+      
+      } else { // right
+      
+        //nextType = nextLink.te;
+        nextType = nextLink.rightType;
+        nextWord = nextLink.rightWord;
+        nextAttach = nextLink.rightAttach;
+      
+      }
+    }
+    else {
+      if (attach == sides.LEFT) { //left
+
+        //nextType = nextLink.ts;
+        nextType = nextLink.leftType;
+        nextWord = nextLink.leftWord;
+        nextAttach = nextLink.leftAttach;
+      
+      } else { // right
+      
+        //nextType = nextLink.te;
+        nextType = nextLink.rightType;
+        nextWord = nextLink.rightWord;
+        nextAttach = nextLink.rightAttach;
+      
+      }
     }
 
-   //// console.log("now going to traceback... link: " + nextLink + ", nextType: " + nextType + " nextWord " + nextWord.val + ", nextAttach: " + nextAttach);
+    console.log("now going to traceback... link: " + nextLink + ", nextType: " + nextType + " nextWord " + nextWord.val + ", nextAttach: " + nextAttach);
     
     return traceBackToWordObj(nextLink, nextType, nextWord, nextAttach);
   }
 }
 
+function determineSide(link) {
+  var rootS, rootE;
+
+    if (link.leftType == types.WORD) {
+      rootS = link.leftWord.idx;
+      //console.log("rootS = " + link.leftWord.id);
+
+    } else {
+      rootS = link.leftWord.rootMinWord.idx;
+      //console.log("rootS = " + link.leftWord.rootMinWord.id);
+
+    }
+
+    if (link.rightType == types.WORD) {
+      rootE = link.rightWord.idx;
+      //console.log("rootE = " + link.rightWord.id);
+
+    } else {
+      rootE = link.rightWord.rootMaxWord.idx;
+      //console.log("rootE = " + link.rightWord.rootMaxWord.id);
+    }
+    
+    if(rootS < rootE) {
+      return swapside.YES;
+    }
+    else {
+      return swapside.NO;
+    }
+}
 
 //TODO - should there be a global strategy for each class of link types? for the different styles of links? for each parent word/link? or for every single individual link??? E.g., could a word support links with different strategies, or would that become cluttered??
 function calcAttachPoints(link, strategy)  {
-
-  var rootS, rootE;
-
-  if (link.leftType == types.WORD) {
-    rootS = link.leftWord.idx;
-    //console.log("rootS = " + link.leftWord.id);
-
-  } else {
-    rootS = link.leftWord.rootMinWord.idx;
-    //console.log("rootS = " + link.leftWord.rootMinWord.id);
-
-  }
-
-  if (link.rightType == types.WORD) {
-    rootE = link.rightWord.idx;
-    //console.log("rootE = " + link.rightWord.id);
-
-  } else {
-    rootE = link.rightWord.rootMaxWord.idx;
-    //console.log("rootE = " + link.rightWord.rootMaxWord.id);
-  }
 
   //link.leftWord.nr += 1;
   //link.rightWord.nl += 1;
@@ -497,7 +530,7 @@ function calcAttachPoints(link, strategy)  {
 
     //console.log("" + link.id + " strategy = CLOSEST");
 
-    if (rootS < rootE) {
+    if (determineSide(link) == swapside.YES) {
       //console.log("rootS < rootE (" +rootS +" < " + rootE +")");
       link.leftWord.nr += 1;
       link.rightWord.nl += 1;
@@ -631,7 +664,6 @@ function createLink(link) {
 
   //calculate attachment points to child links
 
-
   if (link.leftType == types.WORD && link.rightType == types.WORD) {
     calcAttachPoints(link, Config.word2word_strategy);
   } else if (link.leftType == types.LINK && link.rightType == types.LINK) {
@@ -644,17 +676,21 @@ function createLink(link) {
   //calculate attachment points to root
   var checkSlotAt = 1;
   var minWord, minSide, maxWord, maxSide;
-
+  //console.log("\n\n*** \n\n in createLink" + link.words);
+  //console.log("left link type: " + link.leftType);
+  //console.log("left link word: " + link.leftWord);
   var rootWordAndSide = traceBackToWordObj(link, link.leftType, link.leftWord, link.leftAttach);
   link.rootMinWord = rootWordAndSide.w;
   link.rootMinSide = rootWordAndSide.s;
-
+  //console.log("rootWordAndSideMin: " + rootWordAndSide.w);
+  
   checkSlotAt = Math.max(checkSlotAt, link.leftWord.h + 1);
-
+  //console.log("right link type: " + link.rightType);
+  //console.log("right link word: " + link.rightWord);
   var rootWordAndSide = traceBackToWordObj(link, link.rightType, link.rightWord, link.rightAttach);
   link.rootMaxWord = rootWordAndSide.w;
   link.rootMaxSide = rootWordAndSide.s;
-
+  //console.log("rootWordAndSideMax: " + rootWordAndSide.w);
   checkSlotAt = Math.max(checkSlotAt, link.rightWord.h + 1); //minimum height to start checking
   //set checkSlotAt to 1 if you want to be able to connect from underneath
 

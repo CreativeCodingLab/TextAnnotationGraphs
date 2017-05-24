@@ -767,7 +767,7 @@ function drawAllLinkLabels() {
 /** redraws all links that have been marked as needsUpdate = true, OR by passing in a boolean of true to indicate that the window has resized **/
 function redrawLinks(forceRedrawingAll) { //force redraw of all when resizing window
 
-console.log("inredraw links:" + forceRedrawingAll);
+console.log("\n\n***\n\n in redraw links:" + forceRedrawingAll);
   Object.keys(linkObjs).forEach(function(key) {
     if (linkObjs[key].needsUpdate || forceRedrawingAll == true) {
       console.log(" link #" + key + " needsUpdate");
@@ -789,6 +789,7 @@ function getLeftXForWord(word, link) {
   if (word instanceof Word) { //is a word
     return word.leftX;
   } else { //is a link
+    
     if (link.leftAttach == sides.LEFT) {
       return word.linesLeftX[0];
     } else if (link.leftAttach == sides.RIGHT){
@@ -1372,6 +1373,14 @@ function drawLink(link) {
   var minRow = link.rootMinWord.row.idx;
   var maxRow = link.rootMaxWord.row.idx;
 
+  console.log("minWord: " + link.rootMinWord);
+  console.log("minRow: " + link.rootMinWord.row.idx);
+  
+  /* Object.keys(linkObjs).forEach(function(key) {
+    console.log("link minWord: " + linkObjs[key].rootMinWord);
+    console.log("link minRow: " + linkObjs[key].rootMinWord.row);
+  });
+  */
   link.numLineSegments = (maxRow - minRow)+1;
 
   var linkStyles;
