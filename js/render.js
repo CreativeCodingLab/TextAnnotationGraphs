@@ -990,8 +990,10 @@ function storeOnlyArrows(rowNum, y1, link, xPositions) {
     var xpos = xPositions[i].xpos;
     var ypos;
 
+
     var w = link.words[wordIdx];
-    
+    console.log("\n\n *** \n\n in storeOnlyArrows \n word: " + link.words[wordIdx]);
+    console.log("\nxPos: " + xPositions[i].xpos);    
     
     if (w instanceof Word ) { // && w.row.idx == rowNum) {
       ypos = w.bbox.y;
@@ -1005,12 +1007,13 @@ function storeOnlyArrows(rowNum, y1, link, xPositions) {
     }
 
     arrowPos.push( {x:xpos, y:ypos} );
-    
+    console.log("arrowPosPush: " + arrowPos);
    //link.leftAttach == sides.RIGHT; 
    //link.rightAttach == sides.RIGHT; 
-    storeArrow(wordIdx, xpos, ypos, link, w, link.leftAttach, getLeftXForWord(w, link), getRightXForWord(w, link) ); 
+    storeArrow(wordIdx, xpos, ypos, link, w, link.rightAttach, getLeftXForWord(w, link), getRightXForWord(w, link) ); 
   }
 
+  console.log("arrowPos: " + arrowPos);
   return arrowPos;
 }
 
@@ -1210,7 +1213,6 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
   var yPos = rows[rowNum].baseHeight - link.h * percentagePadding;
 
   var arrowPos = storeOnlyArrows(rowNum, yPos, link, xPositions);
-
   arrowPos.sort(function(a, b) {
     return a.x - b.x; 
   });
@@ -1456,6 +1458,7 @@ function filterXPositionsForOnlyThisRow(attachmentXPositions, row, link, which) 
 
 
 function storeArrow(idx, x, y, link, word, side, leftX, rightX) {
+  console.log("\n *** in storedArrow \n x: " + x + " y: " + y + " word: " + word );
   link.arrows[idx] = {x:x, y:y, link:link, word:word, side:side, leftX:leftX, rightX: rightX, visibility:true};
 }
 
