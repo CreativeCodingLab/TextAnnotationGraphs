@@ -1462,15 +1462,23 @@ function filterXPositionsForOnlyThisRow(attachmentXPositions, row, link, type) {
       console.log("rootMinWord = " + link.words[aaa].rootMinWord.toString());
       console.log("rootMaxWord = " + link.words[aaa].rootMaxWord.toString());
       //console.log("link idx: " + link.words[aaa].rootMinWord.row.idx + " row: " + row);
-      if (link.words[aaa].rootMinWord.row.idx == row ) {
+      if (type == rowtypes.END|| type == rowtypes.START) {
+        if (link.words[aaa].nearestConnectedMinWord.row.idx == row) {
+          console.log("linkaaa: " + link.words[aaa].rootMinWord );
+          rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
+        }
+        else if (link.words[aaa].rootMinWord.row.idx == row ) {
+          rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
+          console.log("linkaaa: " + link.words[aaa].rootMinWord);
+        } 
+      }
+      else if (link.words[aaa].rootMinWord.row.idx == row ) {
           rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
           console.log("linkaaa: " + link.words[aaa].rootMinWord);
       } 
-      else if (type == rowtypes.END) {
-        if (link.words[aaa].rootMinWord.row.idx != link.words[aaa].rootMaxWord.row.idx) {
-          console.log("linkaaa: " + link.words[aaa].rootMinWord );
-          rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa+1]} );
-        }
+      else if (type == rowtypes.START) {
+
+
       }
 
     } else if (link.words[aaa] instanceof Word) {

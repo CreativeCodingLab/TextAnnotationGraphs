@@ -22,8 +22,9 @@ class Link {
 
         this.rootMinWord = null;
         this.rootMaxWord = null;
+        this.nearestConnectedMinWord = null;
+        this.nearestConnectedMaxWord = null;
 
-     
         this.arrows = [];
         this.arrowStyles = [];
         this.arrowXPercents = [];
@@ -417,6 +418,46 @@ function checkAndUpdateWordToWordSlots(link, startSlot) { //, minWord, minSide, 
 }
 
 //current link, the word we're tracing, and the side that it's on
+function traceBackToNearestWordObj(link, type, word, attach) { 
+
+  var retVal = {w: -1, s: -1};
+
+  if (type == types.WORD) { 
+    console.log("in traceback, node is a word, wordObj.val = " + word.val + ", attachSide = " + attach);
+
+    retVal.w = word;
+    retVal.s = attach;
+
+    return retVal;
+
+  } else {
+   //// console.log("in traceback, node is a link, wordObj.val, attachSide = " + attach);
+
+    var nextLink = word;
+    var nextType, nextWord, nextAttach;  
+
+    if (attach == sides.LEFT) { //left
+
+      //nextType = nextLink.ts;
+      nextType = nextLink.leftType;
+      nextWord = nextLink.leftWord;
+      nextAttach = nextLink.leftAttach;
+    
+    } else { // right
+    
+      //nextType = nextLink.te;
+      nextType = nextLink.rightType;
+      nextWord = nextLink.rightWord;
+      nextAttach = nextLink.rightAttach;
+    
+    }
+
+    console.log("now going to traceback... link: " + nextLink + ", nextType: " + nextType + " nextWord " + nextWord.val + ", nextAttach: " + nextAttach);
+    
+    return traceBackToWordObj(nextLink, nextType, nextWord, nextAttach);
+  }
+}
+//current link, the word we're tracing, and the side that it's on
 function traceBackToWordObj(link, type, word, attach) { 
 
   var retVal = {w: -1, s: -1};
@@ -680,17 +721,21 @@ function createLink(link) {
   //console.log("left link type: " + link.leftType);
   //console.log("left link word: " + link.leftWord);
   var rootWordAndSide = traceBackToWordObj(link, link.leftType, link.leftWord, link.leftAttach);
+  var rootnearestWordAndSide = traceBackToNearestWordObj(link, link.leftType, link.leftWord, link.leftAttach);
   link.rootMinWord = rootWordAndSide.w;
   link.rootMinSide = rootWordAndSide.s;
   //console.log("rootWordAndSideMin: " + rootWordAndSide.w);
-  
+  link.nearestConnectedMinWord = rootnearestWordAndSide.w;
+
   checkSlotAt = Math.max(checkSlotAt, link.leftWord.h + 1);
   //console.log("right link type: " + link.rightType);
   //console.log("right link word: " + link.rightWord);
-  var rootWordAndSide = traceBackToWordObj(link, link.rightType, link.rightWord, link.rightAttach);
+  rootWordAndSide = traceBackToWordObj(link, link.rightType, link.rightWord, link.rightAttach);
+  rootWordAndSide = traceBackToNearestWordObj(link, link.rightType, link.rightWord, link.rightAttach);
   link.rootMaxWord = rootWordAndSide.w;
   link.rootMaxSide = rootWordAndSide.s;
   //console.log("rootWordAndSideMax: " + rootWordAndSide.w);
+  link.nearestConnectedMaxWord = rootnearestWordAndSide.w;
   checkSlotAt = Math.max(checkSlotAt, link.rightWord.h + 1); //minimum height to start checking
   //set checkSlotAt to 1 if you want to be able to connect from underneath
 
