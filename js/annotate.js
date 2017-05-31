@@ -288,6 +288,24 @@ class Word {
       return [].concat(this.parentsL, this.parentsC, this.parentsR);
     }
 
+    toggleHighlight(select) {
+      if (select === undefined) {
+        this.isSelected = !this.isSelected;
+      }
+      else {
+        this.isSelected = select;
+      }
+
+      let style;
+      if (this.isSelected) {
+        style = this.isHovered ? "hoverAndSelect" : "select";
+      }
+      else {
+        style = this.isHovered ? "hover" : "style";
+      }
+      this.underneathRect.style(styles.wordFill[style]);
+    }
+
     toString() {
       return this.id;
     }

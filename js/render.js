@@ -489,20 +489,10 @@ function drawWord(word) {
   setUpWordDraggable(word); 
   setupMouseOverInteractions(word);
 
-  word.aboveRect.dblclick(function() {
-    word.isSelected = !word.isSelected;
-
-    if (word.isSelected) {
-      style = word.isHovered ? "hoverAndSelect" : "select";
-    }
-    else {
-      style = word.isHovered ? "hover" : "style";
-    }
-    word.underneathRect.style(styles.wordFill[style]);
-
+  word.aboveRect.dblclick( () => {
+    word.toggleHighlight();
     draw.fire('wordSelected', { arbitrary: word });
   });
-
 }
 
 

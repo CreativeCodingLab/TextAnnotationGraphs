@@ -103,7 +103,7 @@ class GraphLayout {
                             if (word !== source) {
                                 const newNode = addNode(word, depth + 1, node);
 
-                                if (node.arrowDirections[i] === 1) {
+                                if (node.arrowDirections[i] === -1) {
                                     newNode.receivesArrow = true;
                                 }
 
@@ -218,6 +218,18 @@ class GraphLayout {
               });
     }
     drawNodes(root, i, el) {
+        function handleNodeClick(d) {
+            let newArray = this.words.slice();
+            let word = newArray.splice(i, 1, d.node)[0];
+            if (word instanceof Word) {
+                word.toggleHighlight(false);
+            }
+            if (d.node instanceof Word) {
+                d.node.toggleHighlight(true);
+            }
+            this.graph(newArray);
+        }
+
         let node = el.selectAll('.node')
             .data(root.descendants());
 
@@ -247,17 +259,13 @@ class GraphLayout {
 
         nodeMerge.select('path')
             .attr('d', d3.symbol()
-                .type((d) => d.data.receivesArrow ? d3.symbolTriangle : (d.data.type === 'Word' ? d3.symbolSquare : d3.symbolCircle))
+                .type((d) => d.data.type === 'Word' ? (d.data.receivesArrow ? d3.symbolTriangle : d3.symbolSquare) : d3.symbolCircle)
                 .size(20)
             )
-            .attr('transform', (d) => d.data.receivesArrow ? 'rotate(-30)' : 'rotate(45)')
+            .attr('transform', (d) => d.data.receivesArrow && d.data.type === 'Word' ? 'rotate(-30)' : 'rotate(45)')
             .attr('stroke', 'grey')
             .attr('fill', (d) => d.data.type === 'Word' ? 'black' : 'white')
-            .on('click', (d) => {
-                let newArray = this.words.slice();
-                newArray.splice(i, 1, d.data.node);
-                this.graph(newArray);
-            });
+            .on('click', (d) => handleNodeClick.bind(this)(d.data));
 
         nodeMerge.select('text')
             .text((d) => d.data.name)
@@ -308,11 +316,7 @@ class GraphLayout {
             .attr('transform', (d, i) => 'translate(-30,' + (-20 * i - 20) + ')');
 
         inMerge.select('circle')
-            .on('click', (d) => {
-                let newArray = this.words.slice();
-                newArray.splice(i, 1, d.node);
-                this.graph(newArray);
-            });
+            .on('click', (d) => handleNodeClick.bind(this)(d));
 
         inMerge.select('path')
             .attr('d', (d, i) => {
