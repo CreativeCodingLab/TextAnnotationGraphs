@@ -109,6 +109,9 @@ class Link {
     }
     //end KLEE
 
+    get parents() {
+      return [].concat(this.parentsL, this.parentsC, this.parentsR);
+    }
 
     toString() {
         return this.id; 
@@ -279,6 +282,10 @@ class Word {
     //getMaxWidth() must return a value less than row width - Config.edgePaddings, else will try to reposition long words forever!!!
     getMaxWidth() {
       return (this.row.rect.width() - (Config.edgePadding*2)) / 3.1; 
+    }
+
+    get parents() {
+      return [].concat(this.parentsL, this.parentsC, this.parentsR);
     }
 
     toString() {

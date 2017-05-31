@@ -498,7 +498,9 @@ function drawWord(word) {
     else {
       style = word.isHovered ? "hover" : "style";
     }
-  word.underneathRect.style(styles.wordFill[style]);
+    word.underneathRect.style(styles.wordFill[style]);
+
+    draw.fire('wordSelected', { arbitrary: word });
   });
 
 }
