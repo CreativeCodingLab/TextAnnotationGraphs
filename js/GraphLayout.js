@@ -99,8 +99,19 @@ class GraphLayout {
 
                 if (node instanceof Link) {
                     let anchors = node.words
-                        .filter((word, i) => word !== source)
-                        .map((word) => addNode(word, depth + 1, node));
+                        .map((word, i) => {
+                            if (word !== source) {
+                                const newNode = addNode(word, depth + 1, node);
+
+                                if (node.arrowDirections[i] === 1) {
+                                    newNode.receivesArrow = true;
+                                }
+
+                                return newNode;
+                            }
+                            return null;
+                        })
+                        .filter(word => word);
 
                     children = children.concat(anchors);
                 }
@@ -194,20 +205,10 @@ class GraphLayout {
                      d.source.data.type === 'Link' &&
                      d.source.data.node.arrowDirections.indexOf(-1) > -1 ) {
 
-                    let i = d.source.data.node.words.indexOf(d.target.data.node);
-                    if (d.source.data.node.arrowDirections[i] === -1) {
-                        return 'M' + [x1, y1] +
-                            'C' + [x1, (y2 + y1)/2] +
-                            ',' + [x2, y2] + 
-                            ',' + [x2, y2];
-                    }
-                    else {
-                        // receive an arrow
-                        return 'M' + [x1, y1] +
-                            'C' + [x1, y2] +
-                            ',' + [x1, y2] + 
-                            ',' + [x2, y2];
-                    }
+                    return 'M' + [x1, y1] +
+                        'C' + [x1, y2] +
+                        ',' + [x1, y2] + 
+                        ',' + [x2, y2];
                 }
 
                 return 'M' + [x1, y1] +
@@ -226,10 +227,8 @@ class GraphLayout {
             .append('g')
             .attr('class', (d) => 'node' + (d.children ? ' node--internal' : ' node--leaf') + (d.parent ? '' : ' node--root'));
 
-        nodeEnter.append('path')
-            .attr('transform', 'rotate(45)');
-
-        nodeEnter.append('text');
+        nodeEnter.append('path');   // symbol
+        nodeEnter.append('text');   // label
 
         let nodeMerge = nodeEnter.merge(node);
 
@@ -248,9 +247,10 @@ class GraphLayout {
 
         nodeMerge.select('path')
             .attr('d', d3.symbol()
-                .type((d) => d.data.type === 'Word' ? d3.symbolSquare : d3.symbolCircle)
+                .type((d) => d.data.receivesArrow ? d3.symbolTriangle : (d.data.type === 'Word' ? d3.symbolSquare : d3.symbolCircle))
                 .size(20)
             )
+            .attr('transform', (d) => d.data.receivesArrow ? 'rotate(-30)' : 'rotate(45)')
             .attr('stroke', 'grey')
             .attr('fill', (d) => d.data.type === 'Word' ? 'black' : 'white')
             .on('click', (d) => {
