@@ -448,7 +448,7 @@ function drawWord(word) {
   word.text = draw.text(function(add) {
 
     add.text(word.val)
-    .y(word.wy + Config.textPaddingY*2) // - texts.wordText.descent)
+    .y(word.wy + Config.textPaddingY*2 - texts.wordText.descent)
     .x(word.wx + (word.ww/2) - (textwh.w / 2))
     .font(texts.wordText.style);
   });
@@ -462,7 +462,7 @@ function drawWord(word) {
     word.tagtext = draw.text(function(add) {
 
       add.text(word.tag)
-      .y(word.wy + Config.textPaddingY/2) // - texts.tagText.descent)
+      .y(word.wy + Config.textPaddingY/2 - texts.wordText.descent)
       .x(tagXPos)
       .font(texts.tagText.style);
     });
