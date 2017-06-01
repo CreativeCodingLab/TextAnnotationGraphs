@@ -90,12 +90,16 @@ window.onload = function() {
     recalculateRows(widthPercChange); //makes sure that the words fit in the current width, else makes new rows  
   }
 
+  function getSelectedObjects() {
+    return wordObjs.concat(linkObjs).filter(obj => obj.isSelected);
+  }
+
   draw.on('wordSelected', function() {
-    Panel.graph(wordObjs.filter(word => word.isSelected));
+    Panel.graph(getSelectedObjects());
   });
 
   document.querySelector('#graph>button').onclick = function() {
-    let words = wordObjs.filter(word => word.isSelected);
+    let words = getSelectedObjects();
     if (words.length > 0) {
       Panel.graph(words);
     }

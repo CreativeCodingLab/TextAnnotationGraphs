@@ -49,3 +49,37 @@ button {
     left:0;
     overflow:hidden;
 }
+
+
+/* svg classes */
+#drawing text, .link--labels text {
+  pointer-events: none;
+}
+
+.row--0, .link--label {
+  fill: #f6f6f6;
+}
+.row--1, .link--label.odd {
+  fill: #d5d5d5;
+}
+
+.word--underneath {
+  fill:white;
+}
+
+.selected .word--underneath, .link--label.selected {
+  fill:white;
+  stroke:teal;
+}
+.hovered .word--underneath, .link--label.hovered {
+  fill:white;
+  stroke:cyan;
+}
+
+.word--handle {
+  fill: rgb(255, 204, 204);
+  opacity: 0;
+}
+.word:hover .word--handle {
+  opacity: 0.7;
+}

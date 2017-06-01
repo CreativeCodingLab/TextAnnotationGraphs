@@ -19,29 +19,6 @@ function drawWords(words) {
   }
 }
 
-// update the text and tag text of an existing word on the graph
-function redrawWords(words) {
-  words.forEach(function(word) {
-
-    if (word.text) {
-      word.text.text(word.val);
-    }
-
-    if (word.tagtext != null) {
-      word.tagtext.text(word.tag || '');
-    }
-
-    // TODO: redefine maxtextw
-    // word.maxtextw = Math.max(textw, tagtextw);
-
-    // rearrange
-    word.aboveRect.front();
-    word.leftHandle.front();
-    word.rightHandle.front();
-    realignWords();
-  });
-}
-
 
 //gets max slot number to be assigned to this word
 function getHeightForWord(word) {
@@ -90,7 +67,7 @@ function checkIfNeedToResizeWords(row) {
   var totalW = 0;
   for (var ii = 0; ii < row.words.length; ii++) {
     var word = row.words[ii];
-    totalW += word.aboveRect.width();
+    totalW += word.underneathRect.width();
   }
 
   if (totalW > Config.svgWidth - (Config.edgePadding*2)) {
@@ -112,7 +89,6 @@ function recalculateRows(percChange) {
 
     row.rect.width(draw.width());
 
-    row.lineTop.plot(0, row.ry, draw.width(), row.ry);
     row.lineBottom.plot(0, row.ry+row.rh, draw.width(), row.ry+row.rh);
 
     row.dragRect.x(draw.width() - (Config.dragRectSide+Config.dragRectMargin));
@@ -125,10 +101,7 @@ function recalculateRows(percChange) {
       var word = row.words[ii];
 
       //first try to expand or shrink size of words - but no smaller than the word's min width
-      var nw = Math.max( Math.min(word.getMaxWidth(), word.aboveRect.width() * percChange), word.getMinWidth() );
-
-      //var nw = Math.max(word.getMinWidth(), word.aboveRect.width() * percChange);
-      //nw = Math.max(nw, word.getMaxWidth());
+      var nw = Math.max( Math.min(word.getMaxWidth(), word.underneathRect.width() * percChange), word.getMinWidth() );
 
       var nx = Config.edgePadding + (word.percPos * (Config.svgWidth-Config.edgePadding*2));
 
@@ -180,8 +153,8 @@ function recalculateRows(percChange) {
           }
 
           newArray.sort(function(a, b) {
-            var d1 = a.aboveRect.width() - a.getMinWidth();
-            var d2 = b.aboveRect.width() - b.getMinWidth();
+            var d1 = a.underneathRect.width() - a.getMinWidth();
+            var d2 = b.underneathRect.width() - b.getMinWidth();
             return d1 - d2; 
           });
 
@@ -193,10 +166,10 @@ function recalculateRows(percChange) {
 
             var minW = word.getMinWidth();
 
-            if (word.aboveRect.width() - pixelsPerWord < minW) {
+            if (word.underneathRect.width() - pixelsPerWord < minW) {
 
-              var minus = word.aboveRect.width() - minW;
-              setWordToXW(word, word.aboveRect.x(), minW);
+              var minus = word.underneathRect.width() - minW;
+              setWordToXW(word, word.underneathRect.x(), minW);
               word.update();
 
                 //console.log("ii = " + ii + ": can't shrink by " +  pixelsPerWord + ", so shrinking by much as possible = " + minus);
@@ -205,7 +178,7 @@ function recalculateRows(percChange) {
               resizeByHowMuch -= minus;
               pixelsPerWord = resizeByHowMuch / numWords; 
             } else {
-              setWordToXW(word, word.aboveRect.x(), word.aboveRect.width() - pixelsPerWord);
+              setWordToXW(word, word.underneathRect.x(), word.underneathRect.width() - pixelsPerWord);
               word.update();
               numWords--;
               resizeByHowMuch -= pixelsPerWord;
@@ -239,7 +212,7 @@ function realignWords() {
     //may not use the move left, might be odd when it jumps up instead of down...
     for (var ii = row.words.length-1; ii >= 0 ; ii--) {
       var word = row.words[ii];
-      checkIfCanMoveLeft(word.aboveRect.x(), word.aboveRect.width(), word.aboveRect.y(), word, true);
+      checkIfCanMoveLeft(word.underneathRect.x(), word.underneathRect.width(), word.underneathRect.y(), word, true);
       word.update();
     }
     
@@ -247,7 +220,7 @@ function realignWords() {
 
     for (var ii = 0; ii < row.words.length; ii++) {
       var word = row.words[ii];
-      checkIfCanMoveRight(word.aboveRect.x(), word.aboveRect.width(), word.aboveRect.y(), word, false);
+      checkIfCanMoveRight(word.underneathRect.x(), word.underneathRect.width(), word.underneathRect.y(), word, false);
       word.update();
     }
   }
@@ -260,7 +233,6 @@ function realignWords() {
 
 function removeLastRow() {
   rows[rows.length-1].rect.remove();
-  rows[rows.length-1].lineTop.remove();
   rows[rows.length-1].lineBottom.remove();
   rows[rows.length-1].dragRect.remove();
   rows.pop();
@@ -286,12 +258,6 @@ function appendRow() {
   row.ry = Config.rowPadding/2 + rows[row.idx - 1].rect.bbox().y + rows[row.idx - 1].rect.bbox().h;
   row.rh = rows[row.idx - 1].rect.bbox().h; 
 
-  if (row.idx % 2 == 0) {
-    row.color = Config.evenRowsColor;
-  } else {
-    row.color = Config.oddRowsColor;
-  }
-
   drawRow(row);
 
   changeSizeOfSVGPanel(window.innerWidth - 16, row.lineBottom.y() + 1);
@@ -300,15 +266,11 @@ function appendRow() {
 
 function drawRow(row) {
 
-  row.rect = rowGroup.rect(Config.svgWidth,row.rh).x(0).y(row.ry);
+  row.rect = rowGroup.rect(Config.svgWidth,row.rh)
+    .x(0)
+    .y(row.ry)
+    .addClass('row--' + row.idx % 2);
 
-  if (row.idx % 2 == 0) {
-    row.rect.style(styles.rowRectEvenFill.style);
-  } else {
-    row.rect.style(styles.rowRectOddFill.style); 
-  }
-
-  row.lineTop = rowGroup.line(0, row.ry, Config.svgWidth, row.ry).style(styles.rowLineStroke.style);
   row.lineBottom = rowGroup.line(0, row.ry+row.rh, Config.svgWidth, row.ry+row.rh).style(styles.rowLineStroke.style);
 
   row.dragRect = rowGroup.rect(Config.dragRectSide,Config.dragRectSide).x(Config.svgWidth - (Config.dragRectSide+Config.dragRectMargin)).y(row.ry + row.rh - (Config.dragRectSide+Config.dragRectMargin)).style(styles.rowDragRectFill.style);
@@ -414,12 +376,6 @@ function setUpRowsAndWords(words) {
 
     row.rh = Config.rowPadding + ((Config.textPaddingY * 2) + texts.wordText.maxHeight) + (Config.levelPadding * row.maxSlots);
 
-    if (row.idx % 2 == 0) {
-      row.color = Config.evenRowsColor;
-    } else {
-      row.color = Config.oddRowsColor;
-    }
-
     for (var ii = 0; ii < row.words.length; ii++) {
       var word = row.words[ii];
 
@@ -441,11 +397,16 @@ function setUpRowsAndWords(words) {
 
 function drawWord(word) {
 
-  word.underneathRect = draw.rect( word.ww, word.wh ).x( word.wx ).y( word.wy ).style(styles.wordFill.style);
+  let g = word.svg = draw.group().addClass('word');
+
+  word.underneathRect = g.rect( word.ww, word.wh )
+    .x( word.wx )
+    .y( word.wy )
+    .addClass('word--underneath');
 
   var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
 
-  word.text = draw.text(function(add) {
+  word.text = g.text(function(add) {
 
     add.text(word.val)
     .y(word.wy + Config.textPaddingY*2 - texts.wordText.descent)
@@ -459,37 +420,35 @@ function drawWord(word) {
     var tagXPos = word.twx + (word.ww/2) - (textwh.w / 2);
 
     //add in tag text, if the word has an associated tag
-    word.tagtext = draw.text(function(add) {
-
-      add.text(word.tag)
-      .y(word.wy + Config.textPaddingY/2 - texts.wordText.descent)
-      .x(tagXPos)
-      .font(texts.tagText.style);
-    });
+    word.tagtext = g.text(function(add) {
+        add.text(word.tag)
+        .y(word.wy + Config.textPaddingY/2 - texts.wordText.descent)
+        .x(tagXPos)
+        .font(texts.tagText.style);
+      });
   }
 
-  //this rect is invisible, but used for detecting mouseevents, as its drawn on top of the text+underneathRect (which provided the color+fill+stroke)
-  word.aboveRect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
+  word.leftHandle = g.rect(Config.handleW, Config.handleH)
+    .x(word.wx)
+    .y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) )
+    .addClass('word--handle');
 
-  word.leftHandle = draw.rect(Config.handleW, Config.handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) ).style(styles.handleFill.style);
+  word.rightHandle = g.rect(Config.handleW,Config.handleH)
+    .x(word.wx + word.ww - (Config.handleW))
+    .y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) )
+    .addClass('word--handle');
 
-
-  word.rightHandle = draw.rect(Config.handleW,Config.handleH).x(word.wx + word.ww - (Config.handleW)).y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) ).style(styles.handleFill.style);
-
-
-  word.bbox = word.aboveRect.bbox();
-  word.leftX = word.aboveRect.bbox().x;
-  word.rightX = word.aboveRect.bbox().x + word.aboveRect.bbox().w;
+  word.bbox = word.underneathRect.bbox();
+  word.leftX = word.underneathRect.bbox().x;
+  word.rightX = word.underneathRect.bbox().x + word.underneathRect.bbox().w;
   word.percPos = (word.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
-
 
   //set up mouse interactions
   setUpLeftHandleDraggable(word);
   setUpRightHandleDraggable(word); 
   setUpWordDraggable(word); 
-  setupMouseOverInteractions(word);
 
-  word.aboveRect.dblclick( () => {
+  word.underneathRect.dblclick( () => {
     word.toggleHighlight();
     draw.fire('wordSelected', { arbitrary: word });
   });
@@ -669,7 +628,6 @@ function drawAllLinks() {
         }
       }
 
-      //setupLineInteractions(poly); 
     }
   }
 
@@ -680,10 +638,9 @@ function drawAllLinks() {
 
 function drawAllLinkLabels() {
 
-  var label = textG.group();
+  var label = textG.group().addClass('link--labels');
 
-  for (var i = 0; i < linkObjs.length; i++) {
-    var lo = linkObjs[i];
+  linkObjs.forEach((lo, i) => {
 
     if (lo.numLineSegments < lo.labelTextSVGs.length) {
       //need to remove the old SVGs
@@ -713,43 +670,54 @@ function drawAllLinkLabels() {
       
       if (lo.labelTextSVGs[ii] == null) {
 
-        lo.labelRectSVGs[ii] = label.rect( lo.labels[ii].rect.w, lo.labels[ii].rect.h );
-        lo.labelRectSVGs[ii].x( lo.labels[ii].rect.x );
-        lo.labelRectSVGs[ii].y( lo.labels[ii].rect.y );
-        lo.labelRectSVGs[ii].style( lo.labels[ii].rect.style ); 
+        lo.labelRectSVGs[ii] = label.rect( lo.labels[ii].rect.w, lo.labels[ii].rect.h )
+          .x( lo.labels[ii].rect.x )
+          .y( lo.labels[ii].rect.y )
+          .addClass('link--label');
 
-        lo.labelTextSVGs[ii] = label.text( lo.labels[ii].text.text );
-        lo.labelTextSVGs[ii].x( lo.labels[ii].text.x );
-        lo.labelTextSVGs[ii].y( lo.labels[ii].text.y );
-        lo.labelTextSVGs[ii].font( lo.labels[ii].text.style );
+        lo.labelTextSVGs[ii] = label.text( lo.labels[ii].text.text )
+          .x( lo.labels[ii].text.x )
+          .y( lo.labels[ii].text.y )
+          .font( lo.labels[ii].text.style );
+
+        // add click selection event
+        lo.labelRectSVGs[ii].dblclick( (e) => {
+          lo.toggleHighlight();
+          draw.fire('wordSelected', {arbitrary: lo});
+        });
 
       } else {
 
-        lo.labelRectSVGs[ii].width( lo.labels[ii].rect.w );
-        lo.labelRectSVGs[ii].height( lo.labels[ii].rect.h );
-        lo.labelRectSVGs[ii].x( lo.labels[ii].rect.x );
-        lo.labelRectSVGs[ii].y( lo.labels[ii].rect.y );
-        lo.labelRectSVGs[ii].y( lo.labels[ii].rect.y );
-        lo.labelRectSVGs[ii].style( lo.labels[ii].rect.style );
+        lo.labelRectSVGs[ii]
+          .width( lo.labels[ii].rect.w )
+          .height( lo.labels[ii].rect.h )
+          .x( lo.labels[ii].rect.x )
+          .y( lo.labels[ii].rect.y );
 
-        lo.labelTextSVGs[ii].text( lo.labels[ii].text.text );
-        lo.labelTextSVGs[ii].x( lo.labels[ii].text.x );
-        lo.labelTextSVGs[ii].y( lo.labels[ii].text.y );
-        lo.labelTextSVGs[ii].style( lo.labels[ii].text.style );
-
-        if (lo.labels[ii].text.visibility == false) {
-          lo.labelRectSVGs[ii].style("visibility:hidden;");
-          lo.labelTextSVGs[ii].style("visibility:hidden;"); 
-        } else {
-          lo.labelTextSVGs[ii].style("visibility:visible;");
-          lo.labelRectSVGs[ii].style("visibility:visible;");
-
-        } 
-
+        lo.labelTextSVGs[ii]
+          .text( lo.labels[ii].text.text )
+          .x( lo.labels[ii].text.x )
+          .y( lo.labels[ii].text.y )
+          .style( lo.labels[ii].text.style );
       }
+
+      if (lo.labels[ii].rect.rowNum % 2) {
+        lo.labelRectSVGs[ii].addClass('odd');
+      }
+      else {
+        lo.labelRectSVGs[ii].removeClass('odd');
+      }
+
+      if (lo.labels[ii].text.visibility == false) {
+        lo.labelRectSVGs[ii].hide();
+        lo.labelTextSVGs[ii].hide(); 
+      } else {
+        lo.labelTextSVGs[ii].show();
+        lo.labelRectSVGs[ii].show();
+      } 
       
     }
-  }
+  });
 
 
 
@@ -1330,7 +1298,6 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
 
 function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
 
-  var style;
   var text;
 
   if (rowNum % 2 == 0) {
@@ -1341,7 +1308,7 @@ function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
 
   var twh = link.textWH;
 
-  var rect = {x: (x - 2 - twh.w/2), y: (y - link.textStyle.maxHeight/2), w: (twh.w + 4), h: link.textStyle.maxHeight, style:style};
+  var rect = {x: (x - 2 - twh.w/2), y: (y - link.textStyle.maxHeight/2), w: (twh.w + 4), h: link.textStyle.maxHeight, style:style, rowNum: rowNum};
 
 
   if (Config.redraw) { 
@@ -1350,13 +1317,13 @@ function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
   else {
     text = {text: link.textStr, x: (x - twh.w/2), y: (y - link.textStyle.maxHeight/2 - link.textStyle.descent), style: (link.textStyle.style), visibility:true};
   }
-
+/*
   console.log(" in calculateLinkLabels, idx = " + idx + ", rowNum = " + rowNum + ", rect = ");
   console.log(rect);
   console.log(" in calculateLinkLabels, text = ");
   console.log(text);
   console.log(link.textStyle.descent)
-
+*/
   link.labels[idx] = {rect:rect, text:text};
 
   if (isHidden) {
@@ -1367,16 +1334,16 @@ function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
 
 function drawLink(link) {
 
-  console.log("\n\n\n***\n\nin drawLink ::: " + link.toString());
+  // console.log("\n\n\n***\n\nin drawLink ::: " + link.toString());
   var attachmentXPositions = getXPosForAttachmentByPercentageOffset(link); 
 
-  console.log("attachment positions = ");
-  console.log(attachmentXPositions);
+  // console.log("attachment positions = ");
+  // console.log(attachmentXPositions);
 
   var xL = attachmentXPositions[0];
   var xR = attachmentXPositions[link.words.length - 1];
 
-  console.log("... xL, xR = " + xL + ", " + xR);
+  // console.log("... xL, xR = " + xL + ", " + xR);
 
   link.linesLeftX = [];
   link.linesRightX = [];
@@ -1384,8 +1351,8 @@ function drawLink(link) {
   var minRow = link.rootMinWord.row.idx;
   var maxRow = link.rootMaxWord.row.idx;
 
-  console.log("minWord: " + link.rootMinWord);
-  console.log("minRow: " + link.rootMinWord.row.idx);
+  // console.log("minWord: " + link.rootMinWord);
+  // console.log("minRow: " + link.rootMinWord.row.idx);
   
   /* Object.keys(linkObjs).forEach(function(key) {
     console.log("link minWord: " + linkObjs[key].rootMinWord);

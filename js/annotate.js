@@ -99,16 +99,6 @@ class Link {
         this.labelTextSVG = null;
     }
 
-    //KLEE's function..
-    removeSVGs() {
-     this.polylineSVGs.forEach(svg => svg.remove());
-     this.labelRectSVGs.forEach(svg => svg.remove());
-     this.labelTextSVGs.forEach(svg => svg.remove());
-     this.arrow1Style.path.remove();
-     this.arrow2Style.path.remove();
-    }
-    //end KLEE
-
     get parents() {
       return [].concat(this.parentsL, this.parentsC, this.parentsR);
     }
@@ -117,6 +107,24 @@ class Link {
         return this.id; 
     }
     
+    toggleHighlight(select) {
+      // default value
+      if (select === undefined) {
+        this.isSelected = !this.isSelected;
+      }
+      else {
+        this.isSelected = select;
+      }
+
+      this.labelRectSVGs.forEach(rect => rect.toggleClass('selected', this.isSelected));
+    }
+
+    hover(label) {
+      this.labelRectSVGs.forEach(rect => rect.addClass('hovered'));
+    }
+    unhover(label) {
+      this.labelRectSVGs.forEach(rect => rect.removeClass('hovered'));
+    }
 
     setStartAndEnd() {
 
@@ -160,9 +168,8 @@ class Row {
 
     //svg elements
     this.rect = null;
-    this.lineTop = null;
     this.lineBottom = null
-      this.dragRect = null;
+    this.dragRect = null;
   }
 
 
@@ -207,22 +214,21 @@ class Word {
     this.parentsR = [];  //who connects to me and is attached to my right side
     this.parentsC = []; //who connects to me and is attached to the center (ie, for multilinks)
 
-
-
-    //this.lines = [];  //don't this is used, double check then remove!
-
     this.tw = 0; //width of text part of word, used also to determine minimum size of word rect
     this.th = 0;
 
     this.percPos = 0.0; //this is used to indicate where along the row the word is positioned, used when resizing the browser's width, or when popping open a right panel.
 
     this.isSelected = false;
-    this.isHovered = false;
     this.isDragging = false;
 
     //variables created in first render...
+
     this.row = null; //this is a row object, for row num do: this.row.idx
-    this.aboveRect = null; //the top level, clickable rect 
+
+    this.svg = null; // group element within which rect, text, and handles are nested
+                    // TODO: transform this.svg instead of individual children
+
     this.bbox = null; //the bbox of the clickable rect
     this.underneathRect = null; //solid rect on which other word parts are placed (text, handles, clickable rect)
     this.text = null; //the svg text
@@ -247,13 +253,11 @@ class Word {
     update() {
       
     ////  console.log("\n***\nin update X = " + this.tempX + ", Y = " + this.tempY + ", W = " + this.tempW );
-      this.aboveRect.x(this.tempX);
-      this.aboveRect.width(this.tempW);
      
       this.underneathRect.x(this.tempX);
       this.underneathRect.width(this.tempW);
 
-      this.bbox = this.aboveRect.bbox();
+      this.bbox = this.underneathRect.bbox();
       
       this.text.x(this.tempX + (this.tempW/2) - (this.text.bbox().w / 2) ); 
       
@@ -296,14 +300,14 @@ class Word {
         this.isSelected = select;
       }
 
-      let style;
-      if (this.isSelected) {
-        style = this.isHovered ? "hoverAndSelect" : "select";
-      }
-      else {
-        style = this.isHovered ? "hover" : "style";
-      }
-      this.underneathRect.style(styles.wordFill[style]);
+      this.svg.toggleClass('selected', this.isSelected);
+    }
+
+    hover() {
+      this.svg.addClass('hovered');
+    }
+    unhover() {
+      this.svg.removeClass('hovered');
     }
 
     toString() {

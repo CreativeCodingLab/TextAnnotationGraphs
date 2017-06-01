@@ -66,7 +66,7 @@ class GraphLayout {
     }
     graph(words) {
         if (words.length === 0 || this.words.length === words.length && 
-            this.words.every((w,i) => words[i] === w)) { return; }
+            this.words.every((w,i) => words.indexOf(w) > -1)) { return; }
         else { this.words = words; }
 
         const maxDepth = this.maxDepth;
@@ -219,15 +219,19 @@ class GraphLayout {
     }
     drawNodes(root, i, el) {
         function handleNodeClick(d) {
+            unhoverNode(d);
             let newArray = this.words.slice();
             let word = newArray.splice(i, 1, d.node)[0];
-            if (word instanceof Word) {
-                word.toggleHighlight(false);
-            }
-            if (d.node instanceof Word) {
-                d.node.toggleHighlight(true);
-            }
+            word.toggleHighlight(false);
+            d.node.toggleHighlight(true);
             this.graph(newArray);
+        }
+
+        function hoverNode(d) {
+            d.node.hover();
+        }
+        function unhoverNode(d) {
+            d.node.unhover();
         }
 
         let node = el.selectAll('.node')
@@ -265,6 +269,8 @@ class GraphLayout {
             .attr('transform', (d) => d.data.receivesArrow && d.data.type === 'Word' ? 'rotate(-30)' : 'rotate(45)')
             .attr('stroke', 'grey')
             .attr('fill', (d) => d.data.type === 'Word' ? 'black' : 'white')
+            .on('mouseover', (d) => hoverNode.bind(this)(d.data))
+            .on('mouseout', (d) => unhoverNode.bind(this)(d.data))
             .on('click', (d) => handleNodeClick.bind(this)(d.data));
 
         nodeMerge.select('text')
@@ -313,9 +319,9 @@ class GraphLayout {
             .style('text-anchor','end');
 
         let inMerge = inEnter.merge(incoming)
-            .attr('transform', (d, i) => 'translate(-30,' + (-20 * i - 20) + ')');
-
-        inMerge.select('circle')
+            .attr('transform', (d, i) => 'translate(-30,' + (-20 * i - 20) + ')')
+            .on('mouseover', (d) => hoverNode.bind(this)(d))
+            .on('mouseout', (d) => unhoverNode.bind(this)(d))
             .on('click', (d) => handleNodeClick.bind(this)(d));
 
         inMerge.select('path')
