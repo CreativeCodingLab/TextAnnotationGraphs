@@ -673,7 +673,7 @@ function drawAllLinkLabels() {
         lo.labelRectSVGs[ii] = label.rect( lo.labels[ii].rect.w, lo.labels[ii].rect.h )
           .x( lo.labels[ii].rect.x )
           .y( lo.labels[ii].rect.y )
-          .addClass('link--label');
+          .addClass(lo.isSelected ? 'link--label selected' : 'link--label');
 
         lo.labelTextSVGs[ii] = label.text( lo.labels[ii].text.text )
           .x( lo.labels[ii].text.x )
@@ -1008,11 +1008,15 @@ function calculateOnlyRow(rowNum, link, percentagePadding, xPositions, linkStyle
   var xL =  arrowPos[0].x ; //xPositions[0];
   var xR = arrowPos[arrowPos.length-1].x; //xPositions[link.words.length - 1];
 
+  var pathline = 'M' + [xL, arrowPos[0].y] +
+    'C' + [xL, yPos, xL,yPos, xL + 5, yPos] +
+    'L' + [xR - 5, yPos] +
+    'C' + [xR, yPos, xR, yPos, xR, arrowPos[arrowPos.length - 1].y];
 
-  var pathline = 'M '+ xL + ' ' + arrowPos[0].y + 
-    ' L ' + xL + ' ' +  yPos + 
-    ' L ' + xR + ' ' +  yPos + 
-    ' L ' + xR + ' ' +  arrowPos[arrowPos.length - 1].y;
+  // var pathline = 'M '+ xL + ' ' + arrowPos[0].y + 
+  //   ' L ' + xL + ' ' +  yPos + 
+  //   ' L ' + xR + ' ' +  yPos + 
+  //   ' L ' + xR + ' ' +  arrowPos[arrowPos.length - 1].y;
 
   for (var p = 1; p < arrowPos.length - 1; p++) {
      pathline += 
@@ -1075,9 +1079,13 @@ function calculateStartRow(idx, rowNum, link, percentagePadding, xPositions, lin
 
 
   //can there be a start row with NO arrows??
-  var pathline = 'M '+ xL + ' ' + arrowPos[0].y + 
-    ' L ' + xL + ' ' +  yPos + 
-    ' L ' + xR + ' ' +  yPos;
+  var pathline = 'M' + [xL, arrowPos[0].y] +
+    'C' + [xL, yPos, xL,yPos, xL + 5, yPos] +
+    'L' + [xR, yPos];
+
+  // var pathline = 'M '+ xL + ' ' + arrowPos[0].y + 
+  //   ' L ' + xL + ' ' +  yPos + 
+  //   ' L ' + xR + ' ' +  yPos;
 
   for (var p = 1; p < arrowPos.length; p++) {
      pathline += 
@@ -1201,10 +1209,14 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
   console.log("in calculateEndRow, xL =  " + xL + ", xR = " + xR);
   
 
+  var pathline = 'M' + [xL, yPos] +
+    'L' + [xR - 5, yPos] +
+    'C' + [xR, yPos, xR, yPos, xR, arrowPos[arrowPos.length - 1].y];
 
-  var pathline = 'M ' + xL + ' ' + yPos + 
-    ' L ' + xR + ' ' +  yPos +
-    ' L ' + xR + ' ' +  arrowPos[arrowPos.length-1].y;
+
+  // var pathline = 'M ' + xL + ' ' + yPos + 
+  //   ' L ' + xR + ' ' +  yPos +
+  //   ' L ' + xR + ' ' +  arrowPos[arrowPos.length-1].y;
 
   console.log("PATHLINE = " + pathline);
   

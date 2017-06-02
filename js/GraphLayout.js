@@ -212,13 +212,12 @@ class GraphLayout {
     drawNodes(root, i, el) {
         function handleNodeClick(d) {
             unhoverNode(d);
-            let newArray = this.words.slice();
-            let word = newArray.splice(i, 1, d.node)[0];
-            if (newArray.indexOf(word) < 0) {
+            let word = this.words.splice(i, 1, d.node)[0];
+            if (this.words.indexOf(word) < 0) {
                 word.toggleHighlight(false);
             }
             d.node.toggleHighlight(true);
-            this.graph(newArray);
+            this.graph(this.words);
         }
 
         function hoverNode(d) {
@@ -316,7 +315,15 @@ class GraphLayout {
             .attr('transform', (d, i) => 'translate(-30,' + (-20 * i - 20) + ')')
             .on('mouseover', (d) => hoverNode.bind(this)(d))
             .on('mouseout', (d) => unhoverNode.bind(this)(d))
-            .on('click', (d) => handleNodeClick.bind(this)(d));
+            .on('click', (d) => handleNodeClick.bind(this)(d))
+            .on('contextmenu', (d) => {
+                d3.event.preventDefault();
+                console.log('hey', d);
+                let word = this.words.splice(i + 1, 0, d.node)[0];
+                d.node.unhover();
+                d.node.toggleHighlight(true);
+                this.graph(this.words);
+            });
 
         inMerge.select('path')
             .attr('d', (d, i) => {

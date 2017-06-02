@@ -70,12 +70,12 @@ var wordObjs = createTestWords(4, 10, 10);
 //var linkObjs = createTestLinks(3,3,3); 
 //var linkObjs = createTestLinks(1,0,0); 
 var linkObjs = createTestMultiLinks(1); 
-
+/*
 drawWords(wordObjs);
 drawLinks(linkObjs);
 
 changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
-
+*/
 window.onload = function() {
 
   const panel = new Panel('graph', 'drawing');
@@ -242,7 +242,7 @@ window.onload = function() {
   };
   window.onresize = _.debounce(resize, 300);
 
-  changeDataset();
+  changeDataset(2);
 };
 
 </script>
