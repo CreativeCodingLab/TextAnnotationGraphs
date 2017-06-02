@@ -65,9 +65,7 @@ class GraphLayout {
         this.links.selectAll('*').remove();
     }
     graph(words) {
-        if (words.length === 0 || this.words.length === words.length && 
-            this.words.every((w,i) => words.indexOf(w) > -1)) { return; }
-        else { this.words = words; }
+        this.words = words;
 
         const maxDepth = this.maxDepth;
         let localMaxDepth = 0;
@@ -222,7 +220,9 @@ class GraphLayout {
             unhoverNode(d);
             let newArray = this.words.slice();
             let word = newArray.splice(i, 1, d.node)[0];
-            word.toggleHighlight(false);
+            if (newArray.indexOf(word) < 0) {
+                word.toggleHighlight(false);
+            }
             d.node.toggleHighlight(true);
             this.graph(newArray);
         }

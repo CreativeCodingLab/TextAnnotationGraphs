@@ -116,7 +116,12 @@ class Link {
         this.isSelected = select;
       }
 
-      this.labelRectSVGs.forEach(rect => rect.toggleClass('selected', this.isSelected));
+      if (this.isSelected) {
+        this.labelRectSVGs.forEach(rect => rect.addClass('selected'));
+      }
+      else {
+        this.labelRectSVGs.forEach(rect => rect.removeClass('selected'));
+      }
     }
 
     hover(label) {
@@ -300,7 +305,12 @@ class Word {
         this.isSelected = select;
       }
 
-      this.svg.toggleClass('selected', this.isSelected);
+      if (this.isSelected) {
+        this.svg.addClass('selected');
+      }
+      else {
+        this.svg.removeClass('selected');
+      }
     }
 
     hover() {
