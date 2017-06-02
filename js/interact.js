@@ -118,32 +118,12 @@ function getAttachedLinks(e, arr) {
 }
 
 function addDragStartingAndEndingListeners(elem) {
-
-
   
   elem.on('dragstart', function() {
     isDragging = true;
-    //isCanceling = false;
-    //console.log("isDragging = " + isDragging);
-    //console.log("elem = " + elem + " rect x = " + elem.bbox().x);
     prevX = elem.bbox().x;
 
   })
-
-  /*
-  elem.on('mousemove.drag', function() {
-    updateWords();   
-  })
-  */
-
-
-  /*
-  elem.on('mousemove.drag', _.debounce(function() {
-    //console.log("here!");
-    updateWords();   
-  }, 1));
-  */
-
 
   elem.on('dragend', function(e) {
     isDragging = false;
@@ -156,8 +136,6 @@ function addDragStartingAndEndingListeners(elem) {
     rowOffsetWord = null;
 
     prevX = -1;
-    console.log("dragEnd B - isDragging = " + isDragging);
-
 
   })
 
@@ -175,27 +153,6 @@ function dragArrow (lo, arrowIdx, arrowSVG ) {
 }
 
 
-/*
-function dragArrow1 (lo, arrowSVG, arrowInfo ) {
-
-  addDragStartingAndEndingListeners(arrowSVG);
-
-  arrowSVG.draggable(function(x, y) {
-    return manageDrag(arrowSVG, x, y, lo, lo.arrows[0]);
-  });
-}
-
-function dragArrow2 (lo, arrowSVG, arrowInfo ) {
-
-  addDragStartingAndEndingListeners(arrowSVG);
-
-  arrowSVG.draggable(function(x, y) {
-    return manageDrag(arrowSVG, x, y, lo, lo.arrows[lo.words.length - 1]);
-  });
-}
-*/
-
-
 function manageDrag(arrowSVG, x, y, lo, arrowInfo, arrowIdx) {
 
   var leftX = arrowInfo.leftX;
@@ -204,47 +161,19 @@ function manageDrag(arrowSVG, x, y, lo, arrowInfo, arrowIdx) {
   var side = arrowInfo.side;
   var word = arrowInfo.word;
 
-//  if (side == sides.LEFT) {
-    var xPos = (x - leftX) + Config.arrowW; 
-    var percentage = xPos / (linkWidth/1);
-    var ux = x;
+  var xPos = (x - leftX) + Config.arrowW; 
+  var percentage = xPos / (linkWidth/1);
+  var ux = x;
 
-    if (percentage < 0.0) {
-      console.log("AAA");
-      percentage = 0.0;
-      ux = leftX - Config.arrowW;
-    } else if (percentage > 1.0) {
-      console.log("BBB");
-      percentage = 1.0;
-      ux = rightX - Config.arrowW;
-    }
-/* 
-} else if (side == sides.RIGHT) { 
-
-    var xPos = linkWidth - ((x - leftX) + Config.arrowW); 
-
-    var percentage = xPos / (linkWidth/1);
-    var ux = x;
-
-    if (percentage < 0.0) {
-      console.log("CCC");
-      percentage = 0.0;
-      ux = rightX - Config.arrowW;
-    } else if (percentage > 1.0) {
-      console.log("DDD");
-      percentage = 1.0;
-      ux = leftX - Config.arrowW;
-    }
+  if (percentage < 0.0) {
+    percentage = 0.0;
+    ux = leftX - Config.arrowW;
+  } else if (percentage > 1.0) {
+    percentage = 1.0;
+    ux = rightX - Config.arrowW;
   }
 
-  if (word == lo.leftWord) {
-    lo.arrowXPercents[0] = percentage;
-  } else {
-    lo.arrowXPercents[lo.words.length - 1] = percentage;
-  }
-*/
-
-console.log("percentage for arrowIdx ("+arrowIdx+") = " + percentage);
+// console.log("percentage for arrowIdx ("+arrowIdx+") = " + percentage);
     lo.arrowXPercents[arrowIdx] = percentage;
  
   updateLinks(lo);
@@ -254,67 +183,6 @@ console.log("percentage for arrowIdx ("+arrowIdx+") = " + percentage);
 
   return { x:ux, y: arrowSVG.bbox().y }
 }
-
-
-/*
-   function dragArrow (arrow, link, word, side, leftX, rightX) {
-
-   addDragStartingAndEndingListeners(arrow);
-
-
-   arrow.draggable(function(x, y) {
-
-   var linkWidth = ( (rightX) - (leftX) );
-
-   console.log(linkWidth);
-
-
-   if (side == sides.LEFT) {
-   var xPos = (x - leftX) + Config.arrowW; 
-//console.log("x = " + x + ", xPos = " + xPos);
-
-var percentage = xPos / (linkWidth/2);
-var ux = x;
-
-if (percentage < 0.0) {
-percentage = 0.0;
-ux = leftX - Config.arrowW;
-} else if (percentage > 2.0) {
-percentage = 2.0;
-ux = leftX - Config.arrowW + (linkWidth/2);
-}
-} else if (side == sides.RIGHT) { 
-
-var xPos = linkWidth - ((x - leftX) + Config.arrowW); 
-
-var percentage = xPos / (linkWidth/2);
-var ux = x;
-
-if (percentage < 0.0) {
-percentage = 0.0;
-ux = leftX - Config.arrowW;
-} else if (percentage > 2.0) {
-percentage = 2.0;
-ux = leftX - Config.arrowW + (linkWidth);
-}
-}
-
-    if (word == link.leftWord) {
-      link.x1percent = percentage;
-    } else {
-      link.x2percent = percentage;
-    }
-
-    updateLinks(link);
-
-    redrawLinks();
-    
-    return { x:ux, y: arrow.bbox().y }
-    
-    //return { x:x, y: arrow.bbox().y }
-  });
-}
-*/
 
 function checkDragDirection(x) {
 
@@ -664,7 +532,7 @@ function moveWordToNewPosition(w, nx, ny) {
   w.percPos = (w.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
 
 
-  w.text.x(nx + (w.bbox.w/2) - (w.text.bbox().w/2)  ); 
+  w.text.x(nx + (w.bbox.w/2) - (w.text.length()/2)  ); 
   w.text.y(ny + Config.textPaddingY*2); // - texts.wordText.descent);
 
 
@@ -673,17 +541,9 @@ function moveWordToNewPosition(w, nx, ny) {
   //Looks like the entire row size jumps one pixel when adding a new row... think this may cause the 1 px differentce
   
   if (w.tag != null) {
-    w.tagtext.x(nx + (w.bbox.w/2) - (w.tagtext.bbox().w/2)  ); 
+    w.tagtext.x(nx + (w.bbox.w/2) - (w.tagtext.length()/2)  ); 
     w.tagtext.y(ny + Config.textPaddingY/2);// - texts.tagText.descent);
   }
-
-  console.log("ny = " + ny);
-  console.log("w.wy = " + w.wy);
-  console.log("w.text.y = " + w.text.y());
-
-
-
-
 
   var handley = ny + ( w.wh / 2 ) - ( Config.handleH / 2 ); 
   w.leftHandle.x(nx);

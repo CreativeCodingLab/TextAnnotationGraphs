@@ -80,12 +80,12 @@ button {
 }
 
 .selected .word--underneath, .link--label.selected {
-  fill:white;
-  stroke:teal;
+  fill:#fff6f6;
+  stroke:#c37;
 }
 .hovered .word--underneath, .link--label.hovered {
   fill:white;
-  stroke:cyan;
+  stroke:#f7c;
 }
 
 .word--handle {
