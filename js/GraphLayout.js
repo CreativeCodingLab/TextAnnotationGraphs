@@ -1,19 +1,13 @@
 class GraphLayout {
-    constructor() {
-        this.isOpen = false;
-
-        // references to dom elements
-        this.drawing = document.getElementById('drawing');
-        this.div = document.getElementById('graph') || 
-                   document.createElement('div');
-        this.div.id = 'graph';
-        document.body.appendChild(this.div);
+    constructor(el) {
+        // container element
+        this.div = el;
 
         // dimensions & properties
         this.bounds = this.div.getBoundingClientRect();
 
         // d3 dom references
-        this.svg = d3.select('#graph').append('svg')
+        this.svg = d3.select(this.div).append('svg')
             .attr('width', this.bounds.width)
             .attr('height', this.bounds.height);
         this.g = this.svg.append('g');
@@ -32,7 +26,7 @@ class GraphLayout {
             .call(d3.drag()
                 .on('drag', () => {
                     this.dx += d3.event.dx;
-                    this.dy += d3.event.dy;
+                    // this.dy += d3.event.dy;
                     this.adjustMargins(this.dx, this.dy);
                 })
             )
