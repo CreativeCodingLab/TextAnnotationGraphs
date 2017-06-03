@@ -36,6 +36,9 @@
 <script src="js/Panel.js"></script>
 <script src="js/GraphLayout.js"></script>
 <script src="js/style.js"></script>
+<script src="js/word.js"></script>
+<script src="js/link.js"></script>
+<script src="js/row.js"></script>
 <script src="js/annotate.js"></script>
 <script src="js/render.js"></script>
 <script src="js/interact.js"></script>
@@ -60,7 +63,6 @@ Config.minWordWidth = Math.max( getTextWidthAndHeight("i", texts.wordText.style)
 
 var rowOffsetX = 0;
 var rowOffsetWord = null;
-var prevX = -1;
 
 var rows = []; //list of Row object, each of those has a list of Word objects
 
@@ -70,12 +72,12 @@ var wordObjs = createTestWords(4, 10, 10);
 //var linkObjs = createTestLinks(3,3,3); 
 //var linkObjs = createTestLinks(1,0,0); 
 var linkObjs = createTestMultiLinks(1); 
-/*
+
 drawWords(wordObjs);
 drawLinks(linkObjs);
 
 changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
-*/
+
 window.onload = function() {
 
   const panel = new Panel('graph', 'drawing');
@@ -217,7 +219,6 @@ window.onload = function() {
     isDragging = false;
     rowOffsetX = 0;
     rowOffsetWord = null;
-    prevX = -1;
     dragElem = null;
 
     rows = [];

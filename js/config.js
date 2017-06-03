@@ -7,7 +7,7 @@ const Config = {
     rowEdgeColor: 'transparent',
     levelPadding: 16,
     textPaddingX: 8,
-    textPaddingY: 6,
+    textPaddingY: 8,
     wordPadding: 4,
     edgePadding: 10,
     rowPadding: 30,

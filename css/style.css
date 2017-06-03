@@ -77,6 +77,8 @@ button {
 
 .word--underneath {
   fill:white;
+  cursor:-webkit-grab;
+  cursor:grab;
 }
 
 .selected .word--underneath, .link--label.selected {
