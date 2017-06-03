@@ -86,24 +86,16 @@ function getAttachedLinks(e, arr) {
 function addDragStartingAndEndingListeners(elem) {
   
   elem.on('dragstart', function() {
-    isDragging = true;
     prevX = elem.bbox().x;
-  })
+  });
 
   elem.on('dragend', function(e) {
-    isDragging = false;
-    //isCanceling = false;
-    if (rowOffsetWord && rowOffsetWord.isHovered == false) {
-      mout(rowOffsetWord);
-    }
 
     rowOffsetX = 0;
     rowOffsetWord = null;
 
     prevX = -1;
-
-  })
-
+  });
 }
 
 
@@ -164,7 +156,7 @@ function setUpLeftHandleDraggable(word) {
 
   addDragStartingAndEndingListeners(word.leftHandle);
 
-  word.leftHandle.draggable(function(x, y, u, v) {
+  word.leftHandle.draggable(function(x, y) {
     rowOffsetWord = word;
 
     var returnVal = dragLeftHandle(x, word.leftHandle.y(), word);
@@ -186,7 +178,7 @@ function setUpRightHandleDraggable(word) {
 
     var returnVal = dragRightHandle(x, word.rightHandle.y(), word);
 
-       updateWords();
+    updateWords();
   
     redrawLinks(false); //actually - only redraw links that moving this word would affect + this row
     prevX = x;
@@ -495,6 +487,9 @@ function moveWordToNewPosition(w, nx, ny) {
   w.percPos = (w.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
 
 
+  // called this again after bbox because possible race issues?
+  w.underneathRect.x(nx);
+  w.underneathRect.y(ny);
   w.text.x(nx + (w.bbox.w/2) - (w.text.length()/2)  ); 
   w.text.y(ny + Config.textPaddingY*2); // - texts.wordText.descent);
 
@@ -537,7 +532,7 @@ function dragWord(x, y, word) {
   } else if (dragDir == directions.FORWARD) {
     return checkIfCanMoveRight(x + rowOffsetX, word.underneathRect.width(), y, word, false);
   } else {
-    return {x:word.underneathRect.x(), y:word.underneathRect.width().y};
+    return {x:word.underneathRect.x(), y:word.row.baseHeight};
   }
 }
 
@@ -657,7 +652,7 @@ function moveWordUpARow(w) {
 
 }
 
-
+let xxx;
 function setUpWordDraggable(word) {
 
   addDragStartingAndEndingListeners(word.underneathRect);
@@ -671,6 +666,12 @@ function setUpWordDraggable(word) {
     updateWords();
 
     redrawLinks(false); //actually - only redraw links that moving this word would affect + this row
+
+    if ((x > prevX && word.bbox.y > returnXY.y) ||
+        (x < prevX && word.bbox.y < returnXY.y)) {
+      returnXY.y = word.bbox.y;
+    }
+
     prevX = x;
 
     return returnXY;

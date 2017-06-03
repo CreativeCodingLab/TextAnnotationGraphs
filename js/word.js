@@ -52,7 +52,6 @@ class Word {
   
   //take temp values and update actual svg values
   update() {
-         
     this.underneathRect.x(this.tempX);
     this.underneathRect.width(this.tempW);
 
