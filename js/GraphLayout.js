@@ -127,6 +127,11 @@ class GraphLayout {
                 root,
                 tree: d3.tree()
                     .size([180, localMaxDepth * 80])
+                    .separation((a,b) => {
+                        let separation = a.parent == b.parent ? 1 : 2;
+                        separation += Math.max(b.data.incoming.length, a.data.incoming.length);
+                        return separation;
+                    })
                     (root),
                 length: localMaxDepth,
                 offset: sum
@@ -227,22 +232,26 @@ class GraphLayout {
             d.node.unhover();
         }
 
+        let data = root.descendants();
+
         let node = el.selectAll('.node')
-            .data(root.descendants());
+            .data(data, d => d.data.node);
 
         node.exit().remove();
 
         let nodeEnter = node.enter()
             .append('g')
+            .attr('transform', (d) => 'translate(' + data[0].y + ',' + data[0].x + ')')
             .attr('class', (d) => 'node' + (d.children ? ' node--internal' : ' node--leaf') + (d.parent ? '' : ' node--root'));
 
         nodeEnter.append('path');   // symbol
         nodeEnter.append('text');   // label
 
         let nodeMerge = nodeEnter.merge(node);
+        nodeMerge.transition()
+            .attr('transform', (d) => 'translate(' + d.y + ',' + d.x + ')');
 
         nodeMerge
-            .attr('transform', (d) => 'translate(' + d.y + ',' + d.x + ')')
             .on('mouseover', function() {
                 d3.select(this).selectAll('.node--incoming')
                     .transition()
@@ -312,7 +321,7 @@ class GraphLayout {
             .style('text-anchor','end');
 
         let inMerge = inEnter.merge(incoming)
-            .attr('transform', (d, i) => 'translate(-30,' + (-20 * i - 20) + ')')
+            .attr('transform', (d, i) => 'translate(-30,' + (-15 * i - 20) + ')')
             .on('mouseover', (d) => hoverNode.bind(this)(d))
             .on('mouseout', (d) => unhoverNode.bind(this)(d))
             .on('click', (d) => handleNodeClick.bind(this)(d))

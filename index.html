@@ -224,7 +224,6 @@ window.onload = function() {
     rows = [];
     wordObjs = words || createTestWords(5, 6, 10);
     linkObjs = links || createTestMultiLinks(1);
-    // linkObjs.forEach(link => link.style = styles[link.style]);
     drawWords(wordObjs);
     drawLinks(linkObjs);
     changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
