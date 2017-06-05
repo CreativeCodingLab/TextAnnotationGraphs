@@ -6,6 +6,13 @@ class GraphLayout {
         // dimensions & properties
         this.bounds = this.div.getBoundingClientRect();
 
+        d3.select(this.div).append('button')
+            .text('⤆ reset ⤇')
+            .on('click', () => {
+                this.dx = this.dy = 0;
+                this.adjustMargins();
+            });
+
         // d3 dom references
         this.svg = d3.select(this.div).append('svg')
             .attr('width', this.bounds.width)
@@ -26,16 +33,10 @@ class GraphLayout {
             .call(d3.drag()
                 .on('drag', () => {
                     this.dx += d3.event.dx;
-                    // this.dy += d3.event.dy;
                     this.adjustMargins(this.dx, this.dy);
                 })
-            )
-            .on('dblclick', () => {
-                if (d3.event.target === this.svg.node()) {
-                    this.dx = this.dy = 0;
-                    this.adjustMargins();
-                }
-            });
+            );
+
         this.resize();
 
         // selected words to generate graph around
@@ -48,10 +49,15 @@ class GraphLayout {
             .attr('width', this.bounds.width)
             .attr('height', this.bounds.height);
 
-        this.adjustMargins();
+        this.adjustMargins(this.dx, this.dy);
     }
-    adjustMargins(dx = 0, dy = 0) {        
-        this.g.attr('transform','translate(' + (20 + dx + this.leftMargin) + ', ' + (10 + dy + this.topMargin) + ')');
+    adjustMargins(dx = 0, dy = 0, transition = false) {
+        if (transition) {
+            this.g.transition().attr('transform','translate(' + (20 + dx + this.leftMargin) + ', ' + (10 + dy + this.topMargin) + ')');
+        }
+        else {
+            this.g.attr('transform','translate(' + (20 + dx + this.leftMargin) + ', ' + (10 + dy + this.topMargin) + ')');
+        }
     }
     clear() {
         this.words = [];
@@ -169,20 +175,10 @@ class GraphLayout {
                     .attr('transform', 'translate(' + d.offset + ', 0)');
                 this.drawNodes(d.root, i, el);
             });
-
-        // adjust offset
-        let rootText = this.nodes.select('.node--root');
-        if (!rootText.empty()) {
-            this.leftMargin = rootText.node().getBBox().width;
-
-            let dy = this.nodes.node().getBBox().y;
-            this.topMargin = (dy < 0) ? -dy : 0;
-            this.adjustMargins(this.dx, this.dy);
-        }
     }
     drawLinks(tree, el) {
         let link = el.selectAll('.link')
-            .data(tree.links());
+            .data(tree.links(), d => d.target.data.node );
 
         link.exit().remove();
 
@@ -249,7 +245,14 @@ class GraphLayout {
 
         let nodeMerge = nodeEnter.merge(node);
         nodeMerge.transition()
-            .attr('transform', (d) => 'translate(' + d.y + ',' + d.x + ')');
+            .attr('transform', (d) => 'translate(' + d.y + ',' + d.x + ')')
+            .select('*')
+            .on('end', () => {
+                let bbox = this.nodes.node().getBBox()
+                this.topMargin = (bbox.y < 0) ? -bbox.y : 0;
+                this.leftMargin = (bbox.x < 0) ? -bbox.x : 0;
+                this.adjustMargins(this.dx, this.dy, true);
+            });
 
         nodeMerge
             .on('mouseover', function() {
@@ -327,7 +330,6 @@ class GraphLayout {
             .on('click', (d) => handleNodeClick.bind(this)(d))
             .on('contextmenu', (d) => {
                 d3.event.preventDefault();
-                console.log('hey', d);
                 let word = this.words.splice(i + 1, 0, d.node)[0];
                 d.node.unhover();
                 d.node.toggleHighlight(true);
@@ -336,7 +338,7 @@ class GraphLayout {
 
         inMerge.select('path')
             .attr('d', (d, i) => {
-                let dy = 20 * i + 20;
+                let dy = 15 * i + 20;
                 return 'M0,0, C30,0,30,' + dy + ',30,' + dy;
             });
 

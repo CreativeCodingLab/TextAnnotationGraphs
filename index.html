@@ -20,7 +20,6 @@
 <div id="drawing">
 </div>
 <div id="graph">
-  <button>(Reset)</button>
 </div>
 
 
@@ -102,16 +101,6 @@ window.onload = function() {
     graph.graph(getSelectedObjects());
   });
 
-  document.querySelector('#graph>button').onclick = function() {
-    let words = getSelectedObjects();
-    if (words.length > 0) {
-      graph.graph(words);
-    }
-    else {
-      graph.clear();
-    }
-  };
-  
   function changeDataset(index = 1) {
     parser.readJson(`./data/data${index}.json`, function() {
       graph.clear();
