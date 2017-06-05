@@ -24,16 +24,13 @@ class GraphLayout {
             .attr('class','nodes');
 
         // margins and drag event for positioning svg
-        this.leftMargin = 0;
-        this.topMargin = 0;
-
         this.dx = 0;
         this.dy = 0;
         this.svg
             .call(d3.drag()
                 .on('drag', () => {
                     this.dx += d3.event.dx;
-                    this.adjustMargins(this.dx, this.dy);
+                    this.adjustMargins();
                 })
             );
 
@@ -49,15 +46,16 @@ class GraphLayout {
             .attr('width', this.bounds.width)
             .attr('height', this.bounds.height);
 
-        this.adjustMargins(this.dx, this.dy);
+        this.adjustMargins();
     }
-    adjustMargins(dx = 0, dy = 0, transition = false) {
-        if (transition) {
-            this.g.transition().attr('transform','translate(' + (20 + dx + this.leftMargin) + ', ' + (10 + dy + this.topMargin) + ')');
-        }
-        else {
-            this.g.attr('transform','translate(' + (20 + dx + this.leftMargin) + ', ' + (10 + dy + this.topMargin) + ')');
-        }
+    adjustMargins() {
+        let bounds = this.div.getBoundingClientRect();
+        let bbox = this.g.node().getBBox();
+
+        let x = 20 - bbox.x + this.dx;
+        let y = bounds.height/2 - (bbox.height/2 + bbox.y) + this.dy;
+
+        this.g.attr('transform', 'translate(' + [x, y] + ')');
     }
     clear() {
         this.words = [];
@@ -132,7 +130,7 @@ class GraphLayout {
             const data = {
                 root,
                 tree: d3.tree()
-                    .size([180, localMaxDepth * 80])
+                    .nodeSize([30,80])
                     .separation((a,b) => {
                         let separation = a.parent == b.parent ? 1 : 2;
                         separation += Math.max(b.data.incoming.length, a.data.incoming.length);
@@ -178,7 +176,7 @@ class GraphLayout {
     }
     drawLinks(tree, el) {
         let link = el.selectAll('.link')
-            .data(tree.links(), d => d.target.data.node );
+            .data(tree.links());
 
         link.exit().remove();
 
@@ -246,12 +244,11 @@ class GraphLayout {
         let nodeMerge = nodeEnter.merge(node);
         nodeMerge.transition()
             .attr('transform', (d) => 'translate(' + d.y + ',' + d.x + ')')
-            .select('*')
-            .on('end', () => {
-                let bbox = this.nodes.node().getBBox()
-                this.topMargin = (bbox.y < 0) ? -bbox.y : 0;
-                this.leftMargin = (bbox.x < 0) ? -bbox.x : 0;
-                this.adjustMargins(this.dx, this.dy, true);
+            .tween(null, () => {
+                let self = this;
+                return function(t) {
+                    self.adjustMargins();
+                }
             });
 
         nodeMerge

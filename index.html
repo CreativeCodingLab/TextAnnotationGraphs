@@ -81,6 +81,7 @@ window.onload = function() {
 
   const panel = new Panel('graph', 'drawing');
   const graph = new GraphLayout(panel.el);
+  panel.onresize = graph.resize.bind(graph);
   const parser = new Parser();
 
   var prevWidth = Config.svgWidth;
