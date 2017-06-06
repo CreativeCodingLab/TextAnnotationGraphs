@@ -139,6 +139,7 @@ const GraphLayout = (function() {
 
             maxDepth = this.maxDepth;
             let sum = 0;
+            this.incoming = [];
             this.data = this.words.map(word => {
                 const seed = addNode(word, 0, null);
 
@@ -157,23 +158,36 @@ const GraphLayout = (function() {
             this.updateGraph();
         }
 
-        updateIncoming(data, index, incomingIndex) {
+        updateIncoming(data, index) {
 
-            console.log('data.anchor', data.anchor);
-            console.log('data[' + index + ']', this.data[index]);
+            console.log('data.anchor', data.anchor, 'depth',data.anchor.depth);
+            // console.log('data[' + index + ']', this.data[index]);
             console.log('incoming node', data.node);
 
             const seed = addNode(data.node, 0, null);
             const root = d3.hierarchy(seed);
-            const tree2 = tree(root);
-            const offset = this.data[index].offset;
 
-            let anchor = root.descendants().find( node => node.data.node === data.anchor.data.node );
+            const anchorInNewTree = root.descendants().find(node => node.data.node === data.anchor.data.node);
+            console.log('root', root);
+            console.log('new anchor', anchorInNewTree, 'depth', anchorInNewTree.depth);
 
-            console.log('anchor', anchor)
+            let dd = anchorInNewTree.depth - data.anchor.depth;
+            if (dd > 0) {
+                console.log(dd,'new tree is rooted farther back')
+            }
+            else if (dd < 0) {
+                console.log(dd,'old tree is rooted farther back')
+            }
+            else {
+                console.log(dd,'trees have same number of ancestors')
+            }
 
-            let dx = data.anchor.x - anchor.x;
-            let dy = data.anchor.y - anchor.y;
+            console.log('new leaves', root.leaves(), root.leaves().map(x => x.data.name));
+            console.log('old leaves',this.data[index].root.leaves(), this.data[index].root.leaves().map(x => x.data.name));
+
+            let tree2 = tree(root);
+            let dx = data.anchor.x - anchorInNewTree.x;
+            let dy = data.anchor.y - anchorInNewTree.y;
 
             root.descendants().forEach(node => {
                 node.x += dx;
@@ -181,18 +195,18 @@ const GraphLayout = (function() {
             });
 
             this.data.push({
+                index,
                 root,
-                offset,
-                tree: tree2
+                tree: tree2,
+                offset: this.data[index].offset
             });
 
             // remove extraneous hooks
-            data.anchor.data.incoming.splice(incomingIndex, 1);
+            data.anchor.data.incoming.splice(data.anchor.data.incoming.indexOf(data.node), 1);
 
-            if (data.anchor.parent) {
-                anchor.data.incoming = anchor.data.incoming.filter(node => node !== data.anchor.parent.data.node);
-            }
-            anchor.children = [];
+            anchorInNewTree.data.incoming.splice(anchorInNewTree.data.incoming.indexOf(data.anchor.parent.data.node), 1);
+            anchorInNewTree.children = [];
+            anchorInNewTree.data.name = '';
 
             this.updateGraph();
         }
@@ -221,6 +235,8 @@ const GraphLayout = (function() {
                 .each((d, i, el) => {
                     el = d3.select(el[i])
                         .attr('transform', 'translate(' + d.offset + ', 0)');
+
+                    if (!isNaN(d.index)) { i = d.index; }
                     this.drawNodes(d.root, i, el);
                 });
         }
@@ -262,6 +278,7 @@ const GraphLayout = (function() {
             function handleNodeClick(d) {
                 unhoverNode(d);
                 let word = this.words.splice(i, 1, d.node)[0];
+                console.log('click', d, word);
                 if (this.words.indexOf(word) < 0) {
                     word.toggleHighlight(false);
                 }
@@ -376,9 +393,15 @@ const GraphLayout = (function() {
                 .on('mouseover', (d) => hoverNode.bind(this)(d))
                 .on('mouseout', (d) => unhoverNode.bind(this)(d))
                 .on('click', (d) => handleNodeClick.bind(this)(d))
-                .on('contextmenu', (d, j) => {
+                .on('contextmenu', (d) => {
+                    unhoverNode.bind(this)(d);
                     d3.event.preventDefault();
-                    this.updateIncoming(d, i, j);
+                    if (d.anchor.parent === null) {
+                        handleNodeClick.bind(this)(d);
+                    }
+                    else {
+                        this.updateIncoming(d, i);
+                    }
                 });
 
             inMerge.select('path')
