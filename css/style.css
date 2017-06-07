@@ -29,23 +29,6 @@ svg text {
   margin-bottom: 210px;
 }
 
-button {
-  position:absolute;
-  background:white;
-  border:none;
-  outline:none;
-  cursor:pointer;
-}
-
-.node { cursor: pointer; }
-.link, .link--dashed {
-  fill: none;
-  stroke: #999;
-}
-.link--dashed {
-  stroke-dasharray: 2,2;
-}
-
 #graph {
   cursor:-webkit-grab;
   cursor:grab;
@@ -70,9 +53,40 @@ button {
   display:block;
 }
 
+#toggle-minimap {
+  display:block;
+  cursor:pointer;
+}
+#minimap {
+  pointer-events:none;
+  position:fixed;
+  z-index:100;
+  top:40px;
+  right:0;
+}
+#minimap * {
+  pointer-events: all;
+}
+
+#minimap canvas {
+  background:rgba(200,200,200,0.5);
+  margin-top:5px;
+  width:100px;
+  height:100px;  
+}
+
 /* svg classes */
 #drawing text, .link--labels text {
   pointer-events: none;
+}
+
+.node { cursor: pointer; }
+.link, .link--dashed {
+  fill: none;
+  stroke: #999;
+}
+.link--dashed {
+  stroke-dasharray: 2,2;
 }
 
 .row--0, .link--label {

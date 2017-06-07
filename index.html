@@ -15,6 +15,17 @@
     <option>paragraph</option>
     <option>passage</option>
   </select>
+
+  <div id="collapse" style="display:inline; float:right;">
+    <button>[</button>
+    <button>]</button>
+  </div>
+</div>
+
+<div id="minimap">
+  <a id="toggle-minimap">hide>></a>
+  <canvas>
+  </canvas>
 </div>
 
 <div id="drawing">
@@ -42,6 +53,7 @@
 <script src="js/render.js"></script>
 <script src="js/interact.js"></script>
 <script src="js/utils.js"></script>
+<script src="js/minimap.js"></script>
 
 <script type="text/javascript">
 /* a lot of these global vars should be wrapped eventually */
@@ -68,8 +80,6 @@ var rows = []; //list of Row object, each of those has a list of Word objects
 // 1. create Words and Links objects (in utils.js) */
 var wordObjs = createTestWords(4, 10, 10);
 
-//var linkObjs = createTestLinks(3,3,3); 
-//var linkObjs = createTestLinks(1,0,0); 
 var linkObjs = createTestMultiLinks(1); 
 
 drawWords(wordObjs);
@@ -78,6 +88,8 @@ drawLinks(linkObjs);
 changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
 
 window.onload = function() {
+
+  const minimap = new Minimap();
 
   const panel = new Panel('graph', 'drawing');
   const graph = new GraphLayout(panel.el);

@@ -195,10 +195,10 @@ const GraphLayout = (function() {
                 node.y += dy;
             });
 
-            console.log('----- range',d3.extent(this.data[index].root.descendants(), d => d.x));
+/*            console.log('----- range',d3.extent(this.data[index].root.descendants(), d => d.x));
             console.log('graft range',d3.extent(root.descendants(), d => d.x));
             console.log(data.anchor.x, dx);
-
+*/
             // -------- in progress
             // test case : Pos_reg         --> graft "outside"
             // test case : Promotes        --> graft "inside"
@@ -324,7 +324,6 @@ const GraphLayout = (function() {
             function handleNodeClick(d) {
                 unhoverNode(d);
                 let word = this.words.splice(i, 1, d.node)[0];
-                console.log('click', d, word);
                 if (this.words.indexOf(word) < 0) {
                     word.toggleHighlight(false);
                 }
