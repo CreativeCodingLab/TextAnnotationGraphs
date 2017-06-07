@@ -1,53 +1,13 @@
 <html>
 <head>
-
-<style>
-body {
-  margin:0;
-  -moz-osx-font-smoothing:grayscale;
-  -webkit-font-smoothing:antialiased;
-}
-
-svg text {
-  cursor: default;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-#header {
-  position:absolute;
-  top:0;
-  left:0;
-  background:#333;
-  color:white;
-  width:calc( 100% - 20px );
-  padding:10px;
-}
-
-#drawing {
-  margin-top:30px;
-  height: 100%;
-}
-
-.axis path {
-  display: none;
-}
-
-.axis line {
-  stroke-opacity: 0.1;
-  shape-rendering: crispEdges;
-}
-
-</style>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
 
 <div id="header">
-  <button id="random">random graph</button>
   <select id="dataset">
     <option>-- select dataset --</option>
     <option>data1</option>
@@ -58,6 +18,9 @@ svg text {
 </div>
 
 <div id="drawing">
+</div>
+<div id="graph">
+  <button>(Reset)</button>
 </div>
 
 
@@ -70,6 +33,7 @@ svg text {
 <script src="js/enums.js"></script>
 <script src="js/config.js"></script>
 <script src="js/parser.js"></script>
+<script src="js/Panel.js"></script>
 <script src="js/GraphLayout.js"></script>
 <script src="js/style.js"></script>
 <script src="js/annotate.js"></script>
@@ -80,144 +44,212 @@ svg text {
 <script src="js/SentenceParser.js"></script>
 
 <script type="text/javascript">
+/* a lot of these global vars should be wrapped eventually */
+var draw = SVG('drawing').size(Config.svgWidth, Config.svgHeight);
+var rowGroup = draw.group();
+var groupAllElements;
+var linkG, textG, arrowG;
+var dragElem = null;
+var isDragging = false;
+
+var styles = setupStyles(draw); //creates an associative array of whatever styles you want to make use of later
+
+var texts = setupTexts(draw); //creates an associate array of whatever text you want to use. Currently using 'texts.wordText' and 'texts.linkText', and using style, maxHeight, and descent to layout text
+
+Config.handleH = texts.wordText.maxHeight + (Config.textPaddingY * 2);
+Config.wordHeight = texts.wordText.maxHeight + (Config.textPaddingY * 2); 
+Config.minWordWidth = Math.max( getTextWidthAndHeight("i", texts.wordText.style).w + (Config.handleW * 2), getTextWidthAndHeight("i", texts.tagText.style).w + (Config.handleW * 2) );
+
+var rowOffsetX = 0;
+var rowOffsetWord = null;
+var prevX = -1;
+
+var rows = []; //list of Row object, each of those has a list of Word objects
+
+// 1. create Words and Links objects (in utils.js) */
+var wordObjs = createTestWords(4, 10, 10);
+
+//var linkObjs = createTestLinks(3,3,3); 
+//var linkObjs = createTestLinks(1,0,0); 
+var linkObjs = createTestMultiLinks(1); 
+/*
+drawWords(wordObjs);
+drawLinks(linkObjs);
+
+changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
+*/
 window.onload = function() {
-  
-  console.log("Page is loaded...");
-  //var parser = new Parser();
-  var parser = new SentenceParser();
 
-  // Get the drawing's bounding client rect
-  var drawingBoundingClientRect = document.getElementById("drawing")
-                                            .getBoundingClientRect();
-  var drawingWidth = drawingBoundingClientRect.width;
-  var drawingHeight = drawingBoundingClientRect.height;   
+  const panel = new Panel('graph', 'drawing');
+  const graph = new Staircase(panel.el);
+  const parser = new Parser();
 
-  console.log(drawingWidth, drawingHeight);
-
-  // Add svg to the div
-  var svg = d3.select("#drawing")
-              .append("svg")
-                .attr("width", "1000%")
-                .attr("height", "1000%")
-                .attr("transform", "translate(20, 20)")
-              ;
-
-  var width = 10 * drawingWidth,
-      height = 10 * drawingHeight;
-
-  /*
-  // Draw grid as background
-  var x = d3.scaleLinear()
-    .domain([-1, width + 1])
-    .range([-1, width + 1]);
-
-  var y = d3.scaleLinear()
-    .domain([-1, height + 1])
-    .range([-1, height + 1]);
-
-  var xAxis = d3.axisBottom(x)
-    .ticks(width/10)
-    .tickSize(height)
-    .tickPadding(8 - height)
-    .tickFormat("");
-
-  var yAxis = d3.axisRight(y)
-    .ticks(height/10)
-    .tickSize(width)
-    .tickPadding(8 - width)
-    .tickFormat("");
-
-  var gX = svg.append("g")
-    .attr("class", "axis axis--x")
-    .call(xAxis);
-
-  var gY = svg.append("g")
-    .attr("class", "axis axis--y")
-    .call(yAxis);
-  */
-  
-  function changeData() {
-    console.log("Changing dataset...");
-
-    if (this.selectedIndex > 0) {
-      console.log("A dataset is selected...");
-
-      parser.readJson(`./data/data${this.selectedIndex}.json`, function() {
-        // construct word objects and tags from tokens, entities, and triggers
-        console.log("Constructing words...");
-        //console.log(parser);
-        const words = parser.tokens.map((token, i) => new Word(token, i));
-
-        [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
-          if (words[el.tokenIndex]) {
-            words[el.tokenIndex].tag = el.type;
-            words[el.tokenIndex].eventId = el.id;
-          }
-        });
-        wordObjs = words;
-
-        
-        var staircase = svg.selectAll("g").data(words);
-
-        staircase.enter()
-          .append("g")
-          .each(function(d,i) {
-            
-            svg.append("rect")
-                .attr("width", 100)
-                .attr("height", 100)
-                .attr("x", 100*i)
-                .attr("y", 100*i)
-                .style("fill", "#ffffff")
-                .style("stroke", "#000000")
-                .style("stroke-width", 1)
-                .on("click", function(d) {console.log(d);})
-                ;
-
-            svg.append("text")
-                .text(words[i].val)
-                .attr("text-anchor", "middle")
-                .attr("alignment-baseline","central")
-                .attr("x", 100*(i+0.5))
-                .attr("y", 100*(i+0.5))
-                .attr("font-family", "helvetica")
-                .attr("font-size", "10px")
-                .attr("fill", "black")
-                .attr("opacity", "0.5")
-                ;
-            })
-        //*/
-
-        // construct links from events and relations
-        console.log("Constructing links...");
-        const links = [];
-        parser.data.events.forEach(evt => {
-          const trigger = words.find(word => word.eventId === evt.trigger);
-
-          // create a link between the trigger and each of its arguments
-          evt.arguments.map(arg => {
-            let anchor;
-            switch (arg.id.charAt(0)) {
-              case 'E':
-                anchor = links.find(link => link.eventId === arg.id);
-                break;
-              case 'T': 
-                anchor = words.find(word => word.eventId === arg.id);
-                break;
-              default:
-                console.log('unhandled argument type', arg);
-                break;
-            }
-          })
-          
-        })
-
-      });
-    }
+  var prevWidth = Config.svgWidth;
+  function svgResize() {
+    var widthPercChange; 
+    Config.svgWidth = (window.innerWidth - 16);
+    changeSizeOfSVGPanel(Config.svgWidth, draw.height());
+    widthPercChange = Config.svgWidth / prevWidth;
+    prevWidth = Config.svgWidth;
+    recalculateRows(widthPercChange); //makes sure that the words fit in the current width, else makes new rows  
   }
 
-  document.getElementById('dataset').onchange = changeData;
-}
+  function getSelectedObjects() {
+    return wordObjs.concat(linkObjs).filter(obj => obj.isSelected);
+  }
+
+  draw.on('wordSelected', function() {
+    graph.graph(getSelectedObjects());
+  });
+
+  document.querySelector('#graph>button').onclick = function() {
+    let words = getSelectedObjects();
+    if (words.length > 0) {
+      graph.graph(words);
+    }
+    else {
+      graph.clear();
+    }
+  };
+  
+  function changeDataset(index = 1) {
+    parser.readJson(`./data/data${index}.json`, function() {
+      graph.clear();
+
+      // construct word objects and tags from tokens, entities, and triggers
+      const words = parser.tokens.map((token, i) => new Word(token, i));
+
+      [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
+        if (words[el.tokenIndex]) {
+          words[el.tokenIndex].tag = el.type;
+          words[el.tokenIndex].eventId = el.id;
+        }
+      });
+      wordObjs = words;
+
+      // construct links from events and relations
+      const links = [];
+      parser.data.events.forEach(evt => {
+        const trigger = words.find(word => word.eventId === evt.trigger);
+
+        // create a link between the trigger and each of its arguments
+        evt.arguments.map(arg => {
+          let anchor;
+          switch (arg.id.charAt(0)) {
+            case 'E':
+              anchor = links.find(link => link.eventId === arg.id);
+              break;
+            case 'T': 
+              anchor = words.find(word => word.eventId === arg.id);
+              break;
+            default:
+              console.log('unhandled argument type', arg);
+              break;
+          }
+
+          // style the arrow
+          const ltr = arg.type !== 'Controller';
+          const direction = ltr ? [1, -1] : [-1, 1];
+          const arrowType = arg.type === 'Theme' ? styles.simpleLine : ltr ? styles.gradientLine1 : styles.gradientLine1r;
+
+          // create link
+          const link = new Link(
+            [trigger, anchor],
+            direction,
+            arrowType,
+            arg.type,
+            texts.linkText
+          );
+          link.eventId = evt.id;
+
+          // push link to link array
+          links.push(link);
+          createLink(link);
+
+        });//evt.argument.map
+      });//parser.data.events.forEach
+
+      parser.data.relations.forEach(rel => {
+        let ltr = true;
+        const arguments = rel.arguments.map((arg, i) => {
+          let anchor;
+          switch (arg.id.charAt(0)) {
+            case 'E':
+              anchor = links.find(link => link.eventId === arg.id);
+              break;
+            case 'T': 
+              anchor = words.find(word => word.eventId === arg.id);
+              break;
+            default:
+              console.log('unhandled argument type', arg);
+              break;
+          }
+          if (arg.type === 'Controlled' && i > 0) {
+            ltr = false;
+          }
+          return anchor;
+        });
+
+        // create link
+        const link = new Link(
+          arguments,
+          ltr ? [-1, 1] : [1, -1],
+          ltr ? styles.gradientLine2 : styles.gradientLine2r,
+          rel.type,
+          texts.linkText
+        );
+
+        // push link to link array
+        links.push(link);
+        createLink(link);
+      });
+
+      resetDrawing(words, links);
+    });
+  };
+
+  function resetDrawing(words, links) {
+    draw.children().forEach(child => {
+      if (child.type !== 'defs') {
+        child.remove();
+      }
+    });
+    rowGroup = draw.group();
+    groupAllElements = linkG = textG = arrowG = undefined;
+    isDragging = false;
+    rowOffsetX = 0;
+    rowOffsetWord = null;
+    prevX = -1;
+    dragElem = null;
+
+    rows = [];
+    wordObjs = words || createTestWords(5, 6, 10);
+    linkObjs = links || createTestMultiLinks(1);
+    // linkObjs.forEach(link => link.style = styles[link.style]);
+    drawWords(wordObjs);
+    drawLinks(linkObjs);
+    changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
+  }
+
+  function resize() {
+    svgResize();
+    graph.resize();
+  }
+
+  document.getElementById('dataset').onchange = function() {
+    Config.redraw = 0;
+    if (this.selectedIndex > 0) {
+      changeDataset(this.selectedIndex);
+    }
+  };
+  window.onresize = _.debounce(resize, 300);
+
+  changeDataset(2);
+};
+
 </script>
 
+
 </body>
+</html>
+
