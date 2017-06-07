@@ -22,8 +22,9 @@ class Link {
 
         this.rootMinWord = null;
         this.rootMaxWord = null;
+        this.nearestConnectedMinWord = null;
+        this.nearestConnectedMaxWord = null;
 
-     
         this.arrows = [];
         this.arrowStyles = [];
         this.arrowXPercents = [];
@@ -98,21 +99,37 @@ class Link {
         this.labelTextSVG = null;
     }
 
-    //KLEE's function..
-    removeSVGs() {
-     this.polylineSVGs.forEach(svg => svg.remove());
-     this.labelRectSVGs.forEach(svg => svg.remove());
-     this.labelTextSVGs.forEach(svg => svg.remove());
-     this.arrow1Style.path.remove();
-     this.arrow2Style.path.remove();
+    get parents() {
+      return [].concat(this.parentsL, this.parentsC, this.parentsR);
     }
-    //end KLEE
-
 
     toString() {
         return this.id; 
     }
     
+    toggleHighlight(select) {
+      // default value
+      if (select === undefined) {
+        this.isSelected = !this.isSelected;
+      }
+      else {
+        this.isSelected = select;
+      }
+
+      if (this.isSelected) {
+        this.labelRectSVGs.forEach(rect => rect.addClass('selected'));
+      }
+      else {
+        this.labelRectSVGs.forEach(rect => rect.removeClass('selected'));
+      }
+    }
+
+    hover(label) {
+      this.labelRectSVGs.forEach(rect => rect.addClass('hovered'));
+    }
+    unhover(label) {
+      this.labelRectSVGs.forEach(rect => rect.removeClass('hovered'));
+    }
 
     setStartAndEnd() {
 
@@ -120,6 +137,9 @@ class Link {
         this.rightWord = this.words[this.words.length - 1];
         this.id = `(${this.leftWord.id}, ${this.rightWord.id})`;
 
+        console.log("\n\n *** \n\n in setStartAndEnd");
+        console.log("leftWord: " + this.leftWord);
+        console.log("rightWord: " + this.rightWord);
 
         if (this.leftWord instanceof Word) {
           this.leftType = types.WORD;
@@ -153,9 +173,8 @@ class Row {
 
     //svg elements
     this.rect = null;
-    this.lineTop = null;
     this.lineBottom = null
-      this.dragRect = null;
+    this.dragRect = null;
   }
 
 
@@ -200,22 +219,21 @@ class Word {
     this.parentsR = [];  //who connects to me and is attached to my right side
     this.parentsC = []; //who connects to me and is attached to the center (ie, for multilinks)
 
-
-
-    //this.lines = [];  //don't this is used, double check then remove!
-
     this.tw = 0; //width of text part of word, used also to determine minimum size of word rect
     this.th = 0;
 
     this.percPos = 0.0; //this is used to indicate where along the row the word is positioned, used when resizing the browser's width, or when popping open a right panel.
 
     this.isSelected = false;
-    this.isHovered = false;
     this.isDragging = false;
 
     //variables created in first render...
+
     this.row = null; //this is a row object, for row num do: this.row.idx
-    this.aboveRect = null; //the top level, clickable rect 
+
+    this.svg = null; // group element within which rect, text, and handles are nested
+                    // TODO: transform this.svg instead of individual children
+
     this.bbox = null; //the bbox of the clickable rect
     this.underneathRect = null; //solid rect on which other word parts are placed (text, handles, clickable rect)
     this.text = null; //the svg text
@@ -240,13 +258,11 @@ class Word {
     update() {
       
     ////  console.log("\n***\nin update X = " + this.tempX + ", Y = " + this.tempY + ", W = " + this.tempW );
-      this.aboveRect.x(this.tempX);
-      this.aboveRect.width(this.tempW);
      
       this.underneathRect.x(this.tempX);
       this.underneathRect.width(this.tempW);
 
-      this.bbox = this.aboveRect.bbox();
+      this.bbox = this.underneathRect.bbox();
       
       this.text.x(this.tempX + (this.tempW/2) - (this.text.bbox().w / 2) ); 
       
@@ -275,6 +291,33 @@ class Word {
     //getMaxWidth() must return a value less than row width - Config.edgePaddings, else will try to reposition long words forever!!!
     getMaxWidth() {
       return (this.row.rect.width() - (Config.edgePadding*2)) / 3.1; 
+    }
+
+    get parents() {
+      return [].concat(this.parentsL, this.parentsC, this.parentsR);
+    }
+
+    toggleHighlight(select) {
+      if (select === undefined) {
+        this.isSelected = !this.isSelected;
+      }
+      else {
+        this.isSelected = select;
+      }
+
+      if (this.isSelected) {
+        this.svg.addClass('selected');
+      }
+      else {
+        this.svg.removeClass('selected');
+      }
+    }
+
+    hover() {
+      this.svg.addClass('hovered');
+    }
+    unhover() {
+      this.svg.removeClass('hovered');
     }
 
     toString() {
@@ -306,7 +349,7 @@ function checkSlotAvailabity(num, slotArr) {
 //type: 1 = word; 2 = link
 function checkAndUpdateWordToWordSlots(link, startSlot) { //, minWord, minSide, maxWord, maxSide) {
   var wo1, wo2, side1, side2; 
-
+  console.log("in checkandupdatewordtowordslots");
   wo1 = link.rootMinWord;
   wo2 = link.rootMaxWord;
   side1 = link.rootMinSide;
@@ -414,15 +457,16 @@ function checkAndUpdateWordToWordSlots(link, startSlot) { //, minWord, minSide, 
 }
 
 //current link, the word we're tracing, and the side that it's on
-function traceBackToWordObj(link, type, word, attach) { 
+function traceBackToNearestWordObj(link, type, word, attach) { 
 
   var retVal = {w: -1, s: -1};
 
   if (type == types.WORD) { 
-    //// console.log("in traceback, node is a word, wordObj.val = " + word.val + ", attachSide = " + attach);
+    console.log("in traceback, node is a word, wordObj.val = " + word.val + ", attachSide = " + attach);
 
     retVal.w = word;
     retVal.s = attach;
+
     return retVal;
 
   } else {
@@ -439,7 +483,7 @@ function traceBackToWordObj(link, type, word, attach) {
       nextAttach = nextLink.leftAttach;
     
     } else { // right
-     
+    
       //nextType = nextLink.te;
       nextType = nextLink.rightType;
       nextWord = nextLink.rightWord;
@@ -447,36 +491,105 @@ function traceBackToWordObj(link, type, word, attach) {
     
     }
 
-   //// console.log("now going to traceback... link: " + nextLink + ", nextType: " + nextType + " nextWord " + nextWord.val + ", nextAttach: " + nextAttach);
+    console.log("now going to traceback... link: " + nextLink + ", nextType: " + nextType + " nextWord " + nextWord.val + ", nextAttach: " + nextAttach);
+    
+    return traceBackToWordObj(nextLink, nextType, nextWord, nextAttach);
+  }
+}
+//current link, the word we're tracing, and the side that it's on
+function traceBackToWordObj(link, type, word, attach) { 
+
+  var retVal = {w: -1, s: -1};
+
+  if (type == types.WORD) { 
+    console.log("in traceback, node is a word, wordObj.val = " + word.val + ", attachSide = " + attach);
+
+    retVal.w = word;
+    retVal.s = attach;
+
+    return retVal;
+
+  } else {
+   //// console.log("in traceback, node is a link, wordObj.val, attachSide = " + attach);
+
+    var nextLink = word;
+    var nextType, nextWord, nextAttach;  
+
+    console.log("nextLinkleft: " + nextLink.leftWord);
+    console.log("nextLinkleft: " + nextLink.rightWord);
+    if (determineSide(link) == swapside.YES) {
+      if (attach == sides.RIGHT) { //left
+
+        //nextType = nextLink.ts;
+        nextType = nextLink.leftType;
+        nextWord = nextLink.leftWord;
+        nextAttach = nextLink.leftAttach;
+      
+      } else { // right
+      
+        //nextType = nextLink.te;
+        nextType = nextLink.rightType;
+        nextWord = nextLink.rightWord;
+        nextAttach = nextLink.rightAttach;
+      
+      }
+    }
+    else {
+      if (attach == sides.LEFT) { //left
+
+        //nextType = nextLink.ts;
+        nextType = nextLink.leftType;
+        nextWord = nextLink.leftWord;
+        nextAttach = nextLink.leftAttach;
+      
+      } else { // right
+      
+        //nextType = nextLink.te;
+        nextType = nextLink.rightType;
+        nextWord = nextLink.rightWord;
+        nextAttach = nextLink.rightAttach;
+      
+      }
+    }
+
+    console.log("now going to traceback... link: " + nextLink + ", nextType: " + nextType + " nextWord " + nextWord.val + ", nextAttach: " + nextAttach);
     
     return traceBackToWordObj(nextLink, nextType, nextWord, nextAttach);
   }
 }
 
+function determineSide(link) {
+  var rootS, rootE;
+
+    if (link.leftType == types.WORD) {
+      rootS = link.leftWord.idx;
+      //console.log("rootS = " + link.leftWord.id);
+
+    } else {
+      rootS = link.leftWord.rootMinWord.idx;
+      //console.log("rootS = " + link.leftWord.rootMinWord.id);
+
+    }
+
+    if (link.rightType == types.WORD) {
+      rootE = link.rightWord.idx;
+      //console.log("rootE = " + link.rightWord.id);
+
+    } else {
+      rootE = link.rightWord.rootMaxWord.idx;
+      //console.log("rootE = " + link.rightWord.rootMaxWord.id);
+    }
+    
+    if(rootS < rootE) {
+      return swapside.YES;
+    }
+    else {
+      return swapside.NO;
+    }
+}
 
 //TODO - should there be a global strategy for each class of link types? for the different styles of links? for each parent word/link? or for every single individual link??? E.g., could a word support links with different strategies, or would that become cluttered??
 function calcAttachPoints(link, strategy)  {
-
-  var rootS, rootE;
-
-  if (link.leftType == types.WORD) {
-    rootS = link.leftWord.idx;
-    //console.log("rootS = " + link.leftWord.id);
-
-  } else {
-    rootS = link.leftWord.rootMinWord.idx;
-    //console.log("rootS = " + link.leftWord.rootMinWord.id);
-
-  }
-
-  if (link.rightType == types.WORD) {
-    rootE = link.rightWord.idx;
-    //console.log("rootE = " + link.rightWord.id);
-
-  } else {
-    rootE = link.rightWord.rootMaxWord.idx;
-    //console.log("rootE = " + link.rightWord.rootMaxWord.id);
-  }
 
   //link.leftWord.nr += 1;
   //link.rightWord.nl += 1;
@@ -497,7 +610,7 @@ function calcAttachPoints(link, strategy)  {
 
     //console.log("" + link.id + " strategy = CLOSEST");
 
-    if (rootS < rootE) {
+    if (determineSide(link) == swapside.YES) {
       //console.log("rootS < rootE (" +rootS +" < " + rootE +")");
       link.leftWord.nr += 1;
       link.rightWord.nl += 1;
@@ -631,7 +744,6 @@ function createLink(link) {
 
   //calculate attachment points to child links
 
-
   if (link.leftType == types.WORD && link.rightType == types.WORD) {
     calcAttachPoints(link, Config.word2word_strategy);
   } else if (link.leftType == types.LINK && link.rightType == types.LINK) {
@@ -644,17 +756,25 @@ function createLink(link) {
   //calculate attachment points to root
   var checkSlotAt = 1;
   var minWord, minSide, maxWord, maxSide;
-
+  //console.log("\n\n*** \n\n in createLink" + link.words);
+  //console.log("left link type: " + link.leftType);
+  //console.log("left link word: " + link.leftWord);
   var rootWordAndSide = traceBackToWordObj(link, link.leftType, link.leftWord, link.leftAttach);
+  var rootnearestWordAndSide = traceBackToNearestWordObj(link, link.leftType, link.leftWord, link.leftAttach);
   link.rootMinWord = rootWordAndSide.w;
   link.rootMinSide = rootWordAndSide.s;
+  //console.log("rootWordAndSideMin: " + rootWordAndSide.w);
+  link.nearestConnectedMinWord = rootnearestWordAndSide.w;
 
   checkSlotAt = Math.max(checkSlotAt, link.leftWord.h + 1);
-
-  var rootWordAndSide = traceBackToWordObj(link, link.rightType, link.rightWord, link.rightAttach);
+  //console.log("right link type: " + link.rightType);
+  //console.log("right link word: " + link.rightWord);
+  rootWordAndSide = traceBackToWordObj(link, link.rightType, link.rightWord, link.rightAttach);
+  rootWordAndSide = traceBackToNearestWordObj(link, link.rightType, link.rightWord, link.rightAttach);
   link.rootMaxWord = rootWordAndSide.w;
   link.rootMaxSide = rootWordAndSide.s;
-
+  //console.log("rootWordAndSideMax: " + rootWordAndSide.w);
+  link.nearestConnectedMaxWord = rootnearestWordAndSide.w;
   checkSlotAt = Math.max(checkSlotAt, link.rightWord.h + 1); //minimum height to start checking
   //set checkSlotAt to 1 if you want to be able to connect from underneath
 

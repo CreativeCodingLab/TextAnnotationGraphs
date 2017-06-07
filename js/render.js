@@ -19,29 +19,6 @@ function drawWords(words) {
   }
 }
 
-// update the text and tag text of an existing word on the graph
-function redrawWords(words) {
-  words.forEach(function(word) {
-
-    if (word.text) {
-      word.text.text(word.val);
-    }
-
-    if (word.tagtext != null) {
-      word.tagtext.text(word.tag || '');
-    }
-
-    // TODO: redefine maxtextw
-    // word.maxtextw = Math.max(textw, tagtextw);
-
-    // rearrange
-    word.aboveRect.front();
-    word.leftHandle.front();
-    word.rightHandle.front();
-    realignWords();
-  });
-}
-
 
 //gets max slot number to be assigned to this word
 function getHeightForWord(word) {
@@ -90,7 +67,7 @@ function checkIfNeedToResizeWords(row) {
   var totalW = 0;
   for (var ii = 0; ii < row.words.length; ii++) {
     var word = row.words[ii];
-    totalW += word.aboveRect.width();
+    totalW += word.underneathRect.width();
   }
 
   if (totalW > Config.svgWidth - (Config.edgePadding*2)) {
@@ -112,7 +89,6 @@ function recalculateRows(percChange) {
 
     row.rect.width(draw.width());
 
-    row.lineTop.plot(0, row.ry, draw.width(), row.ry);
     row.lineBottom.plot(0, row.ry+row.rh, draw.width(), row.ry+row.rh);
 
     row.dragRect.x(draw.width() - (Config.dragRectSide+Config.dragRectMargin));
@@ -125,10 +101,7 @@ function recalculateRows(percChange) {
       var word = row.words[ii];
 
       //first try to expand or shrink size of words - but no smaller than the word's min width
-      var nw = Math.max( Math.min(word.getMaxWidth(), word.aboveRect.width() * percChange), word.getMinWidth() );
-
-      //var nw = Math.max(word.getMinWidth(), word.aboveRect.width() * percChange);
-      //nw = Math.max(nw, word.getMaxWidth());
+      var nw = Math.max( Math.min(word.getMaxWidth(), word.underneathRect.width() * percChange), word.getMinWidth() );
 
       var nx = Config.edgePadding + (word.percPos * (Config.svgWidth-Config.edgePadding*2));
 
@@ -180,8 +153,8 @@ function recalculateRows(percChange) {
           }
 
           newArray.sort(function(a, b) {
-            var d1 = a.aboveRect.width() - a.getMinWidth();
-            var d2 = b.aboveRect.width() - b.getMinWidth();
+            var d1 = a.underneathRect.width() - a.getMinWidth();
+            var d2 = b.underneathRect.width() - b.getMinWidth();
             return d1 - d2; 
           });
 
@@ -193,10 +166,10 @@ function recalculateRows(percChange) {
 
             var minW = word.getMinWidth();
 
-            if (word.aboveRect.width() - pixelsPerWord < minW) {
+            if (word.underneathRect.width() - pixelsPerWord < minW) {
 
-              var minus = word.aboveRect.width() - minW;
-              setWordToXW(word, word.aboveRect.x(), minW);
+              var minus = word.underneathRect.width() - minW;
+              setWordToXW(word, word.underneathRect.x(), minW);
               word.update();
 
                 //console.log("ii = " + ii + ": can't shrink by " +  pixelsPerWord + ", so shrinking by much as possible = " + minus);
@@ -205,7 +178,7 @@ function recalculateRows(percChange) {
               resizeByHowMuch -= minus;
               pixelsPerWord = resizeByHowMuch / numWords; 
             } else {
-              setWordToXW(word, word.aboveRect.x(), word.aboveRect.width() - pixelsPerWord);
+              setWordToXW(word, word.underneathRect.x(), word.underneathRect.width() - pixelsPerWord);
               word.update();
               numWords--;
               resizeByHowMuch -= pixelsPerWord;
@@ -239,7 +212,7 @@ function realignWords() {
     //may not use the move left, might be odd when it jumps up instead of down...
     for (var ii = row.words.length-1; ii >= 0 ; ii--) {
       var word = row.words[ii];
-      checkIfCanMoveLeft(word.aboveRect.x(), word.aboveRect.width(), word.aboveRect.y(), word, true);
+      checkIfCanMoveLeft(word.underneathRect.x(), word.underneathRect.width(), word.underneathRect.y(), word, true);
       word.update();
     }
     
@@ -247,7 +220,7 @@ function realignWords() {
 
     for (var ii = 0; ii < row.words.length; ii++) {
       var word = row.words[ii];
-      checkIfCanMoveRight(word.aboveRect.x(), word.aboveRect.width(), word.aboveRect.y(), word, false);
+      checkIfCanMoveRight(word.underneathRect.x(), word.underneathRect.width(), word.underneathRect.y(), word, false);
       word.update();
     }
   }
@@ -260,7 +233,6 @@ function realignWords() {
 
 function removeLastRow() {
   rows[rows.length-1].rect.remove();
-  rows[rows.length-1].lineTop.remove();
   rows[rows.length-1].lineBottom.remove();
   rows[rows.length-1].dragRect.remove();
   rows.pop();
@@ -286,12 +258,6 @@ function appendRow() {
   row.ry = Config.rowPadding/2 + rows[row.idx - 1].rect.bbox().y + rows[row.idx - 1].rect.bbox().h;
   row.rh = rows[row.idx - 1].rect.bbox().h; 
 
-  if (row.idx % 2 == 0) {
-    row.color = Config.evenRowsColor;
-  } else {
-    row.color = Config.oddRowsColor;
-  }
-
   drawRow(row);
 
   changeSizeOfSVGPanel(window.innerWidth - 16, row.lineBottom.y() + 1);
@@ -300,15 +266,11 @@ function appendRow() {
 
 function drawRow(row) {
 
-  row.rect = rowGroup.rect(Config.svgWidth,row.rh).x(0).y(row.ry);
+  row.rect = rowGroup.rect(Config.svgWidth,row.rh)
+    .x(0)
+    .y(row.ry)
+    .addClass('row--' + row.idx % 2);
 
-  if (row.idx % 2 == 0) {
-    row.rect.style(styles.rowRectEvenFill.style);
-  } else {
-    row.rect.style(styles.rowRectOddFill.style); 
-  }
-
-  row.lineTop = rowGroup.line(0, row.ry, Config.svgWidth, row.ry).style(styles.rowLineStroke.style);
   row.lineBottom = rowGroup.line(0, row.ry+row.rh, Config.svgWidth, row.ry+row.rh).style(styles.rowLineStroke.style);
 
   row.dragRect = rowGroup.rect(Config.dragRectSide,Config.dragRectSide).x(Config.svgWidth - (Config.dragRectSide+Config.dragRectMargin)).y(row.ry + row.rh - (Config.dragRectSide+Config.dragRectMargin)).style(styles.rowDragRectFill.style);
@@ -414,12 +376,6 @@ function setUpRowsAndWords(words) {
 
     row.rh = Config.rowPadding + ((Config.textPaddingY * 2) + texts.wordText.maxHeight) + (Config.levelPadding * row.maxSlots);
 
-    if (row.idx % 2 == 0) {
-      row.color = Config.evenRowsColor;
-    } else {
-      row.color = Config.oddRowsColor;
-    }
-
     for (var ii = 0; ii < row.words.length; ii++) {
       var word = row.words[ii];
 
@@ -441,14 +397,19 @@ function setUpRowsAndWords(words) {
 
 function drawWord(word) {
 
-  word.underneathRect = draw.rect( word.ww, word.wh ).x( word.wx ).y( word.wy ).style(styles.wordFill.style);
+  let g = word.svg = draw.group().addClass('word');
+
+  word.underneathRect = g.rect( word.ww, word.wh )
+    .x( word.wx )
+    .y( word.wy )
+    .addClass('word--underneath');
 
   var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
 
-  word.text = draw.text(function(add) {
+  word.text = g.text(function(add) {
 
     add.text(word.val)
-    .y(word.wy + Config.textPaddingY*2) // - texts.wordText.descent)
+    .y(word.wy + Config.textPaddingY*2 - texts.wordText.descent)
     .x(word.wx + (word.ww/2) - (textwh.w / 2))
     .font(texts.wordText.style);
   });
@@ -459,48 +420,38 @@ function drawWord(word) {
     var tagXPos = word.twx + (word.ww/2) - (textwh.w / 2);
 
     //add in tag text, if the word has an associated tag
-    word.tagtext = draw.text(function(add) {
-
-      add.text(word.tag)
-      .y(word.wy + Config.textPaddingY/2) // - texts.tagText.descent)
-      .x(tagXPos)
-      .font(texts.tagText.style);
-    });
+    word.tagtext = g.text(function(add) {
+        add.text(word.tag)
+        .y(word.wy + Config.textPaddingY/2 - texts.wordText.descent)
+        .x(tagXPos)
+        .font(texts.tagText.style);
+      });
   }
 
-  //this rect is invisible, but used for detecting mouseevents, as its drawn on top of the text+underneathRect (which provided the color+fill+stroke)
-  word.aboveRect = draw.rect(word.ww, word.wh).x( word.wx ).y( word.wy ).fill( {color:'#fff',opacity: 0.0} );
+  word.leftHandle = g.rect(Config.handleW, Config.handleH)
+    .x(word.wx)
+    .y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) )
+    .addClass('word--handle');
 
-  word.leftHandle = draw.rect(Config.handleW, Config.handleH).x(word.wx).y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) ).style(styles.handleFill.style);
+  word.rightHandle = g.rect(Config.handleW,Config.handleH)
+    .x(word.wx + word.ww - (Config.handleW))
+    .y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) )
+    .addClass('word--handle');
 
-
-  word.rightHandle = draw.rect(Config.handleW,Config.handleH).x(word.wx + word.ww - (Config.handleW)).y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) ).style(styles.handleFill.style);
-
-
-  word.bbox = word.aboveRect.bbox();
-  word.leftX = word.aboveRect.bbox().x;
-  word.rightX = word.aboveRect.bbox().x + word.aboveRect.bbox().w;
+  word.bbox = word.underneathRect.bbox();
+  word.leftX = word.underneathRect.bbox().x;
+  word.rightX = word.underneathRect.bbox().x + word.underneathRect.bbox().w;
   word.percPos = (word.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
-
 
   //set up mouse interactions
   setUpLeftHandleDraggable(word);
   setUpRightHandleDraggable(word); 
   setUpWordDraggable(word); 
-  setupMouseOverInteractions(word);
 
-  word.aboveRect.dblclick(function() {
-    word.isSelected = !word.isSelected;
-
-    if (word.isSelected) {
-      style = word.isHovered ? "hoverAndSelect" : "select";
-    }
-    else {
-      style = word.isHovered ? "hover" : "style";
-    }
-  word.underneathRect.style(styles.wordFill[style]);
+  word.underneathRect.dblclick( () => {
+    word.toggleHighlight();
+    draw.fire('wordSelected', { arbitrary: word });
   });
-
 }
 
 
@@ -677,7 +628,6 @@ function drawAllLinks() {
         }
       }
 
-      //setupLineInteractions(poly); 
     }
   }
 
@@ -688,10 +638,9 @@ function drawAllLinks() {
 
 function drawAllLinkLabels() {
 
-  var label = textG.group();
+  var label = textG.group().addClass('link--labels');
 
-  for (var i = 0; i < linkObjs.length; i++) {
-    var lo = linkObjs[i];
+  linkObjs.forEach((lo, i) => {
 
     if (lo.numLineSegments < lo.labelTextSVGs.length) {
       //need to remove the old SVGs
@@ -721,43 +670,54 @@ function drawAllLinkLabels() {
       
       if (lo.labelTextSVGs[ii] == null) {
 
-        lo.labelRectSVGs[ii] = label.rect( lo.labels[ii].rect.w, lo.labels[ii].rect.h );
-        lo.labelRectSVGs[ii].x( lo.labels[ii].rect.x );
-        lo.labelRectSVGs[ii].y( lo.labels[ii].rect.y );
-        lo.labelRectSVGs[ii].style( lo.labels[ii].rect.style ); 
+        lo.labelRectSVGs[ii] = label.rect( lo.labels[ii].rect.w, lo.labels[ii].rect.h )
+          .x( lo.labels[ii].rect.x )
+          .y( lo.labels[ii].rect.y )
+          .addClass(lo.isSelected ? 'link--label selected' : 'link--label');
 
-        lo.labelTextSVGs[ii] = label.text( lo.labels[ii].text.text );
-        lo.labelTextSVGs[ii].x( lo.labels[ii].text.x );
-        lo.labelTextSVGs[ii].y( lo.labels[ii].text.y );
-        lo.labelTextSVGs[ii].font( lo.labels[ii].text.style );
+        lo.labelTextSVGs[ii] = label.text( lo.labels[ii].text.text )
+          .x( lo.labels[ii].text.x )
+          .y( lo.labels[ii].text.y )
+          .font( lo.labels[ii].text.style );
+
+        // add click selection event
+        lo.labelRectSVGs[ii].dblclick( (e) => {
+          lo.toggleHighlight();
+          draw.fire('wordSelected', {arbitrary: lo});
+        });
 
       } else {
 
-        lo.labelRectSVGs[ii].width( lo.labels[ii].rect.w );
-        lo.labelRectSVGs[ii].height( lo.labels[ii].rect.h );
-        lo.labelRectSVGs[ii].x( lo.labels[ii].rect.x );
-        lo.labelRectSVGs[ii].y( lo.labels[ii].rect.y );
-        lo.labelRectSVGs[ii].y( lo.labels[ii].rect.y );
-        lo.labelRectSVGs[ii].style( lo.labels[ii].rect.style );
+        lo.labelRectSVGs[ii]
+          .width( lo.labels[ii].rect.w )
+          .height( lo.labels[ii].rect.h )
+          .x( lo.labels[ii].rect.x )
+          .y( lo.labels[ii].rect.y );
 
-        lo.labelTextSVGs[ii].text( lo.labels[ii].text.text );
-        lo.labelTextSVGs[ii].x( lo.labels[ii].text.x );
-        lo.labelTextSVGs[ii].y( lo.labels[ii].text.y );
-        lo.labelTextSVGs[ii].style( lo.labels[ii].text.style );
-
-        if (lo.labels[ii].text.visibility == false) {
-          lo.labelRectSVGs[ii].style("visibility:hidden;");
-          lo.labelTextSVGs[ii].style("visibility:hidden;"); 
-        } else {
-          lo.labelTextSVGs[ii].style("visibility:visible;");
-          lo.labelRectSVGs[ii].style("visibility:visible;");
-
-        } 
-
+        lo.labelTextSVGs[ii]
+          .text( lo.labels[ii].text.text )
+          .x( lo.labels[ii].text.x )
+          .y( lo.labels[ii].text.y )
+          .style( lo.labels[ii].text.style );
       }
+
+      if (lo.labels[ii].rect.rowNum % 2) {
+        lo.labelRectSVGs[ii].addClass('odd');
+      }
+      else {
+        lo.labelRectSVGs[ii].removeClass('odd');
+      }
+
+      if (lo.labels[ii].text.visibility == false) {
+        lo.labelRectSVGs[ii].hide();
+        lo.labelTextSVGs[ii].hide(); 
+      } else {
+        lo.labelTextSVGs[ii].show();
+        lo.labelRectSVGs[ii].show();
+      } 
       
     }
-  }
+  });
 
 
 
@@ -767,9 +727,10 @@ function drawAllLinkLabels() {
 /** redraws all links that have been marked as needsUpdate = true, OR by passing in a boolean of true to indicate that the window has resized **/
 function redrawLinks(forceRedrawingAll) { //force redraw of all when resizing window
 
+console.log("\n\n***\n\n in redraw links:" + forceRedrawingAll);
   Object.keys(linkObjs).forEach(function(key) {
     if (linkObjs[key].needsUpdate || forceRedrawingAll == true) {
-      ////console.log(" link #" + key + " needsUpdate");
+      console.log(" link #" + key + " needsUpdate");
       Config.redraw = 1;
       drawLink(linkObjs[key]);
       linkObjs[key].needsUpdate = false;
@@ -788,13 +749,22 @@ function getLeftXForWord(word, link) {
   if (word instanceof Word) { //is a word
     return word.leftX;
   } else { //is a link
-    if (link.leftAttach == sides.LEFT) {
-      return word.linesLeftX[0];
-    } else if (link.leftAttach == sides.RIGHT){
-      return word.linesLeftX[0];
-   
+    if (determineSide(link) == swapside.YES) {
+      if (link.leftAttach == sides.RIGHT) {
+        return word.linesLeftX[0];
+      } else if (link.leftAttach == sides.LEFT){
+        return word.linesLeftX[0];
+      }
+    }
+    else {
+      if (link.leftAttach == sides.LEFT) {
+        return word.linesLeftX[0];
+      } else if (link.leftAttach == sides.RIGHT){
+        return word.linesLeftX[0];
+      }
+    }
+    
    //   return word.linesLeftX[word.numLineSegments-1];
-    } 
   }
 }
 
@@ -802,11 +772,20 @@ function getRightXForWord(word, link) {
   if (word instanceof Word) { //is a word
     return word.rightX;
   } else { //is a link
-    if (link.leftAttach == sides.LEFT) {
-      return word.linesRightX[0];
-    } else if (link.leftAttach == sides.RIGHT) {
-      return word.linesRightX[0];
-   //    return word.linesRightX[word.numLineSegments-1];
+    if (determineSide(link) == swapside.YES) {
+      if (link.leftAttach == sides.RIGHT) {
+        return word.linesRightX[0];
+      } else if (link.leftAttach == sides.LEFT) {
+        return word.linesRightX[0];
+    //    return word.linesRightX[word.numLineSegments-1];
+      }
+    }
+    else{
+      if (link.leftAttach == sides.LEFT) {
+        return word.linesLeftX[0];
+      } else if (link.leftAttach == sides.RIGHT){
+        return word.linesLeftX[0];
+      }
     }
   }
 }
@@ -981,15 +960,17 @@ function getLinkStyles(link, xpts) {
 function storeOnlyArrows(rowNum, y1, link, xPositions) {
   
   arrowPos = [];
-
+  console.log("xPos Length: " + xPositions.length);
   for (var i = 0; i < xPositions.length; i++) {  
   
     var wordIdx = xPositions[i].wordIdx;
     var xpos = xPositions[i].xpos;
     var ypos;
 
+
     var w = link.words[wordIdx];
-    
+    console.log("\n\n *** \n\n in storeOnlyArrows \n word: " + link.words[wordIdx]);
+    console.log("\nxPos: " + xPositions[i].xpos);    
     
     if (w instanceof Word ) { // && w.row.idx == rowNum) {
       ypos = w.bbox.y;
@@ -1003,12 +984,13 @@ function storeOnlyArrows(rowNum, y1, link, xPositions) {
     }
 
     arrowPos.push( {x:xpos, y:ypos} );
-    
+    console.log("arrowPosPush: " + arrowPos);
    //link.leftAttach == sides.RIGHT; 
    //link.rightAttach == sides.RIGHT; 
-    storeArrow(wordIdx, xpos, ypos, link, w, link.leftAttach, getLeftXForWord(w, link), getRightXForWord(w, link) ); 
+    storeArrow(wordIdx, xpos, ypos, link, w, link.rightAttach, getLeftXForWord(w, link), getRightXForWord(w, link) ); 
   }
 
+  console.log("arrowPos: " + arrowPos);
   return arrowPos;
 }
 
@@ -1026,11 +1008,15 @@ function calculateOnlyRow(rowNum, link, percentagePadding, xPositions, linkStyle
   var xL =  arrowPos[0].x ; //xPositions[0];
   var xR = arrowPos[arrowPos.length-1].x; //xPositions[link.words.length - 1];
 
+  var pathline = 'M' + [xL, arrowPos[0].y] +
+    'C' + [xL, yPos, xL,yPos, xL + 5, yPos] +
+    'L' + [xR - 5, yPos] +
+    'C' + [xR, yPos, xR, yPos, xR, arrowPos[arrowPos.length - 1].y];
 
-  var pathline = 'M '+ xL + ' ' + arrowPos[0].y + 
-    ' L ' + xL + ' ' +  yPos + 
-    ' L ' + xR + ' ' +  yPos + 
-    ' L ' + xR + ' ' +  arrowPos[arrowPos.length - 1].y;
+  // var pathline = 'M '+ xL + ' ' + arrowPos[0].y + 
+  //   ' L ' + xL + ' ' +  yPos + 
+  //   ' L ' + xR + ' ' +  yPos + 
+  //   ' L ' + xR + ' ' +  arrowPos[arrowPos.length - 1].y;
 
   for (var p = 1; p < arrowPos.length - 1; p++) {
      pathline += 
@@ -1079,7 +1065,7 @@ function calculateOnlyRow(rowNum, link, percentagePadding, xPositions, linkStyle
 
 function calculateStartRow(idx, rowNum, link, percentagePadding, xPositions, linkStyles ) {
   console.log("in calculateStartRow - " + link.toString());
-
+  console.log("link height:" + link.h);
   var yPos = rows[rowNum].baseHeight - link.h * percentagePadding;
 
   var arrowPos = storeOnlyArrows(rowNum, yPos, link, xPositions);
@@ -1093,9 +1079,13 @@ function calculateStartRow(idx, rowNum, link, percentagePadding, xPositions, lin
 
 
   //can there be a start row with NO arrows??
-  var pathline = 'M '+ xL + ' ' + arrowPos[0].y + 
-    ' L ' + xL + ' ' +  yPos + 
-    ' L ' + xR + ' ' +  yPos;
+  var pathline = 'M' + [xL, arrowPos[0].y] +
+    'C' + [xL, yPos, xL,yPos, xL + 5, yPos] +
+    'L' + [xR, yPos];
+
+  // var pathline = 'M '+ xL + ' ' + arrowPos[0].y + 
+  //   ' L ' + xL + ' ' +  yPos + 
+  //   ' L ' + xR + ' ' +  yPos;
 
   for (var p = 1; p < arrowPos.length; p++) {
      pathline += 
@@ -1111,7 +1101,7 @@ function calculateStartRow(idx, rowNum, link, percentagePadding, xPositions, lin
 
   console.log("START link.polylines[i] style = " + linkStyles[idx] );
 
-   //storeArrow(0, p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
+  //storeArrow(0, p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
  
   //storeLeftArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
 
@@ -1208,7 +1198,6 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
   var yPos = rows[rowNum].baseHeight - link.h * percentagePadding;
 
   var arrowPos = storeOnlyArrows(rowNum, yPos, link, xPositions);
-
   arrowPos.sort(function(a, b) {
     return a.x - b.x; 
   });
@@ -1220,10 +1209,14 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
   console.log("in calculateEndRow, xL =  " + xL + ", xR = " + xR);
   
 
+  var pathline = 'M' + [xL, yPos] +
+    'L' + [xR - 5, yPos] +
+    'C' + [xR, yPos, xR, yPos, xR, arrowPos[arrowPos.length - 1].y];
 
-  var pathline = 'M ' + xL + ' ' + yPos + 
-    ' L ' + xR + ' ' +  yPos +
-    ' L ' + xR + ' ' +  arrowPos[arrowPos.length-1].y;
+
+  // var pathline = 'M ' + xL + ' ' + yPos + 
+  //   ' L ' + xR + ' ' +  yPos +
+  //   ' L ' + xR + ' ' +  arrowPos[arrowPos.length-1].y;
 
   console.log("PATHLINE = " + pathline);
   
@@ -1317,7 +1310,6 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
 
 function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
 
-  var style;
   var text;
 
   if (rowNum % 2 == 0) {
@@ -1328,7 +1320,7 @@ function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
 
   var twh = link.textWH;
 
-  var rect = {x: (x - 2 - twh.w/2), y: (y - link.textStyle.maxHeight/2), w: (twh.w + 4), h: link.textStyle.maxHeight, style:style};
+  var rect = {x: (x - 2 - twh.w/2), y: (y - link.textStyle.maxHeight/2), w: (twh.w + 4), h: link.textStyle.maxHeight, style:style, rowNum: rowNum};
 
 
   if (Config.redraw) { 
@@ -1337,13 +1329,13 @@ function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
   else {
     text = {text: link.textStr, x: (x - twh.w/2), y: (y - link.textStyle.maxHeight/2 - link.textStyle.descent), style: (link.textStyle.style), visibility:true};
   }
-
+/*
   console.log(" in calculateLinkLabels, idx = " + idx + ", rowNum = " + rowNum + ", rect = ");
   console.log(rect);
   console.log(" in calculateLinkLabels, text = ");
   console.log(text);
   console.log(link.textStyle.descent)
-
+*/
   link.labels[idx] = {rect:rect, text:text};
 
   if (isHidden) {
@@ -1354,23 +1346,31 @@ function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
 
 function drawLink(link) {
 
-  console.log("\n\n\n***\n\nin drawLink ::: " + link.toString());
+  // console.log("\n\n\n***\n\nin drawLink ::: " + link.toString());
   var attachmentXPositions = getXPosForAttachmentByPercentageOffset(link); 
 
-  console.log("attachment positions = ");
-  console.log(attachmentXPositions);
+  // console.log("attachment positions = ");
+  // console.log(attachmentXPositions);
 
   var xL = attachmentXPositions[0];
   var xR = attachmentXPositions[link.words.length - 1];
 
-  console.log("... xL, xR = " + xL + ", " + xR);
+  // console.log("... xL, xR = " + xL + ", " + xR);
 
   link.linesLeftX = [];
   link.linesRightX = [];
-
+  
   var minRow = link.rootMinWord.row.idx;
   var maxRow = link.rootMaxWord.row.idx;
 
+  // console.log("minWord: " + link.rootMinWord);
+  // console.log("minRow: " + link.rootMinWord.row.idx);
+  
+  /* Object.keys(linkObjs).forEach(function(key) {
+    console.log("link minWord: " + linkObjs[key].rootMinWord);
+    console.log("link minRow: " + linkObjs[key].rootMinWord.row);
+  });
+  */
   link.numLineSegments = (maxRow - minRow)+1;
 
   var linkStyles;
@@ -1395,41 +1395,62 @@ function drawLink(link) {
     var percentagePadding = availableHeight / (rows[i].maxSlots + 1);
 
     if (i == minRow && minRow == maxRow) { //ONLY ROW
-      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, i, link);
+      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, i, link, rowtypes.ONLY);
 
       calculateOnlyRow(minRow, link, percentagePadding, rowAttachXPos, linkStyles); 
     } else if (i == minRow) { //FIRST ROW
 
-      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, minRow, link, -1);
+      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, minRow, link, rowtypes.START);
 
       calculateStartRow(rowNum, i, link, percentagePadding, rowAttachXPos, linkStyles);
     } else if (i == maxRow) { //LAST ROW
 
-      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, maxRow, link, 1);
+      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, maxRow, link, rowtypes.END);
       calculateEndRow(rowNum, i, link, percentagePadding, rowAttachXPos, linkStyles); 
     } else { //MIDDLE ROW
-      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, i, link);
+      var rowAttachXPos = filterXPositionsForOnlyThisRow(attachmentXPositions, i, link, rowtypes.MIDDLE);
 
       calculateMiddleRow(rowNum, i, link, percentagePadding, rowAttachXPos, linkStyles); 
     }
   }
+  
+
 }
 
 
 
-function filterXPositionsForOnlyThisRow(attachmentXPositions, row, link, which) {
-
+function filterXPositionsForOnlyThisRow(attachmentXPositions, row, link, type) {
+  // type: 
+  // 0 only/middle
+  // 1 start
+  // 2 end
   var rowAttachXPos = [];
-
+  //console.log("attachmentXPositions: " + attachmentXPositions.length);
   for (var aaa = 0; aaa < attachmentXPositions.length; aaa++) {
+    
     if (link.words[aaa] instanceof Link) {
 
       console.log("rootMinWord = " + link.words[aaa].rootMinWord.toString());
       console.log("rootMaxWord = " + link.words[aaa].rootMaxWord.toString());
-
-      if (link.words[aaa].rootMinWord.row.idx == row) {
-        rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
+      //console.log("link idx: " + link.words[aaa].rootMinWord.row.idx + " row: " + row);
+      if (type == rowtypes.END|| type == rowtypes.START) {
+        if (link.words[aaa].nearestConnectedMinWord.row.idx == row) {
+          console.log("linkaaa: " + link.words[aaa].rootMinWord );
+          rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
+        }
+        else if (link.words[aaa].rootMinWord.row.idx == row ) {
+          rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
+          console.log("linkaaa: " + link.words[aaa].rootMinWord);
+        } 
+      }
+      else if (link.words[aaa].rootMinWord.row.idx == row ) {
+          rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
+          console.log("linkaaa: " + link.words[aaa].rootMinWord);
       } 
+      else if (type == rowtypes.START) {
+
+
+      }
 
     } else if (link.words[aaa] instanceof Word) {
 
@@ -1438,12 +1459,14 @@ function filterXPositionsForOnlyThisRow(attachmentXPositions, row, link, which) 
       }
     }
   }
-
+  //console.log("rowAttachXpos: " + rowAttachXPos);
   return rowAttachXPos; 
 }
 
 
+
 function storeArrow(idx, x, y, link, word, side, leftX, rightX) {
+  console.log("\n *** in storedArrow \n x: " + x + " y: " + y + " word: " + word );
   link.arrows[idx] = {x:x, y:y, link:link, word:word, side:side, leftX:leftX, rightX: rightX, visibility:true};
 }
 
@@ -1464,11 +1487,20 @@ function getLeftXForLeftWord(link) {
   if (link.leftType == types.WORD) {
     return link.leftWord.leftX;
   } else { //link
-    if (link.leftAttach == sides.LEFT) {
-      return link.leftWord.linesLeftX[0];
-    } else if (link.leftAttach == sides.RIGHT){
-      return link.leftWord.linesLeftX[link.leftWord.numLineSegments-1];
-    }
+    if (determineSide(link) == swapside.YES) {
+      if (link.leftAttach == sides.RIGHT) {
+        return link.leftWord.linesLeftX[0];
+      } else if (link.leftAttach == sides.LEFT){
+        return link.leftWord.linesLeftX[link.leftWord.numLineSegments-1];
+      }
+    } 
+    else {
+      if (link.leftAttach == sides.LEFT) {
+        return link.leftWord.linesLeftX[0];
+      } else if (link.leftAttach == sides.RIGHT){
+        return link.leftWord.linesLeftX[link.leftWord.numLineSegments-1];
+      }
+    }      
   }
 }
 
@@ -1476,10 +1508,19 @@ function getRightXForLeftWord(link) {
   if (link.leftType == types.WORD) {
     return link.leftWord.rightX;
   } else { //link
-    if (link.leftAttach == sides.LEFT) {
-      return link.leftWord.linesRightX[0];
-    } else if (link.leftAttach == sides.RIGHT) {
-      return link.leftWord.linesRightX[link.leftWord.numLineSegments-1];
+    if (determineSide(link) == swapside.YES) {
+      if (link.leftAttach == sides.RIGHT) {
+        return link.leftWord.linesRightX[0];
+      }   else if (link.leftAttach == sides.LEFT) {
+        return link.leftWord.linesRightX[link.leftWord.numLineSegments-1];
+      }
+    }
+    else {
+      if (link.leftAttach == sides.LEFT) {
+        return link.leftWord.linesRightX[0];
+      } else if (link.leftAttach == sides.RIGHT) {
+        return link.leftWord.linesRightX[link.leftWord.numLineSegments-1];
+      }
     }
   }
 }
@@ -1488,10 +1529,19 @@ function getLeftXForRightWord(link) {
   if (link.rightType == types.WORD) {
     return link.rightWord.leftX;
   } else { //link
-    if (link.rightAttach == sides.LEFT) {
-      return link.rightWord.linesLeftX[0];
-    } else if (link.rightAttach == sides.RIGHT) {
-      return link.rightWord.linesLeftX[link.rightWord.numLineSegments-1];
+    if (determineSide(link) == swapside.YES) {
+      if (link.rightAttach == sides.RIGHT) {
+        return link.rightWord.linesLeftX[0];
+      } else if (link.rightAttach == sides.LEFT) {
+        return link.rightWord.linesLeftX[link.rightWord.numLineSegments-1];
+      }
+    }
+    else {
+      if (link.rightAttach == sides.LEFT) {
+        return link.rightWord.linesLeftX[0];
+      } else if (link.rightAttach == sides.RIGHT) {
+        return link.rightWord.linesLeftX[link.rightWord.numLineSegments-1];
+      }
     }
   }
 }
@@ -1500,10 +1550,19 @@ function getRightXForRightWord(link) {
   if (link.rightType == types.WORD) {
     return link.rightWord.rightX;
   } else { //link
-    if (link.rightAttach == sides.LEFT) {
-      return link.rightWord.linesRightX[0];
-    } else if (link.rightAttach == sides.RIGHT) {
-      return link.rightWord.linesRightX[link.rightWord.numLineSegments-1];
+    if (determineSide(link) == swapside.YES) {
+      if (link.rightAttach == sides.RIGHT) {
+        return link.rightWord.linesRightX[0];
+      } else if (link.rightAttach == sides.LEFT) {
+        return link.rightWord.linesRightX[link.rightWord.numLineSegments-1];
+      }
+    }
+    else {
+      if (link.rightAttach == sides.LEFT) {
+        return link.rightWord.linesLeftX[0];
+      } else if (link.rightAttach == sides.RIGHT) {
+        return link.rightWord.linesLeftX[link.rightWord.numLineSegments-1];
+      }
     }
   }
 }

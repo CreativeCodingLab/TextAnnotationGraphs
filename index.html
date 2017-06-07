@@ -1,68 +1,13 @@
 <html>
 <head>
-
-<!-- turns off text selection for svg canvas -->
-<style>
-body {
-  margin:0;
-  -moz-osx-font-smoothing:grayscale;
-  -webkit-font-smoothing:antialiased;
-}
-
-svg text {
-  cursor: default;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-#header {
-  position:absolute;
-  top:0;
-  left:0;
-  background:#333;
-  color:white;
-  width:calc( 100% - 20px );
-  padding:10px;
-}
-
-#drawing {
-  margin-top:30px;
-}
-
-button {
-  background:white;
-  border:none;
-  outline:none;
-}
-
-button.active {
-  background:#ff8;
-}
-
-.split-left {width:66.5%; overflow:hidden;}
-.split-right {transform:translateX(0) !important;}
-.node { cursor: pointer; }
-#graph {
-    transition:transform 200ms ease;
-    transform:translateX(100%);
-    width:33%;
-    height:100%;
-    background:#fafaea;
-    position:fixed;
-    top:0;
-    right:0;
-}
-
-</style>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
 
 <div id="header">
-  <button id="random">random graph</button>
   <select id="dataset">
     <option>-- select dataset --</option>
     <option>data1</option>
@@ -73,7 +18,9 @@ button.active {
 </div>
 
 <div id="drawing">
-
+</div>
+<div id="graph">
+  <button>(Reset)</button>
 </div>
 
 
@@ -86,6 +33,7 @@ button.active {
 <script src="js/enums.js"></script>
 <script src="js/config.js"></script>
 <script src="js/parser.js"></script>
+<script src="js/Panel.js"></script>
 <script src="js/GraphLayout.js"></script>
 <script src="js/style.js"></script>
 <script src="js/annotate.js"></script>
@@ -94,7 +42,6 @@ button.active {
 <script src="js/utils.js"></script>
 
 <script type="text/javascript">
-
 /* a lot of these global vars should be wrapped eventually */
 var draw = SVG('drawing').size(Config.svgWidth, Config.svgHeight);
 var rowGroup = draw.group();
@@ -123,149 +70,140 @@ var wordObjs = createTestWords(4, 10, 10);
 //var linkObjs = createTestLinks(3,3,3); 
 //var linkObjs = createTestLinks(1,0,0); 
 var linkObjs = createTestMultiLinks(1); 
-
+/*
 drawWords(wordObjs);
 drawLinks(linkObjs);
 
 changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
-
+*/
 window.onload = function() {
-  var Panel = new GraphLayout();
-  var parser = new Parser();
+
+  const panel = new Panel('graph', 'drawing');
+  const graph = new GraphLayout(panel.el);
+  const parser = new Parser();
 
   var prevWidth = Config.svgWidth;
   function svgResize() {
     var widthPercChange; 
-    if (Panel.isOpen) {
-      Config.svgWidth = (window.innerWidth - 16) * 0.665;
-    }
-    else {
-      Config.svgWidth = (window.innerWidth - 16)
-    }
+    Config.svgWidth = (window.innerWidth - 16);
     changeSizeOfSVGPanel(Config.svgWidth, draw.height());
     widthPercChange = Config.svgWidth / prevWidth;
     prevWidth = Config.svgWidth;
     recalculateRows(widthPercChange); //makes sure that the words fit in the current width, else makes new rows  
   }
 
-  function handleKeyDown(e) {
-    var key = e.keyCode || e.which;
-    // console.log('keycode',key);
-    switch(key) {
-      case 37:          // left arrow
-        if (Panel.isOpen) {
-          Panel.close();
-          svgResize();
-        }
-        break;
-      case 39:          // right arrow
-        if (!Panel.isOpen) {
-          Panel.open();
-          svgResize();
-        }
-        Panel.graph(wordObjs.filter(word => word.isSelected));
-        break;
-      default:
-        break;
+  function getSelectedObjects() {
+    return wordObjs.concat(linkObjs).filter(obj => obj.isSelected);
+  }
+
+  draw.on('wordSelected', function() {
+    graph.graph(getSelectedObjects());
+  });
+
+  document.querySelector('#graph>button').onclick = function() {
+    let words = getSelectedObjects();
+    if (words.length > 0) {
+      graph.graph(words);
+    }
+    else {
+      graph.clear();
     }
   };
   
-  function changeDataset() {
-    Config.redraw = 0;
-    if (this.selectedIndex > 0) {
-      parser.readJson(`./data/data${this.selectedIndex}.json`, function() {
+  function changeDataset(index = 1) {
+    parser.readJson(`./data/data${index}.json`, function() {
+      graph.clear();
 
-        // construct word objects and tags from tokens, entities, and triggers
-        const words = parser.tokens.map((token, i) => new Word(token, i));
+      // construct word objects and tags from tokens, entities, and triggers
+      const words = parser.tokens.map((token, i) => new Word(token, i));
 
-        [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
-          if (words[el.tokenIndex]) {
-            words[el.tokenIndex].tag = el.type;
-            words[el.tokenIndex].eventId = el.id;
+      [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
+        if (words[el.tokenIndex]) {
+          words[el.tokenIndex].tag = el.type;
+          words[el.tokenIndex].eventId = el.id;
+        }
+      });
+      wordObjs = words;
+
+      // construct links from events and relations
+      const links = [];
+      parser.data.events.forEach(evt => {
+        const trigger = words.find(word => word.eventId === evt.trigger);
+
+        // create a link between the trigger and each of its arguments
+        evt.arguments.map(arg => {
+          let anchor;
+          switch (arg.id.charAt(0)) {
+            case 'E':
+              anchor = links.find(link => link.eventId === arg.id);
+              break;
+            case 'T': 
+              anchor = words.find(word => word.eventId === arg.id);
+              break;
+            default:
+              console.log('unhandled argument type', arg);
+              break;
           }
-        });
-        wordObjs = words;
 
-        // construct links from events and relations
-        const links = [];
-        parser.data.events.forEach(evt => {
-          const trigger = words.find(word => word.eventId === evt.trigger);
-
-          // create a link between the trigger and each of its arguments
-          evt.arguments.map(arg => {
-            let anchor;
-            switch (arg.id.charAt(0)) {
-              case 'E':
-                anchor = links.find(link => link.eventId === arg.id);
-                break;
-              case 'T': 
-                anchor = words.find(word => word.eventId === arg.id);
-                break;
-              default:
-                console.log('unhandled argument type', arg);
-                break;
-            }
-
-            // style the arrow
-            const ltr = arg.type === 'Controlled';
-            const direction = ltr ? [1, -1] : [-1, 1];
-            const arrowType = arg.type === 'Theme' ? styles.simpleLine : ltr ? styles.gradientLine1 : styles.gradientLine1r;
-
-            // create link
-            const link = new Link(
-              [trigger, anchor],
-              direction,
-              arrowType,
-              arg.type,
-              texts.linkText
-            );
-            link.eventId = evt.id;
-
-            // push link to link array
-            links.push(link);
-            createLink(link);
-
-          });//evt.argument.map
-        });//parser.data.events.forEach
-
-        parser.data.relations.forEach(rel => {
-          let ltr = true;
-          const arguments = rel.arguments.map((arg, i) => {
-            let anchor;
-            switch (arg.id.charAt(0)) {
-              case 'E':
-                anchor = links.find(link => link.eventId === arg.id);
-                break;
-              case 'T': 
-                anchor = words.find(word => word.eventId === arg.id);
-                break;
-              default:
-                console.log('unhandled argument type', arg);
-                break;
-            }
-            if (arg.type === 'Controlled' && i > 0) {
-              ltr = false;
-            }
-            return anchor;
-          });
+          // style the arrow
+          const ltr = arg.type !== 'Controller';
+          const direction = ltr ? [1, -1] : [-1, 1];
+          const arrowType = arg.type === 'Theme' ? styles.simpleLine : ltr ? styles.gradientLine1 : styles.gradientLine1r;
 
           // create link
           const link = new Link(
-            arguments,
-            ltr ? [-1, 1] : [1, -1],
-            ltr ? styles.gradientLine2 : styles.gradientLine2r,
-            rel.type,
+            [trigger, anchor],
+            direction,
+            arrowType,
+            arg.type,
             texts.linkText
           );
+          link.eventId = evt.id;
 
           // push link to link array
           links.push(link);
           createLink(link);
+
+        });//evt.argument.map
+      });//parser.data.events.forEach
+
+      parser.data.relations.forEach(rel => {
+        let ltr = true;
+        const arguments = rel.arguments.map((arg, i) => {
+          let anchor;
+          switch (arg.id.charAt(0)) {
+            case 'E':
+              anchor = links.find(link => link.eventId === arg.id);
+              break;
+            case 'T': 
+              anchor = words.find(word => word.eventId === arg.id);
+              break;
+            default:
+              console.log('unhandled argument type', arg);
+              break;
+          }
+          if (arg.type === 'Controlled' && i > 0) {
+            ltr = false;
+          }
+          return anchor;
         });
 
-        resetDrawing(words, links);
+        // create link
+        const link = new Link(
+          arguments,
+          ltr ? [-1, 1] : [1, -1],
+          ltr ? styles.gradientLine2 : styles.gradientLine2r,
+          rel.type,
+          texts.linkText
+        );
+
+        // push link to link array
+        links.push(link);
+        createLink(link);
       });
-    }
+
+      resetDrawing(words, links);
+    });
   };
 
   function resetDrawing(words, links) {
@@ -288,20 +226,23 @@ window.onload = function() {
     // linkObjs.forEach(link => link.style = styles[link.style]);
     drawWords(wordObjs);
     drawLinks(linkObjs);
-    if (Panel.isOpen) { Panel.close(); }
     changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
   }
 
   function resize() {
     svgResize();
-    Panel.resize();
+    graph.resize();
   }
 
-  document.addEventListener('keydown', handleKeyDown, false);
-  document.getElementById('random').onclick = resetDrawing.bind(this, null, null);
-  document.getElementById('dataset').onchange = changeDataset;
+  document.getElementById('dataset').onchange = function() {
+    Config.redraw = 0;
+    if (this.selectedIndex > 0) {
+      changeDataset(this.selectedIndex);
+    }
+  };
   window.onresize = _.debounce(resize, 300);
 
+  changeDataset(2);
 };
 
 </script>

@@ -22,4 +22,14 @@ var strategies = {
   FARTHEST: 1,
 };
 
+var swapside = {
+  YES: 1,
+  NO: 0
+};
 
+var rowtypes = {
+  ONLY: 0,
+  MIDDLE: 1,
+  START: 2,
+  END: 3
+};

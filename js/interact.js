@@ -30,43 +30,6 @@ function mclick(myrect, word){
 }
 
 
-function setupMouseOverInteractions(word) {
-  word.aboveRect.mouseover( function() { mover(word) }  );
-  word.aboveRect.mouseout( function() { mout(word) }  );
-  word.leftHandle.mouseover( function() { mover(word) }  );
-  word.leftHandle.mouseout( function() { mout(word) }  );
-
-  word.rightHandle.mouseover( function() { mover(word) }  );
-  word.rightHandle.mouseout( function() { mout(word) }  );
-
-   word.aboveRect.mousemove( function() {  
-   //  console.log("touchleave!");  
-   }  );
-  
-}
-
-
-function mover(word){
-  // console.log("in mover for " + word.val);
-
-  word.isHovered = true;
-
-  if (word.isSelected) {
-    word.underneathRect.style(styles.wordFill.hoverAndSelect);
-  } else {
-   word.underneathRect.style(styles.wordFill.hover);
-  }
-
-    if (isDragging) {return;} 
-
-  
-  word.leftHandle.style(styles.handleFill.hover);
-  word.rightHandle.style(styles.handleFill.hover);
-
-
-
-}
-
 function updateLinksOfWord(word) {
 
     var arr = [];
@@ -84,6 +47,7 @@ function updateAllLinks() {
   }
 }
 
+
 function updateLinks(link) {
 
     var arr = [link];
@@ -95,6 +59,17 @@ function updateLinks(link) {
     }
 
  
+}
+
+function updateLinkRow(row) {  
+  for (let item of linkObjs) {
+    let minRow = item.rootMinWord.row.idx;
+    let maxRow = item.rootMaxWord.row.idx;
+    if( row >= minRow || maxRow >= row )
+    {
+      item.needsUpdate = true;
+    }   
+  }
 }
 
 
@@ -141,83 +116,6 @@ function getAttachedLinks(e, arr) {
     getAttachedLinks(e.parentsR[i], arr);
   }
 }
-
-
-function mout(word){
-  // console.log("in mout for " + word.val);
-
-  word.isHovered = false;
-  if (isDragging) {return;} 
-
-  if (word.isSelected) {
-   word.underneathRect.style(styles.wordFill.select);
-  } else {
-    word.underneathRect.style(styles.wordFill.style);
-  }
-
-  word.leftHandle.style(styles.handleFill.style);
-  word.rightHandle.style(styles.handleFill.style);
-
-  // for (var i = 0; i < word.parentsL.length; i++) {
-  //   var p = word.parentsL[i];
-
-  //   for (var l = 0; l < p.lines.length; l++) {
-  //     p.lines[l].stroke( {color: "#ff0000"} );
-  //   }
-  // }
-
-  // console.log("length of parentsR??? = " + word.parentsR.length);
-  // for (var i = 0; i < word.parentsR.length; i++) {
-  //   var p = word.parentsR[i];
-
-  //   for (var l = 0; l < p.lines.length; l++) {
-  //     p.lines[l].stroke( {color: "#ff0000"} );
-  //   }
-  // }
-}
-
-function link_mover(link) {
-
-  for (var i = 0; i < link.lines.length; i++) {
-
-    link.lines[i].style(link.style.hover);
-  }
-}
-
-
-function link_mout(link) {
-
- for (var i = 0; i < link.lines.length; i++) {
-    link.lines[i].style(link.style.style);
-  }
-}
-
-function setupLineInteractions(link) {
-  function addInteraction(l) {
-    l.mouseover( function() { link_mover(link) } );
-    l.mouseout( function() { link_mout(link) }  );
-  }
-  
-  
-  if (link.labelRect) { 
-    link.labelRect.forEach(addInteraction);
-  }
-  link.lines.forEach(addInteraction);
-  
-  //link.r1.mouseover( function() { link_mover(link) }  );
-  //link.r2.mouseover( function() { link_mover(link) }  );
-
-}
-
-//function dragend
-//SVG.on(window, "dragend", function(e) {
-//  console.log("DRAG END!  " + e.detail); // Prints "Example of an event"
-//});
-//window.addEventListener('dragend', function(e) {
-//  console.log("DRAG END!  " + e.detail); // Prints "Example of an event"
-//});
-
-
 
 function addDragStartingAndEndingListeners(elem) {
 
@@ -441,7 +339,7 @@ function setUpLeftHandleDraggable(word) {
     var returnVal = dragLeftHandle(x, word.leftHandle.bbox().y, word);
     
     updateWords();
-  
+    
     redrawLinks(false);//actually - only redraw links that moving this word would affect + this row
     prevX = x;
     return returnVal;
@@ -641,7 +539,7 @@ function checkIfCanMoveRight(x, w, y, word, adjustWidth) {
     }
 
     if (rx + w > nextWordX) { //then need to push the next word
-      checkIfCanMoveRight(rx + w, nextWordW, nextWord.aboveRect.y(), nextWord, false);
+      checkIfCanMoveRight(rx + w, nextWordW, nextWord.underneathRect.y(), nextWord, false);
     }
   }
 
@@ -756,17 +654,15 @@ function moveWordToNewPosition(w, nx, ny) {
   w.tempX = nx;
   w.tempW = w.bbox.w;
   
-  w.aboveRect.x(nx);
-  w.aboveRect.y(ny);
+  w.underneathRect.x(nx);
+  w.underneathRect.y(ny);
 
-  w.bbox = w.aboveRect.bbox();
+  w.bbox = w.underneathRect.bbox();
   w.leftX = nx; 
   w.rightX = nx + w.bbox.w;
 
   w.percPos = (w.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
 
-  w.underneathRect.x(nx);
-  w.underneathRect.y(ny);
 
   w.text.x(nx + (w.bbox.w/2) - (w.text.bbox().w/2)  ); 
   w.text.y(ny + Config.textPaddingY*2); // - texts.wordText.descent);
@@ -814,11 +710,11 @@ function dragWord(x, y, word) {
   var dragDir = checkDragDirection(x);
 
   if (dragDir == directions.BACKWARD) {
-    return checkIfCanMoveLeft(x + rowOffsetX, word.aboveRect.bbox().width, y, word, false);
+    return checkIfCanMoveLeft(x + rowOffsetX, word.underneathRect.bbox().width, y, word, false);
   } else if (dragDir == directions.FORWARD) {
-    return checkIfCanMoveRight(x + rowOffsetX, word.aboveRect.bbox().width, y, word, false);
+    return checkIfCanMoveRight(x + rowOffsetX, word.underneathRect.bbox().width, y, word, false);
   } else {
-    return {x:word.aboveRect.bbox().x, y:word.aboveRect.bbox().y};
+    return {x:word.underneathRect.bbox().x, y:word.underneathRect.bbox().y};
   }
 }
 
@@ -888,6 +784,7 @@ function moveWordDownARow(w) {
   
   var currentRowIdx = w.row.idx;
   var nextRowIdx = w.row.idx + 1;
+
   var w = rows[currentRowIdx].words.pop();
   rows[nextRowIdx].words.unshift(w);
   w.row = rows[nextRowIdx];
@@ -901,6 +798,7 @@ function moveWordDownARow(w) {
     calculateMaxSlotForRow(rows[i]);
   }
 
+  updateLinkRow(nextRowIdx);
   return {x:nx, y:ny};
 }
 
@@ -933,6 +831,7 @@ function moveWordUpARow(w) {
     calculateMaxSlotForRow(rows[i]);
   }
 
+  updateLinkRow(nextRowIdx);
   return {x:nx, y:ny};
 
 }
@@ -940,9 +839,9 @@ function moveWordUpARow(w) {
 
 function setUpWordDraggable(word) {
 
-  addDragStartingAndEndingListeners(word.aboveRect);
+  addDragStartingAndEndingListeners(word.underneathRect);
 
-  var dragEvent = word.aboveRect.draggable(function(x,y) { 
+  var dragEvent = word.underneathRect.draggable(function(x,y) { 
     //return aaa(x,y);
 
     rowOffsetWord = word;
@@ -1000,7 +899,7 @@ function dragRow(x, y, row) {
     
 
   for (var i = 0; i < row.words.length; i++) {
-    setWordToY(row.words[i], row.lineBottom.bbox().y - row.words[i].aboveRect.height() );
+    setWordToY(row.words[i], row.lineBottom.bbox().y - row.words[i].underneathRect.height() );
     //updateLinksOfWord(row.words[i]);
   }
 
@@ -1015,9 +914,7 @@ function dragRow(x, y, row) {
 
     nextrow.ry = nextrow.rect.y();
     nextrow.rh = nextrow.rect.height();
-    
-    nextrow.lineTop.y(row.rect.bbox().y + row.rect.bbox().h + Config.rowPadding/2);
-      
+          
     for (var i = 0; i < nextrow.words.length; i++) {
       //updateLinksOfWord(nextrow.words[i]);
     }
@@ -1039,8 +936,8 @@ function dragRow(x, y, row) {
 
 
 function setWordToY(word, wy) {
-  word.aboveRect.y(wy);
-  word.bbox = word.aboveRect.bbox();
+  word.underneathRect.y(wy);
+  word.bbox = word.underneathRect.bbox();
   word.underneathRect.y(wy);  
   word.leftHandle.y(wy);  
   word.rightHandle.y(wy);  
