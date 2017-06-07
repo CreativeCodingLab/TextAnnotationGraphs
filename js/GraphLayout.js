@@ -61,7 +61,11 @@ const GraphLayout = (function() {
         .nodeSize([30,80])
         .separation((a,b) => {
             let separation = a.parent == b.parent ? 1 : 2;
-            separation += Math.max(b.data.incoming.length, a.data.incoming.length) / 2;
+            function reduce(acc, val) {
+                if (val.expanded) { return acc + val.size; }
+                return acc + 1;
+            }
+            separation += Math.max(b.data.incoming.reduce(reduce, 0), a.data.incoming.reduce(reduce, 0)) / 2;
             return separation;
         });
 
@@ -113,19 +117,27 @@ const GraphLayout = (function() {
         adjustMargins() {
             let bounds = this.div.getBoundingClientRect();
 
-            d3.selectAll('.group')
+/*            d3.selectAll('.group')
                 .attr('transform', (d, i, el) => {
 
                     let bbox = el[i].getBBox();
                     let y = -bbox.height / 2 - bbox.y;
 
+                    if (i !== d.index && d.anchor) {
+                        console.log(d3.select(el[d.index]).attr('transform'));
+                        // console.log(bbox.y);
+                        // y = bounds.height / 2 + bbox.y + (d.anchor.x - d.dx);
+                    }
+
                     return 'translate(' + [0, y] + ')';
                 });
-
+*/
             let bbox2 = this.g.node().getBBox();
             let x = 20 - bbox2.x + this.dx;
 
-            this.g.attr('transform', 'translate(' + [x, bounds.height / 2] + ')');
+            let y = bounds.height / 2 - bbox2.height / 2 - bbox2.y;
+
+            this.g.attr('transform', 'translate(' + [x, y/*bounds.height / 2*/] + ')');
         }
         clear() {
             this.words = [];
@@ -168,39 +180,69 @@ const GraphLayout = (function() {
             const anchorInNewTree = root.descendants().find(node => node.data.node === data.anchor.data.node);
 
             let tree2 = tree(root);
+
+            // remove extraneous hooks / shared nodes
+            let range = d3.extent(root.leaves().concat(data.anchor), d => d.x);
+
+            data.anchor.data.incoming.splice(data.anchor.data.incoming.indexOf(data.node), 1);
+            anchorInNewTree.parent.children.splice(anchorInNewTree.parent.children.indexOf(anchorInNewTree), 1);
+
+            // translate grafted tree onto old tree
             let dy = data.anchor.y - anchorInNewTree.y;
-
-            console.log('root.x', root.x, anchorInNewTree.x);
-            console.log('old root.x', this.data[index].root.x, data.anchor.x);
-
-            let graftLeftOfRoot = data.anchor.x < this.data[index].root.x;
-            let range = d3.extent(this.data[index].root.leaves(), d => d.x);
-
-            let dx;
-            if (graftLeftOfRoot) {
-                dx = range[1] - anchorInNewTree.x;
-            }
-            else {
-                dx = range[0] - anchorInNewTree.x;
-            }
-
+            let dx = data.anchor.x - anchorInNewTree.x;
             root.descendants().forEach(node => {
                 node.x += dx;
                 node.y += dy;
             });
 
+            console.log('----- range',d3.extent(this.data[index].root.descendants(), d => d.x));
+            console.log('graft range',d3.extent(root.descendants(), d => d.x));
+            console.log(data.anchor.x, dx);
+
+            // -------- in progress
+            // test case : Pos_reg         --> graft "outside"
+            // test case : Promotes        --> graft "inside"
+            // test case : Phosphorylation --> two
+/*            let graftLeftOfRoot = data.anchor.x < this.data[index].root.x;
+
+            console.log(root.descendants());
+
+            // rearrange old tree to not interfere with graft
+            let range = d3.extent(root.leaves().concat(data.anchor), d => d.x);
+            console.log(range);
+            console.log(this.data[index].root.descendants().map(d => d.x));
+
+            let children = data.anchor.descendants();
+            let offset = Number.MIN_SAFE_INTEGER;
+            this.data[index].root.descendants().forEach(node => {
+                // not a shared branch
+                if (children.indexOf(node) < 0) {
+                    if (node.x <= range[1] && node.x >= range[0]) {
+                        offset = Math.max(offset, node.x);
+                    }
+                }
+            });
+            offset = data.anchor.x - offset;
+            console.log(offset);
+            this.data[index].root.descendants().forEach(node => {
+                if (children.indexOf(node) < 0) {
+                    if (node.x <= range[1] && node.x >= range[0]) {
+                        node.x -= offset;
+                    }
+                }
+            })
+
+*/
+            // ------ end testing
+
             this.data.push({
                 index,
                 root,
+                dx,
                 tree: tree2,
                 anchor: data.anchor,
                 offset: this.data[index].offset
             });
-
-            // remove extraneous hooks
-            data.anchor.data.incoming.splice(data.anchor.data.incoming.indexOf(data.node), 1);
-
-            anchorInNewTree.parent.children.splice(anchorInNewTree.parent.children.indexOf(anchorInNewTree), 1);
 
             this.updateGraph();
         }
