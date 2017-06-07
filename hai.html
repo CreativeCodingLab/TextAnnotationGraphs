@@ -28,6 +28,16 @@ svg text {
 
 #drawing {
   margin-top:30px;
+  height: 100%;
+}
+
+.axis path {
+  display: none;
+}
+
+.axis line {
+  stroke-opacity: 0.1;
+  shape-rendering: crispEdges;
 }
 
 </style>
@@ -66,25 +76,65 @@ svg text {
 <script src="js/render.js"></script>
 <script src="js/interact.js"></script>
 <script src="js/utils.js"></script>
-<!--script src="js/staircase.js"></script-->
+<script src="js/staircase.js"></script>
+<script src="js/SentenceParser.js"></script>
 
 <script type="text/javascript">
 window.onload = function() {
+  
   console.log("Page is loaded...");
-  var parser = new Parser();
+  //var parser = new Parser();
+  var parser = new SentenceParser();
+
+  // Get the drawing's bounding client rect
+  var drawingBoundingClientRect = document.getElementById("drawing")
+                                            .getBoundingClientRect();
+  var drawingWidth = drawingBoundingClientRect.width;
+  var drawingHeight = drawingBoundingClientRect.height;   
+
+  console.log(drawingWidth, drawingHeight);
 
   // Add svg to the div
   var svg = d3.select("#drawing")
               .append("svg")
                 .attr("width", "1000%")
                 .attr("height", "1000%")
-              //.append("g")
-              //  .attr("transform", "translate(20, 20)")
+                .attr("transform", "translate(20, 20)")
               ;
-  console.log(svg);
-  var width = svg.attr("width"),
-      height = svg.attr("height");
-  console.log(width, height);
+
+  var width = 10 * drawingWidth,
+      height = 10 * drawingHeight;
+
+  /*
+  // Draw grid as background
+  var x = d3.scaleLinear()
+    .domain([-1, width + 1])
+    .range([-1, width + 1]);
+
+  var y = d3.scaleLinear()
+    .domain([-1, height + 1])
+    .range([-1, height + 1]);
+
+  var xAxis = d3.axisBottom(x)
+    .ticks(width/10)
+    .tickSize(height)
+    .tickPadding(8 - height)
+    .tickFormat("");
+
+  var yAxis = d3.axisRight(y)
+    .ticks(height/10)
+    .tickSize(width)
+    .tickPadding(8 - width)
+    .tickFormat("");
+
+  var gX = svg.append("g")
+    .attr("class", "axis axis--x")
+    .call(xAxis);
+
+  var gY = svg.append("g")
+    .attr("class", "axis axis--y")
+    .call(yAxis);
+  */
   
   function changeData() {
     console.log("Changing dataset...");
@@ -95,6 +145,7 @@ window.onload = function() {
       parser.readJson(`./data/data${this.selectedIndex}.json`, function() {
         // construct word objects and tags from tokens, entities, and triggers
         console.log("Constructing words...");
+        //console.log(parser);
         const words = parser.tokens.map((token, i) => new Word(token, i));
 
         [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
@@ -105,34 +156,37 @@ window.onload = function() {
         });
         wordObjs = words;
 
-        //console.log(words[1]);
-        //console.log(words[1].val + ", " + words[1].tag);
-        svg.selectAll("rect")
-            .data(words)
-            .enter().each(function(d,i) {
-              svg.append("rect")
-                  .attr("width", 100)
-                  .attr("height", 100)
-                  .attr("x", 100*i)
-                  .attr("y", 100*i)
-                  .style("fill", "#ffffff")
-                  .style("stroke", "#000000")
-                  .style("stroke-width", 1);
-                  ;
+        
+        var staircase = svg.selectAll("g").data(words);
 
-              svg.append("text")
-                  .text(words[i].val)
-                  .attr("text-anchor", "middle")
-                  .attr("alignment-baseline","central")
-                  .attr("x", 100*i)
-                  .attr("y", 100*i)
-                  .attr("font-family", "helvetica")
-                  .attr("font-size", "10px")
-                  .attr("fill", "black")
-                  .attr("opacity", "0.5")
-                  ;
+        staircase.enter()
+          .append("g")
+          .each(function(d,i) {
+            
+            svg.append("rect")
+                .attr("width", 100)
+                .attr("height", 100)
+                .attr("x", 100*i)
+                .attr("y", 100*i)
+                .style("fill", "#ffffff")
+                .style("stroke", "#000000")
+                .style("stroke-width", 1)
+                .on("click", function(d) {console.log(d);})
+                ;
+
+            svg.append("text")
+                .text(words[i].val)
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline","central")
+                .attr("x", 100*(i+0.5))
+                .attr("y", 100*(i+0.5))
+                .attr("font-family", "helvetica")
+                .attr("font-size", "10px")
+                .attr("fill", "black")
+                .attr("opacity", "0.5")
+                ;
             })
-
+        //*/
 
         // construct links from events and relations
         console.log("Constructing links...");
@@ -154,27 +208,6 @@ window.onload = function() {
                 console.log('unhandled argument type', arg);
                 break;
             }
-
-            /*
-            // style the arrow
-            const ltr = arg.type === 'Controlled';
-            const direction = ltr ? [1, -1] : [-1, 1];
-            const arrowType = arg.type === 'Theme' ? styles.simpleLine : ltr ? styles.gradientLine1 : styles.gradientLine1r;
-
-            
-            // create link
-            const link = new Link(
-              [trigger, anchor],
-              direction,
-              arrowType,
-              arg.type,
-              texts.linkText
-            );
-            link.eventId = evt.id;
-
-            // push link to link array
-            links.push(link);
-            */
           })
           
         })
