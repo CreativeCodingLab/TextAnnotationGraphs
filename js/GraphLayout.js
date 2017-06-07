@@ -160,34 +160,27 @@ const GraphLayout = (function() {
 
         updateIncoming(data, index) {
 
-            console.log('data.anchor', data.anchor, 'depth',data.anchor.depth);
-            // console.log('data[' + index + ']', this.data[index]);
-            console.log('incoming node', data.node);
-
             const seed = addNode(data.node, 0, null);
             const root = d3.hierarchy(seed);
 
             const anchorInNewTree = root.descendants().find(node => node.data.node === data.anchor.data.node);
-            console.log('root', root);
-            console.log('new anchor', anchorInNewTree, 'depth', anchorInNewTree.depth);
-
-            let dd = anchorInNewTree.depth - data.anchor.depth;
-            if (dd > 0) {
-                console.log(dd,'new tree is rooted farther back')
-            }
-            else if (dd < 0) {
-                console.log(dd,'old tree is rooted farther back')
-            }
-            else {
-                console.log(dd,'trees have same number of ancestors')
-            }
-
-            console.log('new leaves', root.leaves(), root.leaves().map(x => x.data.name));
-            console.log('old leaves',this.data[index].root.leaves(), this.data[index].root.leaves().map(x => x.data.name));
 
             let tree2 = tree(root);
-            let dx = data.anchor.x - anchorInNewTree.x;
             let dy = data.anchor.y - anchorInNewTree.y;
+
+            console.log('root.x', root.x, anchorInNewTree.x);
+            console.log('old root.x', this.data[index].root.x, data.anchor.x);
+
+            let graftLeftOfRoot = data.anchor.x < this.data[index].root.x;
+            let range = d3.extent(this.data[index].root.leaves(), d => d.x);
+
+            let dx;
+            if (graftLeftOfRoot) {
+                dx = range[1] - anchorInNewTree.x;
+            }
+            else {
+                dx = range[0] - anchorInNewTree.x;
+            }
 
             root.descendants().forEach(node => {
                 node.x += dx;
@@ -198,15 +191,14 @@ const GraphLayout = (function() {
                 index,
                 root,
                 tree: tree2,
+                anchor: data.anchor,
                 offset: this.data[index].offset
             });
 
             // remove extraneous hooks
             data.anchor.data.incoming.splice(data.anchor.data.incoming.indexOf(data.node), 1);
 
-            anchorInNewTree.data.incoming.splice(anchorInNewTree.data.incoming.indexOf(data.anchor.parent.data.node), 1);
-            anchorInNewTree.children = [];
-            anchorInNewTree.data.name = '';
+            anchorInNewTree.parent.children.splice(anchorInNewTree.parent.children.indexOf(anchorInNewTree), 1);
 
             this.updateGraph();
         }
@@ -223,6 +215,19 @@ const GraphLayout = (function() {
                     el = d3.select(el[i])
                         .attr('transform', 'translate(' + d.offset + ', 0)');
                     this.drawLinks(d.tree, el);
+                    if (d.anchor) {
+                        let [x1, y1] = [d.root.y, d.root.x];
+                        let [x2, y2] = [d.anchor.y, d.anchor.x];
+                        let curve_offset = 20;
+                        el.select('.link--dashed').remove();
+                        el.append('path')
+                            .attr('class','link--dashed')
+                            .attr('d', 'M' + [x1, y1] +
+                                'C' + [x1 + curve_offset, y1, x1 + curve_offset, y2, x2, y2]);
+                    }
+                    else {
+                        el.select('.link--dashed').remove();
+                    }
                 });
 
             let nodes = this.nodes.selectAll('.nodeGroup')
@@ -248,8 +253,6 @@ const GraphLayout = (function() {
 
             link.enter().append('path')
                 .attr('class', 'link')
-                .attr('fill', 'none')
-                .attr('stroke','#999')
             .merge(link)
                 .transition()
                 .attr('d', (d) => {
@@ -263,15 +266,11 @@ const GraphLayout = (function() {
                          d.source.data.node.arrowDirections.indexOf(-1) > -1 ) {
 
                         return 'M' + [x1, y1] +
-                            'C' + [x1, y2] +
-                            ',' + [x1, y2] + 
-                            ',' + [x2, y2];
+                            'C' + [x1, y2, x1, y2, x2, y2];
                     }
 
                     return 'M' + [x1, y1] +
-                        'C' + [x1 + curve_offset, y1] +
-                        ',' + [x1 + curve_offset, y2] + 
-                        ',' + [x2, y2];
+                        'C' + [x1 + curve_offset, y1, x1 + curve_offset, y2, x2, y2];
                   });
         }
         drawNodes(root, i, el) {

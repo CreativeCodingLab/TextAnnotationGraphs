@@ -38,6 +38,13 @@ button {
 }
 
 .node { cursor: pointer; }
+.link, .link--dashed {
+  fill: none;
+  stroke: #999;
+}
+.link--dashed {
+  stroke-dasharray: 2,2;
+}
 
 #graph {
   cursor:-webkit-grab;
