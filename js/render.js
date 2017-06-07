@@ -96,12 +96,11 @@ function recalculateRows(percChange) {
     //first pass at resizing   
 
     for (var ii = 0; ii < row.words.length; ii++) {
-      
-      
+
       var word = row.words[ii];
 
       //first try to expand or shrink size of words - but no smaller than the word's min width
-      var nw = Math.max( Math.min(word.getMaxWidth(), word.underneathRect.width() * percChange), word.getMinWidth() );
+      var nw = Math.max( Math.min(word.maxWidth, word.underneathRect.width() * percChange), word.minWidth );
 
       var nx = Config.edgePadding + (word.percPos * (Config.svgWidth-Config.edgePadding*2));
 
@@ -127,7 +126,7 @@ function recalculateRows(percChange) {
 
         var wordsFitInRow = true;
 
-        if (row.getMinWidth() > (Config.svgWidth - Config.edgePadding*2)) {
+        if (row.minWidth > (Config.svgWidth - Config.edgePadding*2)) {
           //console.log("words will not fit in row! have to adjust...");
           wordsFitInRow = false;
         } 
@@ -138,7 +137,7 @@ function recalculateRows(percChange) {
           //we'll make all minimum width for now
           for (var ii = row.words.length-1; ii >= 0 ; ii--) {
             var word = row.words[ii];
-            setWordToXW(word, word.leftX, word.getMinWidth());
+            setWordToXW(word, word.leftX, word.minWidth);
             word.update();
           }
 
@@ -153,8 +152,8 @@ function recalculateRows(percChange) {
           }
 
           newArray.sort(function(a, b) {
-            var d1 = a.underneathRect.width() - a.getMinWidth();
-            var d2 = b.underneathRect.width() - b.getMinWidth();
+            var d1 = a.underneathRect.width() - a.minWidth;
+            var d2 = b.underneathRect.width() - b.minWidth;
             return d1 - d2; 
           });
 
@@ -164,7 +163,7 @@ function recalculateRows(percChange) {
           for (var ii = 0; ii < newArray.length; ii++) {
             var word = newArray[ii];
 
-            var minW = word.getMinWidth();
+            var minW = word.minWidth;
 
             if (word.underneathRect.width() - pixelsPerWord < minW) {
 
@@ -232,10 +231,7 @@ function realignWords() {
 }
 
 function removeLastRow() {
-  rows[rows.length-1].rect.remove();
-  rows[rows.length-1].lineBottom.remove();
-  rows[rows.length-1].dragRect.remove();
-  rows.pop();
+  rows.pop().svg.remove();
 
   changeSizeOfSVGPanel(window.innerWidth - 16, (rows[rows.length - 1].lineBottom.y() ) + 1);
 }
@@ -258,27 +254,10 @@ function appendRow() {
   row.ry = Config.rowPadding/2 + rows[row.idx - 1].rect.bbox().y + rows[row.idx - 1].rect.bbox().h;
   row.rh = rows[row.idx - 1].rect.bbox().h; 
 
-  drawRow(row);
+  row.draw();
 
   changeSizeOfSVGPanel(window.innerWidth - 16, row.lineBottom.y() + 1);
 
-}
-
-function drawRow(row) {
-
-  row.rect = rowGroup.rect(Config.svgWidth,row.rh)
-    .x(0)
-    .y(row.ry)
-    .addClass('row--' + row.idx % 2);
-
-  row.lineBottom = rowGroup.line(0, row.ry+row.rh, Config.svgWidth, row.ry+row.rh).style(styles.rowLineStroke.style);
-
-  row.dragRect = rowGroup.rect(Config.dragRectSide,Config.dragRectSide).x(Config.svgWidth - (Config.dragRectSide+Config.dragRectMargin)).y(row.ry + row.rh - (Config.dragRectSide+Config.dragRectMargin)).style(styles.rowDragRectFill.style);
-
-
-  row.baseHeight = row.lineBottom.y() - (Config.textPaddingY*2) - texts.wordText.maxHeight;
-
-  setUpRowDraggable(row);
 }
 
 function calculateMaxSlotForRow(row) {
@@ -414,6 +393,10 @@ function drawWord(word) {
     .font(texts.wordText.style);
   });
 
+  word.bbox = word.underneathRect.bbox();
+  word.leftX = word.underneathRect.bbox().x;
+  word.rightX = word.underneathRect.bbox().x + word.underneathRect.bbox().w;
+  word.percPos = (word.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
 
   if (word.tag != null) {
     var textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
@@ -426,26 +409,21 @@ function drawWord(word) {
         .x(tagXPos)
         .font(texts.tagText.style);
       });
+    word.leftHandle = g.rect(Config.handleW, Config.handleH)
+      .x(word.wx)
+      .y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) )
+      .addClass('word--handle');
+
+    word.rightHandle = g.rect(Config.handleW,Config.handleH)
+      .x(word.wx + word.ww - (Config.handleW))
+      .y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) )
+      .addClass('word--handle');
+
+    //set up mouse interactions
+    setUpLeftHandleDraggable(word);
+    setUpRightHandleDraggable(word); 
   }
 
-  word.leftHandle = g.rect(Config.handleW, Config.handleH)
-    .x(word.wx)
-    .y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) )
-    .addClass('word--handle');
-
-  word.rightHandle = g.rect(Config.handleW,Config.handleH)
-    .x(word.wx + word.ww - (Config.handleW))
-    .y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) )
-    .addClass('word--handle');
-
-  word.bbox = word.underneathRect.bbox();
-  word.leftX = word.underneathRect.bbox().x;
-  word.rightX = word.underneathRect.bbox().x + word.underneathRect.bbox().w;
-  word.percPos = (word.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
-
-  //set up mouse interactions
-  setUpLeftHandleDraggable(word);
-  setUpRightHandleDraggable(word); 
   setUpWordDraggable(word); 
 
   word.underneathRect.dblclick( () => {
@@ -587,22 +565,16 @@ function drawAllLinks() {
 
     var lo = linkObjs[i];
 
-    ////console.log("lo.numLineSegments = " + lo.numLineSegments + " and lo.polylineSVGs.length = " + lo.polylineSVGs.length);
-    ////console.log(lo.polylineSVGs);
-
     if (lo.numLineSegments != lo.polylineSVGs.length) {
       if (lo.numLineSegments < lo.polylineSVGs.length) {
         //need to remove the old SVGs
-        ////console.log("REMOVING SVG");
         for (var ii = lo.numLineSegments; ii < lo.polylineSVGs.length; ii++) {
           lo.polylineSVGs[ii].remove();
           lo.polylineSVGs.splice(ii,1);
         }
       } else if (lo.numLineSegments > lo.polylineSVGs.length) {
         //need to add new SVGs
-        ////console.log("ADDING SVG");
         for (var ii = lo.polylineSVGs.length; ii < lo.numLineSegments; ii++) {
-          //console.log(ii);
           lo.polylineSVGs[ii] = null;
         }
       }
@@ -612,11 +584,8 @@ function drawAllLinks() {
     for (var ii = 0; ii < lo.numLineSegments; ii++) {
 
       if (lo.polylineSVGs[ii] == null) { //hasn't been drawn before
-        //console.log("here" + lo.polylines[ii].polyline);
-        //lo.polylineSVGs[ii] = link.polyline( lo.polylines[ii].polyline ).style( lo.polylines[ii].style) ;
         lo.polylineSVGs[ii] = link.path( lo.polylines[ii].polyline ).style( lo.polylines[ii].style) ;
       } else { //update existing polylineSVG
-
 
         lo.polylineSVGs[ii].plot(lo.polylines[ii].polyline).style(lo.polylines[ii].style);
 
@@ -630,8 +599,6 @@ function drawAllLinks() {
 
     }
   }
-
-  //interactions are for an array of polylines, eg when links are multi-rows. TODO add back in the link interactions - also link labels?
 
 }
 
@@ -664,9 +631,6 @@ function drawAllLinkLabels() {
 
     
     for (var ii = 0; ii < lo.numLineSegments; ii++) {
-
-      //console.log("in drawAllLinkLabels, line seg # " + ii);
-
       
       if (lo.labelTextSVGs[ii] == null) {
 
@@ -718,22 +682,17 @@ function drawAllLinkLabels() {
       
     }
   });
-
-
-
 }
 
 
 /** redraws all links that have been marked as needsUpdate = true, OR by passing in a boolean of true to indicate that the window has resized **/
 function redrawLinks(forceRedrawingAll) { //force redraw of all when resizing window
 
-console.log("\n\n***\n\n in redraw links:" + forceRedrawingAll);
-  Object.keys(linkObjs).forEach(function(key) {
-    if (linkObjs[key].needsUpdate || forceRedrawingAll == true) {
-      console.log(" link #" + key + " needsUpdate");
+  linkObjs.forEach(function(lo) {
+    if (lo.needsUpdate || forceRedrawingAll == true) {
       Config.redraw = 1;
-      drawLink(linkObjs[key]);
-      linkObjs[key].needsUpdate = false;
+      drawLink(lo);
+      lo.needsUpdate = false;
     }
   });
 
@@ -741,9 +700,6 @@ console.log("\n\n***\n\n in redraw links:" + forceRedrawingAll);
   drawAllLinkLabels();
   drawAllArrows();
 }
-
-
-
 
 function getLeftXForWord(word, link) {
   if (word instanceof Word) { //is a word
@@ -763,8 +719,6 @@ function getLeftXForWord(word, link) {
         return word.linesLeftX[0];
       }
     }
-    
-   //   return word.linesLeftX[word.numLineSegments-1];
   }
 }
 
@@ -777,7 +731,6 @@ function getRightXForWord(word, link) {
         return word.linesRightX[0];
       } else if (link.leftAttach == sides.LEFT) {
         return word.linesRightX[0];
-    //    return word.linesRightX[word.numLineSegments-1];
       }
     }
     else{
@@ -793,34 +746,15 @@ function getRightXForWord(word, link) {
 
 function getXPosForAttachmentByPercentageOffset(link) {
 
-  console.log("in getXPosForAttachmentByPercentageOffset for " + link.toString());
-
   attachXPositions = [];
 
   for (var i = 0; i < link.words.length; i++) {
     
-    var xleft, xright;
-    /*
-    if (i == 0) {
-      xleft = getLeftXForLeftWord(link);
-      xright = getRightXForLeftWord(link);
-    } else if (i == link.words.length - 1) {
-      xleft = getLeftXForRightWord(link);
-      xright = getRightXForRightWord(link);
-    } else {
-    */
-      xleft = getLeftXForWord(link.words[i], link);
-      xright = getRightXForWord(link.words[i], link);
-    //}
-    console.log(" xleft / xright = " + xleft + ", " + xright);
+    let xleft = getLeftXForWord(link.words[i], link);
+    let xright = getRightXForWord(link.words[i], link);
     var len = xright - xleft;
     attachXPositions[i] = xleft + (len * link.arrowXPercents[i]); 
-
-    console.log("link.arrowXPercents["+i+"] = " + link.arrowXPercents[i]);
- 
-    console.log("attachXPositions["+i+"] = " + attachXPositions[i]);
   }
-  
 
   return attachXPositions;
 }
@@ -833,48 +767,16 @@ function getXPosForAttachmentByPercentageOffset_old(link) {
   var leftX_2 = getLeftXForRightWord(link); 
   var rightX_2 = getRightXForRightWord(link);
 
-  console.log("leftX_1 = " + leftX_1);
-  console.log("rightX_1 = " + rightX_1);
-  console.log("leftX_2 = " + leftX_1);
-  console.log("rightX_2 = " + rightX_2);
-
   var lengthOfHalfOfLeftWord = ((rightX_1 - leftX_1) / 1);
   var lengthOfHalfOfRightWord = ((rightX_2 - leftX_2) / 1);
 
   xL = leftX_1 + (lengthOfHalfOfLeftWord * link.arrowXPercents[0]) ;
   xR = leftX_2 + (lengthOfHalfOfRightWord * link.arrowXPercents[link.words.length - 1]); 
   
-console.log("link.arrowXPercents[0] = " + link.arrowXPercents[0]);
-
-/*
-  if (link.leftAttach == sides.LEFT) { //attaches to the left side of the left word
-    //xL = leftX_1 + (lengthOfHalfOfLeftWord * link.x1percent) ;
-    xL = leftX_1 + (lengthOfHalfOfLeftWord * link.arrowXPercents[0]) ;
-  } else if (link.leftAttach == sides.RIGHT) { //attaches to the right side of the left word
-    //xL = (rightX_1) - ( lengthOfHalfOfLeftWord * link.x1percent); 
-    xL = (rightX_1) - ( lengthOfHalfOfLeftWord * link.arrowXPercents[0]); 
-  }
-
-  if (link.rightAttach == sides.LEFT) { //attaches to the left side of the right word
-    //xR =  leftX_2 + (lengthOfHalfOfRightWord * link.x2percent); 
-    xR =  leftX_2 + (lengthOfHalfOfRightWord * link.arrowXPercents[link.words.length - 1]); 
-  } else if (link.rightAttach == sides.RIGHT) {  //attaches to the right side of the right word
-
-    //xR = (rightX_2 ) - (lengthOfHalfOfRightWord * link.x2percent);
-    xR = (rightX_2 ) - (lengthOfHalfOfRightWord * link.arrowXPercents[link.words.length - 1]);
-  }
-*/
-
   return {left:xL, right:xR};
 }
 
-
-
-
 function getLinkStyles(link, xpts) {
-
-  //TODO - need to reverse direction of gradient when link reverses! currently always assumes increases in x direction, but manually moving links around can put the end x point before the start x point (ie, when moving link2link links). In that case, need to reverse the x's
-  // gradient.from(0, 0).to(1, 0) is the default, would need to be gradient.from(1, 0).to(0, 0)
 
   var linkStyles = [];
 
@@ -884,8 +786,7 @@ function getLinkStyles(link, xpts) {
   var left = xpts[0];
   var right = xpts[xpts.length - 1];
 
-  console.log("left = " + left + ", right = " + right);
-  //total length = middle rows * (screen width-margin*2) + (screenwidth-margin - left) + (right - margin)
+  // console.log("left = " + left + ", right = " + right);
 
   var middleLength = 0;
   if (link.numLineSegments > 2) {
@@ -916,24 +817,11 @@ function getLinkStyles(link, xpts) {
       } else {
         sp = sx / totalLength;
         ep = 1.0;
-        //sx = totalLength;
-        //sx += lastLength;
-        ////console.log("does sx = totalLength? : " + sx + " = " + totalLength); //yep!
       }
-
-      ////console.log("in getLinkStyles : i = " + i + ", sp/ep = " + sp + ", " + ep);
-      /*
-      //Older way - simpler, but doesn't take into account total lenghth of link, so for instance, for a link with three rows, the middle row would always look the same, regardless of where the start and end were, but I think it looks nice when the gradient gives you a hint about how long the link is, especially to help differentiate other long links
-      var sp = ((i) / link.numLineSegments) - 0.1;
-      var ep = ((i + 1) / link.numLineSegments) + 0.1; 
-      //seems to help user to recognize same line on different rows when we overlap the gardient transitions? .. testing w +0.1 and -0.1 on percents..., but may want to play around with it or remove it...
-      */
 
       var uc1 = chroma.mix(c1, c2, sp).hex();
       var uc2 = chroma.mix(c1, c2, ep).hex();
 
-
-      //var g = gradientDefGroup.gradient('linear', 
       var g = groupAllElements.gradient('linear', 
           function(stop) { 
             stop.at(0.0, uc1); 
@@ -960,7 +848,6 @@ function getLinkStyles(link, xpts) {
 function storeOnlyArrows(rowNum, y1, link, xPositions) {
   
   arrowPos = [];
-  console.log("xPos Length: " + xPositions.length);
   for (var i = 0; i < xPositions.length; i++) {  
   
     var wordIdx = xPositions[i].wordIdx;
@@ -969,11 +856,9 @@ function storeOnlyArrows(rowNum, y1, link, xPositions) {
 
 
     var w = link.words[wordIdx];
-    console.log("\n\n *** \n\n in storeOnlyArrows \n word: " + link.words[wordIdx]);
-    console.log("\nxPos: " + xPositions[i].xpos);    
     
     if (w instanceof Word ) { // && w.row.idx == rowNum) {
-      ypos = w.bbox.y;
+      ypos = rows[rowNum].baseHeight;
 
     } else if ( w instanceof Link ) { //&& w.rootMinWord.row.idx == rowNum ) {
 
@@ -984,27 +869,22 @@ function storeOnlyArrows(rowNum, y1, link, xPositions) {
     }
 
     arrowPos.push( {x:xpos, y:ypos} );
-    console.log("arrowPosPush: " + arrowPos);
-   //link.leftAttach == sides.RIGHT; 
-   //link.rightAttach == sides.RIGHT; 
     storeArrow(wordIdx, xpos, ypos, link, w, link.rightAttach, getLeftXForWord(w, link), getRightXForWord(w, link) ); 
   }
 
-  console.log("arrowPos: " + arrowPos);
   return arrowPos;
 }
 
 
 function calculateOnlyRow(rowNum, link, percentagePadding, xPositions, linkStyles) {
 
-  console.log("in calculateOnlyRow - " + link.toString());
   var yPos = rows[rowNum].baseHeight - link.h * percentagePadding;
   var arrowPos = storeOnlyArrows(rowNum, yPos, link, xPositions);
   
   arrowPos.sort(function(a, b) {
     return a.x - b.x; 
   });
-  
+
   var xL =  arrowPos[0].x ; //xPositions[0];
   var xR = arrowPos[arrowPos.length-1].x; //xPositions[link.words.length - 1];
 
@@ -1013,17 +893,11 @@ function calculateOnlyRow(rowNum, link, percentagePadding, xPositions, linkStyle
     'L' + [xR - 5, yPos] +
     'C' + [xR, yPos, xR, yPos, xR, arrowPos[arrowPos.length - 1].y];
 
-  // var pathline = 'M '+ xL + ' ' + arrowPos[0].y + 
-  //   ' L ' + xL + ' ' +  yPos + 
-  //   ' L ' + xR + ' ' +  yPos + 
-  //   ' L ' + xR + ' ' +  arrowPos[arrowPos.length - 1].y;
-
   for (var p = 1; p < arrowPos.length - 1; p++) {
      pathline += 
         ' M ' + arrowPos[p].x + ' ' +  yPos +
         ' L ' + arrowPos[p].x + ' ' +  arrowPos[p].y;
   }
-
 
   var lineStyle = link.style.style;
 
@@ -1051,7 +925,7 @@ function calculateOnlyRow(rowNum, link, percentagePadding, xPositions, linkStyle
     //setupLineInteractions(link); //only can interact with them if they are visible
   }
 
-   calculateLinkLabels(0, rowNum, (xL + xR) / 2, yPos, link, (percentagePadding < Config.hideLinkTextPercentage));
+  calculateLinkLabels(0, rowNum, (xL + xR) / 2, yPos, link, (percentagePadding < Config.hideLinkTextPercentage));
 
  
   link.linesLeftX.push(xL); 
@@ -1064,8 +938,8 @@ function calculateOnlyRow(rowNum, link, percentagePadding, xPositions, linkStyle
 
 
 function calculateStartRow(idx, rowNum, link, percentagePadding, xPositions, linkStyles ) {
-  console.log("in calculateStartRow - " + link.toString());
-  console.log("link height:" + link.h);
+  // console.log("in calculateStartRow - " + link.toString());
+  // console.log("link height:" + link.h);
   var yPos = rows[rowNum].baseHeight - link.h * percentagePadding;
 
   var arrowPos = storeOnlyArrows(rowNum, yPos, link, xPositions);
@@ -1083,10 +957,6 @@ function calculateStartRow(idx, rowNum, link, percentagePadding, xPositions, lin
     'C' + [xL, yPos, xL,yPos, xL + 5, yPos] +
     'L' + [xR, yPos];
 
-  // var pathline = 'M '+ xL + ' ' + arrowPos[0].y + 
-  //   ' L ' + xL + ' ' +  yPos + 
-  //   ' L ' + xR + ' ' +  yPos;
-
   for (var p = 1; p < arrowPos.length; p++) {
      pathline += 
         ' M ' + arrowPos[p].x + ' ' +  yPos +
@@ -1099,19 +969,12 @@ function calculateStartRow(idx, rowNum, link, percentagePadding, xPositions, lin
 
   link.polylines[idx] = {polyline: pathline, style: linkStyles[idx]};
 
-  console.log("START link.polylines[i] style = " + linkStyles[idx] );
-
-  //storeArrow(0, p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
- 
-  //storeLeftArrow(p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
-
   if (percentagePadding < Config.hideLinkLinesPercentage) { 
     link.polylines[idx].visibility = false;
     for (var i = 0; i < xPositions.length; i++) {
       var wordIdx = xPositions[i].wordIdx;
       link.arrows[wordIdx].visibility = false;
     }
-    //link.arrows[0].visibility = false;
 
   } else {
     link.polylines[idx].visibility = true;
@@ -1121,8 +984,6 @@ function calculateStartRow(idx, rowNum, link, percentagePadding, xPositions, lin
       link.arrows[wordIdx].visibility = true;
     }
   
-    //  link.arrows[link.words.length - 1].visibility = true;
-    //setupLineInteractions(link); //only can interact with them if they are visible
   }
 
   calculateLinkLabels(idx, rowNum, (xL + xR)/2, yPos, link, (percentagePadding < Config.hideLinkTextPercentage));
@@ -1139,8 +1000,8 @@ function calculateMiddleRow (idx, rowNum, link, percentagePadding, xPositions, l
     return a.x - b.x; 
   });
   
-  var xL = 0; //xPositions[0];
-  var xR = Config.svgWidth; //xPositions[link.words.length - 1];
+  var xL = 0;
+  var xR = Config.svgWidth;
 
    var pathline = 'M '+ (xL-10) + ' ' + (yPos-10) + 
     ' L ' + xL + ' ' +  yPos + 
@@ -1151,16 +1012,6 @@ function calculateMiddleRow (idx, rowNum, link, percentagePadding, xPositions, l
         ' M ' + arrowPos[p].x + ' ' +  yPos +
         ' L ' + arrowPos[p].x + ' ' +  arrowPos[p].y;
   }
-
-  //adding the first coordinate since the linearGradients don't seem to calculate on polylines with only 2 points!!! Seems to be an SVG bug!!! (the first coordinate is offscreen and so doesn't cause any problems... but I can imagine this could come back to haunt us... (or is it because the bbox is h=0?)
-
-  //var polyline = [ [p2x-10,p2y-10],[p2x,p2y],[p3x,p3y] ];
-
-  //var pathline = 'M '+ (p2x-10) + ' ' + (p2y-10) + 
-  //  ' L ' + p2x + ' ' +  p2y + 
-  //  ' L ' + p3x + ' ' +  p3y;
-
-  //pathline += appendMiddleLinksToPathline(rowNum, p3y, link);
 
   link.linesLeftX.push(xL);
   link.linesRightX.push(xR);
@@ -1181,8 +1032,6 @@ function calculateMiddleRow (idx, rowNum, link, percentagePadding, xPositions, l
       var wordIdx = xPositions[i].wordIdx;
       link.arrows[wordIdx].visibility = true;
     }
-
-    //setupLineInteractions(link); //only can interact with them if they are visible
   }
 
   calculateLinkLabels(idx, rowNum, (xL+xR) / 2, yPos, link, (percentagePadding < Config.hideLinkTextPercentage));
@@ -1192,9 +1041,6 @@ function calculateMiddleRow (idx, rowNum, link, percentagePadding, xPositions, l
 
 function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkStyles ) {
   
-  console.log("in calculateEndRow - " + link.toString());
-
-
   var yPos = rows[rowNum].baseHeight - link.h * percentagePadding;
 
   var arrowPos = storeOnlyArrows(rowNum, yPos, link, xPositions);
@@ -1206,19 +1052,9 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
   var xL = 0; //xPositions[0];
   var xR = arrowPos[arrowPos.length-1].x; //xPositions[link.words.length - 1];
 
-  console.log("in calculateEndRow, xL =  " + xL + ", xR = " + xR);
-  
-
   var pathline = 'M' + [xL, yPos] +
     'L' + [xR - 5, yPos] +
     'C' + [xR, yPos, xR, yPos, xR, arrowPos[arrowPos.length - 1].y];
-
-
-  // var pathline = 'M ' + xL + ' ' + yPos + 
-  //   ' L ' + xR + ' ' +  yPos +
-  //   ' L ' + xR + ' ' +  arrowPos[arrowPos.length-1].y;
-
-  console.log("PATHLINE = " + pathline);
   
      for (var p = 0; p < arrowPos.length - 1; p++) {
        console.log("p = " + p);
@@ -1232,47 +1068,7 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
   link.linesLeftX.push(xL);
   link.linesRightX.push(xR);
 
-
-  /*
-  var y2 = rows[rowNum].baseHeight - link.h * percentagePadding;
-  var y3 = rows[rowNum].baseHeight - link.h * percentagePadding;
-  var y4 = rows[rowNum].baseHeight - link.rightWord.h * percentagePadding;
-
-  var p2x = 0; 
-  var p2y = y2;
-
-  var p3x = xR; 
-  var p3y = y3;
-
-  var p4x = xR; 
-  var p4y = y4;
-
-
-  var pathline = 'M '+ p2x + ' ' + p2y + 
-    ' L ' + p3x + ' ' +  p3y +
-    ' L ' + p4x + ' ' +  p4y;
-  //' M ' + ((p2x+p3x)/2) + ' ' +  p3y +
-    //' L ' + ((p2x+p3x)/2) + ' ' +  p4y;
-
- 
-//  pathline += appendMiddleLinksToPathline(rowNum, p3y, link);
- 
-
-
-//  var polyline = [ [p2x,p2y],[p3x,p3y],[p4x,p4y] ]; 
-  link.linesLeftX.push(p2x);
-  link.linesRightX.push(p4x);
-*/
-
   link.polylines[idx] = {polyline: pathline, style: linkStyles[idx]};
-
-  console.log("END link.polylines[idx] style = " + linkStyles[idx] );
-
-
- //  storeArrow(0, p1x, p1y, link, link.leftWord, link.leftAttach, getLeftXForLeftWord(link), getRightXForLeftWord(link));
-  //storeArrow(link.words.length - 1, p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link));
- 
-  //storeRightArrow(p4x, p4y, link, link.rightWord, link.rightAttach, getLeftXForRightWord(link), getRightXForRightWord(link));
 
   if (percentagePadding < Config.hideLinkLinesPercentage) { //only bother drawing links if there's room in the row
     link.polylines[idx].visibility = false;
@@ -1281,11 +1077,6 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
       var wordIdx = xPositions[i].wordIdx;
       link.arrows[wordIdx].visibility = false;
     }
-    
-    //for (var i = 0; i < link.words.length; i++) {
-    //  link.arrows[i].visibility = false;
-   // }
-
 
   } else {
 
@@ -1295,13 +1086,6 @@ function calculateEndRow(idx, rowNum, link, percentagePadding, xPositions, linkS
       var wordIdx = xPositions[i].wordIdx;
       link.arrows[wordIdx].visibility = true;
     }
-    
-    //for (var i = 0; i < link.words.length; i++) {
-    //  link.arrows[i].visibility = true;
-    //}
-
-
-    //setupLineInteractions(link); //only can interact with them if they are visible
   }
 
   calculateLinkLabels(idx, rowNum, (xL+xR) / 2, yPos, link, (percentagePadding < Config.hideLinkTextPercentage));
@@ -1329,13 +1113,6 @@ function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
   else {
     text = {text: link.textStr, x: (x - twh.w/2), y: (y - link.textStyle.maxHeight/2 - link.textStyle.descent), style: (link.textStyle.style), visibility:true};
   }
-/*
-  console.log(" in calculateLinkLabels, idx = " + idx + ", rowNum = " + rowNum + ", rect = ");
-  console.log(rect);
-  console.log(" in calculateLinkLabels, text = ");
-  console.log(text);
-  console.log(link.textStyle.descent)
-*/
   link.labels[idx] = {rect:rect, text:text};
 
   if (isHidden) {
@@ -1346,16 +1123,10 @@ function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
 
 function drawLink(link) {
 
-  // console.log("\n\n\n***\n\nin drawLink ::: " + link.toString());
   var attachmentXPositions = getXPosForAttachmentByPercentageOffset(link); 
-
-  // console.log("attachment positions = ");
-  // console.log(attachmentXPositions);
 
   var xL = attachmentXPositions[0];
   var xR = attachmentXPositions[link.words.length - 1];
-
-  // console.log("... xL, xR = " + xL + ", " + xR);
 
   link.linesLeftX = [];
   link.linesRightX = [];
@@ -1363,14 +1134,6 @@ function drawLink(link) {
   var minRow = link.rootMinWord.row.idx;
   var maxRow = link.rootMaxWord.row.idx;
 
-  // console.log("minWord: " + link.rootMinWord);
-  // console.log("minRow: " + link.rootMinWord.row.idx);
-  
-  /* Object.keys(linkObjs).forEach(function(key) {
-    console.log("link minWord: " + linkObjs[key].rootMinWord);
-    console.log("link minRow: " + linkObjs[key].rootMinWord.row);
-  });
-  */
   link.numLineSegments = (maxRow - minRow)+1;
 
   var linkStyles;
@@ -1379,13 +1142,6 @@ function drawLink(link) {
   } else {
     linkStyles = getLinkStyles(link, attachmentXPositions);
 
-    /* thought that it would be faster to not create new gradients on the fly, but doesn't seem to be the case! */ 
-    /*
-       var linkStyles = [];
-       for (var i = 0; i < link.numLineSegments; i++) {
-       linkStyles[i] = link.style.style;
-       }
-       */
   }
 
   for (var i = minRow; i <= maxRow; i++) {
@@ -1413,7 +1169,6 @@ function drawLink(link) {
       calculateMiddleRow(rowNum, i, link, percentagePadding, rowAttachXPos, linkStyles); 
     }
   }
-  
 
 }
 
@@ -1430,22 +1185,19 @@ function filterXPositionsForOnlyThisRow(attachmentXPositions, row, link, type) {
     
     if (link.words[aaa] instanceof Link) {
 
-      console.log("rootMinWord = " + link.words[aaa].rootMinWord.toString());
-      console.log("rootMaxWord = " + link.words[aaa].rootMaxWord.toString());
+      // console.log("rootMinWord = " + link.words[aaa].rootMinWord.toString());
+      // console.log("rootMaxWord = " + link.words[aaa].rootMaxWord.toString());
       //console.log("link idx: " + link.words[aaa].rootMinWord.row.idx + " row: " + row);
       if (type == rowtypes.END|| type == rowtypes.START) {
         if (link.words[aaa].nearestConnectedMinWord.row.idx == row) {
-          console.log("linkaaa: " + link.words[aaa].rootMinWord );
           rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
         }
         else if (link.words[aaa].rootMinWord.row.idx == row ) {
           rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
-          console.log("linkaaa: " + link.words[aaa].rootMinWord);
         } 
       }
       else if (link.words[aaa].rootMinWord.row.idx == row ) {
           rowAttachXPos.push( {wordIdx:aaa, xpos:attachmentXPositions[aaa]} );
-          console.log("linkaaa: " + link.words[aaa].rootMinWord);
       } 
       else if (type == rowtypes.START) {
 
@@ -1459,29 +1211,14 @@ function filterXPositionsForOnlyThisRow(attachmentXPositions, row, link, type) {
       }
     }
   }
-  //console.log("rowAttachXpos: " + rowAttachXPos);
   return rowAttachXPos; 
 }
 
 
 
 function storeArrow(idx, x, y, link, word, side, leftX, rightX) {
-  console.log("\n *** in storedArrow \n x: " + x + " y: " + y + " word: " + word );
   link.arrows[idx] = {x:x, y:y, link:link, word:word, side:side, leftX:leftX, rightX: rightX, visibility:true};
 }
-
-
-/*
-   function storeLeftArrow(x, y, link, word, side, leftX, rightX) {
-   link.arrows[0] = {x:x, y:y, link:link, word:word, side:side, leftX:leftX, rightX: rightX, visibility:true};
-   }
-
-   function storeRightArrow(x, y, link, word, side, leftX, rightX) {
-   link.arrows[link.words.length - 1] = {x:x, y:y, link:link, word:word, side:side, leftX:leftX, rightX: rightX, visibility:true};
-   }
-   */
-
-
 
 function getLeftXForLeftWord(link) {
   if (link.leftType == types.WORD) {

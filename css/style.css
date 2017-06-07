@@ -26,7 +26,7 @@ svg text {
 
 #drawing {
   margin-top:30px;
-  margin-bottom: 230px;
+  margin-bottom: 210px;
 }
 
 button {
@@ -38,12 +38,19 @@ button {
 }
 
 .node { cursor: pointer; }
+.link, .link--dashed {
+  fill: none;
+  stroke: #999;
+}
+.link--dashed {
+  stroke-dasharray: 2,2;
+}
 
 #graph {
   cursor:-webkit-grab;
   cursor:grab;
   width:100%;
-  height:220px;
+  height:200px;
   border-top: 1px solid #ccc;
   background:#fff;
   position:fixed;
@@ -77,15 +84,17 @@ button {
 
 .word--underneath {
   fill:white;
+  cursor:-webkit-grab;
+  cursor:grab;
 }
 
 .selected .word--underneath, .link--label.selected {
-  fill:white;
-  stroke:teal;
+  fill:#fff6f6;
+  stroke:#c37;
 }
 .hovered .word--underneath, .link--label.hovered {
   fill:white;
-  stroke:cyan;
+  stroke:#f7c;
 }
 
 .word--handle {

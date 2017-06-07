@@ -1,35 +1,3 @@
-
-function mdown(myrect, word){
-  //console.log("in mdown!");
-  //console.log(word);
-  //console.log(myrect.bbox());
-  word.isSelected = true;
-}
-
-function mup(myrect, word){
-  //console.log("in mup!");
-  //console.log(word);
-  //console.log(myrect.bbox());
-  word.isSelected = false;
-}
-
-function mmove(myrect, word){
-  //console.log("in mmove!");
-  //console.log(word);
-  //console.log(myrect.bbox());
-
-  if (word.isSelected == true) {
-    //console.log("you are moving this guy!");
-  }
-}
-
-function mclick(myrect, word){
-  //console.log("in mclick!");
-  //console.log(word);
-  //console.log(myrect.bbox());
-}
-
-
 function updateLinksOfWord(word) {
 
     var arr = [];
@@ -39,7 +7,6 @@ function updateLinksOfWord(word) {
       item.needsUpdate = true;
     }
 }
-
 
 function updateAllLinks() {
   for (let item of linkObjs) {
@@ -57,11 +24,10 @@ function updateLinks(link) {
      //console.log(item.toString());
      item.needsUpdate = true;
     }
-
- 
 }
 
 function updateLinkRow(row) {  
+
   for (let item of linkObjs) {
     let minRow = item.rootMinWord.row.idx;
     let maxRow = item.rootMaxWord.row.idx;
@@ -118,49 +84,18 @@ function getAttachedLinks(e, arr) {
 }
 
 function addDragStartingAndEndingListeners(elem) {
-
-
   
   elem.on('dragstart', function() {
-    isDragging = true;
-    //isCanceling = false;
-    //console.log("isDragging = " + isDragging);
-    //console.log("elem = " + elem + " rect x = " + elem.bbox().x);
     prevX = elem.bbox().x;
-
-  })
-
-  /*
-  elem.on('mousemove.drag', function() {
-    updateWords();   
-  })
-  */
-
-
-  /*
-  elem.on('mousemove.drag', _.debounce(function() {
-    //console.log("here!");
-    updateWords();   
-  }, 1));
-  */
-
+  });
 
   elem.on('dragend', function(e) {
-    isDragging = false;
-    //isCanceling = false;
-    if (rowOffsetWord && rowOffsetWord.isHovered == false) {
-      mout(rowOffsetWord);
-    }
 
     rowOffsetX = 0;
     rowOffsetWord = null;
 
     prevX = -1;
-    console.log("dragEnd B - isDragging = " + isDragging);
-
-
-  })
-
+  });
 }
 
 
@@ -175,27 +110,6 @@ function dragArrow (lo, arrowIdx, arrowSVG ) {
 }
 
 
-/*
-function dragArrow1 (lo, arrowSVG, arrowInfo ) {
-
-  addDragStartingAndEndingListeners(arrowSVG);
-
-  arrowSVG.draggable(function(x, y) {
-    return manageDrag(arrowSVG, x, y, lo, lo.arrows[0]);
-  });
-}
-
-function dragArrow2 (lo, arrowSVG, arrowInfo ) {
-
-  addDragStartingAndEndingListeners(arrowSVG);
-
-  arrowSVG.draggable(function(x, y) {
-    return manageDrag(arrowSVG, x, y, lo, lo.arrows[lo.words.length - 1]);
-  });
-}
-*/
-
-
 function manageDrag(arrowSVG, x, y, lo, arrowInfo, arrowIdx) {
 
   var leftX = arrowInfo.leftX;
@@ -204,117 +118,26 @@ function manageDrag(arrowSVG, x, y, lo, arrowInfo, arrowIdx) {
   var side = arrowInfo.side;
   var word = arrowInfo.word;
 
-//  if (side == sides.LEFT) {
-    var xPos = (x - leftX) + Config.arrowW; 
-    var percentage = xPos / (linkWidth/1);
-    var ux = x;
+  var xPos = (x - leftX) + Config.arrowW; 
+  var percentage = xPos / (linkWidth/1);
+  var ux = x;
 
-    if (percentage < 0.0) {
-      console.log("AAA");
-      percentage = 0.0;
-      ux = leftX - Config.arrowW;
-    } else if (percentage > 1.0) {
-      console.log("BBB");
-      percentage = 1.0;
-      ux = rightX - Config.arrowW;
-    }
-/* 
-} else if (side == sides.RIGHT) { 
-
-    var xPos = linkWidth - ((x - leftX) + Config.arrowW); 
-
-    var percentage = xPos / (linkWidth/1);
-    var ux = x;
-
-    if (percentage < 0.0) {
-      console.log("CCC");
-      percentage = 0.0;
-      ux = rightX - Config.arrowW;
-    } else if (percentage > 1.0) {
-      console.log("DDD");
-      percentage = 1.0;
-      ux = leftX - Config.arrowW;
-    }
+  if (percentage < 0.0) {
+    percentage = 0.0;
+    ux = leftX - Config.arrowW;
+  } else if (percentage > 1.0) {
+    percentage = 1.0;
+    ux = rightX - Config.arrowW;
   }
 
-  if (word == lo.leftWord) {
-    lo.arrowXPercents[0] = percentage;
-  } else {
-    lo.arrowXPercents[lo.words.length - 1] = percentage;
-  }
-*/
-
-console.log("percentage for arrowIdx ("+arrowIdx+") = " + percentage);
-    lo.arrowXPercents[arrowIdx] = percentage;
+  lo.arrowXPercents[arrowIdx] = percentage;
  
   updateLinks(lo);
 
   redrawLinks(false);
-  //redrawLinks(true);
 
   return { x:ux, y: arrowSVG.bbox().y }
 }
-
-
-/*
-   function dragArrow (arrow, link, word, side, leftX, rightX) {
-
-   addDragStartingAndEndingListeners(arrow);
-
-
-   arrow.draggable(function(x, y) {
-
-   var linkWidth = ( (rightX) - (leftX) );
-
-   console.log(linkWidth);
-
-
-   if (side == sides.LEFT) {
-   var xPos = (x - leftX) + Config.arrowW; 
-//console.log("x = " + x + ", xPos = " + xPos);
-
-var percentage = xPos / (linkWidth/2);
-var ux = x;
-
-if (percentage < 0.0) {
-percentage = 0.0;
-ux = leftX - Config.arrowW;
-} else if (percentage > 2.0) {
-percentage = 2.0;
-ux = leftX - Config.arrowW + (linkWidth/2);
-}
-} else if (side == sides.RIGHT) { 
-
-var xPos = linkWidth - ((x - leftX) + Config.arrowW); 
-
-var percentage = xPos / (linkWidth/2);
-var ux = x;
-
-if (percentage < 0.0) {
-percentage = 0.0;
-ux = leftX - Config.arrowW;
-} else if (percentage > 2.0) {
-percentage = 2.0;
-ux = leftX - Config.arrowW + (linkWidth);
-}
-}
-
-    if (word == link.leftWord) {
-      link.x1percent = percentage;
-    } else {
-      link.x2percent = percentage;
-    }
-
-    updateLinks(link);
-
-    redrawLinks();
-    
-    return { x:ux, y: arrow.bbox().y }
-    
-    //return { x:x, y: arrow.bbox().y }
-  });
-}
-*/
 
 function checkDragDirection(x) {
 
@@ -336,7 +159,7 @@ function setUpLeftHandleDraggable(word) {
   word.leftHandle.draggable(function(x, y) {
     rowOffsetWord = word;
 
-    var returnVal = dragLeftHandle(x, word.leftHandle.bbox().y, word);
+    var returnVal = dragLeftHandle(x, word.leftHandle.y(), word);
     
     updateWords();
     
@@ -353,9 +176,9 @@ function setUpRightHandleDraggable(word) {
   word.rightHandle.draggable(function(x, y) {
     rowOffsetWord = word;
 
-    var returnVal = dragRightHandle(x, word.rightHandle.bbox().y, word);
+    var returnVal = dragRightHandle(x, word.rightHandle.y(), word);
 
-       updateWords();
+    updateWords();
   
     redrawLinks(false); //actually - only redraw links that moving this word would affect + this row
     prevX = x;
@@ -379,7 +202,7 @@ function dragLeftHandle(x, y, word) {
 
 
 function checkIfCanDragLeftHandleLeft(x, y, word) {
-    var rw = Math.max( Math.min(word.getMaxWidth(), (word.rightX - x)), word.getMinWidth() );
+    var rw = Math.max( Math.min(word.maxWidth, (word.rightX - x)), word.minWidth );
 
     setWordToXW(word, x, rw);
 
@@ -390,7 +213,7 @@ function checkIfCanDragLeftHandleLeft(x, y, word) {
 
 function checkIfCanDragLeftHandleRight(x, y, word) {
 
-    var rw = Math.max( Math.min(word.getMaxWidth(), (word.rightX - x) ), word.getMinWidth() );
+    var rw = Math.max( Math.min(word.maxWidth, (word.rightX - x) ), word.minWidth );
 
     setWordToXW(word, x, rw);
 
@@ -416,7 +239,7 @@ function dragRightHandle(x, y, word) {
 }
 
 function checkIfCanDragRightHandleLeft(x, y, word) {
-    var rw = Math.max( Math.min(word.getMaxWidth(), (x - word.leftX + Config.handleW)), word.getMinWidth() );
+    var rw = Math.max( Math.min(word.maxWidth, (x - word.leftX + Config.handleW)), word.minWidth );
 
     setWordToXW(word, word.leftX, rw);
 
@@ -432,7 +255,7 @@ function checkIfCanDragRightHandleLeft(x, y, word) {
 
 function checkIfCanDragRightHandleRight(x, y, word) {
 
-    var rw = Math.max( Math.min(word.getMaxWidth(), (x - word.leftX + Config.handleW) ), word.getMinWidth() );
+    var rw = Math.max( Math.min(word.maxWidth, (x - word.leftX + Config.handleW) ), word.minWidth );
 
     setWordToXW(word, word.leftX, rw);
 
@@ -490,7 +313,7 @@ function checkIfCanMoveRight(x, w, y, word, adjustWidth) {
   }
 
 
-  w = Math.max( Math.min(w, word.getMaxWidth()), word.getMinWidth()) ;
+  w = Math.max( Math.min(w, word.maxWidth), word.minWidth) ;
  
 
   /* Check to see if the word needs to jump to the next row */
@@ -632,14 +455,14 @@ function checkIfCanMoveLeft(x, w, y, word, adjustWidth) {
     rw = word.rightX - rx;
 
     //if rw > maxWidth, then set to maxWidth
-    rw = Math.max( Math.min(rw, word.getMaxWidth()), word.getMinWidth()) ;
+    rw = Math.max( Math.min(rw, word.maxWidth), word.minWidth) ;
     //in rare cases, if window width is small, maxWidth can be < minWidth!
 
   } else {
     rw = w;
   }
 
-  //rw = Math.max( Math.min(rw, word.getMaxWidth()), word.getMinWidth()) ;
+  //rw = Math.max( Math.min(rw, word.maxWidth), word.minWidth) ;
  
   setWordToXW(word, rx, rw);
 
@@ -653,7 +476,7 @@ function moveWordToNewPosition(w, nx, ny) {
 
   w.tempX = nx;
   w.tempW = w.bbox.w;
-  
+
   w.underneathRect.x(nx);
   w.underneathRect.y(ny);
 
@@ -664,7 +487,10 @@ function moveWordToNewPosition(w, nx, ny) {
   w.percPos = (w.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
 
 
-  w.text.x(nx + (w.bbox.w/2) - (w.text.bbox().w/2)  ); 
+  // called this again after bbox because possible race issues?
+  w.underneathRect.x(nx);
+  w.underneathRect.y(ny);
+  w.text.x(nx + (w.bbox.w/2) - (w.text.length()/2)  ); 
   w.text.y(ny + Config.textPaddingY*2); // - texts.wordText.descent);
 
 
@@ -673,24 +499,16 @@ function moveWordToNewPosition(w, nx, ny) {
   //Looks like the entire row size jumps one pixel when adding a new row... think this may cause the 1 px differentce
   
   if (w.tag != null) {
-    w.tagtext.x(nx + (w.bbox.w/2) - (w.tagtext.bbox().w/2)  ); 
+    w.tagtext.x(nx + (w.bbox.w/2) - (w.tagtext.length()/2)  ); 
     w.tagtext.y(ny + Config.textPaddingY/2);// - texts.tagText.descent);
+
+    var handley = ny + ( w.wh / 2 ) - ( Config.handleH / 2 ); 
+    w.leftHandle.x(nx);
+    w.leftHandle.y(handley);
+
+    w.rightHandle.x( w.rightX - Config.handleW );
+    w.rightHandle.y(handley);
   }
-
-  console.log("ny = " + ny);
-  console.log("w.wy = " + w.wy);
-  console.log("w.text.y = " + w.text.y());
-
-
-
-
-
-  var handley = ny + ( w.wh / 2 ) - ( Config.handleH / 2 ); 
-  w.leftHandle.x(nx);
-  w.leftHandle.y(handley);
-
-  w.rightHandle.x( w.rightX - Config.handleW );
-  w.rightHandle.y(handley);
 
   w.needsUpdate = true;
 
@@ -710,11 +528,11 @@ function dragWord(x, y, word) {
   var dragDir = checkDragDirection(x);
 
   if (dragDir == directions.BACKWARD) {
-    return checkIfCanMoveLeft(x + rowOffsetX, word.underneathRect.bbox().width, y, word, false);
+    return checkIfCanMoveLeft(x + rowOffsetX, word.underneathRect.width(), y, word, false);
   } else if (dragDir == directions.FORWARD) {
-    return checkIfCanMoveRight(x + rowOffsetX, word.underneathRect.bbox().width, y, word, false);
+    return checkIfCanMoveRight(x + rowOffsetX, word.underneathRect.width(), y, word, false);
   } else {
-    return {x:word.underneathRect.bbox().x, y:word.underneathRect.bbox().y};
+    return {x:word.underneathRect.x(), y:word.row.baseHeight};
   }
 }
 
@@ -780,8 +598,6 @@ function checkIfSpaceToMoveDownARow(width, nextRow) {
 
 function moveWordDownARow(w) {
 
-  // console.log("in moveWordDownARow:, word row was... = " + w.row.idx);
-  
   var currentRowIdx = w.row.idx;
   var nextRowIdx = w.row.idx + 1;
 
@@ -836,23 +652,26 @@ function moveWordUpARow(w) {
 
 }
 
-
+let xxx;
 function setUpWordDraggable(word) {
 
   addDragStartingAndEndingListeners(word.underneathRect);
 
   var dragEvent = word.underneathRect.draggable(function(x,y) { 
-    //return aaa(x,y);
 
     rowOffsetWord = word;
 
-    var returnXY = dragWord(x, word.bbox.y, word);
-
-    //console.log("in word.draggable");
+    var returnXY = dragWord(x, word.underneathRect.y(), word);
 
     updateWords();
 
     redrawLinks(false); //actually - only redraw links that moving this word would affect + this row
+
+    if ((x > prevX && word.bbox.y > returnXY.y) ||
+        (x < prevX && word.bbox.y < returnXY.y)) {
+      returnXY.y = word.bbox.y;
+    }
+
     prevX = x;
 
     return returnXY;
@@ -861,107 +680,14 @@ function setUpWordDraggable(word) {
 
 }
 
-function dragRow(x, y, row) {
-
-  var prevY = row.rect.bbox().y;
-  //var prevY = row.bbox.y;
-  var inc = y - prevY;
-
-  var nextRowTooSmall = false;
-  var nextY = 0;
-
-  if (row.idx < rows.length - 1) {
-
-    nextY = (rows[row.idx + 1].lineBottom.bbox().y - Config.wordHeight ) - (Config.dragRectSide + Config.dragRectMargin) - Config.rowPadding/2 ;
-
-    if (y > nextY) {
-      nextRowTooSmall = true;
-    }
-  }
-
-  //check that this row height is not smaller than the max word height in the row
-
-  if (inc + Config.dragRectSide + Config.dragRectMargin < Config.wordHeight) {
-    row.rect.height(Config.wordHeight);
-    y = row.rect.bbox().y + row.rect.bbox().h - (Config.dragRectSide + Config.dragRectMargin);
-    row.lineBottom.y(y + Config.dragRectSide + Config.dragRectMargin);
-  } else if (row.idx < rows.length - 1 && nextRowTooSmall == true) { //check that this row is not expanding so large that it is bigger than the next row's smallest size
-    y = nextY; 
-    row.lineBottom.y(y + Config.dragRectSide + Config.dragRectMargin );
-    row.rect.height((y - prevY) + Config.dragRectSide + Config.dragRectMargin);
-  } else { //this y val is fine
-    row.rect.height(inc + Config.dragRectSide + Config.dragRectMargin);
-    row.lineBottom.y(y + Config.dragRectSide + Config.dragRectMargin);
-  }
-
-  row.ry = row.rect.y();
-  row.rh = row.rect.height();
-    
-
-  for (var i = 0; i < row.words.length; i++) {
-    setWordToY(row.words[i], row.lineBottom.bbox().y - row.words[i].underneathRect.height() );
-    //updateLinksOfWord(row.words[i]);
-  }
-
-  row.baseHeight = row.lineBottom.y() - (Config.textPaddingY*2) - texts.wordText.maxHeight;
-
-
-  if (row.idx < rows.length - 1) {
-
-    var nextrow = rows[row.idx + 1];
-    nextrow.rect.y(row.rect.bbox().y + row.rect.bbox().h + Config.rowPadding/2);
-    nextrow.rect.height( nextrow.dragRect.bbox().y - y - (Config.rowPadding/2));
-
-    nextrow.ry = nextrow.rect.y();
-    nextrow.rh = nextrow.rect.height();
-          
-    for (var i = 0; i < nextrow.words.length; i++) {
-      //updateLinksOfWord(nextrow.words[i]);
-    }
-  }
-
-  //hmm... what about links that pass through the row, but aren't attached to any word on this row?
-  updateAllLinks(); //this works for now
-
-
-  //update size of svg window if necessary
-  if (row.idx == rows.length - 1) {
-   changeSizeOfSVGPanel(window.innerWidth - 16, row.lineBottom.y() + 1)
-  }
-
-  var returnVal = {x:row.dragRect.bbox().x, y:y}; 
-
-  return returnVal;
-}
-
-
 function setWordToY(word, wy) {
   word.underneathRect.y(wy);
   word.bbox = word.underneathRect.bbox();
-  word.underneathRect.y(wy);  
-  word.leftHandle.y(wy);  
-  word.rightHandle.y(wy);  
   word.text.y(word.bbox.y + Config.textPaddingY*2);
   
  if (word.tag != null) { 
   word.tagtext.y(word.bbox.y + Config.textPaddingY/2); 
+  word.leftHandle.y(wy);  
+  word.rightHandle.y(wy);  
  }
 }
-
-function setUpRowDraggable(row) {
-
-  addDragStartingAndEndingListeners(row.dragRect);
-
-  row.dragRect.draggable(function(x, y) {
-    var returnVal = dragRow(x, y, row);
-    redrawLinks(false); //actually - only redraw links that moving this word would affect + this row?
-
-    return returnVal;
-  });
-
-
-
-
-}
-
-

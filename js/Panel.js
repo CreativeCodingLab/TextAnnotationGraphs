@@ -23,6 +23,7 @@ const Panel = (function() {
         }
       });
 
+      let self = this;
       function drag(e) {
         if (isResizingPanel) {
           const dy = e.y - y;
@@ -38,6 +39,8 @@ const Panel = (function() {
           if (above) {
             above.style.marginBottom = height + 10;
           }
+
+          self.onresize();
         }
       }
 
@@ -46,6 +49,8 @@ const Panel = (function() {
       }
 
     }
+
+    onresize() {}
   }
 
   return Panel;
