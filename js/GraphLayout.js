@@ -76,7 +76,7 @@ const GraphLayout = (function() {
             d3.select(this.div).append('button')
                 .text('⤆ reset ⤇')
                 .on('click', () => {
-                    this.dx = this.dy = 0;
+                    this.dx = 0;
                     this.adjustMargins();
                 });
 
@@ -85,14 +85,9 @@ const GraphLayout = (function() {
                 .attr('width', this.bounds.width)
                 .attr('height', this.bounds.height);
             this.g = this.svg.append('g');
-            this.links = this.g.append('g')
-                .attr('class','links');
-            this.nodes = this.g.append('g')
-                .attr('class','nodes');
 
             // margins and drag event for positioning svg
             this.dx = 0;
-            this.dy = 0;
             this.svg
                 .call(d3.drag()
                     .on('drag', () => {
@@ -117,17 +112,24 @@ const GraphLayout = (function() {
         }
         adjustMargins() {
             let bounds = this.div.getBoundingClientRect();
-            let bbox = this.g.node().getBBox();
 
-            let x = 20 - bbox.x + this.dx;
-            let y = bounds.height/2 - (bbox.height/2 + bbox.y) + this.dy;
+            d3.selectAll('.group')
+                .attr('transform', (d, i, el) => {
 
-            this.g.attr('transform', 'translate(' + [x, y] + ')');
+                    let bbox = el[i].getBBox();
+                    let y = -bbox.height / 2 - bbox.y;
+
+                    return 'translate(' + [0, y] + ')';
+                });
+
+            let bbox2 = this.g.node().getBBox();
+            let x = 20 - bbox2.x + this.dx;
+
+            this.g.attr('transform', 'translate(' + [x, bounds.height / 2] + ')');
         }
         clear() {
             this.words = [];
-            this.nodes.selectAll('*').remove();
-            this.links.selectAll('*').remove();
+            this.g.selectAll('*').remove();
         }
 
         /**
@@ -204,14 +206,23 @@ const GraphLayout = (function() {
         }
 
         updateGraph() {
-            let links = this.links.selectAll('.linkGroup')
+            let group = this.g.selectAll('.group')
                 .data(this.data);
 
-            links.exit().remove();
-            links.enter().append('g')
-                .attr('class','linkGroup')
-            .merge(links)
-                .each((d, i, el) => {
+            group.exit().remove();
+
+            let groupEnter = group.enter().append('g')
+                .attr('class','group')
+
+            groupEnter.append('g')
+                .attr('class', 'linkGroup');
+            groupEnter.append('g')
+                .attr('class', 'nodeGroup');
+
+            let groupMerge = groupEnter.merge(group);
+
+            groupMerge.select('.linkGroup')
+                .datum((d, i, el) => {
                     el = d3.select(el[i])
                         .attr('transform', 'translate(' + d.offset + ', 0)');
                     this.drawLinks(d.tree, el);
@@ -230,14 +241,8 @@ const GraphLayout = (function() {
                     }
                 });
 
-            let nodes = this.nodes.selectAll('.nodeGroup')
-                .data(this.data);
-
-            nodes.exit().remove();
-            nodes.enter().append('g')
-                .attr('class','nodeGroup')
-            .merge(nodes)
-                .each((d, i, el) => {
+            groupMerge.select('.nodeGroup')
+                .datum((d, i, el) => {
                     el = d3.select(el[i])
                         .attr('transform', 'translate(' + d.offset + ', 0)');
 
