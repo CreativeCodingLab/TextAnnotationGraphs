@@ -14,7 +14,7 @@ const Minimap = (function() {
         word: '#888',
         untagged: '#aaa',
         selected: 'crimson',
-        link: 'blue'
+        link: 'cyan'
     }
 
     function update() {
@@ -46,6 +46,7 @@ const Minimap = (function() {
 
         });
 
+        // draw links
         ctx.globalAlpha = 0.75;
         linkObjs.forEach(function(link) {
             let minRow = link.rootMinWord.row.idx;
@@ -55,6 +56,7 @@ const Minimap = (function() {
 
             let y = (slots[minRow - 1] || 0) + rows[minRow].maxSlots - link.h;
 
+            // choose color
             ctx.fillStyle = COLOR.link;
 
             if (!link.isSelected && link.style) {
@@ -71,6 +73,7 @@ const Minimap = (function() {
             }
             ctx.fillRect(link.linesLeftX[0] * r, y * RECT_HEIGHT + minRow * PADDING, width * r, RECT_HEIGHT);
 
+            // draw links spanning multiple rows
             if (maxRow > minRow) {
                 for (let i = minRow + 1; i < maxRow; ++i) {
                     y = slots[i - 1] + rows[i].maxSlots - link.h;
@@ -82,10 +85,28 @@ const Minimap = (function() {
             }
         });
 
+        // translate canvas contents according to scroll position
         dy = (slots[scrollIndex - 1] || 0) * RECT_HEIGHT + scrollIndex * PADDING;
         ctx.setTransform( 1, 0, 0, 1, 0, -dy );
 
         window.requestAnimationFrame(update);
+    }
+
+    // drag events
+    let drag = 0;
+    let mousedown = false;
+    function onmousedown(e) {
+        drag = e.y;
+        mousedown = true;
+    }
+    function onmousemove(e) {
+        if (mousedown) {
+            document.body.scrollTop += (e.y - drag) * window.innerHeight / h;
+            drag = e.y;
+        }
+    }
+    function onmouseup() {
+        mousedown = false;
     }
 
     class Minimap {
@@ -96,12 +117,19 @@ const Minimap = (function() {
                 view = document.querySelector('#minimap canvas');
                 let toggle = document.getElementById('toggle-minimap');
 
+                // show / hide minimap
                 toggle.onclick = function() {
                     show = !show;
                     this.style.textAlign = show ? 'left' : 'right';
                     this.innerHTML = show ? 'hide>>' : '&lt;&lt;minimap';
                     view.style.visibility = show ? 'visible' : 'hidden';
                 };
+
+                // swipe minimap to scroll page
+                view.onmousedown = onmousedown;
+                document.addEventListener('mousemove', onmousemove);
+                document.addEventListener('mouseup', onmouseup);
+                document.addEventListener('mouseleave', onmouseup);
 
                 h = view.height;
                 w = view.width;

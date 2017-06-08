@@ -79,6 +79,7 @@ const GraphLayout = (function() {
 
             d3.select(this.div).append('button')
                 .text('⤆ reset ⤇')
+                .attr('class', 'noselect')
                 .on('click', () => {
                     this.dx = 0;
                     this.adjustMargins();
