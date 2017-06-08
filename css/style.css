@@ -53,6 +53,10 @@ svg text {
   display:block;
 }
 
+#graph button {
+  position:absolute;
+}
+
 #toggle-minimap {
   display:block;
   cursor:pointer;

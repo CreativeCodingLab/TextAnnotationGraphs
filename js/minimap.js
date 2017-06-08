@@ -6,6 +6,7 @@ const Minimap = (function() {
     let ctx;
     let h;
     let w;
+    let dy = 0;
 
     const RECT_HEIGHT = 3;
     const PADDING = 3;
@@ -20,12 +21,16 @@ const Minimap = (function() {
         const ROW_WIDTH = Config.svgWidth;
         const r = w / ROW_WIDTH;
 
-        ctx.clearRect(0,0,w,h);
+        ctx.clearRect(0,0,w,h + dy);
         ctx.globalAlpha = 1;
-        
+        ctx.strokeStyle = 'white';
+
+        let scrollIndex = 0;
+
         // draw word
         let slots = [];
         rows.forEach(function(row, i) {
+            if (row.ry < document.body.scrollTop) { scrollIndex = i; }
             slots[i] = (slots[i - 1] || 0) + row.maxSlots + 1;
 
             row.words.forEach(function(word) {
@@ -76,6 +81,9 @@ const Minimap = (function() {
                 ctx.fillRect(0, y * RECT_HEIGHT + maxRow * PADDING, link.linesRightX[link.linesRightX.length - 1] * r, RECT_HEIGHT);
             }
         });
+
+        dy = (slots[scrollIndex - 1] || 0) * RECT_HEIGHT + scrollIndex * PADDING;
+        ctx.setTransform( 1, 0, 0, 1, 0, -dy );
 
         window.requestAnimationFrame(update);
     }
