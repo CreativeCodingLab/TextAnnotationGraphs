@@ -61,6 +61,10 @@ svg text {
   display:block;
   cursor:pointer;
 }
+#search-minimap {
+  display:block;
+  width:100px;
+}
 #minimap {
   pointer-events:none;
   position:fixed;

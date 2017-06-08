@@ -203,6 +203,7 @@ const GraphLayout = (function() {
             // -------- in progress
             // test case : Pos_reg         --> graft "outside"
             // test case : Promotes        --> graft "inside"
+            // test case : Ubiquitination  --> graft left
             // test case : Phosphorylation --> two
 /*            let graftLeftOfRoot = data.anchor.x < this.data[index].root.x;
 

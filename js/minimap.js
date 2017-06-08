@@ -12,9 +12,11 @@ const Minimap = (function() {
     const PADDING = 3;
     const COLOR = {
         word: '#888',
-        untagged: '#aaa',
+        untagged: '#bbb',
         selected: 'crimson',
-        link: 'cyan'
+        link: 'magenta',
+        highlight: 'cyan',
+        unhighlight: '#666'
     }
 
     function update() {
@@ -35,9 +37,19 @@ const Minimap = (function() {
 
             row.words.forEach(function(word) {
                 // choose color
-                ctx.fillStyle = word.tag ? COLOR.word : COLOR.untagged;
-                if (word.isSelected) {
+                if (searchTerm) {
+                    if (word.val.toLowerCase().includes(searchTerm) || (word.tag && word.tag.toLowerCase().includes(searchTerm))) {
+                        ctx.fillStyle = COLOR.highlight;
+                    }
+                    else {
+                        ctx.fillStyle = COLOR.untagged;
+                    }
+                }
+                else if (word.isSelected) {
                     ctx.fillStyle = COLOR.selected;
+                }
+                else {
+                    ctx.fillStyle = word.tag ? COLOR.word : COLOR.untagged;
                 }
 
                 // add word rectangle
@@ -57,9 +69,15 @@ const Minimap = (function() {
             let y = (slots[minRow - 1] || 0) + rows[minRow].maxSlots - link.h;
 
             // choose color
-            ctx.fillStyle = COLOR.link;
-
-            if (!link.isSelected && link.style) {
+            if (searchTerm) {
+                if (link.textStr.toLowerCase().includes(searchTerm)) {
+                    ctx.fillStyle = COLOR.highlight;
+                }
+                else {
+                    ctx.fillStyle = COLOR.unhighlight;
+                }
+            }
+            else if (!link.isSelected && link.style) {
                 if (link.style.stroke instanceof LinearGradient) {
                     let x = (maxRow > minRow) ? 0 : link.linesLeftX[0];
                     let gradient = ctx.createLinearGradient(x * r,0,width * r,0);
@@ -70,6 +88,9 @@ const Minimap = (function() {
                 else {
                     ctx.fillStyle = link.style.stroke;
                 }
+            }
+            else {
+                ctx.fillStyle = COLOR.link;
             }
             ctx.fillRect(link.linesLeftX[0] * r, y * RECT_HEIGHT + minRow * PADDING, width * r, RECT_HEIGHT);
 
@@ -107,9 +128,11 @@ const Minimap = (function() {
     }
 
     // drag events
+    let dragStart = null;
     let drag = 0;
     let mousedown = false;
     function onmousedown(e) {
+        dragStart = e;
         drag = e.y;
         mousedown = true;
     }
@@ -119,15 +142,22 @@ const Minimap = (function() {
             drag = e.y;
         }
     }
-    function onmouseup() {
-        mousedown = false;
-    }
 
     let clicked = false;
     let click = 0;
-    function onclick(e) {
-        clicked = true;
-        click = e.offsetY / e.target.getBoundingClientRect().height;
+    function onmouseup(e) {
+        if (mousedown) {
+            if (Math.abs(e.x - dragStart.x) < 2 && Math.abs(e.y - dragStart.y) < 2) {
+                clicked = true;
+                click = e.offsetY / e.target.getBoundingClientRect().height;
+            }
+            mousedown = false;
+        }
+    }
+
+    let searchTerm = null;
+    function search() {
+        searchTerm = this.value.trim().toLowerCase() || null;
     }
 
     class Minimap {
@@ -148,10 +178,13 @@ const Minimap = (function() {
 
                 // swipe minimap to scroll page
                 view.onmousedown = onmousedown;
-                view.onclick = onclick;
                 document.addEventListener('mousemove', onmousemove);
                 document.addEventListener('mouseup', onmouseup);
                 document.addEventListener('mouseleave', onmouseup);
+
+                // add search functionality
+                document.getElementById('search-minimap').onchange = search;
+                document.getElementById('search-minimap').onkeyup = search;
 
                 h = view.height;
                 w = view.width;
