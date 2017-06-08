@@ -89,6 +89,20 @@ const Minimap = (function() {
         dy = (slots[scrollIndex - 1] || 0) * RECT_HEIGHT + scrollIndex * PADDING;
         ctx.setTransform( 1, 0, 0, 1, 0, -dy );
 
+        // handle click event
+        if (clicked === true) {
+            clicked = false;
+
+            let y = click * h + dy;
+            let i = slots.findIndex((d, i) => d * RECT_HEIGHT + i * PADDING >= y);
+            if (rows[i]) {
+                document.body.scrollTop = rows[i].ry;
+            }
+            else {
+                document.body.scrollTop = rows[rows.length - 1].ry;
+            }
+        }
+
         window.requestAnimationFrame(update);
     }
 
@@ -109,6 +123,13 @@ const Minimap = (function() {
         mousedown = false;
     }
 
+    let clicked = false;
+    let click = 0;
+    function onclick(e) {
+        clicked = true;
+        click = e.offsetY / e.target.getBoundingClientRect().height;
+    }
+
     class Minimap {
         constructor() {
             if (singleton === false) {
@@ -127,6 +148,7 @@ const Minimap = (function() {
 
                 // swipe minimap to scroll page
                 view.onmousedown = onmousedown;
+                view.onclick = onclick;
                 document.addEventListener('mousemove', onmousemove);
                 document.addEventListener('mouseup', onmouseup);
                 document.addEventListener('mouseleave', onmouseup);
