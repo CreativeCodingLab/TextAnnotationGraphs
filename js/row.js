@@ -118,9 +118,6 @@ class Row {
     return returnVal;
   }
 
-  get wordY() {
-    return this.ry + this.rh - (texts.wordText.maxHeight + Config.textPaddingY*2);
-  }
   get minWidth() {
     return this.words.reduce((acc, val) => acc + val.minWidth, 0);
   }

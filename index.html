@@ -55,6 +55,7 @@
 <script src="js/interact.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/minimap.js"></script>
+<script src="js/wordcollapser.js"></script>
 
 <script type="text/javascript">
 /* a lot of these global vars should be wrapped eventually */
@@ -69,7 +70,6 @@ var styles = setupStyles(draw); //creates an associative array of whatever style
 
 var texts = setupTexts(draw); //creates an associate array of whatever text you want to use. Currently using 'texts.wordText' and 'texts.linkText', and using style, maxHeight, and descent to layout text
 
-Config.handleH = texts.wordText.maxHeight + (Config.textPaddingY * 2);
 Config.wordHeight = texts.wordText.maxHeight + (Config.textPaddingY * 2); 
 Config.minWordWidth = getTextWidth("i", texts.wordText.style) + (Config.handleW * 2);
 
@@ -96,6 +96,7 @@ window.onload = function() {
   const graph = new GraphLayout(panel.el);
   panel.onresize = graph.resize.bind(graph);
   const parser = new Parser();
+  const wc = new WordCollapser();
 
   var prevWidth = Config.svgWidth;
   function svgResize() {
@@ -113,6 +114,9 @@ window.onload = function() {
 
   draw.on('wordSelected', function() {
     graph.graph(getSelectedObjects());
+  });
+  draw.on('wordClicked', function(e) {
+    wc.setClick(e.detail.arbitrary);
   });
 
   function changeDataset(index = 1) {
@@ -247,59 +251,6 @@ window.onload = function() {
 
   changeDataset(2);
 };
-
-let collapse;
-let c0;
-document.addEventListener('keydown', function(e) {
-  let c = e.keyCode;
-  if (c === 65) { // A
-    collapse = true;
-    c0 = null;
-  }
-  else {
-    collapse = false;
-    c0 = null;
-  }
-});
-draw.on('wordClicked', function(e) {
-  let word = e.detail.arbitrary;
-  if (collapse) {
-    if (c0 === null) {
-      c0 = word;
-      console.log('left', word);
-    }
-    else {
-      console.log('right', c0, word);
-
-      let phrase = "";
-      for (let i = c0.idx; i <= word.idx; ++i) {
-        if (i > c0.idx) {
-          phrase += ' ';
-        }
-        phrase += wordObjs[i].val;
-      }
-      // console.log(phrase);
-
-      let newWord = new Word(phrase, wordObjs.length);
-      wordObjs.push(newWord);
-
-      let row = rows[rows.length - 1];
-      row.words.push(newWord);
-      
-      //calculate x position and width of the Word
-      newWord.wx = 80;
-      newWord.ww = newWord.tw + (Config.textPaddingX * 2);
-      newWord.wy = row.wordY;
-      newWord.row = row;
-
-
-      newWord.draw();
-      collapse = false;
-      c0 = null;
-    }
-  }
-});
-
 
 </script>
 

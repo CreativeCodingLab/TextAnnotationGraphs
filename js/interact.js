@@ -502,12 +502,11 @@ function moveWordToNewPosition(w, nx, ny) {
     w.tagtext.x(nx + w.bbox.w/2); 
     w.tagtext.y(ny + Config.textPaddingY/2);// - texts.tagText.descent);
 
-    var handley = ny + ( w.wh / 2 ) - ( Config.handleH / 2 ); 
     w.leftHandle.x(nx);
-    w.leftHandle.y(handley);
+    w.leftHandle.y(ny);
 
     w.rightHandle.x( w.rightX - Config.handleW );
-    w.rightHandle.y(handley);
+    w.rightHandle.y(ny);
   }
 
   w.needsUpdate = true;

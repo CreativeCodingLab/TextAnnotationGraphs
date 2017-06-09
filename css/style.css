@@ -28,6 +28,12 @@ svg text {
   margin-top:30px;
   margin-bottom: 210px;
 }
+#drawing.bracket-left{
+  cursor:e-resize !important;
+}
+#drawing.bracket-right {
+  cursor:w-resize !important;
+}
 
 #graph {
   cursor:-webkit-grab;
@@ -42,7 +48,7 @@ svg text {
 }
 
 #graph:before {
-  cursor:ns-resize;
+  cursor:row-resize;
   content:'';
   width:100%;
   height:7px;

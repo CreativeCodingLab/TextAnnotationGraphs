@@ -6,10 +6,8 @@ class Word {
 
     this.h = 0; //num slots
 
-    this.ww = 0;
     this.wh = texts.wordText.maxHeight + Config.textPaddingY*2; 
-    this.wx = 0;
-    this.wy = 0;
+    this.leftX = 0;
 
     this.slotsL = []; //all the slots that links attached the left side of this word occupy
     this.slotsR = [];  //all the slots that links attached the left side of this word occupy
@@ -81,39 +79,38 @@ class Word {
 
 
     let g = this.svg = draw.group().addClass('word');
+    let x = this.leftX + this.defaultWidth/2;
 
-    this.underneathRect = g.rect( this.ww, this.wh )
-      .x( this.wx )
+    this.underneathRect = g.rect( this.defaultWidth, this.wh )
+      .x( this.leftX )
       .y( this.wy )
       .addClass('word--underneath');
 
     this.text = g.text(this.val)
       .y(this.wy + Config.textPaddingY*2 - texts.wordText.descent)
-      .x(this.wx + this.ww/2)
+      .x(x)
       .font(texts.wordText.style);
 
     this.bbox = this.underneathRect.bbox();
-    this.leftX = this.underneathRect.bbox().x;
     this.rightX = this.underneathRect.bbox().x + this.underneathRect.bbox().w;
     this.percPos = (this.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
 
     if (this.tag != null) {
-      var tagXPos = this.wx + this.ww/2;
 
       //add in tag text, if the word has an associated tag
       this.tagtext = g.text(this.tag)
         .y(this.wy + Config.textPaddingY/2 - texts.wordText.descent)
-        .x(tagXPos)
+        .x(x)
         .font(texts.tagText.style);
 
-      this.leftHandle = g.rect(Config.handleW, Config.handleH)
-        .x(this.wx)
-        .y( this.wy + (this.wh / 2 ) - (Config.handleH / 2) )
+      this.leftHandle = g.rect(Config.handleW, Config.wordHeight)
+        .x(this.leftX)
+        .y( this.wy)
         .addClass('word--handle');
 
-      this.rightHandle = g.rect(Config.handleW,Config.handleH)
-        .x(this.wx + this.ww - (Config.handleW))
-        .y( this.wy + (this.wh / 2 ) - (Config.handleH / 2) )
+      this.rightHandle = g.rect(Config.handleW,Config.wordHeight)
+        .x(this.rightX - (Config.handleW))
+        .y( this.wy)
         .addClass('word--handle');
 
       //set up mouse interactions
@@ -131,6 +128,17 @@ class Word {
     this.underneathRect.click(() => {
       draw.fire('wordClicked', { arbitrary: this });
     })
+  }
+
+  get wy() {
+    if (this.row) {
+      return this.row.ry + this.row.rh - (texts.wordText.maxHeight + Config.textPaddingY*2);
+    }
+    return 0;
+  }
+
+  get defaultWidth() {
+    return this.tw + (Config.textPaddingX * 2)
   }
 
   get minWidth() { //min width is the maximum of: the word text, the tag text, or the size of the two handles + a little bit

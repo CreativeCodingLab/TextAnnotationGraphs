@@ -275,7 +275,6 @@ function calculateMaxSlotForRow(row) {
   }
 }
 
-
 function setUpRowsAndWords(words) {
 
   var rowNum = 0;
@@ -314,10 +313,9 @@ function setUpRowsAndWords(words) {
     word.th = texts.wordText.maxHeight; //guaranteed to be the same for all words
 
     //calculate x position and width of the Word
-    word.wx = x;
-    word.ww = word.tw + (Config.textPaddingX * 2);
+    word.leftX = x;
 
-    x += word.ww + Config.wordPadding;
+    x += word.defaultWidth + Config.wordPadding;
   }
 
 
@@ -336,9 +334,7 @@ function setUpRowsAndWords(words) {
 
     for (var ii = 0; ii < row.words.length; ii++) {
       var word = row.words[ii];
-
-      word.wy = row.wordY;
-
+      
       if (word.tag != null) {
         var tag_textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
         word.twh = texts.tagText.maxHeight + Config.textPaddingY*2; 
