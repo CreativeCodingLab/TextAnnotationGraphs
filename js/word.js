@@ -73,7 +73,60 @@ class Word {
   }
   
   draw() {
-    drawWord(this);
+    let g = this.svg = draw.group().addClass('word');
+
+    this.underneathRect = g.rect( this.ww, this.wh )
+      .x( this.wx )
+      .y( this.wy )
+      .addClass('word--underneath');
+
+    var textwh = getTextWidthAndHeight(this.val, texts.wordText.style);
+
+    this.text = g.text(this.val)
+      .y(this.wy + Config.textPaddingY*2 - texts.wordText.descent)
+      .x(this.wx + (this.ww/2) - (textwh.w / 2))
+      .font(texts.wordText.style);
+
+    this.bbox = this.underneathRect.bbox();
+    this.leftX = this.underneathRect.bbox().x;
+    this.rightX = this.underneathRect.bbox().x + this.underneathRect.bbox().w;
+    this.percPos = (this.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
+
+    if (this.tag != null) {
+      var textwh = getTextWidthAndHeight(this.tag, texts.tagText.style);
+      var tagXPos = this.twx + (this.ww/2) - (textwh.w / 2);
+
+      //add in tag text, if the word has an associated tag
+      this.tagtext = g.text(this.tag)
+        .y(this.wy + Config.textPaddingY/2 - texts.wordText.descent)
+        .x(tagXPos)
+        .font(texts.tagText.style);
+
+      this.leftHandle = g.rect(Config.handleW, Config.handleH)
+        .x(this.wx)
+        .y( this.wy + (this.wh / 2 ) - (Config.handleH / 2) )
+        .addClass('word--handle');
+
+      this.rightHandle = g.rect(Config.handleW,Config.handleH)
+        .x(this.wx + this.ww - (Config.handleW))
+        .y( this.wy + (this.wh / 2 ) - (Config.handleH / 2) )
+        .addClass('word--handle');
+
+      //set up mouse interactions
+      setUpLeftHandleDraggable(this);
+      setUpRightHandleDraggable(this); 
+    }
+
+    setUpWordDraggable(this); 
+
+    this.underneathRect.dblclick( () => {
+      this.toggleHighlight();
+      draw.fire('wordSelected', { arbitrary: this });
+    });
+
+    this.underneathRect.click(() => {
+      draw.fire('wordClicked', { arbitrary: this });
+    })
   }
 
   get minWidth() { //min width is the maximum of: the word text, the tag text, or the size of the two handles + a little bit

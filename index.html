@@ -248,6 +248,82 @@ window.onload = function() {
   changeDataset(2);
 };
 
+let collapse;
+let c0;
+document.addEventListener('keydown', function(e) {
+  let c = e.keyCode;
+  if (c === 65) { // A
+    collapse = true;
+    c0 = null;
+  }
+  else {
+    collapse = false;
+    c0 = null;
+  }
+});
+draw.on('wordClicked', function(e) {
+  let word = e.detail.arbitrary;
+  if (collapse) {
+    if (c0 === null) {
+      c0 = word;
+      console.log('left', word);
+    }
+    else {
+      console.log('right', c0, word);
+
+      let phrase = "";
+      for (let i = c0.idx; i <= word.idx; ++i) {
+        if (i > c0.idx) {
+          phrase += ' ';
+        }
+        phrase += wordObjs[i].val;
+      }
+      // console.log(phrase);
+
+      let newWord = new Word(phrase, wordObjs.length);
+      wordObjs.push(newWord);
+
+      let row = rows[rows.length - 1];
+      row.words.push(newWord);
+      
+
+      var wh = getTextWidthAndHeight(newWord.val, texts.wordText.style);
+
+      //calculate the width of the Word
+      newWord.tw = wh.w;
+      newWord.maxtextw = wh.w;
+    
+      if (newWord.tag != null) {
+        var twh = getTextWidthAndHeight(newWord.tag, texts.tagText.style);
+        
+        if (twh.w > word.tw) {
+          newWord.tw = twh.w; //think tw is ONLY used for checking minWidth, so this should be ok
+          newWord.maxtextw = twh.w;
+        }
+      }
+      //calculate x position and width of the Word
+      newWord.wx = 80;
+      newWord.ww = newWord.tw + (Config.textPaddingX * 2);
+
+
+      if (newWord.tag != null) {
+        newWord.tww = newWord.ww; //maxtextw + (Config.textPaddingX * 2);
+        newWord.twx = newWord.wx;
+      }
+      newWord.h = 0; //the number of link levels is 0 for the word itself
+      newWord.wh = texts.wordText.maxHeight + Config.textPaddingY*2; 
+      newWord.wy = row.ry + rows[0].rh - newWord.wh;
+      newWord.row = row;
+
+
+      newWord.draw();
+      collapse = false;
+      c0 = null;
+    }
+  }
+});
+
+
 </script>
 
 

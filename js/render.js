@@ -374,65 +374,6 @@ function setUpRowsAndWords(words) {
 }
 
 
-function drawWord(word) {
-
-  let g = word.svg = draw.group().addClass('word');
-
-  word.underneathRect = g.rect( word.ww, word.wh )
-    .x( word.wx )
-    .y( word.wy )
-    .addClass('word--underneath');
-
-  var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
-
-  word.text = g.text(function(add) {
-
-    add.text(word.val)
-    .y(word.wy + Config.textPaddingY*2 - texts.wordText.descent)
-    .x(word.wx + (word.ww/2) - (textwh.w / 2))
-    .font(texts.wordText.style);
-  });
-
-  word.bbox = word.underneathRect.bbox();
-  word.leftX = word.underneathRect.bbox().x;
-  word.rightX = word.underneathRect.bbox().x + word.underneathRect.bbox().w;
-  word.percPos = (word.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
-
-  if (word.tag != null) {
-    var textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
-    var tagXPos = word.twx + (word.ww/2) - (textwh.w / 2);
-
-    //add in tag text, if the word has an associated tag
-    word.tagtext = g.text(function(add) {
-        add.text(word.tag)
-        .y(word.wy + Config.textPaddingY/2 - texts.wordText.descent)
-        .x(tagXPos)
-        .font(texts.tagText.style);
-      });
-    word.leftHandle = g.rect(Config.handleW, Config.handleH)
-      .x(word.wx)
-      .y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) )
-      .addClass('word--handle');
-
-    word.rightHandle = g.rect(Config.handleW,Config.handleH)
-      .x(word.wx + word.ww - (Config.handleW))
-      .y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) )
-      .addClass('word--handle');
-
-    //set up mouse interactions
-    setUpLeftHandleDraggable(word);
-    setUpRightHandleDraggable(word); 
-  }
-
-  setUpWordDraggable(word); 
-
-  word.underneathRect.dblclick( () => {
-    word.toggleHighlight();
-    draw.fire('wordSelected', { arbitrary: word });
-  });
-}
-
-
 var _linkLabels = [];
 var _links = [];
 var _arrows = [];
