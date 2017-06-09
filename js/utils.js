@@ -7,7 +7,7 @@ function createTestWords(numWords, minLength, maxLength) {
     var w = new Word(getLetterString(i, minLength, maxLength), i); 
     
     if (Math.random() < 0.5) {
-      w.tag = getRandomString(3,10);
+      w.setTag(getRandomString(3,10));
     }
     
 
@@ -222,7 +222,12 @@ function getRandomStyle() {
    
 }
 
-
+function getTextWidth(word, fs) {
+  let t = draw.text(word).font(fs)
+  let l = t.length();
+  t.remove();
+  return l;
+}
 function getTextWidthAndHeight(word, fs) {
   var text2 = draw.text(word).font(fs);
   textbbox = text2.bbox();

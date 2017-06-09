@@ -1,14 +1,13 @@
 class Word {
-  constructor(val, idx) {
+  constructor(val, idx, tag = null) {
     this.val = val;
     this.idx = idx;
     this.id = `(${this.val}, ${this.idx})`;
 
-    this.tag = null;
     this.h = 0; //num slots
 
     this.ww = 0;
-    this.wh = 0;
+    this.wh = texts.wordText.maxHeight + Config.textPaddingY*2; 
     this.wx = 0;
     this.wy = 0;
 
@@ -19,8 +18,11 @@ class Word {
     this.parentsR = [];  //who connects to me and is attached to my right side
     this.parentsC = []; //who connects to me and is attached to the center (ie, for multilinks)
 
-    this.tw = 0; //width of text part of word, used also to determine minimum size of word rect
-    this.th = 0;
+    let wh = getTextWidthAndHeight(val, texts.wordText.style);
+    this.tw = wh.w; //width of text part of word, used also to determine minimum size of word rect
+    this.th = wh.h;
+
+    this.setTag(tag);
 
     this.percPos = 0.0; //this is used to indicate where along the row the word is positioned, used when resizing the browser's width, or when popping open a right panel.
 
@@ -39,8 +41,6 @@ class Word {
     this.text = null; //the svg text
     this.tagtext = null; //the svg text for a tag
 
-    this.maxtextw = null; //either the word text width, or the tag text with, whichever is wider
-
     this.leftHandle = null; //the left draggable handle to resize word
     this.rightHandle = null; //the right draggable handle to resize word
          
@@ -48,7 +48,6 @@ class Word {
     this.tempW = 0.0;
     this.tempY = 0.0;
   }
-
   
   //take temp values and update actual svg values
   update() {
@@ -57,11 +56,11 @@ class Word {
 
     this.bbox = this.underneathRect.bbox();
 
-    this.text.x(this.tempX + (this.tempW/2) - (this.text.length() / 2) ); 
+    this.text.x(this.tempX + this.tempW/2); 
     this.rightX = this.tempX + this.tempW;
 
     if (this.tag != null) {
-      this.tagtext.x(this.tempX + (this.tempW/2) - (this.tagtext.length() / 2) ); 
+      this.tagtext.x(this.tempX + this.tempW/2); 
 
       this.leftHandle.x(this.tempX);
       this.rightHandle.x(this.rightX - Config.handleW);
@@ -72,7 +71,15 @@ class Word {
     this.percPos = (this.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
   }
   
-  draw() {
+  setTag(tag) {
+    let tagw = tag === null ? 0 : getTextWidth(tag, texts.tagText.style);
+    this.tw = Math.max(tagw, this.tw);
+    this.tag = tag;
+  }
+
+  draw() {    
+
+
     let g = this.svg = draw.group().addClass('word');
 
     this.underneathRect = g.rect( this.ww, this.wh )
@@ -80,11 +87,9 @@ class Word {
       .y( this.wy )
       .addClass('word--underneath');
 
-    var textwh = getTextWidthAndHeight(this.val, texts.wordText.style);
-
     this.text = g.text(this.val)
       .y(this.wy + Config.textPaddingY*2 - texts.wordText.descent)
-      .x(this.wx + (this.ww/2) - (textwh.w / 2))
+      .x(this.wx + this.ww/2)
       .font(texts.wordText.style);
 
     this.bbox = this.underneathRect.bbox();
@@ -93,8 +98,7 @@ class Word {
     this.percPos = (this.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
 
     if (this.tag != null) {
-      var textwh = getTextWidthAndHeight(this.tag, texts.tagText.style);
-      var tagXPos = this.twx + (this.ww/2) - (textwh.w / 2);
+      var tagXPos = this.wx + this.ww/2;
 
       //add in tag text, if the word has an associated tag
       this.tagtext = g.text(this.tag)
@@ -130,7 +134,7 @@ class Word {
   }
 
   get minWidth() { //min width is the maximum of: the word text, the tag text, or the size of the two handles + a little bit
-    return Math.max(Config.minWordWidth, this.maxtextw);
+    return Math.max(Config.minWordWidth, this.tw);
   }
 
   //maxWidth() must return a value less than row width - Config.edgePaddings, else will try to reposition long words forever!!!

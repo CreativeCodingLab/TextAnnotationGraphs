@@ -490,7 +490,7 @@ function moveWordToNewPosition(w, nx, ny) {
   // called this again after bbox because possible race issues?
   w.underneathRect.x(nx);
   w.underneathRect.y(ny);
-  w.text.x(nx + (w.bbox.w/2) - (w.text.length()/2)  ); 
+  w.text.x(nx + w.bbox.w/2); 
   w.text.y(ny + Config.textPaddingY*2); // - texts.wordText.descent);
 
 
@@ -499,7 +499,7 @@ function moveWordToNewPosition(w, nx, ny) {
   //Looks like the entire row size jumps one pixel when adding a new row... think this may cause the 1 px differentce
   
   if (w.tag != null) {
-    w.tagtext.x(nx + (w.bbox.w/2) - (w.tagtext.length()/2)  ); 
+    w.tagtext.x(nx + w.bbox.w/2); 
     w.tagtext.y(ny + Config.textPaddingY/2);// - texts.tagText.descent);
 
     var handley = ny + ( w.wh / 2 ) - ( Config.handleH / 2 ); 
@@ -682,12 +682,11 @@ function setUpWordDraggable(word) {
 
 function setWordToY(word, wy) {
   word.underneathRect.y(wy);
-  word.bbox = word.underneathRect.bbox();
-  word.text.y(word.bbox.y + Config.textPaddingY*2);
+  word.text.y(wy + Config.textPaddingY*2);
   
- if (word.tag != null) { 
-  word.tagtext.y(word.bbox.y + Config.textPaddingY/2); 
-  word.leftHandle.y(wy);  
-  word.rightHandle.y(wy);  
- }
+  if (word.tag != null) { 
+    word.tagtext.y(wy + Config.textPaddingY/2); 
+    word.leftHandle.y(wy);  
+    word.rightHandle.y(wy);
+  }
 }

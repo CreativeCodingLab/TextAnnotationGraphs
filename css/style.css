@@ -97,6 +97,9 @@ svg text {
 #drawing text, .link--labels text {
   pointer-events: none;
 }
+#drawing text {
+  text-anchor: middle;
+}
 
 .node { cursor: pointer; }
 .link, .link--dashed {

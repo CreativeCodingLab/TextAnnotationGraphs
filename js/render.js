@@ -286,22 +286,7 @@ function setUpRowsAndWords(words) {
   for (var i = 0; i < words.length; i++) {
 
     var word = words[i];
- 
-    var wh = getTextWidthAndHeight(word.val, texts.wordText.style);
-
-    //calculate the width of the Word
-    word.tw = wh.w;
-    word.maxtextw = wh.w;
     
-      if (word.tag != null) {
-      var twh = getTextWidthAndHeight(word.tag, texts.tagText.style);
-      
-      if (twh.w > word.tw) {
-        word.tw = twh.w; //think tw is ONLY used for checking minWidth, so this should be ok
-        word.maxtextw = twh.w;
-      }
-    }
-   
     //what row will this Word belong to?
     
     if (i == 0) { //if first word, then obviously in first row
@@ -332,12 +317,6 @@ function setUpRowsAndWords(words) {
     word.wx = x;
     word.ww = word.tw + (Config.textPaddingX * 2);
 
-
-    if (word.tag != null) {
-      word.tww = word.ww; //maxtextw + (Config.textPaddingX * 2);
-      word.twx = word.wx;
-    }
-
     x += word.ww + Config.wordPadding;
   }
 
@@ -358,9 +337,7 @@ function setUpRowsAndWords(words) {
     for (var ii = 0; ii < row.words.length; ii++) {
       var word = row.words[ii];
 
-      word.h = 0; //the number of link levels is 0 for the word itself
-      word.wh = texts.wordText.maxHeight + Config.textPaddingY*2; 
-      word.wy = row.ry + row.rh - word.wh;
+      word.wy = row.wordY;
 
       if (word.tag != null) {
         var tag_textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
@@ -1045,16 +1022,27 @@ function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
 
   var twh = link.textWH;
 
-  var rect = {x: (x - 2 - twh.w/2), y: (y - link.textStyle.maxHeight/2), w: (twh.w + 4), h: link.textStyle.maxHeight, style:style, rowNum: rowNum};
+  var rect = {
+    x: (x - 2 - twh.w/2), 
+    y: (y - link.textStyle.maxHeight/2), 
+    w: (twh.w + 4), 
+    h: link.textStyle.maxHeight, 
+    style:style, 
+    rowNum: rowNum
+  };
 
+  y -= Config.redraw ? 
+    (link.textStyle.maxHeight/2) :
+    (link.textStyle.maxHeight/2 + link.textStyle.descent);
+  text = {
+    x,
+    y,
+    text: link.textStr, 
+    style: link.textStyle.style, 
+    visibility:true
+  };
 
-  if (Config.redraw) { 
-    text = {text: link.textStr, x: (x - twh.w/2), y: (y - link.textStyle.maxHeight/2), style: (link.textStyle.style), visibility:true};
-  }
-  else {
-    text = {text: link.textStr, x: (x - twh.w/2), y: (y - link.textStyle.maxHeight/2 - link.textStyle.descent), style: (link.textStyle.style), visibility:true};
-  }
-  link.labels[idx] = {rect:rect, text:text};
+  link.labels[idx] = {rect, text};
 
   if (isHidden) {
     link.labels[idx].text.visibility = false;

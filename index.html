@@ -71,7 +71,7 @@ var texts = setupTexts(draw); //creates an associate array of whatever text you 
 
 Config.handleH = texts.wordText.maxHeight + (Config.textPaddingY * 2);
 Config.wordHeight = texts.wordText.maxHeight + (Config.textPaddingY * 2); 
-Config.minWordWidth = Math.max( getTextWidthAndHeight("i", texts.wordText.style).w + (Config.handleW * 2), getTextWidthAndHeight("i", texts.tagText.style).w + (Config.handleW * 2) );
+Config.minWordWidth = getTextWidth("i", texts.wordText.style) + (Config.handleW * 2);
 
 var rowOffsetX = 0;
 var rowOffsetWord = null;
@@ -124,7 +124,7 @@ window.onload = function() {
 
       [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
         if (words[el.tokenIndex]) {
-          words[el.tokenIndex].tag = el.type;
+          words[el.tokenIndex].setTag(el.type);
           words[el.tokenIndex].eventId = el.id;
         }
       });
@@ -286,33 +286,10 @@ draw.on('wordClicked', function(e) {
       let row = rows[rows.length - 1];
       row.words.push(newWord);
       
-
-      var wh = getTextWidthAndHeight(newWord.val, texts.wordText.style);
-
-      //calculate the width of the Word
-      newWord.tw = wh.w;
-      newWord.maxtextw = wh.w;
-    
-      if (newWord.tag != null) {
-        var twh = getTextWidthAndHeight(newWord.tag, texts.tagText.style);
-        
-        if (twh.w > word.tw) {
-          newWord.tw = twh.w; //think tw is ONLY used for checking minWidth, so this should be ok
-          newWord.maxtextw = twh.w;
-        }
-      }
       //calculate x position and width of the Word
       newWord.wx = 80;
       newWord.ww = newWord.tw + (Config.textPaddingX * 2);
-
-
-      if (newWord.tag != null) {
-        newWord.tww = newWord.ww; //maxtextw + (Config.textPaddingX * 2);
-        newWord.twx = newWord.wx;
-      }
-      newWord.h = 0; //the number of link levels is 0 for the word itself
-      newWord.wh = texts.wordText.maxHeight + Config.textPaddingY*2; 
-      newWord.wy = row.ry + rows[0].rh - newWord.wh;
+      newWord.wy = row.wordY;
       newWord.row = row;
 
 
