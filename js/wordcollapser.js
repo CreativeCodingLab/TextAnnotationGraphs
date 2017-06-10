@@ -41,6 +41,7 @@ const WordCollapser = (function() {
         // selecting left word
         if (leftWord === null) {
           leftWord = word;
+          listenForRightWord();
           console.log('left', word);
         }
         // selected words in the wrong order
@@ -50,27 +51,34 @@ const WordCollapser = (function() {
         }
         // select second word
         else {
-          console.log('right', leftWord, word);
+          console.log('right', word);
 
-          let text = "";
-          for (let i = leftWord.idx; i <= word.idx; ++i) {
-            if (i > leftWord.idx) {
-              text += ' ';
-            }
-            text += wordObjs[i].val;
+          let lIndex = wordObjs.indexOf(leftWord);
+          let rIndex = wordObjs.indexOf(word);
+          let text = leftWord.val;
+          for (let i = lIndex + 1; i <= rIndex; ++i) {
+            text += ' ' + wordObjs[i].val;
+          }
+
+          // condense text if too long
+          if (text.length > 25) {
+            text = text.slice(0, 12) + "…" + text.slice(-12);
           }
 
           let phrase = new Word(text, leftWord.idx);
 
           let row = leftWord.row;
 
-          wordObjs.splice(wordObjs.indexOf(leftWord), 1, phrase);
-          row.words.splice(row.words.indexOf(leftWord), 1, phrase);
+          let numberToSplice = 1 + rIndex - lIndex;
+
+          // todo: correct number over multi rows
+          let removedWords = wordObjs.splice(lIndex, numberToSplice, phrase);
+          row.words.splice(row.words.indexOf(leftWord), numberToSplice, phrase);
 
           phrase.leftX = leftWord.leftX;
           phrase.row = row;
           phrase.draw();
-          leftWord.svg.hide();
+          removedWords.forEach(word => word.svg.hide());
           cancel();
         }
       }
