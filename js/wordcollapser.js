@@ -1,6 +1,6 @@
 const WordCollapser = (function() {
 
-  let div;
+  let div = {};
   let selecting;
   let leftWord;
 
@@ -20,20 +20,20 @@ const WordCollapser = (function() {
     div.className = null;
   }
 
+  document.addEventListener('keydown', function(e) {
+    let c = e.keyCode;
+    if (c === 65) { // A
+      listenForLeftWord();
+    }
+    else {
+      cancel();
+    }
+  });
+
   class WordCollapser {
 
     constructor() {
       div = document.getElementById('drawing');
-
-      document.addEventListener('keydown', function(e) {
-        let c = e.keyCode;
-        if (c === 65) { // A
-          listenForLeftWord();
-        }
-        else {
-          cancel();
-        }
-      });
     }
 
     setClick(word) {
@@ -75,10 +75,48 @@ const WordCollapser = (function() {
           let removedWords = wordObjs.splice(lIndex, numberToSplice, phrase);
           row.words.splice(row.words.indexOf(leftWord), numberToSplice, phrase);
 
+
+          removedWords.forEach(word => {
+
+            // replace backreferences of word in link with phrase
+            function replaceLinkWordObject(link) {
+              ['leftWord', 'rightWord', 'nearestConnectedMaxWord', 'nearestConnectedMinWord', 'rootMaxWord', 'rootMinWord'].forEach(prop => {
+                if (link[prop] === word) {
+                  link[prop] = phrase;
+                }
+                let idx = link.words.indexOf(word);
+                if (idx > -1) {
+                  link.words[idx] = phrase;
+                }
+              });
+
+              link.parents.forEach(replaceLinkWordObject);
+            }
+
+            // relink word links to phrase
+            ['parentsL', 'parentsC', 'parentsR'].forEach(prop => {
+              phrase[prop] = phrase[prop].concat(word[prop]);
+            });
+            ['slotsL', 'slotsR'].forEach(prop => {
+              word[prop].forEach(slot => {
+                if (phrase[prop].indexOf(slot) < 0) {
+                  phrase[prop].push(slot);
+                }
+              });
+            })
+
+            // recurse through word's ancestor links
+            word.parents.forEach(replaceLinkWordObject);
+
+            // make svg invisible
+            word.svg.hide();
+
+          });
+
           phrase.leftX = leftWord.leftX;
           phrase.row = row;
           phrase.draw();
-          removedWords.forEach(word => word.svg.hide());
+          redrawLinks(true);
           cancel();
         }
       }
