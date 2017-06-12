@@ -36,6 +36,9 @@ const WordCollapser = (function() {
     if (c === 65) { // A
       listenForLeftWord();
     }
+    else if (c === 83) { // S
+      listenForUnjoin();
+    }
     else {
       cancel();
     }
@@ -54,7 +57,7 @@ const WordCollapser = (function() {
       text = text.slice(0, 12) + "…" + text.slice(-12);
     }
 
-    let phrase = new Word(text, leftWord.idx);
+    let phrase = new Word(text, leftWord.idx, ' ');
 
     let row = leftWord.row;
 
@@ -133,34 +136,45 @@ const WordCollapser = (function() {
   }
 
   function unjoinWord(word) {
+    let i = word.row.words.indexOf(word);
+    let row = word.row;
+
     [].splice.apply(wordObjs, [wordObjs.indexOf(word), 1].concat(word.removedWords));
-    [].splice.apply(word.row.words, [word.row.words.indexOf(word), 1].concat(word.removedWords));
+    [].splice.apply(row.words, [i, 1].concat(word.removedWords));
 
     // set position of uncollapsed words
     const rowWidth = Config.svgWidth - Config.edgePadding * 2;
     let x = word.leftX;
-    const y = word.underneathRect.y();
+    let y = word.underneathRect.y();
     word.removedWords.forEach(rw => {
-      rw.row = word.row;
-      moveWordToNewPosition(rw, x, y);
-      x += rw.underneathRect.width() + Config.wordPadding;
+      rw.row = row;
+      rw.leftX = -1;
       rw.svg.show();
     });
+
     // rearrange remaining words on row
-    let i = word.row.words.indexOf(word.removedWords[word.removedWords.length - 1]) + 1;
-    while (word.row.words[i]) {
-      if (x <= word.row.words[i].leftX) {
+    while (row.words[i]) {
+      if (x <= row.words[i].leftX) {
         break;
       }
-      moveWordToNewPosition(word.row.words[i], x, y);
-      x += word.row.words[i].underneathRect.width() + Config.wordPadding;
+      moveWordToNewPosition(row.words[i], x, y);
+      x += row.words[i].underneathRect.width() + Config.wordPadding;
       if (x > rowWidth) {
-        if (word.row.idx + 1 === rows.length) { appendRow(); }
-        moveWordDownARow(word.row.words[i]);        
+        // move down a row
+        if (row.idx + 1 === rows.length) { appendRow(); }
+        let w = row.words[i];
+        for (let j = row.words.length - 1; j >=i; --j) {
+          moveWordDownARow(row.words[j]);
+        }
+        row = w.row;
+        x = w.leftX + w.underneathRect.width() + Config.wordPadding;
+        y = w.underneathRect.y();
+        i = 1;
       }
-      ++i;
+      else {
+        ++i;
+      }
     }
-
 
     // revert assigned references to word in link
     function revertLinkWordObject(link) {

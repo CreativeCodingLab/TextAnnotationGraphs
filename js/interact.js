@@ -522,9 +522,9 @@ function setWordToXW(word, xval, wval) {
 
 }
 
-function dragWord(x, y, word) {
+function dragWord(x, y, word, direction) {
 
-  var dragDir = checkDragDirection(x);
+  var dragDir = direction || checkDragDirection(x);
 
   if (dragDir == directions.BACKWARD) {
     return checkIfCanMoveLeft(x + rowOffsetX, word.underneathRect.width(), y, word, false);
