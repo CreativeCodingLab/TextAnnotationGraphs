@@ -77,6 +77,10 @@ const WordCollapser = (function() {
 
       // replace backreferences of word in link with phrase
       function replaceLinkWordObject(link) {
+        if (!link._words) {
+          link._words = link.words.slice();
+        }
+
         ['leftWord', 'rightWord', 'nearestConnectedMaxWord', 'nearestConnectedMinWord', 'rootMaxWord', 'rootMinWord'].forEach(prop => {
           if (link[prop] === word) {
             link[prop] = phrase;
@@ -90,9 +94,6 @@ const WordCollapser = (function() {
           }
         });
 
-        if (!link._words) {
-          link._words = link.words.slice();
-        }
         link.parents.forEach(replaceLinkWordObject);
       }
 
@@ -116,7 +117,13 @@ const WordCollapser = (function() {
 
     });
 
-    phrase.removedWords = Array.prototype.concat.apply([], removedWords.map(word => word.removedWords || word));
+    phrase.removedWords = Array.prototype.concat.apply([], removedWords.map(word => {
+        if (word.removedWords) {
+          word.svg.remove();
+          return word.removedWords;
+        }
+        return word;
+      }));
 
     phrase.leftX = leftWord.leftX;
     phrase.row = row;
@@ -129,9 +136,31 @@ const WordCollapser = (function() {
     [].splice.apply(wordObjs, [wordObjs.indexOf(word), 1].concat(word.removedWords));
     [].splice.apply(word.row.words, [word.row.words.indexOf(word), 1].concat(word.removedWords));
 
-    word.removedWords.forEach(word => {
-      word.svg.show();
+    // set position of uncollapsed words
+    const rowWidth = Config.svgWidth - Config.edgePadding * 2;
+    let x = word.leftX;
+    const y = word.underneathRect.y();
+    word.removedWords.forEach(rw => {
+      rw.row = word.row;
+      moveWordToNewPosition(rw, x, y);
+      x += rw.underneathRect.width() + Config.wordPadding;
+      rw.svg.show();
     });
+    // rearrange remaining words on row
+    let i = word.row.words.indexOf(word.removedWords[word.removedWords.length - 1]) + 1;
+    while (word.row.words[i]) {
+      if (x <= word.row.words[i].leftX) {
+        break;
+      }
+      moveWordToNewPosition(word.row.words[i], x, y);
+      x += word.row.words[i].underneathRect.width() + Config.wordPadding;
+      if (x > rowWidth) {
+        if (word.row.idx + 1 === rows.length) { appendRow(); }
+        moveWordDownARow(word.row.words[i]);        
+      }
+      ++i;
+    }
+
 
     // revert assigned references to word in link
     function revertLinkWordObject(link) {
@@ -139,7 +168,7 @@ const WordCollapser = (function() {
         let _prop = '_' + prop;
         if (link[_prop]) {
           link[prop] = link[_prop];
-          delete link['_']
+          delete link['_'];
         }
       });
 
@@ -152,9 +181,7 @@ const WordCollapser = (function() {
 
     word.parents.forEach(revertLinkWordObject);
 
-    word.svg.hide();
-
-    // todo: make it go on the correct row and leftX and make enough room
+    word.svg.remove();
 
     redrawLinks(true);
   }
@@ -181,7 +208,6 @@ const WordCollapser = (function() {
         else if (leftWord === null) {
           leftWord = word;
           listenForRightWord();
-          console.log('left', word);
         }
         // selected words in the wrong order
         else if (leftWord.idx >= word.idx) {
@@ -190,7 +216,6 @@ const WordCollapser = (function() {
         }
         // select second word
         else {
-          console.log('right', word);
           joinWords(word);
         }
       }
