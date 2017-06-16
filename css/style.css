@@ -14,7 +14,7 @@ svg text {
   user-select: none;
 }
 
-#header {
+/*#header {
   position:absolute;
   top:0;
   left:0;
@@ -22,7 +22,7 @@ svg text {
   color:white;
   width:calc( 100% - 20px );
   padding:10px;
-}
+}*/
 
 #drawing {
   margin-top:30px;
@@ -86,7 +86,7 @@ svg text {
   background:rgba(200,200,200,0.5);
   margin-top:5px;
   width:100px;
-  height:100px;  
+  height:100px;
 }
 
 .noselect {

@@ -11,31 +11,39 @@ const Parser = (function() {
     /* first get string tokens from the syntaxData */
     _text = data.syntaxData.text;
 
-    const offsets = {};
     _tokens = data.syntaxData.entities
       .map(x => x[2][0])
       .sort((a, b) => a[0] - b[0])
       .map((interval, i) => {
-        offsets[interval[0]] = i;
-        return _text.substring(interval[0], interval[1]);
+        return {
+          text: _text.substring(interval[0], interval[1]),
+          startIndex: interval[0],
+          endIndex: interval[1]
+        };
       });
+
+    function findTokenByIndex([i1, i2]) {
+      const startToken = _tokens.findIndex(token => token.startIndex === i1);
+      const endToken = _tokens.findIndex(token => token.endIndex === i2);
+      return [startToken, endToken];
+    }
 
     /* parse the event data: entities, triggers, events, and relations */
     const e = data.eventData;
     const entities = e.entities.map(arr => {
-          return {
-              id: arr[0],
-              type: arr[1],
-              tokenIndex: offsets[arr[2][0][0]],
-              string: e.text.substring(arr[2][0][0], arr[2][0][1])
-          };
+        return {
+            id: arr[0],
+            type: arr[1],
+            tokenIndex: findTokenByIndex(arr[2][0]),
+            string: e.text.substring(arr[2][0][0], arr[2][0][1])
+        };
       });
 
     const triggers = e.triggers.map(arr => {
           return {
               id: arr[0],
               type: arr[1],
-              tokenIndex: offsets[arr[2][0][0]],
+              tokenIndex: findTokenByIndex(arr[2][0]),
               string: e.text.substring(arr[2][0][0], arr[2][0][1])
           };
       });
@@ -72,6 +80,7 @@ const Parser = (function() {
       events,
       relations
     };
+    _tokens = _tokens.map(token => token.text);
   }
 
   class Parser {

@@ -34,10 +34,9 @@ const Panel = (function() {
           let min = 30;
 
           height = Math.min(Math.max(min, height - dy), max);
-          container.style.height = height;
-
+          container.style.height = height + 'px';
           if (above) {
-            above.style.marginBottom = height + 10;
+            above.style.marginBottom = height + 10 + 'px';
           }
 
           self.onresize();
