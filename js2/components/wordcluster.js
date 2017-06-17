@@ -59,6 +59,7 @@ class WordCluster {
         let svg = this.svgs[i] = word.svg.group()
           .addClass('word-cluster');
 
+        // TODO: recalculate offset when tag is added/removed
         if (this.words.find(word => word.tag)) {
           svg.y(this.tagOffset * 1.9);
         }

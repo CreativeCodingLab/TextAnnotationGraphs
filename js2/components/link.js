@@ -3,8 +3,7 @@ class Link {
       this.eventId = eventId;
       this.trigger = trigger;
       this.arguments = args;
-      // console.log('trigger\t\t',trigger);
-      // console.log.apply(null, args);
-
+      console.log('trigger\t\t',trigger);
+      console.log.apply(null, args);
     }
 }

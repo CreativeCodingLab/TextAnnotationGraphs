@@ -31,8 +31,7 @@ class WordTag {
   }
   updateWordWidth() {
     let ww = this.entity.ww;
-    let tw = this.ww;
-    if (tw > ww - 5) {
+    if (this.entity.val.length < 9) {
       this.line.plot('M0,25,l0,8');
     }
     else {
@@ -93,7 +92,6 @@ class WordTag {
       this.remove();
     }
     else {
-      this.updateWordWidth();
       this.entity.setBoxWidth();
     }
   }

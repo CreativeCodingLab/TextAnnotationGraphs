@@ -75,12 +75,12 @@ const LabelManager = (function() {
     }
   })
   document.addEventListener('keypress', function(e) {
-    // console.log(String.fromCharCode(e.which), e.which);
+    // console.log(String.fromCharCode(e.which), e.which, e.metaKey);
     if (activeObject && activeObject.isEditing) {
       if (e.which === 32) {
         e.preventDefault();
       }
-      if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+      if (e.which > 31 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         if (string === null) { string = ''; }
         updateString(string + String.fromCharCode(e.which));
       }

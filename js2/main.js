@@ -32,7 +32,7 @@ const Main = (function() {
     lm      = new LabelManager(svg);
 
     // load and render initial dataset by default
-    changeDataset(4);
+    changeDataset(2);
 
     // svg event listeners
     svg.on('row-resize', function(e) {
@@ -133,13 +133,12 @@ const Main = (function() {
           console.log('unhandled argument type', argument);
           break;
       }
-      return anchor;
+      return { anchor, type: argument.type };
     }
 
     // construct links from events and relations
     const links = [];
     parser.data.events.forEach(evt => {
-
       // create a link between the trigger and each of its arguments
       const trigger = entities.find(word => word.eventId === evt.trigger);
       const arguments = evt.arguments.map(searchForEntity);
