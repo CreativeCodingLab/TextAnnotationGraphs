@@ -32,7 +32,7 @@ const Main = (function() {
     lm      = new LabelManager(svg);
 
     // load and render initial dataset by default
-    changeDataset();
+    changeDataset(4);
 
     // svg event listeners
     svg.on('row-resize', function(e) {

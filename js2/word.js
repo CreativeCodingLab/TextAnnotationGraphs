@@ -31,6 +31,7 @@ class Word {
       else {
         this.tag = tag;
       }
+      return this.tag;
     }
     init(svg) {
       this.mainSVG = svg;
@@ -47,7 +48,7 @@ class Word {
 
       // draw cluster info
       this.clusters.forEach((cluster) => {
-        cluster.draw(svg);
+        cluster.init(this);
       });
 
       // translate over by half (since the text is centered)
@@ -82,9 +83,18 @@ class Word {
       }
     }
 
+    redrawClusters() {
+      this.clusters.forEach(cluster => {
+        if (cluster.endpoints.indexOf(this) > -1) {
+          cluster.draw();
+        }
+      });
+    }
+
     move(x) {
       this.x = x;
       this.svg.transform({x: this.boxWidth / 2 + this.x});
+      this.redrawClusters();
     }
 
     dx(x) {

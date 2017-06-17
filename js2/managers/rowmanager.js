@@ -46,6 +46,7 @@ const RowManager = (function() {
 
     addWordToRow(word, row, i, ignorePosition) {
       if (isNaN(i)) { i = row.words.length; }
+
       let overflow = row.addWord(word, i, ignorePosition);
       while (overflow < row.words.length) {
         this.moveWordDownARow(row.idx);
@@ -153,7 +154,9 @@ const RowManager = (function() {
 
     moveWordUpARow(index) {
       if (!_rows[index - 1]) { return; }
-      this.addWordToRow(_rows[index].removeFirstWord(), _rows[index - 1], undefined, true);
+      let removedWord = _rows[index].removeFirstWord();
+      this.addWordToRow(removedWord, _rows[index - 1], undefined, true);
+      removedWord.redrawClusters();
     }
 
     moveWordDownARow(index) {

@@ -134,5 +134,5 @@ class Row {
   }
 
   get ry2() { return this.ry + this.rh; }
-  get minHeight() { return 50; }
+  get minHeight() { return Math.max(30, this.wordGroup.bbox().height); }
 }

@@ -18,6 +18,7 @@ svg text {
 
 #header {
   position:fixed;
+  z-index:100;
   background:black;
   width:100%;
   height:40px;
@@ -89,19 +90,20 @@ svg text {
   cursor: pointer;
 }
 
-.word .word-cluster,
+.word-cluster text,
 .word .word-tag {
   font-size: 12px;
   cursor: text;
 }
 
-.word .word-cluster {
+.word-cluster text {
   fill:#a94442;
 }
 .word .word-tag {
   fill:#333;
 }
-.editing .word-tag {
+.editing .word-tag,
+.editing text {
   fill: #fff;
 }
 .editing rect {

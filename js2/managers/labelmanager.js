@@ -7,6 +7,7 @@ const LabelManager = (function() {
   // special keys
   const Key = {
     delete: 8,
+    tab: 9,
     enter: 13,
     escape: 27,
     left: 37,
@@ -33,7 +34,7 @@ const LabelManager = (function() {
 
   function stopEditing() {
     if (activeObject && activeObject.isEditing) {
-      if (!string) { updateString(originalString); }
+      // if (!string) { updateString(originalString); }
       activeObject.stopEditing();
       activeObject = null;
       originalString = string = null;
@@ -52,6 +53,8 @@ const LabelManager = (function() {
             case Key.delete:
                 if (string === null) { string = originalString; }
                 updateString(string.slice(0, -1));
+              break;
+            case Key.tab:
               break;
             case Key.enter:
                 stopEditing();
@@ -72,15 +75,19 @@ const LabelManager = (function() {
     }
   })
   document.addEventListener('keypress', function(e) {
+    // console.log(String.fromCharCode(e.which), e.which);
     if (activeObject && activeObject.isEditing) {
-      if (string === null) { string = ''; }
-      updateString(string + String.fromCharCode(e.which));
+      if (e.which === 32) {
+        e.preventDefault();
+      }
+      if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (string === null) { string = ''; }
+        updateString(string + String.fromCharCode(e.which));
+      }
     }
   });
 
-  document.addEventListener('mousedown', function(e) {
-    stopEditing();
-  });
+  document.addEventListener('mousedown', stopEditing);
 
   return LabelManager;
 })();

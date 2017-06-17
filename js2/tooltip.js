@@ -1,5 +1,6 @@
 const Tooltip = (function() {
   let div = {};
+  let _svg = {};
   let activeObject = null;
   let yOffset = 0;
 
@@ -8,6 +9,8 @@ const Tooltip = (function() {
       div = document.getElementById(id);
       yOffset = svg.node.getBoundingClientRect().top;
       this.clear = clear;
+
+      _svg = svg;
 
       // listeners to open tooltip
       svg.on('tag-right-click', openTooltip);
@@ -22,7 +25,7 @@ const Tooltip = (function() {
     let html = '';
     if (activeObject instanceof Word) {
       if (activeObject.tag) {
-        html += '<p id="menu--edit-tag">Edit tag</p><hr>';
+        html += '<p id="menu--edit-tag">Edit tag</p><p id="menu--remove-tag">Remove tag</p><hr>';
       }
       else {
         html += '<p id="menu--add-tag">Add tag</p><hr>';
@@ -63,11 +66,19 @@ const Tooltip = (function() {
       switch (e.target.id) {
         // tag management events
         case 'menu--remove-tag':
-          activeObject.remove();
+          if (activeObject instanceof Word && activeObject.tag) {
+            activeObject.tag.remove();
+          }
+          else {
+            activeObject.remove();
+          }
           break;
         case 'menu--add-tag':
+          let tag = activeObject.setTag('?');
+          _svg.fire('tag-edit', { object: tag });
           break;
         case 'menu--edit-tag':
+          _svg.fire('tag-edit', { object: activeObject.tag });
           break;
         default: ;
       }
