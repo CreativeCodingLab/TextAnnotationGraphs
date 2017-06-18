@@ -1,5 +1,6 @@
 class WordCluster {
   constructor(words = [], val) {
+    this.eventIds = [];
     this.val = val;
     this.words = words;
     this.metaValue = words.map(w => {
@@ -15,6 +16,11 @@ class WordCluster {
     this.svgs = [];
     this.lines = [];
     this.svgText = null;
+  }
+  addEventId(id) {
+    if (this.eventIds.indexOf(id) < 0) {
+      this.eventIds.push(id);
+    }
   }
   setTag(tag) {
     this.val = tag;

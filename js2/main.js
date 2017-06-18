@@ -32,7 +32,7 @@ const Main = (function() {
     lm      = new LabelManager(svg);
 
     // load and render initial dataset by default
-    changeDataset(2);
+    changeDataset(5);
 
     // svg event listeners
     svg.on('row-resize', function(e) {
@@ -92,6 +92,9 @@ const Main = (function() {
       word.init(svg);
       rm.addWordToRow(word, rm.lastRow);
     });
+    links.forEach(link => {
+      link.init(svg);
+    });
   }
 
   //--------------------------------
@@ -105,7 +108,7 @@ const Main = (function() {
     [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
       if (el.tokenIndex[0] === el.tokenIndex[1]) {
         words[el.tokenIndex[0]].setTag(el.type);
-        words[el.tokenIndex[0]].eventId = el.id;
+        words[el.tokenIndex[0]].addEventId(el.id);
       }
       else {
         let cluster = [];
@@ -113,7 +116,7 @@ const Main = (function() {
           cluster.push(words[i]);
         }
         const wordCluster = new WordCluster(cluster, el.type);
-        wordCluster.eventId = el.id;
+        wordCluster.addEventId(el.id);
         clusters.push(wordCluster);
       }
     });
@@ -127,7 +130,7 @@ const Main = (function() {
           anchor = links.find(link => link.eventId === argument.id);
           break;
         case 'T':
-          anchor = entities.find(word => word.eventId === argument.id);
+          anchor = entities.find(word => word.eventIds.indexOf(argument.id) > -1);
           break;
         default:
           console.log('unhandled argument type', argument);
@@ -140,7 +143,7 @@ const Main = (function() {
     const links = [];
     parser.data.events.forEach(evt => {
       // create a link between the trigger and each of its arguments
-      const trigger = entities.find(word => word.eventId === evt.trigger);
+      const trigger = entities.find(word => word.eventIds.indexOf(evt.trigger) > -1);
       const arguments = evt.arguments.map(searchForEntity);
 
       // create link

@@ -1,10 +1,11 @@
 class Word {
     constructor(val, idx, tag, svg, row) {
+      this.eventIds = [];
       this.val = val;
       this.idx = idx;
       this.x = 0;
       this.boxWidth = 0;
-      this.isPunct = (val.length === 1 && val.charCodeAt(0) < 65);
+      this.isPunct = (val.length === 1 && val.charCodeAt(0) < 65); // FIXME: doesn't handle fancier unicode punct | should exclude left-punctuation e.g. left-paren or left-quote
       this.clusters = [];
       this.links = [];
 
@@ -13,6 +14,11 @@ class Word {
       }
       if (svg) {
         this.init(svg, row);
+      }
+    }
+    addEventId(id) {
+      if (this.eventIds.indexOf(id) < 0) {
+        this.eventIds.push(id);
       }
     }
     setTag(tag) {
@@ -111,6 +117,17 @@ class Word {
     moveToRow(row, i, ignorePosition = true) {
       this.row.removeWord(this);
       row.addWord(this, i, ignorePosition);
+    }
+
+    /**
+     * remove reference to a link
+     * @return array containing the link, or undefined
+     */
+    detachLink(link) {
+      let i = this.links.indexOf(link);
+      if (i > -1) {
+        return this.links.splice(i, 1);
+      }
     }
 
     get ww() {
