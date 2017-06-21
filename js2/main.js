@@ -104,7 +104,12 @@ const Main = (function() {
   //--------------------------------
   function buildWordsAndLinks() {
     // construct word objects and tags from tokens, entities, and triggers
-    const words = parser.tokens.map((token, i) => new Word(token, i));
+    const words = parser.tokens.map((token, i) => {
+      let w = new Word(token.text, i);
+      w.syntaxTag = token.type;
+      w.syntaxId = token.id;
+      return w;
+    });
     const clusters = [];
 
     [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
@@ -160,6 +165,21 @@ const Main = (function() {
 
       // create link
       const link = new Link(rel.id, null, arguments, rel.type);
+
+      // push link to link array
+      links.push(link);
+    });
+
+    parser.data.syntax.forEach(syn => {
+      // create a link between the trigger and each of its arguments
+      const trigger = entities.find(word => word.eventIds.indexOf(syn.trigger) > -1);
+      const arguments = syn.arguments.map(arg => {
+        let anchor = words.find(w => w.syntaxId === arg.id);
+        return { anchor, type: arg.type };
+      });
+
+      // create link
+      const link = new Link(syn.id, trigger, arguments);
 
       // push link to link array
       links.push(link);

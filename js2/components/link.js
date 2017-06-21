@@ -105,7 +105,7 @@ class Link {
               + 'c' + [dx, 0, dx, 10, dx, 10];
           }).join();
         }
-        else {
+        else if (this.relType) {
           let avg = this.arguments.reduce((acc, a) => acc + a.anchor.cx, 0) / this.arguments.length;
           this.svgTexts[0].x(avg)
             .y(this.arguments[0].anchor.absoluteY - 10 - 7);

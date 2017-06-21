@@ -10,16 +10,16 @@ const Parser = (function() {
   function parseData(data) {
     /* first get string tokens from the syntaxData */
     _text = data.syntaxData.text;
-
     _tokens = data.syntaxData.entities
-      .map(x => x[2][0])
-      .sort((a, b) => a[0] - b[0])
-      .map((interval, i) => {
+      .sort((a, b) => a[2][0][0] - b[2][0][0])
+      .map(x => {
         return {
-          text: _text.substring(interval[0], interval[1]),
-          startIndex: interval[0],
-          endIndex: interval[1]
-        };
+          text: _text.substring(x[2][0][0], x[2][0][1]),
+          id: x[0],
+          type: x[1],
+          startIndex: x[2][0][0],
+          endIndex: x[2][0][1]
+        }
       });
 
     function findTokenByIndex([i1, i2]) {
@@ -27,6 +27,19 @@ const Parser = (function() {
       const endToken = _tokens.findIndex(token => token.endIndex === i2);
       return [startToken, endToken];
     }
+
+    const syntax = data.syntaxData.relations.map(arr => {
+      return {
+        id: arr[0],
+        trigger: arr[2][0][1],
+        arguments: [
+          {
+            id: arr[2][1][1],
+            type: arr[1]
+          }
+        ]
+      };
+    });
 
     /* parse the event data: entities, triggers, events, and relations */
     const e = data.eventData;
@@ -78,9 +91,9 @@ const Parser = (function() {
       entities,
       triggers,
       events,
-      relations
+      relations,
+      syntax
     };
-    _tokens = _tokens.map(token => token.text);
   }
 
   class Parser {
