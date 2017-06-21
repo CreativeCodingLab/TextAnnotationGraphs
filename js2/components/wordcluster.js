@@ -8,6 +8,7 @@ class WordCluster {
       return w.val;
     }).join(' ');
     this.setEndpoints();
+    this.links = [];
 
     // svgs:
     //   2 groups for left & right brace, containing:
@@ -16,6 +17,7 @@ class WordCluster {
     this.svgs = [];
     this.lines = [];
     this.svgText = null;
+    this.x = 0;       // x position of text
   }
   addEventId(id) {
     if (this.eventIds.indexOf(id) < 0) {
@@ -86,6 +88,10 @@ class WordCluster {
       this.draw();
     }
   }
+
+  /**
+   * recalculate position of lines
+   */
   draw() {
     if (!this.lines[1]) { return; }
     let left = this.endpoints[0].x;
@@ -99,6 +105,7 @@ class WordCluster {
     if (this.endpoints[0].row === this.endpoints[1].row) {
       // draw left side of the brace and align text
       let center = (-left + right) / 2;
+      this.x = center + lOffset;
       this.svgText.x(center + lOffset);
       if (dblheight && !this.endpoints[0].tag) {
         this.lines[0].plot('M' + lOffset + ',59l0,-5c0,-34,' + [center,-21,center,-29]);
@@ -118,6 +125,7 @@ class WordCluster {
     else {
       // draw right side of brace extending to end of row and align text
       let center = (-left + this.endpoints[0].row.rw) / 2 + 10;
+      this.x = center + lOffset;
       this.svgText.x(center + lOffset);
 
       if (dblheight && !this.endpoints[0].tag) {
@@ -149,6 +157,9 @@ class WordCluster {
         );
       }
     }
+
+    // propagate draw command to parent links
+    this.links.forEach(l => l.draw(this));
   }
   remove() {
     this.svgs.forEach(svg => svg.remove());
@@ -181,6 +192,13 @@ class WordCluster {
     if (!this.val) {
       this.remove();
     }
+  }
+
+  get absoluteY() {
+    return this.endpoints[0].absoluteY;
+  }
+  get cx() {
+    return this.x;
   }
   get ww() {
     return this.svgText.length();

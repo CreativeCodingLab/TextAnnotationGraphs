@@ -5,6 +5,7 @@ class Word {
       this.idx = idx;
       this.x = 0;
       this.boxWidth = 0;
+      this.boxHeight = 0;
       this.isPunct = (val.length === 1 && val.charCodeAt(0) < 65); // FIXME: doesn't handle fancier unicode punct | should exclude left-punctuation e.g. left-paren or left-quote
       this.clusters = [];
       this.links = [];
@@ -32,7 +33,7 @@ class Word {
         else {
           this.tag = new WordTag(tag, this);
         }
-        this.setBoxWidth();
+        this.calculateBox();
       }
       else {
         this.tag = tag;
@@ -58,7 +59,7 @@ class Word {
       });
 
       // translate over by half (since the text is centered)
-      this.setBoxWidth();
+      this.calculateBox();
       this.svg.y(-this.svgText.bbox().y2);
 
       // attach drag listeners
@@ -89,6 +90,10 @@ class Word {
       }
     }
 
+    redrawLinks() {
+      this.links.forEach(l => l.draw(this));
+    }
+
     redrawClusters() {
       this.clusters.forEach(cluster => {
         if (cluster.endpoints.indexOf(this) > -1) {
@@ -101,15 +106,18 @@ class Word {
       this.x = x;
       this.svg.transform({x: this.boxWidth / 2 + this.x});
       this.redrawClusters();
+      this.redrawLinks();
     }
 
     dx(x) {
       this.move(this.x + x);
     }
 
-    setBoxWidth() {
-      let diff = this.boxWidth - this.minWidth;
+    calculateBox() {
+      let minWidth = (this.tag instanceof WordTag) ? Math.max(this.tag.ww, this.ww) : this.ww;
+      let diff = this.boxWidth - minWidth;
       this.boxWidth -= diff;
+      this.boxHeight = this.svg.bbox().height;
       this.dx(diff / 2);
       this.mainSVG.fire('word-move', {object: this, x: 0});
     }
@@ -119,21 +127,13 @@ class Word {
       row.addWord(this, i, ignorePosition);
     }
 
-    /**
-     * remove reference to a link
-     * @return array containing the link, or undefined
-     */
-    detachLink(link) {
-      let i = this.links.indexOf(link);
-      if (i > -1) {
-        return this.links.splice(i, 1);
-      }
+    get absoluteY() {
+      return this.row ? this.row.ry + this.row.rh - this.boxHeight - 5 : 0;
     }
-
+    get cx() {
+      return this.x + this.boxWidth / 2;
+    }
     get ww() {
       return this.svgText.length();
-    }
-    get minWidth() {
-      return this.tag instanceof WordTag ? Math.max(this.tag.ww, this.ww) : this.ww;
     }
 }

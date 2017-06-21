@@ -11,8 +11,10 @@ const RowManager = (function() {
       let row = _rows[i];
       dy = Math.max(-row.rh + row.minHeight, dy);
       row.height(row.rh + dy);
+      row.words.forEach(word => word.redrawLinks());
       for (let j = i + 1; j < _rows.length; ++j) {
         _rows[j].dy(dy);
+        _rows[j].words.forEach(word => word.redrawLinks());
       }
       _svg.height(this.lastRow.ry2 + ROW_PADDING);
     }
@@ -157,6 +159,7 @@ const RowManager = (function() {
       let removedWord = _rows[index].removeFirstWord();
       this.addWordToRow(removedWord, _rows[index - 1], undefined, true);
       removedWord.redrawClusters();
+      removedWord.redrawLinks();
     }
 
     moveWordDownARow(index) {

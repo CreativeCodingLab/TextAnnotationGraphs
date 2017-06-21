@@ -7,9 +7,9 @@ const Main = (function() {
   let svg;
 
   // node-link objects
-  let words;
-  let links;
-  let clusters;
+  let words = [];
+  let links = [];
+  let clusters = [];
 
   // other html elements
   let tooltip = {};
@@ -25,6 +25,7 @@ const Main = (function() {
     body = document.body.getBoundingClientRect();
     svg = SVG('main')
       .size(body.width, window.innerHeight - body.top - 10);
+
     tooltip = new Tooltip('tooltip', svg);
     parser  = new Parser();
     panel   = new Panel('graph');
@@ -32,7 +33,7 @@ const Main = (function() {
     lm      = new LabelManager(svg);
 
     // load and render initial dataset by default
-    changeDataset(5);
+    changeDataset(2);
 
     // svg event listeners
     svg.on('row-resize', function(e) {
@@ -66,8 +67,8 @@ const Main = (function() {
    */
   function changeDataset(index = 1) {
     parser.readJson(`./data/data${index}.json`, function() {
-      [words, links, clusters] = buildWordsAndLinks();
       clear();
+      [words, links, clusters] = buildWordsAndLinks();
       draw();
     });
   };
@@ -79,6 +80,7 @@ const Main = (function() {
     while (rm.rows.length > 0) {
       rm.removeRow();
     }
+    links.forEach(link => link.svg && link.svg.remove());
   }
 
   /**
@@ -107,7 +109,7 @@ const Main = (function() {
 
     [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
       if (el.tokenIndex[0] === el.tokenIndex[1]) {
-        words[el.tokenIndex[0]].setTag(el.type);
+        words[el.tokenIndex[0]].setTag(el.type);  // TODO: enable setting multiple tags
         words[el.tokenIndex[0]].addEventId(el.id);
       }
       else {
@@ -157,7 +159,7 @@ const Main = (function() {
       const arguments = rel.arguments.map(searchForEntity);
 
       // create link
-      const link = new Link(rel.id, null, arguments);
+      const link = new Link(rel.id, null, arguments, rel.type);
 
       // push link to link array
       links.push(link);

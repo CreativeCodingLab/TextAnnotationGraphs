@@ -64,6 +64,10 @@ svg text {
 #main svg {
   background-color: hsl(40,10%,90%);
 }
+#main text {
+  font-family: BrownPro, Brown, futura, helvetica, arial, sans-serif;
+  text-anchor: middle;
+}
 .row-drag {
   stroke-width:2;
   stroke-dasharray: 2,1;
@@ -77,9 +81,7 @@ svg text {
 }
 
 .word text {
-  font-family: BrownPro, Brown, futura, helvetica, arial, sans-serif;
   font-size:16px;
-  text-anchor: middle;
   fill:black;
 }
 .word path {
@@ -96,9 +98,7 @@ svg text {
   cursor: text;
 }
 
-.word-cluster text {
-  fill:#a94442;
-}
+.word-cluster text,
 .word .word-tag {
   fill:#333;
 }
@@ -107,5 +107,15 @@ svg text {
   fill: #fff;
 }
 .editing rect {
-  fill: rgb(203, 120, 111);
+  /*fill: rgb(203, 120, 111);*/
+  fill:#a94442;
+}
+
+.link path.polyline {
+  stroke: #6590b4;
+  fill: none;
+}
+.link {
+  font-size: 12px;
+  fill:#6590b4;
 }

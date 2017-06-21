@@ -26,7 +26,7 @@ class WordTag {
   }
   remove() {
     this.entity.tag = null;
-    this.entity.setBoxWidth();
+    this.entity.calculateBox();
     return this.svg.remove();
   }
   updateWordWidth() {
@@ -92,7 +92,7 @@ class WordTag {
       this.remove();
     }
     else {
-      this.entity.setBoxWidth();
+      this.entity.calculateBox();
     }
   }
   // word width
