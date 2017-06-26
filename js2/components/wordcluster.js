@@ -197,6 +197,9 @@ class WordCluster {
   get absoluteY() {
     return this.endpoints[0].absoluteY;
   }
+  get idx() {
+    return this.endpoints[0].idx;
+  }
   get cx() {
     return this.x;
   }

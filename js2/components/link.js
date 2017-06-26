@@ -2,11 +2,9 @@ class Link {
     constructor(eventId, trigger, args, reltype) {
       this.eventId = eventId;
       this.trigger = trigger;
-      this.arguments = args;
+      this.arguments = args.sort((a,b) => a.anchor.idx - b.anchor.idx);
       this.links = [];
       this.reltype = reltype;
-      // console.log('trigger\t\t', this.val);
-      // console.log.apply(null, args);
 
       if (this.trigger) { this.trigger.links.push(this); }
       this.arguments.forEach(arg => arg.anchor.links.push(this));
@@ -76,41 +74,58 @@ class Link {
         }
       })
       if (this.line) {
-        let d;
+        let d = '';
         if (this.trigger) {
-          d = this.arguments.map((arg, i) => {
-            let tx = this.trigger.cx
-                , ty = this.trigger.absoluteY
-                , ax = arg.anchor.cx
-                , ay = arg.anchor.absoluteY;
+          // draw a polyline between the trigger and each of its arguments
+          for (let i = 0, il = this.arguments.length; i < il; ++i) {
+            let leftOfTrigger = this.arguments[i].anchor.idx < this.trigger.idx;
+            let dx = leftOfTrigger ? 5 : -5;
+            let textlen = leftOfTrigger ? this.svgTexts[i].length() : -this.svgTexts[i].length();
 
-            let dx = (tx < ax) ? 10 : -10;
-            let dy = ty - ay; // FIXME: this only handles case for trigger.y on lower level than arg.y
+            // draw a line from the prev arrow segment
+            if (i > 0) {
+              if (leftOfTrigger) {
+                d += 'L' + [this.handles[i + 1].x + dx, this.handles[i + 1].y - 10]
+              }
+              else {
+                d += 'L' + [this.handles[i + 1].x + dx + textlen, this.handles[i + 1].y - 10]                
+              }
+            }
+            else if (!leftOfTrigger) {
+              // start drawing from the trigger
+              d += 'M' + [this.handles[0].x, this.handles[0].y]
+                + 'c' + [0, -10, 0, -10, -dx, -10]
+                + 'L' + [this.handles[1].x + dx + textlen, this.handles[1].y - 10];
+            }
 
-            // get text position
-            let len = this.svgTexts[i]
-              .x((ax + tx) / 2)
-              .y(arg.anchor.absoluteY - 10 - 7)
-              .length() / 2;
+            // draw an arrow segment coming from each argument
+            d += 'M' + [this.handles[i + 1].x, this.handles[i + 1].y]
+              + 'c' + [0, -10, 0, -10, dx, -10];
+            if (leftOfTrigger) {
+              d += 'm' + [textlen, 0];
+            }
 
-            let cx = (ax - tx) / 2 - dx;
-            if (cx < 0) { len = -len; }
+            if (leftOfTrigger && (i + 2 > il || this.arguments[i + 1].anchor.idx >= this.trigger.idx)) {
+              // draw trigger to the right of the arrow segment
+              d += 'L' + [this.handles[0].x - dx, this.handles[0].y - 10]
+                + 'c' + [dx, 0, dx, 0, dx, 10];
+              if (i + 1 < il) {
+                d += 'c' + [0, -10, 0, -10, dx, -10];
+              }
+            }
 
-            // get path string
-            return 'M' + [tx, ty]
-              + 'c' + [0, -10 - dy, 0, -10 - dy, dx, -10 - dy]
-              + 'l' + [cx - len, 0]
-              + 'm' + [len * 2, 0]
-              + 'l' + [cx - len, 0]
-              + 'c' + [dx, 0, dx, 10, dx, 10];
-          }).join();
+            // draw the text svg
+            this.svgTexts[i]
+              .x(this.handles[i + 1].x + dx + textlen / 2)
+              .y(this.handles[i + 1].y - 10 - 7);
+          }
         }
-        else if (this.relType) {
+        else if (this.reltype) {
           let avg = this.arguments.reduce((acc, a) => acc + a.anchor.cx, 0) / this.arguments.length;
           this.svgTexts[0].x(avg)
             .y(this.arguments[0].anchor.absoluteY - 10 - 7);
-          d = 'M' + [this.arguments[0].anchor.cx, this.arguments[0].anchor.absoluteY]
-            + 'L' + [this.arguments[1].anchor.cx, this.arguments[1].anchor.absoluteY];
+          // d = 'M' + [this.arguments[0].anchor.cx, this.arguments[0].anchor.absoluteY]
+          //   + 'L' + [this.arguments[1].anchor.cx, this.arguments[1].anchor.absoluteY];
         }
         this.line.plot(d);
       }
@@ -140,6 +155,13 @@ class Link {
       return this.arguments.find(arg => arg.anchor === a);
     }
 
+    get idx() {
+      if (this.trigger) {
+        return this.trigger.idx;
+      }
+      return this.arguments.reduce((acc, arg) => acc + arg.anchor.idx, 0) / this.arguments.length;
+    }
+
     get cx() {
       if (this.trigger) {
         // if (this.trigger.links.length > 1) {
@@ -149,7 +171,7 @@ class Link {
         return this.trigger.cx;
       }
       if (this.arguments.length > 0) {
-        return this.arguments.reduce((acc, arg) => acc + arg.cx, 0) / this.arguments.length;
+        return this.arguments.reduce((acc, arg) => acc + arg.anchor.cx, 0) / this.arguments.length;
       }
       return 0;
     }

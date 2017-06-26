@@ -162,7 +162,6 @@ const Main = (function() {
 
     parser.data.relations.forEach(rel => {
       const arguments = rel.arguments.map(searchForEntity);
-
       // create link
       const link = new Link(rel.id, null, arguments, rel.type);
 
@@ -170,20 +169,21 @@ const Main = (function() {
       links.push(link);
     });
 
-    parser.data.syntax.forEach(syn => {
-      // create a link between the trigger and each of its arguments
-      const trigger = entities.find(word => word.eventIds.indexOf(syn.trigger) > -1);
-      const arguments = syn.arguments.map(arg => {
-        let anchor = words.find(w => w.syntaxId === arg.id);
-        return { anchor, type: arg.type };
-      });
-
-      // create link
-      const link = new Link(syn.id, trigger, arguments);
-
-      // push link to link array
-      links.push(link);
-    });
+    // // syntax data
+    // parser.data.syntax.forEach(syn => {
+    //   // create a link between the trigger and each of its arguments
+    //   const trigger = entities.find(word => word.eventIds.indexOf(syn.trigger) > -1);
+    //   const arguments = syn.arguments.map(arg => {
+    //     let anchor = words.find(w => w.syntaxId === arg.id);
+    //     return { anchor, type: arg.type };
+    //   });
+    //
+    //   // create link
+    //   const link = new Link(syn.id, trigger, arguments);
+    //
+    //   // push link to link array
+    //   links.push(link);
+    // });
 
     return [ words, links, clusters ];
   }
