@@ -177,18 +177,17 @@ const Main = (function() {
     // syntax data
     parser.data.syntax.forEach(syn => {
       // create a link between the trigger and each of its arguments
-      const trigger = entities.find(word => word.eventIds.indexOf(syn.trigger) > -1);
+      const trigger = entities.find(word => word.syntaxId === syn.trigger);
       const arguments = syn.arguments.map(arg => {
         let anchor = words.find(w => w.syntaxId === arg.id);
         return { anchor, type: arg.type };
       });
 
       // create link
-      // console.log(syn.id, trigger, arguments, syn);
-      // const link = new Link(syn.id, trigger, arguments);
-      //
-      // // push link to link array
-      // links.push(link);
+      const link = new Link(syn.id, trigger, arguments, null, false);
+
+      // push link to link array
+      links.push(link);
     });
 
     return [ words, links, clusters ];

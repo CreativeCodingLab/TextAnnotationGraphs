@@ -158,6 +158,9 @@ class Word {
       row.addWord(this, i, ignorePosition);
     }
 
+    get absoluteDescent() {
+      return this.row ? this.row.ry + this.row.rh + this.descendHeight + 8 : 0;
+    }
     get absoluteY() {
       // console.log(this.svgText.bbox().height);
       return this.row ? this.row.ry + this.row.rh - this.boxHeight : 0;

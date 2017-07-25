@@ -1,25 +1,35 @@
 class Link {
-    constructor(eventId, trigger, args, reltype) {
+    constructor(eventId, trigger, args, reltype, top = true) {
       this.eventId = eventId;
       this.trigger = trigger;
       this.arguments = args.sort((a,b) => a.anchor.idx - b.anchor.idx);
       this.links = [];
       this.reltype = reltype;
+      this.top = top;
 
       this.slot = 0;
 
-      if (this.trigger) {
-        this.trigger.links.push(this);
-        this.slot = this.trigger.slot;
-      }
-      this.arguments.forEach(arg => {
-        arg.anchor.links.push(this)
-        if (arg.anchor.slot > this.slot) {
-          this.slot = arg.anchor.slot;
+      if (this.top) {
+        // top links
+        if (this.trigger) {
+          this.trigger.links.push(this);
+          this.slot = this.trigger.slot;
         }
-      });
+        this.arguments.forEach(arg => {
+          arg.anchor.links.push(this);
+          if (arg.anchor.slot > this.slot) {
+            this.slot = arg.anchor.slot;
+          }
+        });
 
-      this.slot += 1;
+        this.slot += 1;
+      }
+      else {
+        // bottom links
+        this.trigger.links.push(this);
+        this.slot = -1;
+        this.arguments.forEach(arg => arg.anchor.links.push(this));
+      }
       this.endpoints = this.getEndpoints();
 
       this.mainSVG = null;
@@ -31,8 +41,7 @@ class Link {
 
     init(svg, words) {
       this.mainSVG = svg;
-      this.svg = svg.group().addClass('link');
-
+      this.svg = svg.group().addClass(this.top ? 'link' : 'link syntax-link');
       this.recalculateSlots(words);
 
       // init handles
@@ -41,9 +50,9 @@ class Link {
       // draw trigger
       if (this.trigger) {
         // draw a diamond at the location of the trigger
-        let offset = this.trigger.links.indexOf(this);
+        let offset = this.trigger.links.filter(l => l.top == this.top).indexOf(this);
         let x = this.trigger.cx + 8 * offset;
-        let y = this.trigger.absoluteY;
+        let y = this.top ? this.trigger.absoluteY : this.trigger.absoluteDescent;
 
         let handle = this.svg.path(`M${s},0L0,${s}L${-s},0L0,${-s}Z`)
           .x(x - s)
@@ -54,11 +63,15 @@ class Link {
       // draw arguments
       this.arguments.forEach(arg => {
         // draw a triangle at the location of the argument
-        let offset = arg.anchor.links.indexOf(this);
+        let offset = arg.anchor.links.filter(l => l.top == this.top).indexOf(this);
         let x = arg.anchor.cx + 8 * offset;
-        let y = arg.anchor.absoluteY;
+        let y = this.top ? arg.anchor.absoluteY : arg.anchor.absoluteDescent;
 
-        let handle = this.svg.path(`M${[s, -s/2]}L${[-s, -s/2]}L0,${s}`)
+        let handle = (
+          this.top ?
+            this.svg.path(`M${[s, -s/2]}L${[-s, -s/2]}L0,${s}`) :
+            this.svg.path(`M0,${-s/2}L${[-s,s]}L${[s,s]}`)
+        )
           .x(x - s)
           .y(y - s);
         this.handles.push({ anchor: arg.anchor, handle, x, y, offset });
@@ -91,7 +104,7 @@ class Link {
       this.handles.forEach(h => {
         if (anchor === h.anchor) {
           h.x = anchor.cx + 8 * h.offset;
-          h.y = anchor.absoluteY;
+          h.y = this.top ? anchor.absoluteY : anchor.absoluteDescent;
           h.handle
             .x(h.x - s)
             .y(h.y - s);
@@ -233,7 +246,9 @@ class Link {
     // helper function to calculate line-height in draw()
     getY(handle) {
       let r = handle.anchor.row;
-      return r.rh + r.ry - 45 - 15 * this.slot;
+      return this.top ?
+          r.rh + r.ry - 45 - 15 * this.slot
+        : r.rh + r.ry + 25 - 15 * this.slot;
     }
 
     remove() {
@@ -260,8 +275,8 @@ class Link {
       let wordArray = words.slice(this.endpoints[0].idx, this.endpoints[1].idx + 1);
 
       // recursively increase the slots of l
-      function incrementSlot(l) {
-        l.slot += 1;
+      function incrementSlot(l, top) {
+        l.slot += top ? 1 : -1;
         l.links.forEach(incrementSlot);
       }
 
@@ -269,12 +284,12 @@ class Link {
       function checkCollision(l) {
         if (l !== self && l.slot === self.slot) {
           if (l.endpoints[0] <= ep[0] && l.endpoints[1] >= ep[0]) {
-            incrementSlot(l);
+            incrementSlot(l, self.top);
             l.recalculateSlots(words);
           }
           else if (l.endpoints[0] >= ep[0] &&  l.endpoints[0] <= ep[1]) {
-            // TODO: increase the slots of self
-            incrementSlot(self);
+            // TODO: properly handle slots of self
+            incrementSlot(self, self.top);
           }
           l.links.forEach(checkCollision);
         }

@@ -142,6 +142,15 @@ class Row {
     }
     this.maxSlot = this.words.reduce(fn, 0);
   }
+  calculateMinSlot() {
+    function fn(acc, anchor) {
+      if (anchor.links.length === 0) {
+        return Math.min(acc, anchor.slot);
+      }
+      return anchor.links.reduce(fn, 0);
+    }
+    this.minSlot = this.words.reduce(fn, 0);
+  }
 
   get ry2() { return this.ry + this.rh; }
   get minHeight() {

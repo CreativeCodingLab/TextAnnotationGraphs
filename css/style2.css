@@ -103,9 +103,9 @@ svg text {
   fill:#333;
 }
 .word .syntax-tag {
-  fill: rgb(203, 120, 111);
+  fill: rgb(208, 150, 143);
 }
-.toggle-syntax .syntax-tag {
+.toggle-syntax .syntax-tag, .toggle-syntax .syntax-link {
   display:none;
 }
 
@@ -114,7 +114,6 @@ svg text {
   fill: #fff;
 }
 .editing rect {
-  /*fill: rgb(203, 120, 111);*/
   fill:#a94442;
 }
 
@@ -126,6 +125,14 @@ svg text {
   font-size: 12px;
   fill:#6590b4;
 }
+.link.syntax-link {
+  fill: #999;
+}
+.syntax-link path.polyline {
+  stroke: #999;
+  fill: none;
+}
+
 .link:hover {
   stroke-width:2px;
 }
