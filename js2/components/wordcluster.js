@@ -199,7 +199,7 @@ class WordCluster {
     return this.endpoints[0].row;
   }
   get absoluteY() {
-    return this.endpoints[0].absoluteY + 10;
+    return this.endpoints[0].absoluteY;
   }
   get idx() {
     return this.endpoints[0].idx;

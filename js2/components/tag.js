@@ -1,7 +1,8 @@
 class WordTag {
-  constructor(val, word) {
+  constructor(val, word, above = true) {
     this.val = val;
     this.entity = word;
+    this.position = above;
 
     if (!word.svg) {
       console.log("error: word must have an svg element");
@@ -11,7 +12,8 @@ class WordTag {
     this.svg = word.svg.group()
       .y(this.tagOffset);
     this.svgText = this.svg.text(this.val)
-      .addClass('word-tag');
+      .addClass(above ? 'word-tag' : 'word-tag syntax-tag');
+    this.ww = this.svgText.length();
 
     // add click and right-click listeners
     let svg = word.mainSVG;
@@ -30,22 +32,25 @@ class WordTag {
     return this.svg.remove();
   }
   updateWordWidth() {
-    let ww = this.entity.ww;
-    if (this.entity.val.length < 9) {
-      this.line.plot('M0,25,l0,8');
-    }
-    else {
-      let diff = ww / 2;
-      this.line.plot('M0,25,c0,8,'
-        + [diff,0,diff,8]
-        + ',M0,25,c0,8,'
-        + [-diff,0,-diff,8]
-      );
+    if (this.position) {
+      let ww = this.entity.ww;
+      if (this.entity.val.length < 9) {
+        this.line.plot('M0,25,l0,8');
+      }
+      else {
+        let diff = ww / 2;
+        this.line.plot('M0,25,c0,8,'
+          + [diff,0,diff,8]
+          + ',M0,25,c0,8,'
+          + [-diff,0,-diff,8]
+        );
+      }
     }
   }
   text(val) {
     this.val = val;
     this.svgText.text(this.val);
+    this.ww = this.svgText.length();
     if (this.editingRect) {
       let bbox = this.svgText.bbox();
       if (bbox.width > 0) {
@@ -95,11 +100,7 @@ class WordTag {
       this.entity.calculateBox();
     }
   }
-  // word width
-  get ww() {
-    return this.svgText.length();
-  }
   get tagOffset() {
-    return -28;
+    return this.position ? -28 : 20;
   }
 }

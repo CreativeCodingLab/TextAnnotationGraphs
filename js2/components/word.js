@@ -7,6 +7,7 @@ class Word {
       this.slot = 0;
       this.boxWidth = 0;
       this.boxHeight = 0;
+      this.descendHeight = 0;
       this.isPunct = (val.length === 1 && val.charCodeAt(0) < 65); // FIXME: doesn't handle fancier unicode punct | should exclude left-punctuation e.g. left-paren or left-quote
       this.clusters = [];
       this.links = [];
@@ -23,6 +24,10 @@ class Word {
         this.eventIds.push(id);
       }
     }
+    setSyntaxId(id) {
+      this.syntaxId = id;
+    }
+
     setTag(tag) {
       if (this.svg) {
         if (tag instanceof WordTag) {
@@ -41,6 +46,25 @@ class Word {
       }
       return this.tag;
     }
+    setSyntaxTag(tag) {
+      if (this.svg) {
+        if (tag instanceof WordTag) {
+          this.syntaxTag = tag;
+        }
+        else if (this.syntaxTag instanceof WordTag) {
+          this.syntaxTag.text(tag);
+        }
+        else {
+          this.tag = new WordTag(tag, this, false);
+        }
+        this.calculateBox();
+      }
+      else {
+        this.syntaxTag = tag;
+      }
+      return this.syntaxTag;
+    }
+
     init(svg) {
       this.mainSVG = svg;
       this.svg = svg.group()
@@ -52,6 +76,9 @@ class Word {
       // draw tag
       if (this.tag && !(this.tag instanceof WordTag)) {
         this.tag = new WordTag(this.tag, this);
+      }
+      if (this.syntaxTag && !(this.syntaxTag instanceof WordTag)) {
+        this.syntaxTag = new WordTag(this.syntaxTag, this, false);
       }
 
       // draw cluster info
@@ -116,9 +143,12 @@ class Word {
 
     calculateBox() {
       let minWidth = (this.tag instanceof WordTag) ? Math.max(this.tag.ww, this.ww) : this.ww;
+      // if (this.syntaxTag instanceof WordTag && this.syntaxTag.ww > minWidth) { minWidth = this.syntaxTag.ww; }
       let diff = this.boxWidth - minWidth;
       this.boxWidth -= diff;
-      this.boxHeight = this.svg.bbox().height;
+      this.descendHeight = this.syntaxTag instanceof WordTag ? this.syntaxTag.svgText.bbox().height : 0;
+      this.boxHeight = this.svg.bbox().height - this.descendHeight;
+
       this.dx(diff / 2);
       this.mainSVG.fire('word-move', {object: this, x: 0});
     }
@@ -129,7 +159,8 @@ class Word {
     }
 
     get absoluteY() {
-      return this.row ? this.row.ry + this.row.rh - this.boxHeight - 5 : 0;
+      // console.log(this.svgText.bbox().height);
+      return this.row ? this.row.ry + this.row.rh - this.boxHeight : 0;
     }
     get cx() {
       return this.x + this.boxWidth / 2;

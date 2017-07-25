@@ -7,6 +7,14 @@ const RowManager = (function() {
       _svg = svg;
     }
 
+    resizeAll() {
+      _rows.forEach(row => {
+        row.calculateMaxSlot();
+        let dy = row.minHeight - row.rh;
+        if (dy > 0) { this.resizeRow(row.idx, dy); }
+      });
+    }
+
     resizeRow(i, dy) {
       let row = _rows[i];
       dy = Math.max(-row.rh + row.minHeight, dy);
@@ -16,7 +24,7 @@ const RowManager = (function() {
         _rows[j].dy(dy);
         _rows[j].words.forEach(word => word.redrawLinks());
       }
-      _svg.height(this.lastRow.ry2 + ROW_PADDING);
+      _svg.height(this.lastRow.ry2 + ROW_PADDING + 20);
     }
 
     width(rw) {
@@ -32,7 +40,7 @@ const RowManager = (function() {
       const lr = this.lastRow;
       const row = !lr ? new Row(_svg) : new Row(_svg, lr.idx + 1, lr.ry2 + ROW_PADDING);
       _rows.push(row);
-      _svg.height(row.ry2 + ROW_PADDING);
+      _svg.height(row.ry2 + ROW_PADDING + 20);
       return row;
     }
 
@@ -42,12 +50,13 @@ const RowManager = (function() {
     removeRow() {
       _rows.pop().remove();
       if (this.lastRow) {
-        _svg.height(this.lastRow.ry2 + ROW_PADDING);
+        _svg.height(this.lastRow.ry2 + ROW_PADDING + 20);
       }
     }
 
     addWordToRow(word, row, i, ignorePosition) {
       if (isNaN(i)) { i = row.words.length; }
+      if (word.row && word.row !== row) { word.row.calculateMaxSlot(); }
 
       let overflow = row.addWord(word, i, ignorePosition);
       while (overflow < row.words.length) {

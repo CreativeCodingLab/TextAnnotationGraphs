@@ -27,7 +27,7 @@ svg text {
 
 #tooltip {
   width:175px;
-  background:#f6f6f6;
+  background:hsl(40,10%,98%);
   margin-bottom:10px;
   box-shadow: 0 0 10px #555;
   border-radius:3px;
@@ -102,6 +102,13 @@ svg text {
 .word .word-tag {
   fill:#333;
 }
+.word .syntax-tag {
+  fill: rgb(203, 120, 111);
+}
+.toggle-syntax .syntax-tag {
+  display:none;
+}
+
 .editing .word-tag,
 .editing text {
   fill: #fff;

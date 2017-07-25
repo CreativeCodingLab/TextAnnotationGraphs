@@ -59,6 +59,10 @@ const Main = (function() {
         changeDataset(this.selectedIndex);
       }
     }
+    document.getElementById('syntax-toggle').onclick = function() {
+      svg.toggleClass('toggle-syntax');
+      rm.resizeAll();
+    }
   }
 
   /**
@@ -97,6 +101,7 @@ const Main = (function() {
     links.forEach(link => {
       link.init(svg, words);
     });
+    rm.resizeAll();
   }
 
   //--------------------------------
@@ -106,8 +111,8 @@ const Main = (function() {
     // construct word objects and tags from tokens, entities, and triggers
     const words = parser.tokens.map((token, i) => {
       let w = new Word(token.text, i);
-      w.syntaxTag = token.type;
-      w.syntaxId = token.id;
+      w.setSyntaxTag(token.type);
+      w.setSyntaxId(token.id);
       return w;
     });
     const clusters = [];
@@ -169,21 +174,22 @@ const Main = (function() {
       links.push(link);
     });
 
-    // // syntax data
-    // parser.data.syntax.forEach(syn => {
-    //   // create a link between the trigger and each of its arguments
-    //   const trigger = entities.find(word => word.eventIds.indexOf(syn.trigger) > -1);
-    //   const arguments = syn.arguments.map(arg => {
-    //     let anchor = words.find(w => w.syntaxId === arg.id);
-    //     return { anchor, type: arg.type };
-    //   });
-    //
-    //   // create link
-    //   const link = new Link(syn.id, trigger, arguments);
-    //
-    //   // push link to link array
-    //   links.push(link);
-    // });
+    // syntax data
+    parser.data.syntax.forEach(syn => {
+      // create a link between the trigger and each of its arguments
+      const trigger = entities.find(word => word.eventIds.indexOf(syn.trigger) > -1);
+      const arguments = syn.arguments.map(arg => {
+        let anchor = words.find(w => w.syntaxId === arg.id);
+        return { anchor, type: arg.type };
+      });
+
+      // create link
+      // console.log(syn.id, trigger, arguments, syn);
+      // const link = new Link(syn.id, trigger, arguments);
+      //
+      // // push link to link array
+      // links.push(link);
+    });
 
     return [ words, links, clusters ];
   }
