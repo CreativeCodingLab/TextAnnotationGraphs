@@ -27,7 +27,7 @@ svg text {
 
 #tooltip {
   width:175px;
-  background:white;
+  background:#f6f6f6;
   margin-bottom:10px;
   box-shadow: 0 0 10px #555;
   border-radius:3px;
@@ -118,4 +118,7 @@ svg text {
 .link {
   font-size: 12px;
   fill:#6590b4;
+}
+.link:hover {
+  stroke-width:2px;
 }

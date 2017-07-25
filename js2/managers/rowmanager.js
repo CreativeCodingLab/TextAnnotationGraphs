@@ -53,6 +53,9 @@ const RowManager = (function() {
       while (overflow < row.words.length) {
         this.moveWordDownARow(row.idx);
       }
+      row.calculateMaxSlot();
+      let dy = row.minHeight - row.rh;
+      if (dy > 0) { this.resizeRow(row.idx, dy); }
     }
 
     moveWordOnRow(word, dx) {

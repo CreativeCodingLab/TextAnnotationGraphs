@@ -4,6 +4,7 @@ class Word {
       this.val = val;
       this.idx = idx;
       this.x = 0;
+      this.slot = 0;
       this.boxWidth = 0;
       this.boxHeight = 0;
       this.isPunct = (val.length === 1 && val.charCodeAt(0) < 65); // FIXME: doesn't handle fancier unicode punct | should exclude left-punctuation e.g. left-paren or left-quote
@@ -92,6 +93,7 @@ class Word {
 
     redrawLinks() {
       this.links.forEach(l => l.draw(this));
+      this.redrawClusters();
     }
 
     redrawClusters() {
@@ -105,7 +107,6 @@ class Word {
     move(x) {
       this.x = x;
       this.svg.transform({x: this.boxWidth / 2 + this.x});
-      this.redrawClusters();
       this.redrawLinks();
     }
 

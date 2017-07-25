@@ -5,7 +5,7 @@ class Row {
     this.rh = rh;     // row height
     this.rw = 0;
     this.words = [];
-    this.links = [];
+    this.maxSlot = 0;
 
     // svg elements
     this.svg = null;    // group
@@ -132,7 +132,19 @@ class Row {
     this.wordGroup.removeElement(word.svg);
     return word;
   }
+  calculateMaxSlot() {
+    // get max slot
+    function fn(acc, anchor) {
+      if (anchor.links.length === 0) {
+        return Math.max(acc, anchor.slot);
+      }
+      return anchor.links.reduce(fn, 0);
+    }
+    this.maxSlot = this.words.reduce(fn, 0);
+  }
 
   get ry2() { return this.ry + this.rh; }
-  get minHeight() { return Math.max(30, this.wordGroup.bbox().height); }
+  get minHeight() {
+    return this.wordGroup.bbox().height + this.maxSlot * 15 + 15;
+  }
 }

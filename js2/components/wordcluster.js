@@ -3,6 +3,7 @@ class WordCluster {
     this.eventIds = [];
     this.val = val;
     this.words = words;
+    this.slot = words.reduce((acc, w) => Math.max(acc, w.slot), 0);
     this.metaValue = words.map(w => {
       w.clusters.push(this);
       return w.val;
@@ -194,14 +195,17 @@ class WordCluster {
     }
   }
 
+  get row() {
+    return this.endpoints[0].row;
+  }
   get absoluteY() {
-    return this.endpoints[0].absoluteY;
+    return this.endpoints[0].absoluteY + 10;
   }
   get idx() {
     return this.endpoints[0].idx;
   }
   get cx() {
-    return this.x;
+    return this.endpoints[0].cx;
   }
   get ww() {
     return this.svgText.length();

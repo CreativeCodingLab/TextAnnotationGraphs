@@ -95,7 +95,7 @@ const Main = (function() {
       rm.addWordToRow(word, rm.lastRow);
     });
     links.forEach(link => {
-      link.init(svg);
+      link.init(svg, words);
     });
   }
 
