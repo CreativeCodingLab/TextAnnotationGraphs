@@ -6,6 +6,7 @@ class Link {
       this.links = [];
       this.reltype = reltype;
       this.top = top;
+      this.visible = true;
 
       this.slot = 0;
 
@@ -45,36 +46,21 @@ class Link {
       this.recalculateSlots(words);
 
       // init handles
-      const s = 4;
-
-      // draw trigger
+      // get location of trigger
       if (this.trigger) {
-        // draw a diamond at the location of the trigger
         let offset = this.trigger.links.filter(l => l.top == this.top).indexOf(this);
         let x = this.trigger.cx + 8 * offset;
         let y = this.top ? this.trigger.absoluteY : this.trigger.absoluteDescent;
-
-        let handle = this.svg.path(`M${s},0L0,${s}L${-s},0L0,${-s}Z`)
-          .x(x - s)
-          .y(y - s);
-        this.handles.push({ anchor: this.trigger, handle, x, y, offset });
+        this.handles.push({ anchor: this.trigger, x, y, offset });
       }
 
       // draw arguments
       this.arguments.forEach(arg => {
-        // draw a triangle at the location of the argument
+        // get location of the argument
         let offset = arg.anchor.links.filter(l => l.top == this.top).indexOf(this);
         let x = arg.anchor.cx + 8 * offset;
         let y = this.top ? arg.anchor.absoluteY : arg.anchor.absoluteDescent;
-
-        let handle = (
-          this.top ?
-            this.svg.path(`M${[s, -s/2]}L${[-s, -s/2]}L0,${s}`) :
-            this.svg.path(`M0,${-s/2}L${[-s,s]}L${[s,s]}`)
-        )
-          .x(x - s)
-          .y(y - s);
-        this.handles.push({ anchor: arg.anchor, handle, x, y, offset });
+        this.handles.push({ anchor: arg.anchor, x, y, offset });
 
         // draw svgText for each trigger-argument relation
         if (this.trigger) {
@@ -98,18 +84,34 @@ class Link {
       this.draw();
     }
 
+    toggle() {
+      this.visible = !this.visible;
+      if (this.visible) { this.show(); }
+      else { this.hide(); }
+    }
+    show() {
+      this.visible = true;
+      if (this.svg) {
+        this.svg.show();
+        this.draw();
+      }
+    }
+    hide() {
+      this.visible = false;
+      if (this.svg) {
+        this.svg.hide();
+      }
+    }
+
     draw(anchor) {
-      const s = 4;
       // redraw handles if word or link was moved
-      this.handles.forEach(h => {
-        if (anchor === h.anchor) {
-          h.x = anchor.cx + 8 * h.offset;
-          h.y = this.top ? anchor.absoluteY : anchor.absoluteDescent;
-          h.handle
-            .x(h.x - s)
-            .y(h.y - s);
-        }
-      });
+      let h = this.handles.find(h => (anchor === h.anchor));
+      if (h) {
+        h.x = anchor.cx + 8 * h.offset;
+        h.y = this.top ? anchor.absoluteY : anchor.absoluteDescent;
+      }
+
+      if (!this.visible) { return; }
 
       // redraw line if it exists
       if (this.line) {
@@ -163,6 +165,10 @@ class Link {
             this.svgTexts[i]
               .x(handle1.x + dx + textlen / 2)
               .y(y - 10);
+
+            // draw an arrow at the handle
+            const s = 4;
+            d += this.arrowhead(handle1);
 
             let handlePrecedesTrigger = leftOfTrigger && (i + 2 > il || this.arguments[i + 1].anchor.idx >= this.trigger.idx);
 
@@ -218,7 +224,9 @@ class Link {
               + 'L' + [avg - textlen / 2, y]
               + 'm' + [textlen, 0]
               + 'L' + [endHandle.x - 5, y]
-              + 'C' + [endHandle.x, y, endHandle.x, y, endHandle.x, endHandle.y];
+              + 'C' + [endHandle.x, y, endHandle.x, y, endHandle.x, endHandle.y]
+              + this.arrowhead(this.handles[0])
+              + this.arrowhead(endHandle);
           }
           else {
             avg = (this.handles[0].x + width) / 2;
@@ -231,7 +239,9 @@ class Link {
             let tempY = this.getY(endHandle);
             d += 'M0,' + tempY
               + 'L' + [endHandle.x - 5, tempY]
-              + 'C' + [endHandle.x, tempY, endHandle.x, tempY, endHandle.x, endHandle.y];
+              + 'C' + [endHandle.x, tempY, endHandle.x, tempY, endHandle.x, endHandle.y]
+              + this.arrowhead(this.handles[0])
+              + this.arrowhead(endHandle);
           }
           this.svgTexts[0].x(avg)
             .y(y - 10);
@@ -249,6 +259,14 @@ class Link {
       return this.top ?
           r.rh + r.ry - 45 - 15 * this.slot
         : r.rh + r.ry + 25 - 15 * this.slot;
+    }
+
+    // helper function to return a path string for an arrowhead
+    arrowhead(handle) {
+      const s = 4;
+      return this.top ?
+          'M' + [handle.x - s, handle.y - s] + 'l' + [s,s * 1.5] + 'l' + [s,-s * 1.5] :
+          'M' + [handle.x - s, handle.y + s] + 'l' + [s, -s * 1.5] + 'l' + [s, s * 1.5];
     }
 
     remove() {

@@ -124,6 +124,7 @@ svg text {
 .link {
   font-size: 12px;
   fill:#6590b4;
+  stroke-width:1.5px;
 }
 .link.syntax-link {
   fill: #999;
@@ -134,5 +135,5 @@ svg text {
 }
 
 .link:hover {
-  stroke-width:2px;
+  stroke-width:2.5px;
 }

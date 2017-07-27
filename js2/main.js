@@ -60,7 +60,7 @@ const Main = (function() {
       }
     }
     document.getElementById('syntax-toggle').onclick = function() {
-      svg.toggleClass('toggle-syntax');
+      links.forEach(l => l.toggle());
       rm.resizeAll();
     }
   }
