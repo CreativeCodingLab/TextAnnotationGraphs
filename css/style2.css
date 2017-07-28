@@ -19,10 +19,63 @@ svg text {
 #header {
   position:fixed;
   z-index:100;
-  background:black;
+  background:#555;
   width:100%;
   height:40px;
   top:0;
+  font: 14px/1.5em helvetica, arial, sans-serif;
+}
+
+#options {
+  float:right;
+  display:inline-block;
+  background:inherit;
+  color:white;
+}
+#dataset,
+#options button {
+  color:white;
+  height:40px;
+  padding: 0 20px;
+  background: none;
+  outline:none;
+  cursor:pointer;
+  font:inherit;
+  border:none;
+}
+#options button {
+  border: 1px solid #999;
+  border-width:0 0 0 1px;
+  border-radius:0;
+}
+#options.open button {
+  background: #333;
+  border-color: #555;
+  border-width:0 0 1px 0;
+}
+#options ul {
+  display:none;
+  margin:0;
+  list-style-type: none;
+  padding: 4px 0;
+  background: #333;
+}
+#options > ul {
+  position:absolute;
+  min-width:125px;
+  padding: 10px;
+  padding-left: 0;
+  right: 0;
+}
+#options.open ul {
+  display:block;
+}
+#options li {
+  padding: 3px 10px;
+  padding-right: 0;
+}
+#options li input[type="checkbox"] {
+  margin-right: 5px;
 }
 
 #tooltip {

@@ -59,9 +59,8 @@ const Main = (function() {
         changeDataset(this.selectedIndex);
       }
     }
-    document.getElementById('syntax-toggle').onclick = function() {
-      links.forEach(l => l.toggle());
-      rm.resizeAll();
+    document.getElementById('options-toggle').onclick = function() {
+      document.getElementById('options').classList.toggle('open');
     }
   }
 
@@ -73,6 +72,7 @@ const Main = (function() {
     parser.readJson(`./data/data${index}.json`, function() {
       clear();
       [words, links, clusters] = buildWordsAndLinks();
+      populateOptions();
       draw();
     });
   };
@@ -191,6 +191,98 @@ const Main = (function() {
     });
 
     return [ words, links, clusters ];
+  }
+
+  function populateOptions() {
+    document.querySelector('.reach').onclick = toggleEdgeVisibility;
+    document.querySelector('.pos').onclick = toggleEdgeVisibility;
+
+    let reachTypes = {};
+    let posTypes = {};
+
+    function toggleEdgeVisibility(e) {
+      if (e.target.nodeName === 'INPUT') {
+        let id = e.target.id.split('--');
+        let checked = e.target.checked;
+
+        function linkMatchesId(l) {
+          if (l.top && id[0] === 'reach') {
+            return l.reltype === id[1] || (l.trigger instanceof Word && l.trigger.tag.val === id[1]);
+          }
+          else if (!l.top && id[0] === 'pos') {
+            return l.arguments.some(arg => arg.type === id[1]);
+          }
+        }
+
+        if (checked) {
+          if (id[1] === 'all') {
+            document.querySelectorAll(`.${id[0]} > ul input`).forEach(i => {
+              i.disabled = false;
+              toggleEdgeVisibility({target: i});
+            });
+          }
+          else {
+            links.forEach(l => linkMatchesId(l) && l.show());
+          }
+        }
+        else {
+          if (id[1] === 'all') {
+            document.querySelectorAll(`.${id[0]} > ul input`).forEach(i => {
+              links.forEach(l => {
+                if (l.top == (id[0] === 'reach')) {
+                  l.hide();
+                }
+              });
+              i.disabled = true;
+            });
+          }
+          else {
+            links.forEach(l => linkMatchesId(l) && l.hide());
+          }
+        }
+      }
+    }
+
+    // find link types
+    links.forEach(link => {
+      if (link.top) {
+        let type = link.trigger instanceof Word ? link.trigger.tag : link.reltype;
+        if (reachTypes[type]) {
+          reachTypes[type].push(link);
+        }
+        else {
+          reachTypes[type] = [link];
+        }
+      }
+      else {
+        link.arguments.forEach(arg => {
+          if (posTypes[arg.type]) {
+            posTypes[arg.type].push(link);
+          }
+          else {
+            posTypes[arg.type] = [link];
+          }
+        });
+      }
+    });
+
+    // add to options
+    function createLi(types, name) {
+      if (Object.keys(types).length > 0) {
+        let li = Object.keys(types).map(type =>
+          `<li><input id="${name}--${type}" type="checkbox" checked><label for="${name}--${type}">${type}</label></li>`
+        );
+        let ul = document.querySelector(`.${name} > ul`) || document.createElement('ul');
+        ul.innerHTML = li.join('');
+        document.querySelector(`.${name}`).appendChild(ul);
+      }
+      else {
+        let ul = document.querySelector(`.${name} > ul`);
+        if (ul) { ul.parentNode.removeChild(ul); }
+      }
+    }
+    createLi(reachTypes, 'reach');
+    createLi(posTypes, 'pos');
   }
 
   // export public functions

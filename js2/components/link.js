@@ -373,4 +373,8 @@ class Link {
     get absoluteY() {
       return this.rootWord.row.rh + this.rootWord.row.ry - 45 - 15 * this.slot;
     }
+
+    get val() {
+      return this.reltype || this.trigger.val;
+    }
 }
