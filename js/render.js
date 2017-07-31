@@ -275,7 +275,6 @@ function calculateMaxSlotForRow(row) {
   }
 }
 
-
 function setUpRowsAndWords(words) {
 
   var rowNum = 0;
@@ -286,22 +285,7 @@ function setUpRowsAndWords(words) {
   for (var i = 0; i < words.length; i++) {
 
     var word = words[i];
- 
-    var wh = getTextWidthAndHeight(word.val, texts.wordText.style);
-
-    //calculate the width of the Word
-    word.tw = wh.w;
-    word.maxtextw = wh.w;
     
-      if (word.tag != null) {
-      var twh = getTextWidthAndHeight(word.tag, texts.tagText.style);
-      
-      if (twh.w > word.tw) {
-        word.tw = twh.w; //think tw is ONLY used for checking minWidth, so this should be ok
-        word.maxtextw = twh.w;
-      }
-    }
-   
     //what row will this Word belong to?
     
     if (i == 0) { //if first word, then obviously in first row
@@ -329,16 +313,9 @@ function setUpRowsAndWords(words) {
     word.th = texts.wordText.maxHeight; //guaranteed to be the same for all words
 
     //calculate x position and width of the Word
-    word.wx = x;
-    word.ww = word.tw + (Config.textPaddingX * 2);
+    word.leftX = x;
 
-
-    if (word.tag != null) {
-      word.tww = word.ww; //maxtextw + (Config.textPaddingX * 2);
-      word.twx = word.wx;
-    }
-
-    x += word.ww + Config.wordPadding;
+    x += word.defaultWidth + Config.wordPadding;
   }
 
 
@@ -357,11 +334,7 @@ function setUpRowsAndWords(words) {
 
     for (var ii = 0; ii < row.words.length; ii++) {
       var word = row.words[ii];
-
-      word.h = 0; //the number of link levels is 0 for the word itself
-      word.wh = texts.wordText.maxHeight + Config.textPaddingY*2; 
-      word.wy = row.ry + row.rh - word.wh;
-
+      
       if (word.tag != null) {
         var tag_textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
         word.twh = texts.tagText.maxHeight + Config.textPaddingY*2; 
@@ -371,65 +344,6 @@ function setUpRowsAndWords(words) {
       row.baseHeight = word.wy; //that is, where the top of the word is in the row.
     }
   }
-}
-
-
-function drawWord(word) {
-
-  let g = word.svg = draw.group().addClass('word');
-
-  word.underneathRect = g.rect( word.ww, word.wh )
-    .x( word.wx )
-    .y( word.wy )
-    .addClass('word--underneath');
-
-  var textwh = getTextWidthAndHeight(word.val, texts.wordText.style);
-
-  word.text = g.text(function(add) {
-
-    add.text(word.val)
-    .y(word.wy + Config.textPaddingY*2 - texts.wordText.descent)
-    .x(word.wx + (word.ww/2) - (textwh.w / 2))
-    .font(texts.wordText.style);
-  });
-
-  word.bbox = word.underneathRect.bbox();
-  word.leftX = word.underneathRect.bbox().x;
-  word.rightX = word.underneathRect.bbox().x + word.underneathRect.bbox().w;
-  word.percPos = (word.leftX-Config.edgePadding) / (Config.svgWidth-Config.edgePadding*2);
-
-  if (word.tag != null) {
-    var textwh = getTextWidthAndHeight(word.tag, texts.tagText.style);
-    var tagXPos = word.twx + (word.ww/2) - (textwh.w / 2);
-
-    //add in tag text, if the word has an associated tag
-    word.tagtext = g.text(function(add) {
-        add.text(word.tag)
-        .y(word.wy + Config.textPaddingY/2 - texts.wordText.descent)
-        .x(tagXPos)
-        .font(texts.tagText.style);
-      });
-    word.leftHandle = g.rect(Config.handleW, Config.handleH)
-      .x(word.wx)
-      .y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) )
-      .addClass('word--handle');
-
-    word.rightHandle = g.rect(Config.handleW,Config.handleH)
-      .x(word.wx + word.ww - (Config.handleW))
-      .y( word.wy + (word.wh / 2 ) - (Config.handleH / 2) )
-      .addClass('word--handle');
-
-    //set up mouse interactions
-    setUpLeftHandleDraggable(word);
-    setUpRightHandleDraggable(word); 
-  }
-
-  setUpWordDraggable(word); 
-
-  word.underneathRect.dblclick( () => {
-    word.toggleHighlight();
-    draw.fire('wordSelected', { arbitrary: word });
-  });
 }
 
 
@@ -1104,16 +1018,27 @@ function calculateLinkLabels(idx, rowNum, x, y, link, isHidden) {
 
   var twh = link.textWH;
 
-  var rect = {x: (x - 2 - twh.w/2), y: (y - link.textStyle.maxHeight/2), w: (twh.w + 4), h: link.textStyle.maxHeight, style:style, rowNum: rowNum};
+  var rect = {
+    x: (x - 2 - twh.w/2), 
+    y: (y - link.textStyle.maxHeight/2), 
+    w: (twh.w + 4), 
+    h: link.textStyle.maxHeight, 
+    style:style, 
+    rowNum: rowNum
+  };
 
+  y -= Config.redraw ? 
+    (link.textStyle.maxHeight/2) :
+    (link.textStyle.maxHeight/2 + link.textStyle.descent);
+  text = {
+    x,
+    y,
+    text: link.textStr, 
+    style: link.textStyle.style, 
+    visibility:true
+  };
 
-  if (Config.redraw) { 
-    text = {text: link.textStr, x: (x - twh.w/2), y: (y - link.textStyle.maxHeight/2), style: (link.textStyle.style), visibility:true};
-  }
-  else {
-    text = {text: link.textStr, x: (x - twh.w/2), y: (y - link.textStyle.maxHeight/2 - link.textStyle.descent), style: (link.textStyle.style), visibility:true};
-  }
-  link.labels[idx] = {rect:rect, text:text};
+  link.labels[idx] = {rect, text};
 
   if (isHidden) {
     link.labels[idx].text.visibility = false;

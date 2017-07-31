@@ -118,7 +118,6 @@ class Row {
     return returnVal;
   }
 
-
   get minWidth() {
     return this.words.reduce((acc, val) => acc + val.minWidth, 0);
   }

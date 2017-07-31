@@ -231,22 +231,15 @@ function determineSide(link) {
 //TODO - should there be a global strategy for each class of link types? for the different styles of links? for each parent word/link? or for every single individual link??? E.g., could a word support links with different strategies, or would that become cluttered??
 function calcAttachPoints(link, strategy)  {
 
-  //link.leftWord.nr += 1;
-  //link.rightWord.nl += 1;
-
     //console.log("" + link.id + " strategy = CLOSEST");
 
     if (determineSide(link) == swapside.YES) {
       //console.log("rootS < rootE (" +rootS +" < " + rootE +")");
-      link.leftWord.nr += 1;
-      link.rightWord.nl += 1;
       link.leftAttach = sides.RIGHT;
       link.rightAttach  = sides.LEFT; 
     } else {
       //console.log("rootS >= rootE (" +rootS +" >= " + rootE +")");
 
-      link.leftWord.nl += 1;
-      link.rightWord.nr += 1;
       link.leftAttach  = sides.LEFT;
       link.rightAttach = sides.RIGHT;
 

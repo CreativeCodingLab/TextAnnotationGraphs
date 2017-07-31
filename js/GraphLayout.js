@@ -6,6 +6,8 @@ const GraphLayout = (function() {
     // recursively build hierarchy from a root word or link
     function addNode(node, depth, source) {
         let incoming = [];
+        source = source ? source.slice() : [];
+        let top = source[source.length - 1];
 
         let data = {
             node,
@@ -14,26 +16,38 @@ const GraphLayout = (function() {
             type: node instanceof Word ? 'Word' : 'Link'
         };
 
+        if (node !== top && source.indexOf(node) > -1) {
+            return data;
+        }
+        else {
+            source.push(node);
+        }
+
         if (depth < maxDepth) {
-            let children = node.parents
-                .filter(parent => {
+            let p = node.parents;
+            let children = p.filter((parent, j) => {
+                    // ignore duplicate children (for self-links)
+                    if (p.indexOf(parent) !== j) { return false; }
+
                     // ignore "incoming" links
-                    if (parent !== source && parent instanceof Link) {
+                    if (parent !== top && parent instanceof Link) {
                         const i = parent.words.indexOf(node);
                         if (i < 0 || parent.arrowDirections[i] === -1) {
                             incoming.push(parent);
                             return false;
                         }
                     }
-                    return parent !== source;
+                    return parent !== top;
                 })
-                .map((parent) => addNode(parent, depth + 1, node));
+                .map((parent) => addNode(parent, depth + 1, source));
 
             if (node instanceof Link) {
                 let anchors = node.words
                     .map((word, i) => {
-                        if (word !== source) {
-                            const newNode = addNode(word, depth + 1, node);
+                        // ignore duplicate children (for self-links)
+                        if (node.words.indexOf(word) !== i) { return null; }
+                        if (word !== top) {
+                            const newNode = addNode(word, depth + 1, source);
 
                             if (node.arrowDirections[i] === -1) {
                                 newNode.receivesArrow = true;
@@ -79,6 +93,7 @@ const GraphLayout = (function() {
 
             d3.select(this.div).append('button')
                 .text('⤆ reset ⤇')
+                .attr('class', 'noselect')
                 .on('click', () => {
                     this.dx = 0;
                     this.adjustMargins();
@@ -104,7 +119,7 @@ const GraphLayout = (function() {
 
             // selected words to generate graph around
             this.words = [];
-            this.maxDepth = 20; // default value for max dist from root
+            this.maxDepth = 8; // default value for max dist from root
         }
         resize() {
             this.bounds = this.div.getBoundingClientRect();
@@ -195,13 +210,14 @@ const GraphLayout = (function() {
                 node.y += dy;
             });
 
-            console.log('----- range',d3.extent(this.data[index].root.descendants(), d => d.x));
+/*            console.log('----- range',d3.extent(this.data[index].root.descendants(), d => d.x));
             console.log('graft range',d3.extent(root.descendants(), d => d.x));
             console.log(data.anchor.x, dx);
-
+*/
             // -------- in progress
             // test case : Pos_reg         --> graft "outside"
             // test case : Promotes        --> graft "inside"
+            // test case : Ubiquitination  --> graft left
             // test case : Phosphorylation --> two
 /*            let graftLeftOfRoot = data.anchor.x < this.data[index].root.x;
 
@@ -324,7 +340,6 @@ const GraphLayout = (function() {
             function handleNodeClick(d) {
                 unhoverNode(d);
                 let word = this.words.splice(i, 1, d.node)[0];
-                console.log('click', d, word);
                 if (this.words.indexOf(word) < 0) {
                     word.toggleHighlight(false);
                 }
