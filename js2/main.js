@@ -33,7 +33,7 @@ const Main = (function() {
     lm      = new LabelManager(svg);
 
     // load and render initial dataset by default
-    changeDataset(2);
+    changeDataset(3);
 
     // svg event listeners
     svg.on('row-resize', function(e) {
@@ -99,8 +99,12 @@ const Main = (function() {
       rm.addWordToRow(word, rm.lastRow);
     });
     links.forEach(link => {
-      link.init(svg, words);
+      link.init(svg);
     });
+    links.forEach(link => {
+      link.recalculateSlots(words);
+      link.draw();
+    })
     rm.resizeAll();
   }
 
@@ -267,7 +271,7 @@ const Main = (function() {
     });
 
     // add to options
-    function createLi(types, name) {
+    function createUl(types, name) {
       if (Object.keys(types).length > 0) {
         let li = Object.keys(types).map(type =>
           `<li><input id="${name}--${type}" type="checkbox" checked><label for="${name}--${type}">${type}</label></li>`
@@ -281,8 +285,10 @@ const Main = (function() {
         if (ul) { ul.parentNode.removeChild(ul); }
       }
     }
-    createLi(reachTypes, 'reach');
-    createLi(posTypes, 'pos');
+    createUl(reachTypes, 'reach');
+    createUl(posTypes, 'pos');
+    document.getElementById('reach--all').checked = true;
+    document.getElementById('pos--all').checked = true;
   }
 
   // export public functions

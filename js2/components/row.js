@@ -89,10 +89,10 @@ class Row {
     let prevWord = this.words[i - 1];
     if (x) {
       x = Math.min(this.rw, x);
-      word.move(x);
-      if (word.x + word.boxWidth > this.rw - EDGE_PADDING) {
+      if (x + word.boxWidth > this.rw - EDGE_PADDING) {
         return i;
       }
+      word.move(x);
       ++i;
       prevWord = word;
     }
@@ -109,10 +109,10 @@ class Row {
         return;
       }
       // move next word over
-      word.move(dx);
-      if (word.x + word.boxWidth > this.rw - EDGE_PADDING) {
+      if (dx + word.boxWidth > this.rw - EDGE_PADDING) {
         return i;
       }
+      word.move(dx);
       prevWord = this.words[i];
       ++i;
     }

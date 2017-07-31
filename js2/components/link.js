@@ -40,10 +40,9 @@ class Link {
       this.svgTexts = [];
     }
 
-    init(svg, words) {
+    init(svg) {
       this.mainSVG = svg;
       this.svg = svg.group().addClass(this.top ? 'link' : 'link syntax-link');
-      this.recalculateSlots(words);
 
       // init handles
       // get location of trigger
@@ -81,7 +80,6 @@ class Link {
 
       this.line = this.svg.path()
         .addClass('polyline');
-      this.draw();
     }
 
     toggle() {
@@ -286,38 +284,50 @@ class Link {
       this.arguments.forEach(arg => detachLink(arg.anchor));
     }
 
+    resetSlotRecalculation() {
+      this.isRecalculated = false;
+    }
+
     recalculateSlots(words) {
       // reorganize slots
-      let self = this;
       let ep = this.endpoints;
-      let wordArray = words.slice(this.endpoints[0].idx, this.endpoints[1].idx + 1);
+      if (this.isRecalculated) { return [{slot: this.slot, endpoints: ep}]; }
 
-      // recursively increase the slots of l
-      function incrementSlot(l, top) {
-        l.slot += top ? 1 : -1;
-        l.links.forEach(incrementSlot);
-      }
+      this.isRecalculated = true;
+      let wordArray = words.slice(ep[0].idx, ep[1].idx + 1);
+      let self = this;
 
-      // recursively check for collisions
-      function checkCollision(l) {
-        if (l !== self && l.slot === self.slot) {
-          if (l.endpoints[0] <= ep[0] && l.endpoints[1] >= ep[0]) {
-            incrementSlot(l, self.top);
-            l.recalculateSlots(words);
+      let slots = [];
+
+      // get all interfering slots
+      wordArray.forEach(word => {
+        word.links.forEach(l => {
+          if (l !== self &&
+              l.top === self.top &&
+              !(l.endpoints[0].idx >= ep[1].idx ||
+                l.endpoints[1].idx <= ep[0].idx)) {
+            [].push.apply(slots, l.recalculateSlots(words));
           }
-          else if (l.endpoints[0] >= ep[0] &&  l.endpoints[0] <= ep[1]) {
-            // TODO: properly handle slots of self
-            incrementSlot(self, self.top);
-          }
-          l.links.forEach(checkCollision);
-        }
-      }
-
-      wordArray.forEach(w => {
-        // get relevant links
-        w.links.forEach(checkCollision);
+        });
       });
 
+      // find a slot to place this link
+      function incrementSlot(l) {
+        while (slots.find(s => s.slot === l.slot &&
+              !(s.endpoints[0].idx >= l.endpoints[1].idx ||
+                s.endpoints[1].idx <= l.endpoints[0].idx))) {
+          l.slot += l.top ? 1 : -1;
+        }
+        slots.push({slot: l.slot, endpoints: l.endpoints});
+        l.links.forEach(link => {
+          if (link.top === l.top) {
+            incrementSlot(link);
+          }
+        });
+      }
+      incrementSlot(this);
+
+      return slots;
     }
 
     getEndpoints() {
