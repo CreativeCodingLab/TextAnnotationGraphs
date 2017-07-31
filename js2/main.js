@@ -273,7 +273,7 @@ const Main = (function() {
     // add to options
     function createUl(types, name) {
       if (Object.keys(types).length > 0) {
-        let li = Object.keys(types).map(type =>
+        let li = Object.keys(types).sort().map(type =>
           `<li><input id="${name}--${type}" type="checkbox" checked><label for="${name}--${type}">${type}</label></li>`
         );
         let ul = document.querySelector(`.${name} > ul`) || document.createElement('ul');

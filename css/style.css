@@ -4,6 +4,8 @@ body {
   -webkit-font-smoothing:antialiased;
   font-family: BrownPro, Brown, futura, helvetica, arial, sans-serif;
   font-size: 11px;
+  min-height:100%;
+  overflow-y: scroll;
 }
 
 svg text {
@@ -14,134 +16,179 @@ svg text {
   user-select: none;
 }
 
-/*#header {
-  position:absolute;
-  top:0;
-  left:0;
-  background:#333;
-  color:white;
-  width:calc( 100% - 20px );
-  padding:10px;
-}*/
-
-#drawing {
-  margin-top:30px;
-  margin-bottom: 210px;
-}
-#drawing.bracket-left, #drawing.bracket-left rect {
-  cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAZCAYAAADnstS2AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo4NDQxNzM1NTQ2MUMxMUU3QTRFNDkxNDI3MkNCQjJGRCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo4NDQxNzM1NjQ2MUMxMUU3QTRFNDkxNDI3MkNCQjJGRCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjg0NDE3MzUzNDYxQzExRTdBNEU0OTE0MjcyQ0JCMkZEIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjg0NDE3MzU0NDYxQzExRTdBNEU0OTE0MjcyQ0JCMkZEIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+3b/Z1wAAAR5JREFUeNrMlE2KhDAQhZNoEH9AT6E7TzJzDfEW3sFTuHA5YJ+h98qgbgbBvStxQGtSYSLdTJrWTTMFCSZ+9awqeFIAIEfDxG1ZFmjblqzrSiilchmGQaZpIrZtkziOP8T5naBy0zTg+z6YpgniJXDO8XMQhiGUZTmioKwAt7quwXEcCQhVmZSmKYzj+IVglmVsh1HZ8zwJYkKe53sjSZLwO2WEXdeVIK6qqhTMVRJyTB2wKRXzPKvH7XYa7DZzv2RMOzqt8qPQKj+Fj8QLyjilfKrmfwhv23YcRnf8hvEQVuPr+15dfd8xOqegrdApwzBctU4JguCPB6MogqIoPpUoxQ3d3XXd3hiWIxKluy3LWoW7L8Ldb/TMf+NHgAEAjFyqDEH528wAAAAASUVORK5CYII='), e-resize !important;
-}
-#drawing.bracket-right, #drawing.bracket-right rect {
-  cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAZCAYAAADnstS2AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo4NDQxNzM1MTQ2MUMxMUU3QTRFNDkxNDI3MkNCQjJGRCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo4NDQxNzM1MjQ2MUMxMUU3QTRFNDkxNDI3MkNCQjJGRCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjg0NDE3MzRGNDYxQzExRTdBNEU0OTE0MjcyQ0JCMkZEIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjg0NDE3MzUwNDYxQzExRTdBNEU0OTE0MjcyQ0JCMkZEIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+7MeYRQAAARlJREFUeNrEVEuKhDAQzUcRP6CXUK8yizmHeAvv4ClcuJsB7zBLQZmFm0HwCmKjpvMCpu3pYWxXXZCiEl69VIp6oUII8qwZcMuyfNR1/T6OI/F9H3sCEizOOYmiiFiWRcnGXJblIA+xEaZpCtu2hWEYQiaLtm2FwsFlWcaQMAzDT5qmCkQpVYmO44imaW5gWJIk5lZbnucKiATP8+6Zd6YSqqpSYCzXdTWY/XrwCoeHbibZdcz+ahFjt+P9zeyot4fMezvFfFfe68o4xXyq5heC13V9Cszh5OAfghFfEHRd99A23fRNKX3ff0EpkNW/SimK4juO4wcNBkGgh5/CSTV/SnW/TdPEoe55njUJZjsMQ6VueubfuAowAPZKsAzs/sUoAAAAAElFTkSuQmCC'), w-resize !important;
-}
-
-#graph {
-  cursor:-webkit-grab;
-  cursor:grab;
-  width:100%;
-  height:200px;
-  border-top: 1px solid #ccc;
-  background:#fff;
-  position:fixed;
-  bottom:0;
-  left:0;
-}
-
-#graph:before {
-  cursor:row-resize;
-  content:'';
-  width:100%;
-  height:7px;
-  margin-top:-3.5px;
-  position:absolute;
-  top:0;
-  left:0;
-  display:block;
-}
-
-#graph button {
-  position:absolute;
-}
-
-#toggle-minimap {
-  display:block;
-  cursor:pointer;
-}
-#search-minimap {
-  display:block;
-  width:100px;
-}
-#minimap {
-  pointer-events:none;
+#header {
   position:fixed;
   z-index:100;
-  top:40px;
-  right:0;
-}
-#minimap * {
-  pointer-events: all;
-}
-
-#minimap canvas {
-  background:rgba(200,200,200,0.5);
-  margin-top:5px;
-  width:100px;
-  height:100px;
+  background:#555;
+  width:100%;
+  height:40px;
+  top:0;
+  font: 14px/1.5em helvetica, arial, sans-serif;
 }
 
-.noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome and Opera */
+#options {
+  float:right;
+  display:inline-block;
+  background:inherit;
+  color:white;
+}
+#dataset,
+#options button {
+  color:white;
+  height:40px;
+  padding: 0 20px;
+  background: none;
+  outline:none;
+  cursor:pointer;
+  font:inherit;
+  border:none;
+}
+#options button {
+  border: 1px solid #999;
+  border-width:0 0 0 1px;
+  border-radius:0;
+}
+#options.open button {
+  background: #333;
+  border-color: #555;
+  border-width:0 0 1px 0;
+}
+#options ul {
+  display:none;
+  margin:0;
+  list-style-type: none;
+  padding: 4px 0;
+  background: #333;
+}
+#options > ul {
+  position:absolute;
+  min-width:125px;
+  padding: 10px;
+  padding-left: 0;
+  right: 0;
+  max-height: calc(100vh - 60px);
+  overflow-y: scroll;
+}
+#options.open ul {
+  display:block;
+}
+#options li {
+  padding: 3px 10px;
+  padding-right: 0;
+}
+#options li input[type="checkbox"] {
+  margin-right: 5px;
 }
 
-/* svg classes */
-#drawing text, .link--labels text {
-  pointer-events: none;
+#tooltip {
+  width:175px;
+  background:hsl(40,10%,98%);
+  margin-bottom:10px;
+  box-shadow: 0 0 10px #555;
+  border-radius:3px;
+  position:absolute;
+  padding: 8px 0;
+  font: 14px helvetica, arial, sans-serif;
+  font-weight: 400;
+  color:#444;
+  display:none;
 }
-#drawing text {
+#tooltip.active {
+  display:block;
+}
+#tooltip p {
+  padding: 4px 14px;
+  margin:0;
+  cursor:default;
+}
+#tooltip p:hover {
+  background-color: rgb(77, 157, 250);
+  color:white;
+}
+#tooltip hr {
+  border-width: 0;
+  border-top:1px solid #ddd;
+}
+
+
+/* svg styles for main vis */
+#main {
+  margin-top:40px;
+  position:relative;
+}
+#main svg {
+  background-color: hsl(40,10%,90%);
+}
+#main text {
+  font-family: BrownPro, Brown, futura, helvetica, arial, sans-serif;
   text-anchor: middle;
 }
+.row-drag {
+  stroke-width:2;
+  stroke-dasharray: 2,1;
+  stroke:rgba(100,100,100,0.3);
+  transition: stroke 300ms ease;
+  cursor: row-resize;
+}
+.row-drag:hover {
+  stroke-dasharray:none;
+  stroke:rgba(100,100,100,0.8);
+}
 
-.node { cursor: pointer; }
-.link, .link--dashed {
+.word text {
+  font-size:16px;
+  fill:black;
+}
+.word path {
+  stroke:#333;
+  fill:none;
+}
+.word .word-text {
+  cursor: pointer;
+}
+
+.word-cluster text,
+.word .word-tag {
+  font-size: 12px;
+  cursor: text;
+}
+
+.word-cluster text,
+.word .word-tag {
+  fill:#333;
+}
+.word .syntax-tag {
+  fill: rgb(208, 150, 143);
+}
+.toggle-syntax .syntax-tag, .toggle-syntax .syntax-link {
+  display:none;
+}
+
+.editing .word-tag,
+.editing text {
+  fill: #fff;
+}
+.editing rect {
+  fill:#a94442;
+}
+
+.link path.polyline {
+  stroke: #6590b4;
   fill: none;
+}
+.link {
+  font-size: 12px;
+  fill:#6590b4;
+  stroke-width:1.5px;
+}
+.link.syntax-link {
+  fill: #999;
+}
+.syntax-link path.polyline {
   stroke: #999;
-}
-.link--dashed {
-  stroke-dasharray: 2,2;
+  fill: none;
 }
 
-.row--0, .link--label {
-  fill: #f6f6f6;
-}
-.row--1, .link--label.odd {
-  fill: #d5d5d5;
-}
-
-.word--underneath {
-  fill:white;
-  cursor:-webkit-grab;
-  cursor:grab;
-}
-
-.selected .word--underneath, .link--label.selected {
-  fill:#fff6f6;
-  stroke:#c37;
-}
-.hovered .word--underneath, .link--label.hovered {
-  fill:white;
-  stroke:#f7c;
-}
-
-.word--handle {
-  fill: rgb(255, 204, 204);
-  opacity: 0;
-}
-.word:hover .word--handle {
-  opacity: 0.7;
+.link:hover {
+  stroke-width:2.5px;
 }

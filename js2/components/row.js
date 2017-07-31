@@ -6,6 +6,7 @@ class Row {
     this.rw = 0;
     this.words = [];
     this.maxSlot = 0;
+    this.paddingTop = 0;
 
     // svg elements
     this.svg = null;    // group
@@ -154,6 +155,6 @@ class Row {
 
   get ry2() { return this.ry + this.rh; }
   get minHeight() {
-    return this.wordGroup.bbox().height + this.maxSlot * 15 + 15;
+    return 90 + (this.maxSlot - this.paddingTop) * 15;
   }
 }

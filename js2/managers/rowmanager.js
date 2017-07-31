@@ -8,8 +8,12 @@ const RowManager = (function() {
     }
 
     resizeAll() {
-      _rows.forEach(row => {
+      _rows.forEach((row, i) => {
         row.calculateMaxSlot();
+        row.calculateMinSlot();
+        if (i > 0) {
+          row.paddingTop = _rows[i - 1].minSlot;
+        }
         let dy = row.minHeight - row.rh;
         if (dy > 0) { this.resizeRow(row.idx, dy); }
       });
