@@ -8,24 +8,24 @@ const RowManager = (function() {
     }
 
     resizeAll() {
-      _rows.forEach((row, i) => {
-        row.calculateMaxSlot();
-        row.calculateMinSlot();
-        if (i > 0) {
-          row.paddingTop = _rows[i - 1].minSlot;
-        }
-        let dy = row.minHeight - row.rh;
-        if (dy > 0) { this.resizeRow(row.idx, dy); }
+      _rows.forEach(row => {
+        this.recalculateRowSlots(row);
+        this.resizeRow(row.idx);
       });
     }
 
-    resizeRow(i, dy) {
+    resizeRow(i, dy = 0) {
       let row = _rows[i];
       dy = Math.max(-row.rh + row.minHeight, dy);
       row.height(row.rh + dy);
       row.words.forEach(word => word.redrawLinks());
       for (let j = i + 1; j < _rows.length; ++j) {
-        _rows[j].dy(dy);
+        if (_rows[j - 1].ry2 + ROW_PADDING > _rows[j].ry + dy) {
+          _rows[j].move(_rows[j - 1].ry2 + ROW_PADDING);
+        }
+        else {
+          _rows[j].dy(dy);
+        }
         _rows[j].words.forEach(word => word.redrawLinks());
       }
       _svg.height(this.lastRow.ry2 + ROW_PADDING + 20);
@@ -60,15 +60,23 @@ const RowManager = (function() {
 
     addWordToRow(word, row, i, ignorePosition) {
       if (isNaN(i)) { i = row.words.length; }
-      if (word.row && word.row !== row) { word.row.calculateMaxSlot(); }
+
+      // get word slots
+      let slots = this.getSlotRange([0,0], word);
+      if (word.row && word.row !== row &&
+        (slots[0] === word.row.minSlot || word.row.maxSlot === slots[1])) {
+        this.recalculateRowSlots(word.row);
+      }
+      if (row.minSlot > slots[0] || row.maxSlot < slots[1]) {
+        if (row.minSlot > slots[0]) { row.minSlot = slots[0]; }
+        if (row.maxSlot < slots[1]) { row.maxSlot = slots[1]; }
+        this.resizeRow(row.idx);
+      }
 
       let overflow = row.addWord(word, i, ignorePosition);
       while (overflow < row.words.length) {
         this.moveWordDownARow(row.idx);
       }
-      row.calculateMaxSlot();
-      let dy = row.minHeight - row.rh;
-      if (dy > 0) { this.resizeRow(row.idx, dy); }
     }
 
     moveWordOnRow(word, dx) {
@@ -181,6 +189,19 @@ const RowManager = (function() {
     moveWordDownARow(index) {
       let nextRow = _rows[index + 1] || this.appendRow();
       this.addWordToRow(_rows[index].removeLastWord(), nextRow, 0);
+    }
+
+    getSlotRange(acc, anchor) {
+      if (anchor.links.length === 0) {
+        return [Math.min(acc[0], anchor.slot), Math.max(acc[1], anchor.slot)];
+      }
+      let a = anchor.links.reduce((acc, val) => this.getSlotRange(acc, val), [0, 0]);
+      return [Math.min(acc[0], a[0]), Math.max(acc[1], a[1])];
+    }
+
+    recalculateRowSlots(row) {
+      [row.minSlot, row.maxSlot] = row.words
+        .reduce((acc, val) => this.getSlotRange(acc, val), [0, 0]);
     }
 
     get lastRow() { return _rows[_rows.length - 1]; }

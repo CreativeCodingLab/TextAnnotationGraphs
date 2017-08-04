@@ -1,7 +1,6 @@
 const Main = (function() {
   // classes
   let parser;
-  let panel;
 
   // main svg element
   let svg;
@@ -28,7 +27,6 @@ const Main = (function() {
 
     tooltip = new Tooltip('tooltip', svg);
     parser  = new Parser();
-    panel   = new Panel('graph');
     rm      = new RowManager(svg);
     lm      = new LabelManager(svg);
 
@@ -71,9 +69,11 @@ const Main = (function() {
   function changeDataset(index = 1) {
     parser.readJson(`./data/data${index}.json`, function() {
       clear();
-      [words, links, clusters] = buildWordsAndLinks();
-      populateOptions();
-      draw();
+      ymlToJson.convert('taxonomy.yml.txt', function(taxonomy) {
+        [words, links, clusters] = buildWordsAndLinks();
+        populateOptions();
+        draw();
+      });
     });
   };
 
