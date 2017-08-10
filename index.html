@@ -8,7 +8,7 @@
 
 <body>
 
-<div id="header">
+<header id="header">
   <select id="dataset">
     <option>-- select dataset --</option>
     <option>data1</option>
@@ -17,21 +17,15 @@
     <option>passage1</option>
     <option>passage2</option>
   </select>
-  <div id="options">
-    <button id="options-toggle">Visible edges ▾</button>
-    <ul>
-      <li class="reach">
-        <input id="reach--all" type="checkbox" checked><label for="reach--all">REACH</label>
-      </li>
-      <li class="pos">
-        <input id="pos--all" type="checkbox" checked><label for="pos--all">Syntax</label>
-      </li>
-    </ul>
-  </div>
-</div>
+  <button id="taxonomy-toggle">Taxonomy ▾</button>
+</header>
 
 <div id="main">
   <div id="tooltip">
+  </div>
+</div>
+<div class="modal" id="taxonomy">
+  <div>
   </div>
 </div>
 

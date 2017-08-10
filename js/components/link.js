@@ -48,6 +48,7 @@ class Link {
       // get location of trigger
       if (this.trigger) {
         let offset = this.trigger.links.filter(l => l.top == this.top).indexOf(this);
+        if (this.trigger.idx > this.endpoints[0].idx) { offset *= -1; }
         let x = this.trigger.cx + 8 * offset;
         let y = this.top ? this.trigger.absoluteY : this.trigger.absoluteDescent;
         this.handles.push({ anchor: this.trigger, x, y, offset });
@@ -57,6 +58,7 @@ class Link {
       this.arguments.forEach(arg => {
         // get location of the argument
         let offset = arg.anchor.links.filter(l => l.top == this.top).indexOf(this);
+        if (arg.anchor.idx > this.endpoints[0].idx) { offset *= -1; }
         let x = arg.anchor.cx + 8 * offset;
         let y = this.top ? arg.anchor.absoluteY : arg.anchor.absoluteDescent;
         this.handles.push({ anchor: arg.anchor, x, y, offset });

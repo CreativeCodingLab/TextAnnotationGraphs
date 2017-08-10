@@ -31,7 +31,7 @@ const Main = (function() {
     lm      = new LabelManager(svg);
 
     // load and render initial dataset by default
-    changeDataset(3);
+    changeDataset(2);
 
     // svg event listeners
     svg.on('row-resize', function(e) {
@@ -57,8 +57,11 @@ const Main = (function() {
         changeDataset(this.selectedIndex);
       }
     }
-    document.getElementById('options-toggle').onclick = function() {
-      document.getElementById('options').classList.toggle('open');
+    document.getElementById('taxonomy-toggle').onclick = function() {
+      document.getElementById('taxonomy').classList.add('open');
+    }
+    document.getElementById('taxonomy').onclick = function(e) {
+      e.target.classList.remove('open');
     }
   }
 
@@ -71,8 +74,102 @@ const Main = (function() {
       clear();
       ymlToJson.convert('taxonomy.yml.txt', function(taxonomy) {
         [words, links, clusters] = buildWordsAndLinks();
-        populateOptions();
+
+        // turn taxonomy into a proper tree
+        let tree = (function() {
+
+          let flat = [];
+
+          function createLinks(val, i, n, parent) {
+            let index = { i, n };
+            let obj = {
+              val,
+              parent,
+              index: parent ? parent.index.concat(index) : [index],
+              depth: parent ? parent.depth + 1 : 0,
+              ancestor: parent ? parent.ancestor : null,
+              children: null
+            };
+            if (!obj.ancestor) {
+              obj.ancestor = obj;
+              obj.descendantCount = 0;
+            }
+            ++obj.ancestor.descendantCount;
+
+            flat.push(obj);
+
+            if (!(typeof val === 'string' || val instanceof String)) {
+              let key = Object.keys(val)[0];
+              obj.val = key;
+              obj.children = val[key].map((v, i) => createLinks(v, i, val[key].length, obj));
+            }
+            return obj;
+          }
+
+          let hierarchy = taxonomy.map((val, i) => createLinks(val, i, taxonomy.length, null));
+
+          return {
+            hierarchy,
+            flat
+          }
+        })();
+
+        let tagTypes = {};
+        words.forEach(word => {
+          if (word.tag) {
+            if (tagTypes[word.tag]) {
+              tagTypes[word.tag].push(word);
+            }
+            else {
+              tagTypes[word.tag] = [word];
+            }
+          }
+          if (word.clusters.length > 0) {
+            word.clusters.forEach(cluster => {
+              if (tagTypes[cluster.val]) {
+                tagTypes[cluster.val].push(cluster);
+              }
+              else {
+                tagTypes[cluster.val] = [cluster];
+              }
+            });
+          }
+        });
+        colors = [
+          '#6185b5',
+          '#ff7f0e',
+          '#52a717',
+          '#d62728',
+          '#9467bd',
+          '#8c564b',
+          '#e377c2',
+          '#347847',
+          '#909108',
+          '#17becf'
+        ];
+
+        let div = document.querySelector('#taxonomy > div');
+
+        tree.flat.forEach(el => {
+          let u = document.createElement('div');
+          u.style.color = colors[el.depth];
+          u.style.marginLeft = el.depth * 15 + 5 + 'px';
+          u.appendChild(document.createTextNode(el.val));
+          div.appendChild(u);
+        });
+
         draw();
+        console.log(Object.keys(tagTypes), tree.flat.filter(x => tagTypes[x.val]));
+        Object.keys(tagTypes).forEach((tag, i) => {
+          tagTypes[tag].forEach(word => {
+            if (word instanceof Word) {
+              word.tag.svgText.node.style.fill = colors[i];
+            }
+            else {
+              word.svgText.node.style.fill = colors[i];
+            }
+          });
+        });
       });
     });
   };

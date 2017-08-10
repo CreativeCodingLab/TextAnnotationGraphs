@@ -63,8 +63,7 @@ const RowManager = (function() {
 
       // get word slots
       let slots = this.getSlotRange([0,0], word);
-      if (word.row && word.row !== row &&
-        (slots[0] === word.row.minSlot || word.row.maxSlot === slots[1])) {
+      if (word.row && word.row !== row && (slots[0] === word.row.minSlot || word.row.maxSlot === slots[1])) {
         this.recalculateRowSlots(word.row);
       }
       if (row.minSlot > slots[0] || row.maxSlot < slots[1]) {
@@ -192,6 +191,7 @@ const RowManager = (function() {
     }
 
     getSlotRange(acc, anchor) {
+      // if (anchor instanceof Link && !anchor.visible) { return [acc, acc]; }
       if (anchor.links.length === 0) {
         return [Math.min(acc[0], anchor.slot), Math.max(acc[1], anchor.slot)];
       }
