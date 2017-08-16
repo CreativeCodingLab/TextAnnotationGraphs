@@ -31,6 +31,7 @@ class Link {
         this.slot = -1;
         this.arguments.forEach(arg => arg.anchor.links.push(this));
       }
+
       this.endpoints = this.getEndpoints();
 
       this.mainSVG = null;
@@ -46,10 +47,11 @@ class Link {
 
       // init handles
       // get location of trigger
+      const offset_multiplier = 8;
       if (this.trigger) {
-        let offset = this.trigger.links.filter(l => l.top == this.top).indexOf(this);
+        let offset = this.trigger.links.filter(l => l.top == this.top).indexOf(this) * offset_multiplier;
         if (this.trigger.idx > this.endpoints[0].idx) { offset *= -1; }
-        let x = this.trigger.cx + 8 * offset;
+        let x = this.trigger.cx + offset;
         let y = this.top ? this.trigger.absoluteY : this.trigger.absoluteDescent;
         this.handles.push({ anchor: this.trigger, x, y, offset });
       }
@@ -57,9 +59,9 @@ class Link {
       // draw arguments
       this.arguments.forEach(arg => {
         // get location of the argument
-        let offset = arg.anchor.links.filter(l => l.top == this.top).indexOf(this);
+        let offset = arg.anchor.links.filter(l => l.top == this.top).indexOf(this) * offset_multiplier;
         if (arg.anchor.idx > this.endpoints[0].idx) { offset *= -1; }
-        let x = arg.anchor.cx + 8 * offset;
+        let x = arg.anchor.cx + offset;
         let y = this.top ? arg.anchor.absoluteY : arg.anchor.absoluteDescent;
         this.handles.push({ anchor: arg.anchor, x, y, offset });
 
@@ -82,6 +84,34 @@ class Link {
 
       this.line = this.svg.path()
         .addClass('polyline');
+
+      let draggedHandle = null;
+      let x = 0;
+      this.line.draggable()
+        .on('dragstart', (e) => {
+          let closestHandle = this.handles.reduce((acc, val) =>
+            Math.abs(val.x - e.detail.p.x) < Math.abs(acc.x - e.detail.p.x)
+              ? val
+              : acc,
+            this.handles[0]);
+
+          // 8 is a "magic number" for tolerance of closeness to the endpoint of the handle
+          if (Math.abs(closestHandle.x - e.detail.p.x) < 5) {
+            draggedHandle = closestHandle;
+            x = e.detail.p.x;
+          }
+        })
+        .on('dragmove', (e) => {
+          e.preventDefault();
+          if (draggedHandle) {
+            let dx = e.detail.p.x - x;
+            x = e.detail.p.x;
+            draggedHandle.offset += dx;
+            this.draw(draggedHandle.anchor);
+            // console.log(dx, x, draggedHandle );
+          }
+        })
+        .on('dragend', () => { draggedHandle = null });
     }
 
     toggle() {
@@ -107,7 +137,7 @@ class Link {
       // redraw handles if word or link was moved
       let h = this.handles.find(h => (anchor === h.anchor));
       if (h) {
-        h.x = anchor.cx + 8 * h.offset;
+        h.x = anchor.cx + h.offset;
         h.y = this.top ? anchor.absoluteY : anchor.absoluteDescent;
       }
 

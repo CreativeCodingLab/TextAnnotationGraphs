@@ -135,41 +135,10 @@ const Main = (function() {
             });
           }
         });
-        colors = [
-          '#6185b5',
-          '#ff7f0e',
-          '#52a717',
-          '#d62728',
-          '#9467bd',
-          '#8c564b',
-          '#e377c2',
-          '#347847',
-          '#909108',
-          '#17becf'
-        ];
-
-        let div = document.querySelector('#taxonomy > div');
-
-        tree.flat.forEach(el => {
-          let u = document.createElement('div');
-          u.style.color = colors[el.depth];
-          u.style.marginLeft = el.depth * 15 + 5 + 'px';
-          u.appendChild(document.createTextNode(el.val));
-          div.appendChild(u);
-        });
 
         draw();
-        console.log(Object.keys(tagTypes), tree.flat.filter(x => tagTypes[x.val]));
-        Object.keys(tagTypes).forEach((tag, i) => {
-          tagTypes[tag].forEach(word => {
-            if (word instanceof Word) {
-              word.tag.svgText.node.style.fill = colors[i];
-            }
-            else {
-              word.svgText.node.style.fill = colors[i];
-            }
-          });
-        });
+
+        populateTaxonomy(tree, tagTypes);
       });
     });
   };
@@ -294,99 +263,221 @@ const Main = (function() {
     return [ words, links, clusters ];
   }
 
-  function populateOptions() {
-    document.querySelector('.reach').onclick = toggleEdgeVisibility;
-    document.querySelector('.pos').onclick = toggleEdgeVisibility;
+  function populateTaxonomy(tree, tagTypes) {
+    colors = [
+      '#3fa1d1',
+      '#ed852a',
+      '#2ca02c',
+      '#c34a1d',
+      '#a048b3',
+      '#e377c2',
+      '#bcbd22',
+      '#17becf',
+      '#e7298a',
+      '#e6ab02',
+      '#7570b3',
+      '#a6761d',
+      '#7f7f7f'
+    ];
 
-    let reachTypes = {};
-    let posTypes = {};
 
-    function toggleEdgeVisibility(e) {
-      if (e.target.nodeName === 'INPUT') {
-        let id = e.target.id.split('--');
-        let checked = e.target.checked;
-
-        function linkMatchesId(l) {
-          if (l.top && id[0] === 'reach') {
-            return l.reltype === id[1] || (l.trigger instanceof Word && l.trigger.tag.val === id[1]);
-          }
-          else if (!l.top && id[0] === 'pos') {
-            return l.arguments.some(arg => arg.type === id[1]);
-          }
-        }
-
-        if (checked) {
-          if (id[1] === 'all') {
-            document.querySelectorAll(`.${id[0]} > ul input`).forEach(i => {
-              i.disabled = false;
-              toggleEdgeVisibility({target: i});
-            });
-          }
-          else {
-            links.forEach(l => linkMatchesId(l) && l.show());
-          }
-        }
-        else {
-          if (id[1] === 'all') {
-            document.querySelectorAll(`.${id[0]} > ul input`).forEach(i => {
-              links.forEach(l => {
-                if (l.top == (id[0] === 'reach')) {
-                  l.hide();
-                }
-              });
-              i.disabled = true;
-            });
-          }
-          else {
-            links.forEach(l => linkMatchesId(l) && l.hide());
-          }
-        }
-      }
-    }
-
-    // find link types
-    links.forEach(link => {
-      if (link.top) {
-        let type = link.trigger instanceof Word ? link.trigger.tag : link.reltype;
-        if (reachTypes[type]) {
-          reachTypes[type].push(link);
-        }
-        else {
-          reachTypes[type] = [link];
-        }
+    function updateColor(word, color) {
+      if (word instanceof Word) {
+        word.tag.svgText.node.style.fill = color;
       }
       else {
-        link.arguments.forEach(arg => {
-          if (posTypes[arg.type]) {
-            posTypes[arg.type].push(link);
-          }
-          else {
-            posTypes[arg.type] = [link];
-          }
-        });
+        word.svgText.node.style.fill = color;
       }
+    };
+
+    // populate taxonomy
+    let div = document.querySelector('#taxonomy > div');
+    div.innerHTML = '';
+    let ul = document.createElement('ul');
+    div.appendChild(ul);
+
+    function createLi(el, ul) {
+      let li = document.createElement('li');
+      el.el = li;
+
+      // create checkbox
+      let cbox = document.createElement('input');
+      cbox.setAttribute('type', 'checkbox');
+      li.appendChild(cbox);
+
+      // text span
+      li.appendChild(document.createTextNode(el.val));
+
+      // create color picker input
+      let picker = document.createElement('input');
+      picker.className = 'jscolor';
+
+      // set initial value
+      let i = Object.keys(tagTypes).indexOf(el.val);
+      if (i > -1) {
+        cbox.checked = true;
+        picker.value = colors[i] || '#000000';
+
+        // propagate color to colorless ancestors
+        let parent = el.parent;
+        while (parent && parent.el && !parent.el.querySelector('input.jscolor').value) {
+          parent.el.querySelector('input.jscolor').value = picker.value;
+          parent = parent.parent;
+        }
+      }
+      picker.setAttribute('disabled', !cbox.checked);
+      li.appendChild(picker);
+
+      // recursively update picker colors
+      function updateChildColors() {
+        let color = this.value;
+        console.log('color', color);
+        function recurse(el) {
+          if (tagTypes[el.val]) {
+            tagTypes[el.val].forEach(word => updateColor(word, color));
+          }
+          if (el.children) {
+            el.children.forEach(recurse);
+          }
+        }
+        recurse(el);
+      }
+
+      // attach listeners
+      cbox.onclick = function() {
+        // TODO: update children colors on click
+        if (this.checked) {
+          // enable current picker and disable children inputs
+          picker.removeAttribute('disabled');
+          li.querySelectorAll('input').forEach(input => {
+            if (input.parentNode !== li) {
+              input.setAttribute('disabled', true);
+            }
+          });
+          updateChildColors.bind(picker);
+        }
+        else {
+          // enable children inputs
+          picker.setAttribute('disabled', true);
+          let checkboxes = li.querySelectorAll('input[type="checkbox"]');
+          let pickers = li.querySelectorAll('input.jscolor');
+          checkboxes.forEach((cbox, i) => {
+            cbox.removeAttribute('disabled');
+            pickers[i].setAttribute('disabled', !cbox.checked);
+          });
+          updateChildColors();
+        }
+      }
+      picker.onchange = updateChildColors;
+
+      if (el.children) {
+        let childUl = document.createElement('ul');
+        li.appendChild(childUl);
+        el.children.forEach(child => createLi(child, childUl));
+      }
+      ul.appendChild(li);
+    }
+    tree.hierarchy.forEach(el => createLi(el, ul));
+    jscolor.installByClassName('jscolor');
+
+    Object.keys(tagTypes).forEach((tag, i) => {
+      tagTypes[tag].forEach(word => updateColor(word, colors[i]));
     });
-
-    // add to options
-    function createUl(types, name) {
-      if (Object.keys(types).length > 0) {
-        let li = Object.keys(types).sort().map(type =>
-          `<li><input id="${name}--${type}" type="checkbox" checked><label for="${name}--${type}">${type}</label></li>`
-        );
-        let ul = document.querySelector(`.${name} > ul`) || document.createElement('ul');
-        ul.innerHTML = li.join('');
-        document.querySelector(`.${name}`).appendChild(ul);
-      }
-      else {
-        let ul = document.querySelector(`.${name} > ul`);
-        if (ul) { ul.parentNode.removeChild(ul); }
-      }
-    }
-    createUl(reachTypes, 'reach');
-    createUl(posTypes, 'pos');
-    document.getElementById('reach--all').checked = true;
-    document.getElementById('pos--all').checked = true;
   }
+
+  // function populateOptions() {
+  //   document.querySelector('.reach').onclick = toggleEdgeVisibility;
+  //   document.querySelector('.pos').onclick = toggleEdgeVisibility;
+  //
+  //   let reachTypes = {};
+  //   let posTypes = {};
+  //
+  //   function toggleEdgeVisibility(e) {
+  //     if (e.target.nodeName === 'INPUT') {
+  //       let id = e.target.id.split('--');
+  //       let checked = e.target.checked;
+  //
+  //       function linkMatchesId(l) {
+  //         if (l.top && id[0] === 'reach') {
+  //           return l.reltype === id[1] || (l.trigger instanceof Word && l.trigger.tag.val === id[1]);
+  //         }
+  //         else if (!l.top && id[0] === 'pos') {
+  //           return l.arguments.some(arg => arg.type === id[1]);
+  //         }
+  //       }
+  //
+  //       if (checked) {
+  //         if (id[1] === 'all') {
+  //           document.querySelectorAll(`.${id[0]} > ul input`).forEach(i => {
+  //             i.disabled = false;
+  //             toggleEdgeVisibility({target: i});
+  //           });
+  //         }
+  //         else {
+  //           links.forEach(l => linkMatchesId(l) && l.show());
+  //         }
+  //       }
+  //       else {
+  //         if (id[1] === 'all') {
+  //           document.querySelectorAll(`.${id[0]} > ul input`).forEach(i => {
+  //             links.forEach(l => {
+  //               if (l.top == (id[0] === 'reach')) {
+  //                 l.hide();
+  //               }
+  //             });
+  //             i.disabled = true;
+  //           });
+  //         }
+  //         else {
+  //           links.forEach(l => linkMatchesId(l) && l.hide());
+  //         }
+  //       }
+  //     }
+  //   }
+  //
+  //   // find link types
+  //   links.forEach(link => {
+  //     if (link.top) {
+  //       let type = link.trigger instanceof Word ? link.trigger.tag : link.reltype;
+  //       if (reachTypes[type]) {
+  //         reachTypes[type].push(link);
+  //       }
+  //       else {
+  //         reachTypes[type] = [link];
+  //       }
+  //     }
+  //     else {
+  //       link.arguments.forEach(arg => {
+  //         if (posTypes[arg.type]) {
+  //           posTypes[arg.type].push(link);
+  //         }
+  //         else {
+  //           posTypes[arg.type] = [link];
+  //         }
+  //       });
+  //     }
+  //   });
+  //
+  //   // add to options
+  //   function createUl(types, name) {
+  //     if (Object.keys(types).length > 0) {
+  //       let li = Object.keys(types).sort().map(type =>
+  //         `<li><input id="${name}--${type}" type="checkbox" checked><label for="${name}--${type}">${type}</label></li>`
+  //       );
+  //       let ul = document.querySelector(`.${name} > ul`) || document.createElement('ul');
+  //       ul.innerHTML = li.join('');
+  //       document.querySelector(`.${name}`).appendChild(ul);
+  //     }
+  //     else {
+  //       let ul = document.querySelector(`.${name} > ul`);
+  //       if (ul) { ul.parentNode.removeChild(ul); }
+  //     }
+  //   }
+  //   createUl(reachTypes, 'reach');
+  //   createUl(posTypes, 'pos');
+  //   document.getElementById('reach--all').checked = true;
+  //   document.getElementById('pos--all').checked = true;
+  // }
 
   // export public functions
   return {
