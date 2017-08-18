@@ -49,14 +49,27 @@ const Main = (function() {
     // resize function
     window.onresize = function() {
       body = document.body.getBoundingClientRect();
+      links.forEach(l => l.hide());
       svg.width(body.width);
       rm.width(body.width);
+      links.forEach(l => l.show());
     }
     document.getElementById('dataset').onchange = function(e) {
       if (this.selectedIndex > 0) {
         changeDataset(this.selectedIndex);
       }
     }
+
+    // let showSyntax = true;
+    // document.getElementById('syntax-toggle').onclick = function() {
+    //   showSyntax = !showSyntax;
+    //   this.innerHTML = showSyntax ? 'Hide syntax' : 'Show syntax';
+    //   links.forEach(l => {
+    //     if (!l.top) {
+    //       showSyntax ? l.show() : l.hide();
+    //     }
+    //   });
+    // }
     document.getElementById('taxonomy-toggle').onclick = function() {
       document.getElementById('taxonomy').classList.add('open');
     }

@@ -107,8 +107,35 @@ class Link {
             let dx = e.detail.p.x - x;
             x = e.detail.p.x;
             draggedHandle.offset += dx;
+            let anchor = draggedHandle.anchor;
+            if (anchor instanceof Link) {
+              if (anchor.trigger) {
+                if (anchor.trigger.idx > anchor.endpoints[0].idx) {
+                  console.log('hey');
+                }
+              }
+
+              // let l = draggedHandle.anchor;
+              // let boundaries = l.handles
+              //   // .filter(h => !l.trigger || h.anchor.row === l.trigger.row)
+              //   .map(h => h.x);
+              // if (l.trigger) { console.log(l.trigger.row); }
+              // console.log(boundaries);
+              // // console.log(draggedHandle.anchor.cx, draggedHandle.anchor.endpoints);
+            }
+            else {
+              let halfWidth = anchor.boxWidth / 2;
+              if (this.top && anchor.tag instanceof WordTag) {
+                halfWidth = anchor.tag.ww / 2;
+              }
+              else if (!this.top && anchor.syntaxTag instanceof WordTag) {
+                halfWidth = anchor.syntaxTag.ww / 2;
+              }
+              draggedHandle.offset = draggedHandle.offset < 0
+               ? Math.max(-halfWidth + 3, draggedHandle.offset)
+               : Math.min(halfWidth - 3, draggedHandle.offset);
+            }
             this.draw(draggedHandle.anchor);
-            // console.log(dx, x, draggedHandle );
           }
         })
         .on('dragend', () => { draggedHandle = null });
@@ -230,11 +257,18 @@ class Link {
 
             if (handlePrecedesTrigger) {
               // draw trigger to the right of the arrow segment
-              d += 'L' + [this.handles[0].x - dx, y]
-                + 'c' + [dx, 0, dx, 0, dx, this.handles[0].y - y];
               if (i + 1 < il) {
+                d += 'L' + [this.handles[0].x - dx, y]
+                  + 'c' + [dx, 0, dx, 0, dx, this.handles[0].y - y]
+                  + 'm' + [dx, 0]
+                  + 'l' + [-2 * dx, 0]
+                  + 'm' + [dx, 0]
+                  + 'C' + [this.handles[0].x, y, this.handles[0].x, y, this.handles[0].x + dx, y];
                 rowCrossed = this.handles[i + 2].anchor.row.idx != this.handles[0].anchor.row.idx;
-                d += 'C' + [this.handles[0].x, y, this.handles[0].x, y, this.handles[0].x + dx, y];
+              }
+              else {
+                d += 'L' + [this.handles[0].x - dx, y]
+                  + 'c' + [dx, 0, dx, 0, dx, this.handles[0].y - y];
               }
             }
           }
@@ -409,6 +443,14 @@ class Link {
     }
 
     get cx() {
+      if (this.line) {
+        if (this.trigger) {
+          return this.trigger.cx + this.handles[0].offset;
+        }
+        else {
+          // FIXME: does not occur currently
+        }
+      }
       return this.rootWord.cx;
     }
 

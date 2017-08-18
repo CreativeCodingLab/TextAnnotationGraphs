@@ -16,6 +16,11 @@ const RowManager = (function() {
 
     resizeRow(i, dy = 0) {
       let row = _rows[i];
+      if (i > 0) {
+        let adjust = _rows[i - 1].ry2 + ROW_PADDING - row.ry;
+        row.move(row.ry + adjust);
+        row.height(row.rh - adjust);
+      }
       dy = Math.max(-row.rh + row.minHeight, dy);
       row.height(row.rh + dy);
       row.words.forEach(word => word.redrawLinks());
@@ -32,8 +37,23 @@ const RowManager = (function() {
     }
 
     width(rw) {
-      _rows.forEach(function(row) {
+      _rows.forEach(row => {
         row.width(rw);
+
+        let i = row.words.findIndex(w => w.x > rw);
+        if (i > 0) {
+          this.moveWordOnRow(row.words[i - 1], 0);
+        }
+        else {
+          row.words.forEach(word => {
+            word.links.forEach(function(l) {
+              if (l.endpoints[1].row !== l.endpoints[0].row) {
+                l.draw(this);
+              }
+            });
+            word.redrawClusters();
+          });
+        }
       });
     }
 
