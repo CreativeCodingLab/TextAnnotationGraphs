@@ -47,23 +47,18 @@ class Link {
 
       // init handles
       // get location of trigger
-      const offset_multiplier = 8;
       if (this.trigger) {
-        let offset = this.trigger.links.filter(l => l.top == this.top).indexOf(this) * offset_multiplier;
-        if (this.trigger.idx > this.endpoints[0].idx) { offset *= -1; }
-        let x = this.trigger.cx + offset;
+        let x = this.trigger.cx;
         let y = this.top ? this.trigger.absoluteY : this.trigger.absoluteDescent;
-        this.handles.push({ anchor: this.trigger, x, y, offset });
+        this.handles.push({ anchor: this.trigger, x, y, offset: null });
       }
 
       // draw arguments
       this.arguments.forEach(arg => {
         // get location of the argument
-        let offset = arg.anchor.links.filter(l => l.top == this.top).indexOf(this) * offset_multiplier;
-        if (arg.anchor.idx > this.endpoints[0].idx) { offset *= -1; }
-        let x = arg.anchor.cx + offset;
+        let x = arg.anchor.cx;
         let y = this.top ? arg.anchor.absoluteY : arg.anchor.absoluteDescent;
-        this.handles.push({ anchor: arg.anchor, x, y, offset });
+        this.handles.push({ anchor: arg.anchor, x, y, offset: null });
 
         // draw svgText for each trigger-argument relation
         if (this.trigger) {
@@ -109,19 +104,10 @@ class Link {
             draggedHandle.offset += dx;
             let anchor = draggedHandle.anchor;
             if (anchor instanceof Link) {
-              if (anchor.trigger) {
-                if (anchor.trigger.idx > anchor.endpoints[0].idx) {
-                  console.log('hey');
-                }
-              }
+              let handles = anchor.handles.map(h => h.x).sort();
+              let cx = draggedHandle.anchor.cx;
 
-              // let l = draggedHandle.anchor;
-              // let boundaries = l.handles
-              //   // .filter(h => !l.trigger || h.anchor.row === l.trigger.row)
-              //   .map(h => h.x);
-              // if (l.trigger) { console.log(l.trigger.row); }
-              // console.log(boundaries);
-              // // console.log(draggedHandle.anchor.cx, draggedHandle.anchor.endpoints);
+              draggedHandle.offset = Math.min(handles[handles.length - 1] - cx, Math.max(handles[0] - cx, draggedHandle.offset));
             }
             else {
               let halfWidth = anchor.boxWidth / 2;
@@ -161,11 +147,32 @@ class Link {
     }
 
     draw(anchor) {
-      // redraw handles if word or link was moved
-      let h = this.handles.find(h => (anchor === h.anchor));
-      if (h) {
-        h.x = anchor.cx + h.offset;
-        h.y = this.top ? anchor.absoluteY : anchor.absoluteDescent;
+      if (!anchor) {
+        // initialize offsets
+        this.handles.forEach(h => {
+          if (h.offset === null) {
+            let l = h.anchor.links
+              .sort((a,b) => a.slot - b.slot)
+              .filter(link => link.top == this.top);
+
+            if (l.length > 1) {
+              l = l.filter(link => h.anchor.idx > link.endpoints[0].idx == h.anchor.idx > this.endpoints[0].idx);
+              let w = 10; // magic number => TODO: resize this to tag width?
+              h.offset = (l.indexOf(this) + 0.5) / l.length * (h.anchor.idx > this.endpoints[0].idx ? -w : w);
+            }
+            else {
+              h.offset = 0;
+            }
+          }
+        });
+      }
+      else {
+        // redraw handles if word or link was moved
+        let h = this.handles.find(h => (anchor === h.anchor));
+        if (h) {
+          h.x = anchor.cx + h.offset;
+          h.y = this.top ? anchor.absoluteY : anchor.absoluteDescent;
+        }
       }
 
       if (!this.visible) { return; }
@@ -282,15 +289,22 @@ class Link {
           let avg;
 
           if (this.handles[0].anchor.row.idx === endHandle.anchor.row.idx) {
-            avg = this.arguments.reduce((acc, a) => acc + a.anchor.cx, 0) / this.arguments.length;
-            d = 'M' + [this.handles[0].x, this.handles[0].y]
-              + 'C' + [this.handles[0].x, y, this.handles[0].x, y, this.handles[0].x + 5, y]
-              + 'L' + [avg - textlen / 2, y]
-              + 'm' + [textlen, 0]
-              + 'L' + [endHandle.x - 5, y]
-              + 'C' + [endHandle.x, y, endHandle.x, y, endHandle.x, endHandle.y]
-              + this.arrowhead(this.handles[0])
-              + this.arrowhead(endHandle);
+            avg = this.handles.reduce((acc, h) => acc + h.x, 0) / this.arguments.length;
+            let textLeft = avg - textlen / 2;
+
+            d = 'M' + [this.handles[0].x, this.handles[0].y] +
+              (textLeft < this.handles[0].x
+                ? ('L' + [this.handles[0].x, y]
+                  + 'M' + [endHandle.x, y]
+                  + 'L' + [endHandle.x, endHandle.y] )
+                : ('C' + [this.handles[0].x, y, this.handles[0].x, y, Math.min(textLeft, this.handles[0].x + 5), y]
+                  + 'L' + [textLeft, y]
+                  + 'm' + [textlen, 0]
+                  + 'L' + [Math.max(textLeft + textlen, endHandle.x - 5), y]
+                  + 'C' + [endHandle.x, y, endHandle.x, y, endHandle.x, endHandle.y] )
+              )
+                + this.arrowhead(this.handles[0])
+                + this.arrowhead(endHandle);
           }
           else {
             avg = (this.handles[0].x + width) / 2;

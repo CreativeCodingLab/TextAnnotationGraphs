@@ -101,27 +101,13 @@ class WordCluster {
     let lOffset = -this.endpoints[0].boxWidth / 2;
     let rOffset = this.endpoints[1].boxWidth / 2;
 
-    let dblheight = this.svgs[0].y() !== this.tagOffset;
-
     if (this.endpoints[0].row === this.endpoints[1].row) {
       // draw left side of the brace and align text
       let center = (-left + right) / 2;
       this.x = center + lOffset;
       this.svgText.x(center + lOffset);
-      if (dblheight && !this.endpoints[0].tag) {
-        this.lines[0].plot('M' + lOffset + ',59l0,-5c0,-34,' + [center,-21,center,-29]);
-      }
-      else {
-        this.lines[0].plot('M' + lOffset + ',33c0,-10,' + [center,0,center,-8]);
-      }
-
-      // draw right side of the brace
-      if (dblheight && !this.endpoints[1].tag) {
-        this.lines[1].plot('M' + rOffset + ',59l0,-5c0,-34,' + [-center,-21,-center,-29]);
-      }
-      else {
-        this.lines[1].plot('M' + rOffset + ',33c0,-10,' + [-center,0,-center,-8]);
-      }
+      this.lines[0].plot('M' + lOffset + ',33c0,-10,' + [center,0,center,-8]);
+      this.lines[1].plot('M' + rOffset + ',33c0,-10,' + [-center,0,-center,-8]);
     }
     else {
       // draw right side of brace extending to end of row and align text
@@ -129,34 +115,14 @@ class WordCluster {
       this.x = center + lOffset;
       this.svgText.x(center + lOffset);
 
-      if (dblheight && !this.endpoints[0].tag) {
-        this.lines[0].plot('M' + lOffset + ',59l0,-5c0,-34,' + [center,-21,center,-29]);
-        this.lines[0].plot('M' + lOffset
-          + ',59l0,-5c0,-34,' + [center,-21,center,-29]
-          + 'c0,10,' + [center,0,center,8]
-        );
-      }
-      else {
-        this.lines[0].plot('M' + lOffset
-          + ',33c0,-10,' + [center,0,center,-8]
-          + 'c0,10,' + [center,0,center,8]
-        );
-      }
-
-      // draw right side of the brace on the next row
-
-      if (dblheight && !this.endpoints[1].tag) {
-        this.lines[1].plot('M' + rOffset
-          + ',59l0,-5c0,-34,' + [-right + 8, -21, -right + 8, -29]
-          + 'c0,10,' + [-right + 8, 0, -right + 8, 8]
-        );
-      }
-      else {
-        this.lines[1].plot('M' + rOffset
-          + ',33c0,-10,' + [-right + 8, 0, -right + 8, -8]
-          + 'c0,10,' + [-right + 8, 0, -right + 8, 8]
-        );
-      }
+      this.lines[0].plot('M' + lOffset
+        + ',33c0,-10,' + [center,0,center,-8]
+        + 'c0,10,' + [center,0,center,8]
+      );
+      this.lines[1].plot('M' + rOffset
+        + ',33c0,-10,' + [-right + 8, 0, -right + 8, -8]
+        + 'c0,10,' + [-right + 8, 0, -right + 8, 8]
+      );
     }
 
     // propagate draw command to parent links
