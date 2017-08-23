@@ -45,6 +45,16 @@ const Main = (function() {
       rm.moveWordOnRow(e.detail.object, e.detail.x);
     });
 
+    svg.on('row-recalculate-slots', function(e) {
+      links.forEach(link => {
+        link.resetSlotRecalculation();
+      });
+      links.forEach(link => {
+        link.recalculateSlots(words);
+        link.draw();
+      });
+    });
+
     // window event listeners
     // resize function
     window.onresize = function() {

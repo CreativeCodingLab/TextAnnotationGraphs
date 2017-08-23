@@ -39,7 +39,7 @@ const Tooltip = (function() {
     }
     else if (activeObject instanceof Link) {
       if (e.detail.type === 'text') {
-        html += '<p id="menu--edit-link-label">Edit label</p>';
+        html += '<p id="menu--edit-link-label">Edit label</p><p id="menu--remove-link">Remove link</p>';
       }
       else {
         html += '<p id="menu--remove-link">Remove link</p>';
@@ -94,6 +94,7 @@ const Tooltip = (function() {
           break;
         case 'menu--remove-link':
           activeObject.remove();
+          _svg.fire('row-recalculate-slots', { object: activeObject, r1: activeObject.endpoints[0].row, r2: activeObject.endpoints[1].row });
           break;
         default: ;
       }

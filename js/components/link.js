@@ -8,27 +8,20 @@ class Link {
       this.top = top;
       this.visible = true;
 
-      this.slot = 0;
+      this.resetSlotRecalculation();
 
       if (this.top) {
         // top links
         if (this.trigger) {
           this.trigger.links.push(this);
-          this.slot = this.trigger.slot;
         }
         this.arguments.forEach(arg => {
           arg.anchor.links.push(this);
-          if (arg.anchor.slot > this.slot) {
-            this.slot = arg.anchor.slot;
-          }
         });
-
-        this.slot += 1;
       }
       else {
         // bottom links
         this.trigger.links.push(this);
-        this.slot = -1;
         this.arguments.forEach(arg => arg.anchor.links.push(this));
       }
 
@@ -391,6 +384,25 @@ class Link {
 
     resetSlotRecalculation() {
       this.isRecalculated = false;
+      this.slot = 0;
+
+      if (this.top) {
+        // top links
+        if (this.trigger) {
+          this.slot = this.trigger.slot;
+        }
+        this.arguments.forEach(arg => {
+          if (arg.anchor.slot > this.slot) {
+            this.slot = arg.anchor.slot;
+          }
+        });
+
+        this.slot += 1;
+      }
+      else {
+        // bottom links
+        this.slot = -1;
+      }
     }
 
     recalculateSlots(words) {
