@@ -77,11 +77,26 @@ class Link {
         this.svgTexts.push(text);
       }
 
+      // apply click events to text
+      this.svgTexts.forEach(text => {
+        text.node.oncontextmenu = (e) => {
+          e.preventDefault();
+          svg.fire('link-label-right-click', { object: this, type: 'text', event: e });
+        };
+      });
+
       this.line = this.svg.path()
         .addClass('polyline');
 
+      // apply drag events to line
       let draggedHandle = null;
       let x = 0;
+
+      this.line.node.oncontextmenu = (e) => {
+        e.preventDefault();
+        svg.fire('link-right-click', { object: this, type: 'link', event: e });
+      }
+
       this.line.draggable()
         .on('dragstart', (e) => {
           let closestHandle = this.handles.reduce((acc, val) =>
@@ -117,6 +132,7 @@ class Link {
               else if (!this.top && anchor.syntaxTag instanceof WordTag) {
                 halfWidth = anchor.syntaxTag.ww / 2;
               }
+              halfWidth = Math.max(halfWidth, 13);
               draggedHandle.offset = draggedHandle.offset < 0
                ? Math.max(-halfWidth + 3, draggedHandle.offset)
                : Math.min(halfWidth - 3, draggedHandle.offset);
@@ -155,10 +171,19 @@ class Link {
               .sort((a,b) => a.slot - b.slot)
               .filter(link => link.top == this.top);
 
+            let w = 10; // magic number => TODO: resize this to tag width?
+
             if (l.length > 1) {
-              l = l.filter(link => h.anchor.idx > link.endpoints[0].idx == h.anchor.idx > this.endpoints[0].idx);
-              let w = 10; // magic number => TODO: resize this to tag width?
-              h.offset = (l.indexOf(this) + 0.5) / l.length * (h.anchor.idx > this.endpoints[0].idx ? -w : w);
+              if (h.anchor instanceof Link && h.anchor.trigger.idx === h.anchor.endpoints[0].idx) {
+                h.offset = l.indexOf(this) / l.length * 2 * w;
+              }
+              else if (h.anchor instanceof Link && h.anchor.trigger.idx === h.anchor.endpoints[1].idx) {
+                h.offset = l.indexOf(this) / l.length * 2 * -w;
+              }
+              else {
+                l = l.filter(link => h.anchor.idx > link.endpoints[0].idx == h.anchor.idx > this.endpoints[0].idx);
+                h.offset = (l.indexOf(this) + 0.5) / l.length * (h.anchor.idx > this.endpoints[0].idx ? -w : w);
+              }
             }
             else {
               h.offset = 0;

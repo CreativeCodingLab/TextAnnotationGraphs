@@ -17,16 +17,29 @@
     <option>passage1</option>
     <option>passage2</option>
   </select>
-  <button id="syntax-toggle">Hide syntax</button>
-  <button id="taxonomy-toggle">Taxonomy ▾</button>
+  <button id="taxonomy-toggle">Taxonomy</button>
+  <button id="options-toggle">Options</button>
 </header>
 
 <div id="main">
   <div id="tooltip">
   </div>
 </div>
-<div class="modal" id="taxonomy">
+<div class="modal" id="modal">
   <div>
+    <header>
+      <span class="tab active" data-id="taxonomy">Taxonomy</span>
+      <span class="tab" data-id="tree">Syntax Tree</span>
+      <span class="tab" data-id="graph">Graph</span>
+      <span class="tab" data-id="options">Options</span>
+    </header>
+    <div class="page active" id="taxonomy"></div>
+    <div class="page" id="tree"></div>
+    <div class="page" id="graph"></div>
+    <div class="page" id="options">
+      <p><input type="checkbox" checked> Syntax tree visible</p>
+      <p><input type="checkbox"> Hide links when moving words</p>
+    </div>
   </div>
 </div>
 

@@ -15,6 +15,8 @@ const Tooltip = (function() {
       // listeners to open tooltip
       svg.on('tag-right-click', openTooltip);
       svg.on('word-right-click', openTooltip);
+      svg.on('link-label-right-click', openTooltip);
+      svg.on('link-right-click', openTooltip);
     }
   }
 
@@ -34,6 +36,14 @@ const Tooltip = (function() {
     }
     else if (activeObject instanceof WordTag || activeObject instanceof WordCluster) {
       html += '<p id="menu--remove-tag">Remove</p>';
+    }
+    else if (activeObject instanceof Link) {
+      if (e.detail.type === 'text') {
+        html += '<p id="menu--edit-link-label">Edit label</p>';
+      }
+      else {
+        html += '<p id="menu--remove-link">Remove link</p>';
+      }
     }
     if (html) {
       div.innerHTML = html;
@@ -79,6 +89,11 @@ const Tooltip = (function() {
           break;
         case 'menu--edit-tag':
           _svg.fire('tag-edit', { object: activeObject.tag });
+          break;
+        case 'menu--edit-link-label':
+          break;
+        case 'menu--remove-link':
+          activeObject.remove();
           break;
         default: ;
       }

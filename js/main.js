@@ -70,10 +70,68 @@ const Main = (function() {
     //     }
     //   });
     // }
-    document.getElementById('taxonomy-toggle').onclick = function() {
-      document.getElementById('taxonomy').classList.add('open');
+
+    function setActiveTab(pageId, modalId="modal") {
+      let m = document.getElementById(modalId);
+      m.classList.add('open');
+
+      m.querySelector('.tab.active').classList.remove('active');
+      m.querySelector('.page.active').classList.remove('active');
+      m.querySelector('header span[data-id="' + pageId + '"]').classList.add('active');
+      document.getElementById(pageId).classList.add('active');
     }
-    document.getElementById('taxonomy').onclick = function(e) {
+
+    let modalHeader = document.querySelector('#modal header');
+    let modalDrag = null;
+    let modalWindow = document.querySelector('#modal > div');
+    modalHeader.onmousedown = function(e) {
+      modalDrag = e;
+    }
+    document.addEventListener('mousemove', function(e) {
+      if (modalDrag) {
+        let dx = e.x - modalDrag.x;
+        let dy = e.y - modalDrag.y;
+        modalDrag = e;
+        let transform = modalWindow.style.transform.match(/-?\d+/g) || [0,0];
+        transform[0] = +transform[0] + dx || dx;
+        transform[1] = +transform[1] + dy || dy;
+        modalWindow.style.transform = `translate(${transform[0]}px, ${transform[1]}px)`;
+      }
+    });
+    document.addEventListener('mouseup', function() {
+      modalDrag = null;
+      let transform = modalWindow.style.transform.match(/-?\d+/g);
+      if (!transform) { return; }
+
+      let rect = modalWindow.getBoundingClientRect();
+      if (rect.left > window.innerWidth - 50) {
+        transform[0] -= (50 + rect.left - window.innerWidth);
+      }
+      else if (rect.right < 50) {
+        transform[0] -= (rect.right - 50);
+      }
+      if (rect.top < 0) {
+        transform[1] -= rect.top;
+      }
+      else if (rect.top > window.innerHeight - 50) {
+        transform[1] -= (50 + rect.top - window.innerHeight);
+      }
+      modalWindow.style.transform = `translate(${transform[0]}px, ${transform[1]}px)`;
+    });
+
+    document.querySelectorAll('.modal header .tab').forEach(tab => {
+      tab.onclick = function() {
+        setActiveTab(this.getAttribute('data-id'));
+      }
+    });
+
+    document.getElementById('options-toggle').onclick = function() {
+        setActiveTab('options');
+    }
+    document.getElementById('taxonomy-toggle').onclick = function() {
+        setActiveTab('taxonomy');
+    }
+    document.getElementById('modal').onclick = function(e) {
       e.target.classList.remove('open');
     }
   }
@@ -88,6 +146,8 @@ const Main = (function() {
       ymlToJson.convert('taxonomy.yml.txt', function(taxonomy) {
         [words, links, clusters] = buildWordsAndLinks();
 
+        //FIXME
+        console.log(words.filter(x => x.val === 'Silencing').map(x => x.links));
         // turn taxonomy into a proper tree
         let tree = (function() {
 
@@ -304,7 +364,7 @@ const Main = (function() {
     };
 
     // populate taxonomy
-    let div = document.querySelector('#taxonomy > div');
+    let div = document.getElementById('taxonomy');
     div.innerHTML = '';
     let ul = document.createElement('ul');
     div.appendChild(ul);

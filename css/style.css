@@ -19,10 +19,12 @@ svg text {
 #header {
   position:fixed;
   z-index:100;
-  background:#555;
   width:100%;
-  height:40px;
+  padding:10px 20px;
+  background-image:linear-gradient(to top, rgba(255,255,255,0),rgba(255,255,255,0.8), white, white);
+  /*background:rgba(255,255,255,0.5);*/
   top:0;
+  color:#777;
   font: 14px/1.5em helvetica, arial, sans-serif;
 }
 
@@ -30,27 +32,35 @@ header > div {
   float:right;
   display:inline-block;
   background:inherit;
-  color:white;
   position:relative;
 }
 #dataset,
 header > button {
-  color:white;
-  height:40px;
-  padding: 0 20px;
+  color:inherit;
   background: none;
   outline:none;
   cursor:pointer;
   font:inherit;
   border:none;
+  padding:0;
+  margin:10px;
 }
-header > button {
-  border: 1px solid #999;
-  border-width:0 0 0 1px;
-  border-radius:0;
+#dataset {
+  display:inline-block;
+  height:40px;
+  background-color:white;
+  border:1px solid #ddd;
+  transition:background 200ms ease;
+}
+#dataset:hover {
+  background:#fafafa;
+}
+header > button:hover {
+  border-bottom:1px solid grey;
 }
 
 .modal {
+  color:#222;
   background:rgba(0,0,0,0.5);
   width:100%;
   height:100%;
@@ -64,36 +74,72 @@ header > button {
   display:block;
 }
 .modal > div {
-  padding:2em;
   background:hsl(5,5%,98%);
   margin: 10vh auto;
   width:80%;
   max-width:700px;
   height:80vh;
-  overflow-y:auto;
   border-radius:6px;
   box-shadow: 0 0 20px black;
   font-size:14px;
   line-height:1.5em;
 }
-.modal > div > ul {
+.modal header {
+  padding: 0 1em;
+  background:white;
+  white-space: nowrap;
+  overflow-x:auto;
+  cursor:move;
+  box-shadow: 0 0 1em rgba(0,0,0, 0.15);
+}
+.modal header .tab {
+  background: hsl(5, 5%, 85%);
+  display:inline-block;
+  margin-top:0.8em;
+  padding: 0.5em 1em;
+  cursor:pointer;
+  border-radius: 3px 3px 0 0;
+  border:1px solid hsl(5, 5%, 85%);
+  border-bottom:none;
+  text-transform: uppercase;
+  font-size:0.85em;
+  letter-spacing:0.03em;
+  color:#555;
+}
+.modal header .tab.active {
+  color:#222;
+  background: hsl(5, 5%, 98%);
+}
+
+.modal .page {
+  padding: 2em;
+  padding-top: 0.5em;
+  display:none;
+  height:calc(100% - 5.6em);
+  overflow-y:auto;
+}
+.modal .page.active {
+  display:block;
+}
+
+#taxonomy > ul {
   list-style-type: none;
   padding:0;
   margin:0;
 }
-.modal > div > ul ul {
+#taxonomy > ul ul {
   list-style-type: none;
   padding:0;
   padding-left: 1.5em;
 }
-.modal > div li {
+#taxonomy li {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
-.modal > div input[type="checkbox"] {
+#taxonomy input[type="checkbox"] {
   margin-right: 0.5em;
 }
-.modal > div input.jscolor {
+#taxonomy input.jscolor {
   margin-left: 0.5em;
   width:4em;
   text-align:center;
@@ -105,7 +151,7 @@ header > button {
   cursor: pointer;
   box-shadow: 0 0 8px rgba(0,0,0,0.2);
 }
-.modal > div input.jscolor[disabled="true"] {
+#taxonomy input.jscolor[disabled="true"] {
   border-color:#ccc;
   box-shadow: none;
   pointer-events:none;
@@ -146,11 +192,9 @@ header > button {
 
 /* svg styles for main vis */
 #main {
-  margin-top:40px;
+  margin-top:100px;
+  margin-bottom:20px;
   position:relative;
-}
-#main svg {
-  background-color: hsl(40,10%,90%);
 }
 #main text {
   font-family: BrownPro, Brown, futura, helvetica, arial, sans-serif;
