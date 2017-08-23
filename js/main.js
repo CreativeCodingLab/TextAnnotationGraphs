@@ -1,6 +1,6 @@
 const Main = (function() {
   // classes
-  let parser;
+  let parser, lm, rm;
 
   // main svg element
   let svg;
@@ -12,6 +12,7 @@ const Main = (function() {
 
   // other html elements
   let tooltip = {};
+  let tl = {};
 
   //--------------------------------
   // public functions
@@ -29,6 +30,7 @@ const Main = (function() {
     parser  = new Parser();
     rm      = new RowManager(svg);
     lm      = new LabelManager(svg);
+    tl      = new TreeLayout(document.querySelector('#tree > svg'));
 
     // load and render initial dataset by default
     changeDataset(2);
@@ -53,6 +55,11 @@ const Main = (function() {
         link.recalculateSlots(words);
         link.draw();
       });
+    });
+
+    svg.on('build-tree', function(e) {
+      setActiveTab('tree');
+      tl.graph(e.detail.object);
     });
 
     // window event listeners

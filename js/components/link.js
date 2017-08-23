@@ -73,9 +73,11 @@ class Link {
       // apply click events to text
       this.svgTexts.forEach(text => {
         text.node.oncontextmenu = (e) => {
+          this.selectedLabel = text;
           e.preventDefault();
           svg.fire('link-label-right-click', { object: this, type: 'text', event: e });
         };
+        text.click((e) => svg.fire('link-label-edit', { object: this, text, event: e }));
       });
 
       this.line = this.svg.path()
@@ -445,6 +447,16 @@ class Link {
       incrementSlot(this);
 
       return slots;
+    }
+
+    listenForEdit() {
+      console.log('listening');
+      this.isEditing = true;
+
+    }
+    stopEditing() {
+      console.log('done');
+      this.isEditing = false;
     }
 
     getEndpoints() {

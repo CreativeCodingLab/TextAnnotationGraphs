@@ -21,6 +21,7 @@ const LabelManager = (function() {
     constructor(svg) {
       // listeners for label handling
       svg.on('tag-edit', listenForEdit);
+      svg.on('link-label-edit', listenForEdit);
       this.stopEditing = stopEditing;
     }
   }

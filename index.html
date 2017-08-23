@@ -29,12 +29,14 @@
   <div>
     <header>
       <span class="tab active" data-id="taxonomy">Taxonomy</span>
-      <span class="tab" data-id="tree">Syntax Tree</span>
+      <span class="tab" data-id="tree">Tree View</span>
       <span class="tab" data-id="graph">Graph</span>
       <span class="tab" data-id="options">Options</span>
     </header>
     <div class="page active" id="taxonomy"></div>
-    <div class="page" id="tree"></div>
+    <div class="page" id="tree">
+      <svg>
+    </div>
     <div class="page" id="graph"></div>
     <div class="page" id="options">
       <p><input type="checkbox" checked> Syntax tree visible</p>
@@ -46,9 +48,11 @@
 <script src="libs/svg.js"></script>
 <script src="libs/svg.draggable.js"></script>
 <script src="libs/jscolor.min.js"></script>
+<script src="libs/d3.min.js"></script>
 
 <script src="js/ymljson.js"></script>
 <script src="js/parser.js"></script>
+<script src="js/treelayout.js"></script>
 <script src="js/main.js"></script>
 <script src="js/managers/tooltip.js"></script>
 <script src="js/managers/labelmanager.js"></script>

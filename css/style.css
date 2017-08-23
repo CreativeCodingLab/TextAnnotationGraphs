@@ -61,7 +61,7 @@ header > button:hover {
 
 .modal {
   color:#222;
-  background:rgba(0,0,0,0.5);
+  background:rgba(0,0,0,0.3);
   width:100%;
   height:100%;
   top:0;
@@ -112,6 +112,7 @@ header > button:hover {
 }
 
 .modal .page {
+  position:relative;
   padding: 2em;
   padding-top: 0.5em;
   display:none;
@@ -120,6 +121,14 @@ header > button:hover {
 }
 .modal .page.active {
   display:block;
+}
+.modal svg {
+  background:blue;
+  width:100%;
+  height:100%;
+  position:absolute;
+  top:0;
+  left:0;
 }
 
 #taxonomy > ul {

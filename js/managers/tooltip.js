@@ -27,12 +27,12 @@ const Tooltip = (function() {
     let html = '';
     if (activeObject instanceof Word) {
       if (activeObject.tag) {
-        html += '<p id="menu--edit-tag">Edit tag</p><p id="menu--remove-tag">Remove tag</p><hr>';
+        html += '<p id="menu--edit-tag">Edit tag</p><p id="menu--remove-tag">Remove tag</p>';
       }
       else {
-        html += '<p id="menu--add-tag">Add tag</p><hr>';
+        html += '<p id="menu--add-tag">Add tag</p>';
       }
-      html += '<p id="menu--graph">Tree visualization</p>';
+      html += '<p id="menu--add-link">Add link</p><hr><p id="menu--tree">Tree visualization</p>';
     }
     else if (activeObject instanceof WordTag || activeObject instanceof WordCluster) {
       html += '<p id="menu--remove-tag">Remove</p>';
@@ -44,6 +44,7 @@ const Tooltip = (function() {
       else {
         html += '<p id="menu--remove-link">Remove link</p>';
       }
+      html += '<hr><p id="menu--tree">Tree visualization</p>';
     }
     if (html) {
       div.innerHTML = html;
@@ -91,10 +92,15 @@ const Tooltip = (function() {
           _svg.fire('tag-edit', { object: activeObject.tag });
           break;
         case 'menu--edit-link-label':
+          _svg.fire('link-label-edit', { object: activeObject, text: activeObject.selectedLabel });
+          activeObject.selectedLabel = null;
           break;
         case 'menu--remove-link':
           activeObject.remove();
-          _svg.fire('row-recalculate-slots', { object: activeObject, r1: activeObject.endpoints[0].row, r2: activeObject.endpoints[1].row });
+          _svg.fire('row-recalculate-slots', { object: activeObject });
+          break;
+        case 'menu--tree':
+          _svg.fire('build-tree', { object: activeObject });
           break;
         default: ;
       }
