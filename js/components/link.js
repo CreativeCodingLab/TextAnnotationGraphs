@@ -522,6 +522,6 @@ class Link {
     }
 
     get val() {
-      return this.reltype || this.trigger.val;
+      return this.reltype || this.trigger.reltype || (this.trigger.tag && this.trigger.tag.val) || this.trigger.val;
     }
 }

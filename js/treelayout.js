@@ -56,30 +56,18 @@ const TreeLayout = (function() {
         return data;
     };
 
-    // tree layout function
-    const tree = d3.tree()
-        .nodeSize([30,80])
-        .separation((a,b) => {
-            let separation = a.parent == b.parent ? 1 : 2;
-            function reduce(acc, val) {
-                if (val.expanded) { return acc + val.size; }
-                return acc + 1;
-            }
-            separation += Math.max(b.data.incoming.reduce(reduce, 0), a.data.incoming.reduce(reduce, 0)) / 2;
-            return separation;
-        });
-
     class TreeLayout {
         constructor(el) {
             // container element
             this.svg = d3.select(el);
-            this.g = this.svg.append('g');
+            this.draggable = this.svg.append('g');
+            this.g = this.draggable.append('g');
 
             // add zoom/pan events
             this.svg.call(d3.zoom()
               .scaleExtent([1 / 2, 4])
               .on("zoom", () => {
-                this.g.attr('transform', d3.event.transform);
+                this.draggable.attr('transform', d3.event.transform);
               }))
               .on("dblclick.zoom", null);
 
@@ -88,6 +76,8 @@ const TreeLayout = (function() {
             this.maxDepth = 20; // default value for max dist from root
         }
         resize() {
+          // let bounds = this.svg.node().getBoundingClientRect();
+          // this.g.attr('transform', `translate(${bounds.width / 2}, 30)`);// ${bounds.height / 2})`);
         }
         clear() {
             this.word = null;
@@ -98,27 +88,191 @@ const TreeLayout = (function() {
          * construct a set of hierarchies from an array of
          * Word or Link "root" nodes
          */
-        graph(word) {
-            this.word = word;
+        graph(selected) {
+            this.resize();
 
             maxDepth = this.maxDepth;
-            let sum = 0;
-            this.incoming = [];
-            this.data = (function() {
-                const seed = addNode(word, 0, null);
 
-                const root = d3.hierarchy(seed);
+            let data = [];
 
-                const data = {
-                    root,
-                    tree: tree(root),
-                    offset: sum
-                };
+            function addNode(node, source = null, depth = 0) {
+              let data = {
+                node,
+                depth,
+                children: [],
+                siblings: []
+              };
 
-                return data;
+              if (depth < maxDepth) {
+                let links = node.links.filter(l => l.top);
+                let args = [];
+                let corefs = links.filter(x => !x.trigger)
+                  .map(coref => {
+                    return {
+                      type: coref.reltype,
+                      args: coref.arguments.filter(x => x.anchor !== node && x.anchor !== source)
+                        .map(x => addNode(x.anchor, node, depth))
+                    };
+                  });
+
+                if (node instanceof Word) {
+                  args = links.filter(x => x.trigger === node);
+                }
+                else if (node instanceof Link) {
+                  args = node.arguments.map(x => x.anchor);
+                }
+
+                data.children = args.map(arg => addNode(arg, data, depth + 1));
+                data.siblings = corefs;
+              }
+
+              return data;
+            }
+
+            let hierarchy = addNode(selected);
+
+            let [nodes, links] = (function() {
+              let nodes = [];
+              let links = [];
+
+              function flatten(node) {
+                nodes.push(node);
+                node.siblings.forEach(sibling => {
+                  sibling.args.forEach(arg => {
+                    flatten(arg);
+                    links.push({
+                      type: 'sibling',
+                      label: sibling.type,
+                      source: node,
+                      target: arg
+                    });
+                  });
+                });
+                node.children.forEach(child => {
+                  flatten(child);
+                  links.push({
+                    type: 'child',
+                    source: node,
+                    target: child
+                  })
+                });
+              }
+              flatten(hierarchy);
+
+              return [nodes, links];
             })();
 
-            this.updateGraph();
+
+            let maxWidth = 0;
+            let layers = [];
+            nodes.forEach(node => {
+              layers[node.depth] = layers[node.depth] || [];
+              layers[node.depth].push(node);
+            });
+
+            function shiftSubtree(node, dx, root) {
+              node.offset += dx;
+              if (node.offset > maxWidth) { maxWidth = node.offset; }
+              if (!root) {
+                node.siblings.forEach(node => shiftSubtree(node, dx))
+              }
+              node.children.forEach(node => shiftSubtree(node, dx));
+            }
+            for (let i = layers.length - 1; i >= 0; --i) {
+              layers[i].forEach((node, j) => {
+                // 1st pass: assign an initial offset according to children
+                if (node.children.length > 0) {
+                  let leftChild = node.children[0];
+                  let rightChild = node.children[node.children.length - 1];
+                  node.offset = (leftChild.offset + rightChild.offset) / 2;
+                }
+                else if (j > 0) {
+                  node.offset = layers[i][j - 1].offset;
+                }
+                else {
+                  node.offset = 0;
+                }
+              });
+
+              // 2nd pass: check that subtree doesn't collide with left tree
+              function computeWidth(word, svg) {
+                let text = svg.append('text').text(word);
+                let length = text.node().getComputedTextLength();
+                text.remove();
+                return length;
+              }
+
+              layers[i].forEach((node, j) => {
+                node.width = computeWidth(node.node.val, this.svg);
+                if (j > 0) {
+                  const prev = layers[i][j - 1];
+                  const separation = prev.siblings.some(sibling => sibling.args.indexOf(node) > -1) ? 50 : 20; // TODO: make more universal
+
+                  let dx = prev.offset + prev.width / 2 + node.width / 2 - node.offset + separation;
+                  if (dx > 0) {
+                    // shift subtree and right-ward trees by dx
+                    for (let k = j; k < layers[i].length; ++k) {
+                      shiftSubtree(layers[i][k], dx, true);
+                    }
+                  }
+                }
+                if (node.offset > maxWidth) { maxWidth = node.offset; }
+              });
+            }// end for
+
+
+            let nodeSVG = this.g.selectAll('.node')
+              .data(nodes, d => d.node);
+
+            let edgeSVG = this.g.selectAll('.edge')
+              .data(links, d => d.parent);
+
+            //layout constants
+            const rh = 50;  // row height
+            nodeSVG.exit().remove();
+            nodeSVG.enter().append('text')
+              .attr('class','node')
+              .attr('text-anchor', 'middle')
+              .attr('transform', d => 'translate(' + [d.offset, d.depth * rh] + ')')
+            .merge(nodeSVG)
+              .text(d => d.node.val)
+              .transition()
+                .attr('transform', d => 'translate(' + [d.offset, d.depth * rh] + ')');
+
+            // resize
+            let bounds = this.svg.node().getBoundingClientRect();
+            this.g.attr('transform', 'translate(' + [bounds.width / 2 - maxWidth / 2, bounds.height / 2 - layers.length * rh / 2] + ')');
+
+            edgeSVG.exit().remove();
+            edgeSVG.enter().append('path')
+              .attr('class', 'edge')
+              .attr('stroke', 'grey')
+              .attr('stroke-width', '1px')
+              .attr('fill','none')
+            .merge(edgeSVG)
+              .attr('d', d => {
+                if (d.type === 'sibling') {
+                  let x1, x2;
+                  if (d.target.offset > d.source.offset) {
+                    x1 = d.source.offset + d.source.width / 2;
+                    x2 = d.target.offset - d.target.width / 2;
+                  }
+                  else {
+                    x1 = d.target.offset + d.target.width / 2;
+                    x2 = d.source.offset - d.source.width / 2;
+                  }
+                  return 'M' + [x1 - 10, d.source.depth * rh + 5]
+                    + 'v7h' + (x2 - x1 + 20) + 'v-7';
+                }
+                else if (d.type === 'child') {
+                  return 'M' + [d.source.offset, d.source.depth * rh + 5]
+                    + 'C' + [
+                      d.source.offset, d.source.depth * rh + 25,
+                      d.target.offset, d.target.depth * rh - 40,
+                      d.target.offset, d.target.depth * rh - 15
+                    ];
+                }
+              })
         }
 
         updateIncoming(data, index) {
@@ -143,43 +297,6 @@ const TreeLayout = (function() {
                 node.x += dx;
                 node.y += dy;
             });
-
-/*            console.log('----- range',d3.extent(this.data[index].root.descendants(), d => d.x));
-            console.log('graft range',d3.extent(root.descendants(), d => d.x));
-            console.log(data.anchor.x, dx);
-*/
-            // -------- in progress
-            // test case : Pos_reg         --> graft "outside"
-            // test case : Promotes        --> graft "inside"
-            // test case : Ubiquitination  --> graft left
-            // test case : Phosphorylation --> two
-/*            let graftLeftOfRoot = data.anchor.x < this.data[index].root.x;
-            console.log(root.descendants());
-            // rearrange old tree to not interfere with graft
-            let range = d3.extent(root.leaves().concat(data.anchor), d => d.x);
-            console.log(range);
-            console.log(this.data[index].root.descendants().map(d => d.x));
-            let children = data.anchor.descendants();
-            let offset = Number.MIN_SAFE_INTEGER;
-            this.data[index].root.descendants().forEach(node => {
-                // not a shared branch
-                if (children.indexOf(node) < 0) {
-                    if (node.x <= range[1] && node.x >= range[0]) {
-                        offset = Math.max(offset, node.x);
-                    }
-                }
-            });
-            offset = data.anchor.x - offset;
-            console.log(offset);
-            this.data[index].root.descendants().forEach(node => {
-                if (children.indexOf(node) < 0) {
-                    if (node.x <= range[1] && node.x >= range[0]) {
-                        node.x -= offset;
-                    }
-                }
-            })
-*/
-            // ------ end testing
 
             this.data.push({
                 index,
