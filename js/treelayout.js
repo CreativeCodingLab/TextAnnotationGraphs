@@ -224,8 +224,11 @@ const TreeLayout = (function() {
             let nodeSVG = this.g.selectAll('.node')
               .data(nodes, d => d.node);
 
+            let edgeLabel = this.g.selectAll('.edgeLabel')
+              .data(links.filter(l => l.source.node instanceof Link), d => d.source.node);
+
             let edgeSVG = this.g.selectAll('.edge')
-              .data(links, d => d.parent);
+              .data(links, d => d.source.node);
 
             //layout constants
             const rh = 50;  // row height
@@ -247,6 +250,7 @@ const TreeLayout = (function() {
             edgeSVG.enter().append('path')
               .attr('class', 'edge')
               .attr('stroke', 'grey')
+              .attr('stroke-dasharray', d => d.source.node instanceof Word ? [2,2] : null)
               .attr('stroke-width', '1px')
               .attr('fill','none')
             .merge(edgeSVG)
@@ -272,7 +276,18 @@ const TreeLayout = (function() {
                       d.target.offset, d.target.depth * rh - 15
                     ];
                 }
-              })
+              });
+
+            edgeLabel.exit().remove();
+            edgeLabel.enter().append('text')
+              .attr('text-anchor', 'middle')
+              .attr('transform', d => 'translate(' + [d.target.offset, d.target.depth * rh - 10] + ')')
+              .attr('class', 'edgeLabel')
+              .attr('font-size', '0.65em')
+            .merge(edgeLabel)
+              .text(d => d.source.node.arguments[0].type)
+              .transition()
+                .attr('transform', d => 'translate(' + [d.target.offset, d.target.depth * rh - 10] + ')');
         }
 
         updateIncoming(data, index) {
