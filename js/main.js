@@ -1,6 +1,6 @@
 const Main = (function() {
   // classes
-  let parser, lm, rm;
+  let parser, lm, rm, tm;
 
   // main svg element
   let svg;
@@ -12,7 +12,7 @@ const Main = (function() {
 
   // other html elements
   let tooltip = {};
-  let tl = {};
+  let tree = {};
 
   //--------------------------------
   // public functions
@@ -30,7 +30,8 @@ const Main = (function() {
     parser  = new Parser();
     rm      = new RowManager(svg);
     lm      = new LabelManager(svg);
-    tl      = new TreeLayout(document.querySelector('#tree > svg'));
+    tm      = new Taxonomy('taxonomy');
+    tree    = new TreeLayout(document.querySelector('#tree > svg'));
 
     // load and render initial dataset by default
     changeDataset(2);
@@ -59,7 +60,7 @@ const Main = (function() {
 
     svg.on('build-tree', function(e) {
       setActiveTab('tree');
-      tl.graph(e.detail.object);
+      tree.graph(e.detail.object);
     });
 
     // window event listeners
@@ -162,73 +163,11 @@ const Main = (function() {
       clear();
       ymlToJson.convert('taxonomy.yml.txt', function(taxonomy) {
         [words, links, clusters] = buildWordsAndLinks();
-
-        //FIXME
-        console.log(words.filter(x => x.val === 'Silencing').map(x => x.links));
-        // turn taxonomy into a proper tree
-        let tree = (function() {
-
-          let flat = [];
-
-          function createLinks(val, i, n, parent) {
-            let index = { i, n };
-            let obj = {
-              val,
-              parent,
-              index: parent ? parent.index.concat(index) : [index],
-              depth: parent ? parent.depth + 1 : 0,
-              ancestor: parent ? parent.ancestor : null,
-              children: null
-            };
-            if (!obj.ancestor) {
-              obj.ancestor = obj;
-              obj.descendantCount = 0;
-            }
-            ++obj.ancestor.descendantCount;
-
-            flat.push(obj);
-
-            if (!(typeof val === 'string' || val instanceof String)) {
-              let key = Object.keys(val)[0];
-              obj.val = key;
-              obj.children = val[key].map((v, i) => createLinks(v, i, val[key].length, obj));
-            }
-            return obj;
-          }
-
-          let hierarchy = taxonomy.map((val, i) => createLinks(val, i, taxonomy.length, null));
-
-          return {
-            hierarchy,
-            flat
-          }
-        })();
-
-        let tagTypes = {};
-        words.forEach(word => {
-          if (word.tag) {
-            if (tagTypes[word.tag]) {
-              tagTypes[word.tag].push(word);
-            }
-            else {
-              tagTypes[word.tag] = [word];
-            }
-          }
-          if (word.clusters.length > 0) {
-            word.clusters.forEach(cluster => {
-              if (tagTypes[cluster.val]) {
-                tagTypes[cluster.val].push(cluster);
-              }
-              else {
-                tagTypes[cluster.val] = [cluster];
-              }
-            });
-          }
-        });
-
         draw();
 
-        populateTaxonomy(tree, tagTypes);
+        tm.buildTree(taxonomy);
+        tm.buildTagTypes(words);
+        tm.populateTaxonomy();
       });
     });
   };
@@ -351,128 +290,6 @@ const Main = (function() {
     });
 
     return [ words, links, clusters ];
-  }
-
-  function populateTaxonomy(tree, tagTypes) {
-    colors = [
-      '#3fa1d1',
-      '#ed852a',
-      '#2ca02c',
-      '#c34a1d',
-      '#a048b3',
-      '#e377c2',
-      '#bcbd22',
-      '#17becf',
-      '#e7298a',
-      '#e6ab02',
-      '#7570b3',
-      '#a6761d',
-      '#7f7f7f'
-    ];
-
-
-    function updateColor(word, color) {
-      if (word instanceof Word) {
-        word.tag.svgText.node.style.fill = color;
-      }
-      else {
-        word.svgText.node.style.fill = color;
-      }
-    };
-
-    // populate taxonomy
-    let div = document.getElementById('taxonomy');
-    div.innerHTML = '';
-    let ul = document.createElement('ul');
-    div.appendChild(ul);
-
-    function createLi(el, ul) {
-      let li = document.createElement('li');
-      el.el = li;
-
-      // create checkbox
-      let cbox = document.createElement('input');
-      cbox.setAttribute('type', 'checkbox');
-      li.appendChild(cbox);
-
-      // text span
-      li.appendChild(document.createTextNode(el.val));
-
-      // create color picker input
-      let picker = document.createElement('input');
-      picker.className = 'jscolor';
-
-      // set initial value
-      let i = Object.keys(tagTypes).indexOf(el.val);
-      if (i > -1) {
-        cbox.checked = true;
-        picker.value = colors[i] || '#000000';
-
-        // propagate color to colorless ancestors
-        let parent = el.parent;
-        while (parent && parent.el && !parent.el.querySelector('input.jscolor').value) {
-          parent.el.querySelector('input.jscolor').value = picker.value;
-          parent = parent.parent;
-        }
-      }
-      picker.setAttribute('disabled', !cbox.checked);
-      li.appendChild(picker);
-
-      // recursively update picker colors
-      function updateChildColors() {
-        let color = this.value;
-        console.log('color', color);
-        function recurse(el) {
-          if (tagTypes[el.val]) {
-            tagTypes[el.val].forEach(word => updateColor(word, color));
-          }
-          if (el.children) {
-            el.children.forEach(recurse);
-          }
-        }
-        recurse(el);
-      }
-
-      // attach listeners
-      cbox.onclick = function() {
-        // TODO: update children colors on click
-        if (this.checked) {
-          // enable current picker and disable children inputs
-          picker.removeAttribute('disabled');
-          li.querySelectorAll('input').forEach(input => {
-            if (input.parentNode !== li) {
-              input.setAttribute('disabled', true);
-            }
-          });
-          updateChildColors.bind(picker);
-        }
-        else {
-          // enable children inputs
-          picker.setAttribute('disabled', true);
-          let checkboxes = li.querySelectorAll('input[type="checkbox"]');
-          let pickers = li.querySelectorAll('input.jscolor');
-          checkboxes.forEach((cbox, i) => {
-            cbox.removeAttribute('disabled');
-            pickers[i].setAttribute('disabled', !cbox.checked);
-          });
-          updateChildColors();
-        }
-      }
-      picker.onchange = updateChildColors;
-
-      if (el.children) {
-        let childUl = document.createElement('ul');
-        li.appendChild(childUl);
-        el.children.forEach(child => createLi(child, childUl));
-      }
-      ul.appendChild(li);
-    }
-    tree.hierarchy.forEach(el => createLi(el, ul));
-    jscolor.installByClassName('jscolor');
-
-    Object.keys(tagTypes).forEach((tag, i) => {
-      tagTypes[tag].forEach(word => updateColor(word, colors[i]));
-    });
   }
 
   // function populateOptions() {
