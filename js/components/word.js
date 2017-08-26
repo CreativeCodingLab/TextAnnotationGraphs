@@ -97,6 +97,7 @@ class Word {
         .on('dragstart', function(e) {
           mousemove = false;
           x = e.detail.p.x;
+          svg.fire('word-move-start');
         })
         .on('dragmove', (e) => {
           e.preventDefault();
@@ -106,9 +107,7 @@ class Word {
           if (dx !== 0) { mousemove = true; }
         })
         .on('dragend', (e) => {
-          if (mousemove === false) {
-            svg.fire('word-clicked', { object: this });
-          }
+          svg.fire('word-move-end', { object: this, clicked: mousemove === false });
         });
 
       // attach right click listener

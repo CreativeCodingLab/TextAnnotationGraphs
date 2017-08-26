@@ -10,8 +10,8 @@ const RowManager = (function() {
     resizeAll() {
       _rows.forEach(row => {
         this.recalculateRowSlots(row);
-        this.resizeRow(row.idx);
       });
+      this.resizeRow(0);      
     }
 
     resizeRow(i, dy = 0) {
@@ -211,7 +211,7 @@ const RowManager = (function() {
     }
 
     getSlotRange(acc, anchor) {
-      // if (anchor instanceof Link && !anchor.visible) { return [acc, acc]; }
+      if (anchor instanceof Link && !anchor.visible) { return [acc[0], acc[1]]; }
       if (anchor.links.length === 0) {
         return [Math.min(acc[0], anchor.slot), Math.max(acc[1], anchor.slot)];
       }

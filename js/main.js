@@ -13,6 +13,10 @@ const Main = (function() {
   // other html elements
   let tooltip = {};
   let tree = {};
+  let options = {
+    showSyntax: false,
+    showLinksOnMove: false
+  };
 
   //--------------------------------
   // public functions
@@ -42,10 +46,22 @@ const Main = (function() {
       rm.resizeRow(e.detail.object.idx, e.detail.y);
     });
 
+    svg.on('word-move-start', function() {
+      if (!options.showLinksOnMove && options.showSyntax) {
+        setSyntaxVisibility(false);
+      }
+    });
+
     svg.on('word-move', function(e) {
       tooltip.clear()
       lm.stopEditing();
       rm.moveWordOnRow(e.detail.object, e.detail.x);
+    });
+
+    svg.on('word-move-end', function(e) {
+      if (!options.showLinksOnMove && options.showSyntax) {
+        setSyntaxVisibility(true);
+      }
     });
 
     svg.on('row-recalculate-slots', function(e) {
@@ -78,16 +94,21 @@ const Main = (function() {
       }
     }
 
-    // let showSyntax = true;
-    // document.getElementById('syntax-toggle').onclick = function() {
-    //   showSyntax = !showSyntax;
-    //   this.innerHTML = showSyntax ? 'Hide syntax' : 'Show syntax';
-    //   links.forEach(l => {
-    //     if (!l.top) {
-    //       showSyntax ? l.show() : l.hide();
-    //     }
-    //   });
-    // }
+    document.querySelectorAll('#options input').forEach(input => {
+      input.onclick = function() {
+        let option = this.getAttribute('data-option');
+        switch(option) {
+          case 'syntax':
+            options.showSyntax = this.checked;
+            setSyntaxVisibility();
+            break;
+          case 'links':
+            options.showLinksOnMove = this.checked;
+            break;
+          default: ;
+        }
+      };
+    });
 
     function setActiveTab(pageId, modalId="modal") {
       let m = document.getElementById(modalId);
@@ -163,6 +184,7 @@ const Main = (function() {
       clear();
       ymlToJson.convert('taxonomy.yml.txt', function(taxonomy) {
         [words, links, clusters] = buildWordsAndLinks();
+        setSyntaxVisibility();
         draw();
 
         tm.buildTree(taxonomy);
@@ -206,6 +228,21 @@ const Main = (function() {
   //--------------------------------
   // private functions
   //--------------------------------
+
+  /** options to set visibility of syntax tree
+   */
+  function setSyntaxVisibility(bool) {
+    bool = (bool === undefined) ? options.showSyntax : bool;
+    links.forEach(l => {
+      if (!l.top) {
+        bool ? l.show() : l.hide();
+      }
+    });
+    if (rm.rows.length > 0) {
+      rm.resizeAll();
+    }
+  }
+
   function buildWordsAndLinks() {
     // construct word objects and tags from tokens, entities, and triggers
     const words = parser.tokens.map((token, i) => {

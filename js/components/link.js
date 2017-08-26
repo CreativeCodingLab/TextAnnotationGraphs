@@ -37,6 +37,7 @@ class Link {
     init(svg) {
       this.mainSVG = svg;
       this.svg = svg.group().addClass(this.top ? 'link' : 'link syntax-link');
+      if (!this.visible) { this.svg.hide(); }
 
       // init handles
       // get location of trigger
