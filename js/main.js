@@ -262,6 +262,9 @@ const Main = (function() {
       if (!l.top) {
         bool ? l.show() : l.hide();
       }
+      else {
+        l.show();
+      }
     });
     if (rm.rows.length > 0) {
       rm.resizeAll();

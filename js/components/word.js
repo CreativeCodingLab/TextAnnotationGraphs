@@ -111,6 +111,7 @@ class Word {
         });
 
       // attach right click listener
+      this.svgText.dblclick((e) => svg.fire('build-tree', { object: this, event: e }));
       this.svgText.node.oncontextmenu = (e) => {
         e.preventDefault();
         svg.fire('word-right-click', { object: this, event: e });

@@ -88,6 +88,7 @@ class Link {
       let draggedHandle = null;
       let x = 0;
 
+      this.line.dblclick((e) => svg.fire('build-tree', { object: this, event: e }));
       this.line.node.oncontextmenu = (e) => {
         e.preventDefault();
         svg.fire('link-right-click', { object: this, type: 'link', event: e });

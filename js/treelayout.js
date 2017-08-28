@@ -106,7 +106,7 @@ const TreeLayout = (function() {
               if (depth < maxDepth) {
                 let links = node.links.filter(l => l.top);
                 let args = [];
-                let corefs = links.filter(x => !x.trigger)
+                let corefs = links.filter(x => !x.trigger && (!source || x !== source.node))
                   .map(coref => {
                     return {
                       type: coref.reltype,
