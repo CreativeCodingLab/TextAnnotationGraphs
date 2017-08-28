@@ -81,13 +81,15 @@ const Main = (function() {
 
     // window event listeners
     // resize function
-    window.onresize = function() {
+    function resizeWindow() {
       body = document.body.getBoundingClientRect();
       links.forEach(l => l.hide());
       svg.width(body.width);
       rm.width(body.width);
-      links.forEach(l => l.show());
+      setSyntaxVisibility();
     }
+    window.onresize = debounce(resizeWindow, 200);
+
     document.getElementById('dataset').onchange = function(e) {
       if (this.selectedIndex > 0) {
         changeDataset(this.selectedIndex);
@@ -228,6 +230,29 @@ const Main = (function() {
   //--------------------------------
   // private functions
   //--------------------------------
+
+  // from https://davidwalsh.name/javascript-debounce-function,
+  // as taken from underscore
+
+  // Returns a function, that, as long as it continues to be invoked, will not
+  // be triggered. The function will be called after it stops being called for
+  // N milliseconds. If `immediate` is passed, trigger the function on the
+  // leading edge, instead of the trailing.
+  function debounce(func, wait, immediate) {
+  	var timeout;
+  	return function() {
+  		var context = this, args = arguments;
+  		var later = function() {
+  			timeout = null;
+  			if (!immediate) func.apply(context, args);
+  		};
+  		var callNow = immediate && !timeout;
+  		clearTimeout(timeout);
+  		timeout = setTimeout(later, wait);
+  		if (callNow) func.apply(context, args);
+  	};
+  };
+
 
   /** options to set visibility of syntax tree
    */

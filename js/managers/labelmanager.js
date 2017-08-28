@@ -28,7 +28,7 @@ const LabelManager = (function() {
 
   function listenForEdit(e) {
     activeObject = e.detail.object;
-    activeObject.listenForEdit();
+    activeObject.listenForEdit(e);
     originalString = e.detail.object.val;
     string = null;
   };

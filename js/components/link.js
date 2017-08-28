@@ -450,14 +450,52 @@ class Link {
       return slots;
     }
 
-    listenForEdit() {
-      console.log('listening');
+    listenForEdit(e) {
+      console.log('listening', e.detail.text, e.detail.text.text());
       this.isEditing = true;
+
+      let bbox = e.detail.text.bbox();
+      this.svg.addClass('editing');
+      this.editingRect = this.svg.rect(bbox.width + 8, bbox.height + 4)
+        .x(bbox.x - 4)
+        .y(bbox.y - 2)
+        .rx(2)
+        .ry(2)
+        .back();
+
+      // listenForEdit() {
+      //   this.isEditing = true;
+      //   let bbox = this.svgText.bbox();
+      //
+      //   this.svg.addClass('editing');
+      //   this.editingRect = this.svg.rect(bbox.width + 8, bbox.height + 4)
+      //     .x(bbox.x - 4)
+      //     .y(bbox.y - 2)
+      //     .rx(2)
+      //     .ry(2)
+      //     .back();
+      // }
+      // stopEditing() {
+      //   this.isEditing = false;
+      //   this.svg.removeClass('editing');
+      //   this.editingRect.remove();
+      //   this.editingRect = null;
+      //   this.val = this.val.trim();
+      //   if (!this.val) {
+      //     this.remove();
+      //   }
+      //   else {
+      //     this.entity.calculateBox();
+      //   }
+      // }
 
     }
     stopEditing() {
       console.log('done');
       this.isEditing = false;
+      this.svg.removeClass('editing');
+      this.editingRect.remove();
+      this.editingRect = null;
     }
 
     getEndpoints() {

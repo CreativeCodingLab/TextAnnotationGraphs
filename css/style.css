@@ -8,6 +8,10 @@ body {
   overflow-y: scroll;
 }
 
+svg, svg text {
+  font-family: Nunito, futura, helvetica, arial, sans-serif;
+  font-weight:600;  
+}
 svg text {
   cursor: default;
   -webkit-user-select: none;
@@ -130,6 +134,14 @@ header > button:hover {
   left:0;
 }
 
+#toggle-taxonomy {
+  font-size:0.9em;
+  text-decoration:underline;
+  cursor:pointer;
+  color:steelblue;
+  float:right;
+}
+
 #taxonomy > ul {
   list-style-type: none;
   padding:0;
@@ -205,7 +217,6 @@ header > button:hover {
   position:relative;
 }
 #main text {
-  font-family: BrownPro, Brown, futura, helvetica, arial, sans-serif;
   text-anchor: middle;
 }
 .row-drag {

@@ -100,7 +100,8 @@ const Taxonomy = (function() {
       let keys = Object.keys(tagTypes);
 
       // populate taxonomy
-      div.innerHTML = '';
+      div.innerHTML = '<span id="toggle-taxonomy">Filter unused labels</span>';
+
       let ul = document.createElement('ul');
       div.appendChild(ul);
 
@@ -187,6 +188,17 @@ const Taxonomy = (function() {
       }
       this.tree.hierarchy.forEach(el => createLi(el, ul));
       jscolor.installByClassName('jscolor');
+
+      document.getElementById('toggle-taxonomy').onclick = function() {
+          if (ul.className === 'filtered') {
+            ul.className = '';
+            this.innerHTML = 'Show all labels';
+          }
+          else {
+            ul.className = 'filtered';
+            this.innerHTML = 'Filter unused labels';
+          }
+      }
 
       keys.forEach((tag, i) => {
         tagTypes[tag].forEach(word => updateColor(word, colors[i]));
