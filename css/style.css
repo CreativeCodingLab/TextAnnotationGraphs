@@ -10,7 +10,7 @@ body {
 
 svg, svg text {
   font-family: Nunito, futura, helvetica, arial, sans-serif;
-  font-weight:600;  
+  font-weight:600;
 }
 svg text {
   cursor: default;
@@ -261,9 +261,12 @@ header > button:hover {
 }
 
 .editing .word-tag,
+.editing-text,
 .editing text {
   fill: #fff !important;
 }
+
+.editing-rect,
 .editing rect {
   fill:#a94442;
 }

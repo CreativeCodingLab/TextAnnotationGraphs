@@ -451,51 +451,30 @@ class Link {
     }
 
     listenForEdit(e) {
-      console.log('listening', e.detail.text, e.detail.text.text());
       this.isEditing = true;
 
       let bbox = e.detail.text.bbox();
-      this.svg.addClass('editing');
+      e.detail.text.addClass('editing-text');
+      this.editingText = e.detail.text;
       this.editingRect = this.svg.rect(bbox.width + 8, bbox.height + 4)
         .x(bbox.x - 4)
         .y(bbox.y - 2)
         .rx(2)
         .ry(2)
+        .addClass('editing-rect')
         .back();
-
-      // listenForEdit() {
-      //   this.isEditing = true;
-      //   let bbox = this.svgText.bbox();
-      //
-      //   this.svg.addClass('editing');
-      //   this.editingRect = this.svg.rect(bbox.width + 8, bbox.height + 4)
-      //     .x(bbox.x - 4)
-      //     .y(bbox.y - 2)
-      //     .rx(2)
-      //     .ry(2)
-      //     .back();
-      // }
-      // stopEditing() {
-      //   this.isEditing = false;
-      //   this.svg.removeClass('editing');
-      //   this.editingRect.remove();
-      //   this.editingRect = null;
-      //   this.val = this.val.trim();
-      //   if (!this.val) {
-      //     this.remove();
-      //   }
-      //   else {
-      //     this.entity.calculateBox();
-      //   }
-      // }
-
+    }
+    text(str) {
+      if (this.editingText) {
+        this.editingText.text(str);
+      }
     }
     stopEditing() {
-      console.log('done');
       this.isEditing = false;
-      this.svg.removeClass('editing');
+      this.editingText.removeClass('editing-text');
       this.editingRect.remove();
-      this.editingRect = null;
+      this.editingRect = this.editingText = null;
+      this.draw();
     }
 
     getEndpoints() {
