@@ -178,6 +178,30 @@ header > button:hover {
   opacity:0.5;
 }
 
+body > #tree-svg {
+  box-shadow: 0 0 1em #aaa;
+  background:hsl(5,5%,98%);
+  position:fixed;
+  bottom:0;
+  font-size:14px;
+  height:250px;
+  max-height:40vh;
+}
+body > #tree-svg.hidden {
+  display:none;
+}
+body > #tree-svg #tree-close {
+  display:inline-block;
+}
+#tree-close {
+  display:none;
+}
+#tree-popout, #tree-close {
+  font-size: 0.9em;
+  text-decoration: underline;
+  cursor: pointer;
+  fill: steelblue;
+}
 
 #tooltip {
   width:175px;

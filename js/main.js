@@ -15,7 +15,8 @@ const Main = (function() {
   let tree = {};
   let options = {
     showSyntax: false,
-    showLinksOnMove: false
+    showLinksOnMove: false,
+    showTreeInModal: false
   };
 
   //--------------------------------
@@ -35,7 +36,7 @@ const Main = (function() {
     rm      = new RowManager(svg);
     lm      = new LabelManager(svg);
     tm      = new Taxonomy('taxonomy');
-    tree    = new TreeLayout(document.querySelector('#tree > svg'));
+    tree    = new TreeLayout('#tree', svg);
 
     // load and render initial dataset by default
     changeDataset(2);
@@ -75,8 +76,19 @@ const Main = (function() {
     });
 
     svg.on('build-tree', function(e) {
-      setActiveTab('tree');
-      tree.graph(e.detail.object);
+      tree.svg.classed('hidden', false);
+      if (tree.isInModal) {
+        setActiveTab('tree');
+      }
+      else {
+        setActiveTab(null);
+      }
+      if (e.detail) {
+        tree.graph(e.detail.object);
+      }
+      else {
+        tree.resize();
+      }
     });
 
     // window event listeners
@@ -107,6 +119,10 @@ const Main = (function() {
           case 'links':
             options.showLinksOnMove = this.checked;
             break;
+          case 'tree':
+            options.showTreeInModal = this.checked;
+            // document.querySelector('.tab[data-id="tree"]').style.display = this.checked ? 'inline-block' : 'none';
+            break;
           default: ;
         }
       };
@@ -114,12 +130,17 @@ const Main = (function() {
 
     function setActiveTab(pageId, modalId="modal") {
       let m = document.getElementById(modalId);
-      m.classList.add('open');
+      if (pageId == null) {
+        m.classList.remove('open');
+      }
+      else {
+        m.classList.add('open');
 
-      m.querySelector('.tab.active').classList.remove('active');
-      m.querySelector('.page.active').classList.remove('active');
-      m.querySelector('header span[data-id="' + pageId + '"]').classList.add('active');
-      document.getElementById(pageId).classList.add('active');
+        m.querySelector('.tab.active').classList.remove('active');
+        m.querySelector('.page.active').classList.remove('active');
+        m.querySelector('header span[data-id="' + pageId + '"]').classList.add('active');
+        document.getElementById(pageId).classList.add('active');
+      }
     }
 
     let modalHeader = document.querySelector('#modal header');

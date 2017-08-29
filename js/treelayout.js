@@ -2,6 +2,7 @@ const TreeLayout = (function() {
 
     // depth of recursion
     let maxDepth;
+    const rh = 50;  // row height
 
     // recursively build hierarchy from a root word or link
     function addNode(node, depth, source) {
@@ -57,11 +58,44 @@ const TreeLayout = (function() {
     };
 
     class TreeLayout {
-        constructor(el) {
+        constructor(el, mainSVG, openInModal) {
             // container element
-            this.svg = d3.select(el);
+            this.isInModal = openInModal;
+            this.svg = openInModal ? d3.select(el) : d3.select(document.body).append('svg')
+              .attr('id', 'tree-svg');
             this.draggable = this.svg.append('g');
             this.g = this.draggable.append('g');
+
+            let self = this;
+            this.svg.append('text')
+              .text(openInModal ? 'Show in main window' : 'Pop into modal')
+              .attr('id', 'tree-popout')
+              .attr('x', 15)
+              .attr('y', 25)
+              .on('click', function() {
+                let node = document.getElementById('tree-svg');
+                let parent = node.parentNode;
+                if (parent === document.body) {
+                  d3.select(this).text('Show in main window');
+                  d3.select(el).node().appendChild(node);
+                  self.isInModal = true;
+                }
+                else {
+                  d3.select(this).text('Pop into modal');
+                  document.body.appendChild(node);
+                  self.isInModal = false;
+                }
+                mainSVG.fire('build-tree');
+              });
+            this.svg.append('text')
+              .text('Close')
+              .attr('id', 'tree-close')
+              .attr('x', this.svg.node().getBoundingClientRect().width - 15)
+              .attr('text-anchor', 'end')
+              .attr('y', 25)
+              .on('click', () => {
+                this.svg.classed('hidden', true);
+              });
 
             // add zoom/pan events
             this.svg.call(d3.zoom()
@@ -74,10 +108,12 @@ const TreeLayout = (function() {
             // selected words to generate graph around
             this.word = null;
             this.maxDepth = 20; // default value for max dist from root
+            this.maxWidth = 0;
+            this.layers = [];
         }
         resize() {
-          // let bounds = this.svg.node().getBoundingClientRect();
-          // this.g.attr('transform', `translate(${bounds.width / 2}, 30)`);// ${bounds.height / 2})`);
+          let bounds = this.svg.node().getBoundingClientRect();
+          this.g.attr('transform', 'translate(' + [bounds.width / 2 - this.maxWidth / 2, bounds.height / 2 - (this.layers.length - 1) * rh / 2] + ')');
         }
         clear() {
             this.word = null;
@@ -89,8 +125,6 @@ const TreeLayout = (function() {
          * Word or Link "root" nodes
          */
         graph(selected) {
-            this.resize();
-
             maxDepth = this.maxDepth;
 
             let data = [];
@@ -220,6 +254,8 @@ const TreeLayout = (function() {
               });
             }// end for
 
+            this.maxWidth = maxWidth;
+            this.layers = layers;
 
             let nodeSVG = this.g.selectAll('.node')
               .data(nodes, d => d.node);
@@ -230,8 +266,6 @@ const TreeLayout = (function() {
             let edgeSVG = this.g.selectAll('.edge')
               .data(links, d => d.source.node);
 
-            //layout constants
-            const rh = 50;  // row height
             nodeSVG.exit().remove();
             nodeSVG.enter().append('text')
               .attr('class','node')
@@ -243,8 +277,7 @@ const TreeLayout = (function() {
                 .attr('transform', d => 'translate(' + [d.offset, d.depth * rh] + ')');
 
             // resize
-            let bounds = this.svg.node().getBoundingClientRect();
-            this.g.attr('transform', 'translate(' + [bounds.width / 2 - maxWidth / 2, bounds.height / 2 - layers.length * rh / 2] + ')');
+            this.resize();
 
             edgeSVG.exit().remove();
             edgeSVG.enter().append('path')

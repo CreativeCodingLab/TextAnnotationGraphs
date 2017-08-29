@@ -79,6 +79,7 @@ class Link {
           svg.fire('link-label-right-click', { object: this, type: 'text', event: e });
         };
         text.click((e) => svg.fire('link-label-edit', { object: this, text, event: e }));
+        text.dblclick((e) => svg.fire('build-tree', { object: this, event: e }));
       });
 
       this.line = this.svg.path()
@@ -116,10 +117,17 @@ class Link {
             draggedHandle.offset += dx;
             let anchor = draggedHandle.anchor;
             if (anchor instanceof Link) {
-              let handles = anchor.handles.map(h => h.x).sort();
-              let cx = draggedHandle.anchor.cx;
+              let handles = anchor.handles
+                .filter(h => h.anchor.row.idx === anchor.handles[0].anchor.row.idx)
+                .sort((a,b) => a.x - b.x);
 
-              draggedHandle.offset = Math.min(handles[handles.length - 1] - cx, Math.max(handles[0] - cx, draggedHandle.offset));
+              let min = handles[0].x;
+              let max = handles[handles.length - 1].x;
+              if (handles.length < anchor.handles.length) {
+                max = this.mainSVG.width();
+              }
+              let cx = draggedHandle.anchor.cx;
+              draggedHandle.offset = Math.min(max - cx, Math.max(min - cx, draggedHandle.offset));
             }
             else {
               let halfWidth = anchor.boxWidth / 2;
@@ -134,6 +142,25 @@ class Link {
                ? Math.max(-halfWidth + 3, draggedHandle.offset)
                : Math.min(halfWidth - 3, draggedHandle.offset);
             }
+
+            // also constrain links above this link
+            let handles = this.handles
+              .filter(h => h.anchor.row.idx === this.handles[0].anchor.row.idx)
+              .sort((a, b) => a.x - b.x);
+
+            let min = handles[0].x;
+            let max = handles[handles.length - 1].x;
+            if (handles.length < this.handles.length) {
+              max = this.mainSVG.width();
+            }
+            let cx = this.cx;
+            this.links.forEach(link => {
+              link.handles.forEach(h => {
+                if (h.anchor === this) {
+                  h.offset = Math.min(max - cx, Math.max(min - cx, h.offset));
+                }
+              });
+            });
             this.draw(draggedHandle.anchor);
           }
         })
