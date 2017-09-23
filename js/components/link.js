@@ -494,6 +494,7 @@ class Link {
     }
     text(str) {
       if (this.editingText) {
+        if (str === undefined) { return this.editingText; }
         this.editingText.text(str);
       }
     }

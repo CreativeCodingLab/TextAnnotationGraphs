@@ -1,4 +1,5 @@
 const LabelManager = (function() {
+  let _svg;
   let activeObject = null;
   let string = null;
   let originalString = null;
@@ -20,6 +21,7 @@ const LabelManager = (function() {
   class LabelManager {
     constructor(svg) {
       // listeners for label handling
+      _svg = svg;
       svg.on('tag-edit', listenForEdit);
       svg.on('link-label-edit', listenForEdit);
       this.stopEditing = stopEditing;
@@ -35,7 +37,10 @@ const LabelManager = (function() {
 
   function stopEditing() {
     if (activeObject && activeObject.isEditing) {
-      // if (!string) { updateString(originalString); }
+      let text = activeObject.text();
+      if (text && !(activeObject instanceof Link)) {
+        _svg.fire('label-updated', { object: text, label: text.text() });
+      }
       activeObject.stopEditing();
       activeObject = null;
       originalString = string = null;

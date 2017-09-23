@@ -77,16 +77,12 @@ const Tooltip = (function() {
       switch (e.target.id) {
         // tag management events
         case 'menu--remove-tag':
-          if (activeObject instanceof Word && activeObject.tag) {
-            activeObject.tag.remove();
-          }
-          else {
-            activeObject.remove();
-          }
+          let tag1 = (activeObject instanceof Word && activeObject.tag) ? activeObject.tag : activeObject;
+          _svg.fire('tag-remove', { object: tag1 });
           break;
         case 'menu--add-tag':
-          let tag = activeObject.setTag('?');
-          _svg.fire('tag-edit', { object: tag });
+          let tag2 = activeObject.setTag('?');
+          _svg.fire('tag-edit', { object: tag2 });
           break;
         case 'menu--edit-tag':
           _svg.fire('tag-edit', { object: activeObject.tag });

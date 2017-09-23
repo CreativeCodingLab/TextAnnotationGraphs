@@ -48,6 +48,7 @@ class WordTag {
     }
   }
   text(val) {
+    if (val === undefined) { return this.svgText; }
     this.val = val;
     this.svgText.text(this.val);
     this.ww = this.svgText.length();

@@ -39,12 +39,18 @@ const Main = (function() {
     tree    = new TreeLayout('#tree', svg);
 
     // load and render initial dataset by default
-    changeDataset(2);
+    changeDataset(6);
 
     // svg event listeners
     svg.on('row-resize', function(e) {
       lm.stopEditing();
       rm.resizeRow(e.detail.object.idx, e.detail.y);
+    });
+
+    svg.on('label-updated', function(e) {
+      // TODO: so so incomplete
+      let color = tm.getColor(e.detail.label, e.detail.object);
+      e.detail.object.node.style.fill = color;
     });
 
     svg.on('word-move-start', function() {
@@ -65,6 +71,11 @@ const Main = (function() {
       }
     });
 
+    svg.on('tag-remove', function(e) {
+      e.detail.object.remove();
+      tm.remove(e.detail.object);
+    });
+
     svg.on('row-recalculate-slots', function(e) {
       links.forEach(link => {
         link.resetSlotRecalculation();
@@ -76,7 +87,7 @@ const Main = (function() {
     });
 
     svg.on('build-tree', function(e) {
-      tree.svg.classed('hidden', false);
+      document.body.classList.remove('tree-closed');
       if (tree.isInModal) {
         setActiveTab('tree');
       }
@@ -300,6 +311,7 @@ const Main = (function() {
       w.setSyntaxId(token.id);
       return w;
     });
+    console.log('words',words);
     const clusters = [];
 
     [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
@@ -324,6 +336,7 @@ const Main = (function() {
       let anchor;
       switch (argument.id.charAt(0)) {
         case 'E':
+        case 'R':
           anchor = links.find(link => link.eventId === argument.id);
           break;
         case 'T':

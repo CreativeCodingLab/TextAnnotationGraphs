@@ -179,15 +179,19 @@ header > button:hover {
 }
 
 body > #tree-svg {
-  box-shadow: 0 0 1em #aaa;
+  border-top: 1px solid #ccc;
+  /*box-shadow: 0 0 1em #aaa;*/
   background:hsl(5,5%,98%);
   position:fixed;
   bottom:0;
   font-size:14px;
-  height:250px;
+  height:200px;
+  width:100%;
   max-height:40vh;
 }
-body > #tree-svg.hidden {
+body { margin-bottom:200px; }
+body.tree-closed { margin-bottom: 0; }
+body.tree-closed > #tree-svg {
   display:none;
 }
 body > #tree-svg #tree-close {
@@ -215,6 +219,7 @@ body > #tree-svg #tree-close {
   font-weight: 400;
   color:#444;
   display:none;
+  z-index:100;
 }
 #tooltip.active {
   display:block;

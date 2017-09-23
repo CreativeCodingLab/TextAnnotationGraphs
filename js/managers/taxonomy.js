@@ -14,6 +14,7 @@ const Taxonomy = (function() {
     '#a6761d',
     '#7f7f7f'
   ];
+  let tagTypes = {};
 
   function updateColor(word, color) {
     if (word instanceof Word) {
@@ -29,28 +30,27 @@ const Taxonomy = (function() {
   class Taxonomy {
     constructor(id) {
       this.tree = {};
-      this.tagTypes = {};
       div = document.getElementById('taxonomy');
     }
 
     buildTagTypes(words) {
-      this.tagTypes = {};
+      tagTypes = {};
       words.forEach(word => {
         if (word.tag) {
-          if (this.tagTypes[word.tag.val]) {
-            this.tagTypes[word.tag.val].push(word);
+          if (tagTypes[word.tag.val]) {
+            tagTypes[word.tag.val].push(word);
           }
           else {
-            this.tagTypes[word.tag.val] = [word];
+            tagTypes[word.tag.val] = [word];
           }
         }
         if (word.clusters.length > 0) {
           word.clusters.forEach(cluster => {
-            if (this.tagTypes[cluster.val]) {
-              this.tagTypes[cluster.val].push(cluster);
+            if (tagTypes[cluster.val]) {
+              tagTypes[cluster.val].push(cluster);
             }
             else {
-              this.tagTypes[cluster.val] = [cluster];
+              tagTypes[cluster.val] = [cluster];
             }
           });
         }
@@ -96,7 +96,6 @@ const Taxonomy = (function() {
     }
 
     populateTaxonomy() {
-      let tagTypes = this.tagTypes;
       let keys = Object.keys(tagTypes);
 
       // populate taxonomy
@@ -203,6 +202,35 @@ const Taxonomy = (function() {
       keys.forEach((tag, i) => {
         tagTypes[tag].forEach(word => updateColor(word, colors[i]));
       });
+    }
+
+    remove(object) {
+      // TODO: fix the fuck out of this
+      return;
+      let tag = object.val;
+      let entity = object.entity;
+      if (tagTypes[tag]) {
+        let i = tagTypes[tag].indexOf(entity);
+        if (i > -1) {
+          tagTypes[tag].splice(i, 1);
+          if (tagTypes[tag].length < 1) {
+            delete tagTypes[tag];
+          }
+        }
+      }
+    }
+
+    getColor(label, object) {
+      //FIXME: fix me the fuck up
+      return;
+      let keys = Object.keys(tagTypes);
+      if (tagTypes[label]) {
+        return colors[keys.indexOf(label)];
+      }
+      else {
+        tagTypes[label] = object;
+        return colors[keys.length] || 'black';
+      }
     }
   }
   return Taxonomy;
