@@ -120,11 +120,11 @@
       "T7",
       [
          [
-            "Controlled",
+            "Controller",
             "E1"
          ],
          [
-            "Controller",
+            "Controlled",
             "T4"
          ]
       ]
@@ -134,11 +134,11 @@
       "T7",
       [
          [
-            "Controlled",
+            "Controller",
             "E1"
          ],
          [
-            "Controller",
+            "Controlled",
             "T5"
          ]
       ]
