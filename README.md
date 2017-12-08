@@ -3,12 +3,15 @@ A modular annotation system that supports complex, interactive annotation graphs
 
 ![TAG](/figs/OneRow.png)
 
+---
 
 ![TAG](/figs/TwoRows.png)
 
+---
 
 ![TAG](/figs/taxonomyColors.png)
 
+---
 
 ![TAG](/figs/trees.png)
 
