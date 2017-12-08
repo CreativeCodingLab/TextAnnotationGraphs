@@ -5,11 +5,11 @@ A modular annotation system that supports complex, interactive annotation graphs
 
 ---
 
-![TAG](/figs/TwoRows.png)
+![TAG](/figs/taxonomyColors.png)
 
 ---
 
-![TAG](/figs/taxonomyColors.png)
+![TAG](/figs/TwoRows.png)
 
 ---
 
@@ -17,7 +17,7 @@ A modular annotation system that supports complex, interactive annotation graphs
 
 
 ## Development
-TAG was developed by Angus Forbes (UC Santa Cruz) and Kristine Lee (University of Illinios at Chicago), in collaboration with Gustave Hahn-Powell, Marco Anto Valenzuela Escarcega, and Mihai Surdeanu (University of Arizona).
+TAG was developed by Angus Forbes (UC Santa Cruz) and Kristine Lee (University of Illinios at Chicago), in collaboration with Gustave Hahn-Powell, Marco Anto Valenzuela Escarcega, and Mihai Surdeanu (University of Arizona). Contact angus@ucsc.edu for more information.
 
 ## Write-up
 An article describing TAG is currently in submission to LREC'18. A pre-print can be found at [https://arxiv.org/abs/1711.00529](https://arxiv.org/abs/1711.00529)
