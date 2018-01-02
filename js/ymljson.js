@@ -1,12 +1,9 @@
 // non-comprehensive function to convert yml file to json
 const ymlToJson = (function() {
   function convert(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4 && xhr.status === 200) {
+    load(url).then(function(text) {
         let taxonomy = [];
         let arr = taxonomy;
-        const text = xhr.responseText;
         const lines = text.split('\n');
         let depths = [];
 
@@ -40,10 +37,7 @@ const ymlToJson = (function() {
         if (callback) {
           callback(taxonomy);
         }
-      }
-    }
-    xhr.open("GET", url);
-    xhr.send();
+    })
   };
 
   return {

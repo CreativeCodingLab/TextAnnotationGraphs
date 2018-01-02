@@ -1,0 +1,6 @@
+un lock able
+T1 BOUND 0 2 un
+T2 FREE 4 7 lock
+T3 BOUND 8 12 able
+R1 unlock controlled:T1 controller:T2
+R2 unlockable controller:R1 controlled:T3

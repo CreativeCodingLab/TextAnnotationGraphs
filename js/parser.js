@@ -103,28 +103,12 @@ const Parser = (function() {
     /* load a json from a path */
     readJson(path, callback) {
 
-      var json = path || './data/data1.json';
-
-      function loadJSON(path) {
-          var httpRequest = new XMLHttpRequest();
-          httpRequest.onreadystatechange = function() {
-              if (httpRequest.readyState === 4) {
-                  if (httpRequest.status === 200) {
-                      var data = JSON.parse(httpRequest.responseText);
-
-                      parseData(data);
-                      if (callback) {
-                        callback();
-                      }
-                  }
-              }
-          };
-          httpRequest.open('GET', path);
-          httpRequest.send();
-      }
-
-      /* parse json file*/
-      loadJSON(json);
+      load(path).then((data) => {
+        parseData(data);
+        if (callback) {
+          callback();
+        }
+      })
     }
 
     get tokens() { return _tokens; }

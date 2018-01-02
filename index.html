@@ -10,6 +10,7 @@
 <body>
 
 <header id="header">
+  Examples:
   <select id="dataset">
     <option>-- select dataset --</option>
     <option>data1</option>
@@ -21,9 +22,27 @@
     <option>morpheme2</option>
     <option>event annotation</option>
   </select>
+  <button id="custom-annotation">Custom annotation</button>
   <button id="taxonomy-toggle">Taxonomy</button>
   <button id="options-toggle">Options</button>
 </header>
+
+<div id="brat-input" class="modal">
+  <div>
+    <header>
+      <span class="tab active">Custom input in .ann format</span>
+    </header>
+    <div class="page active">
+      <div>
+        <button><label for="file-input">Load .ann file</label></button>
+        <input type="file" id="file-input" style="display:none;">
+      </div>
+      <textarea></textarea>
+      <div id="error-message"></div>
+    </div>
+  </div>
+</div>
+
 
 <div id="main">
   <div id="tooltip">
@@ -47,6 +66,7 @@
       <p><input type="checkbox" data-option="tree"> Open tree view in modal</p>
     </div>
   </div>
+
 </div>
 
 <script src="libs/svg.js"></script>
@@ -54,7 +74,9 @@
 <script src="libs/jscolor.min.js"></script>
 <script src="libs/d3.min.js"></script>
 
+<script src="js/xhr.js"></script>
 <script src="js/ymljson.js"></script>
+<script src="js/ann-parser.js"></script>
 <script src="js/parser.js"></script>
 <script src="js/treelayout.js"></script>
 <script src="js/main.js"></script>
@@ -69,6 +91,11 @@
 <script src="js/components/link.js"></script>
 
 <script type="text/javascript">
+
+// page setup
+// manage input
+// manage visualization
+
   Main.init();
 </script>
 

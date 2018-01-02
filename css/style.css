@@ -63,6 +63,19 @@ header > button:hover {
   border-bottom:1px solid grey;
 }
 
+
+/* input */
+#brat-input {
+}
+#brat-input textarea {
+  width:100%;
+  height:300px;
+  padding:5px;
+  font-size:15px;
+}
+
+
+/* modal */
 .modal {
   color:#222;
   background:rgba(0,0,0,0.3);

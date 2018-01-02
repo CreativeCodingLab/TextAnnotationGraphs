@@ -25,8 +25,11 @@ const Main = (function() {
   /**
    * init:  set up singleton classes and create initial drawing
    */
+  let _initialized = false;
   function init() {
     // setup
+    if (_initialized) { return; }
+    _initialized = true;
     body = document.body.getBoundingClientRect();
     svg = SVG('main')
       .size(body.width, window.innerHeight - body.top - 10);
@@ -38,8 +41,13 @@ const Main = (function() {
     tm      = new Taxonomy('taxonomy');
     tree    = new TreeLayout('#tree', svg);
 
+    load('data/example2.ann').then(text => {
+      console.log(text);
+      console.log(parseAnn(text));
+    });
+    return;
     // load and render initial dataset by default
-    changeDataset(6);
+    // changeDataset(6);
 
     // svg event listeners
     svg.on('row-resize', function(e) {
@@ -198,6 +206,9 @@ const Main = (function() {
       }
     });
 
+    document.getElementById('custom-annotation').onclick = function() {
+      document.getElementById('brat-input').classList.add('open');
+    }
     document.getElementById('options-toggle').onclick = function() {
         setActiveTab('options');
     }
