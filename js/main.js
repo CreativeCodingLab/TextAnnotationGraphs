@@ -41,13 +41,8 @@ const Main = (function() {
     tm      = new Taxonomy('taxonomy');
     tree    = new TreeLayout('#tree', svg);
 
-    load('data/example2.ann').then(text => {
-      console.log(text);
-      console.log(parseAnn(text));
-    });
-    return;
     // load and render initial dataset by default
-    // changeDataset(6);
+    changeDataset();
 
     // svg event listeners
     svg.on('row-resize', function(e) {
@@ -215,28 +210,38 @@ const Main = (function() {
     document.getElementById('taxonomy-toggle').onclick = function() {
         setActiveTab('taxonomy');
     }
-    document.getElementById('modal').onclick = function(e) {
-      e.target.classList.remove('open');
-    }
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.onclick = function(e) {
+        e.target.classList.remove('open');
+      }
+    });
   }
 
   /**
    * changeDataset:  read and parse data from a json file in the /data folder
    *   and generate visualization from it
    */
-  function changeDataset(index = 1) {
-    parser.readJson(`./data/data${index}.json`, function() {
-      clear();
-      ymlToJson.convert('taxonomy.yml.txt', function(taxonomy) {
-        [words, links, clusters] = buildWordsAndLinks();
-        setSyntaxVisibility();
+  function changeDataset(index = 6) {
+    if (index >= 6) {
+      load(`./data/example${index - 5}.ann`).then(text => {
+        clear();
+        [words, links, clusters] = buildWordsLinksAnn(text);
         draw();
-
-        tm.buildTree(taxonomy);
-        tm.buildTagTypes(words);
-        tm.populateTaxonomy();
       });
-    });
+    } else {
+      parser.readJson(`./data/data${index}.json`, function() {
+        clear();
+        ymlToJson.convert('taxonomy.yml.txt', function(taxonomy) {
+          [words, links, clusters] = buildWordsAndLinks();
+          setSyntaxVisibility();
+          draw();
+
+          tm.buildTree(taxonomy);
+          tm.buildTagTypes(words);
+          tm.populateTaxonomy();
+        });
+      });
+    }
   };
 
   /**
@@ -402,99 +407,58 @@ const Main = (function() {
     return [ words, links, clusters ];
   }
 
-  // function populateOptions() {
-  //   document.querySelector('.reach').onclick = toggleEdgeVisibility;
-  //   document.querySelector('.pos').onclick = toggleEdgeVisibility;
-  //
-  //   let reachTypes = {};
-  //   let posTypes = {};
-  //
-  //   function toggleEdgeVisibility(e) {
-  //     if (e.target.nodeName === 'INPUT') {
-  //       let id = e.target.id.split('--');
-  //       let checked = e.target.checked;
-  //
-  //       function linkMatchesId(l) {
-  //         if (l.top && id[0] === 'reach') {
-  //           return l.reltype === id[1] || (l.trigger instanceof Word && l.trigger.tag.val === id[1]);
-  //         }
-  //         else if (!l.top && id[0] === 'pos') {
-  //           return l.arguments.some(arg => arg.type === id[1]);
-  //         }
-  //       }
-  //
-  //       if (checked) {
-  //         if (id[1] === 'all') {
-  //           document.querySelectorAll(`.${id[0]} > ul input`).forEach(i => {
-  //             i.disabled = false;
-  //             toggleEdgeVisibility({target: i});
-  //           });
-  //         }
-  //         else {
-  //           links.forEach(l => linkMatchesId(l) && l.show());
-  //         }
-  //       }
-  //       else {
-  //         if (id[1] === 'all') {
-  //           document.querySelectorAll(`.${id[0]} > ul input`).forEach(i => {
-  //             links.forEach(l => {
-  //               if (l.top == (id[0] === 'reach')) {
-  //                 l.hide();
-  //               }
-  //             });
-  //             i.disabled = true;
-  //           });
-  //         }
-  //         else {
-  //           links.forEach(l => linkMatchesId(l) && l.hide());
-  //         }
-  //       }
-  //     }
-  //   }
-  //
-  //   // find link types
-  //   links.forEach(link => {
-  //     if (link.top) {
-  //       let type = link.trigger instanceof Word ? link.trigger.tag : link.reltype;
-  //       if (reachTypes[type]) {
-  //         reachTypes[type].push(link);
-  //       }
-  //       else {
-  //         reachTypes[type] = [link];
-  //       }
-  //     }
-  //     else {
-  //       link.arguments.forEach(arg => {
-  //         if (posTypes[arg.type]) {
-  //           posTypes[arg.type].push(link);
-  //         }
-  //         else {
-  //           posTypes[arg.type] = [link];
-  //         }
-  //       });
-  //     }
-  //   });
-  //
-  //   // add to options
-  //   function createUl(types, name) {
-  //     if (Object.keys(types).length > 0) {
-  //       let li = Object.keys(types).sort().map(type =>
-  //         `<li><input id="${name}--${type}" type="checkbox" checked><label for="${name}--${type}">${type}</label></li>`
-  //       );
-  //       let ul = document.querySelector(`.${name} > ul`) || document.createElement('ul');
-  //       ul.innerHTML = li.join('');
-  //       document.querySelector(`.${name}`).appendChild(ul);
-  //     }
-  //     else {
-  //       let ul = document.querySelector(`.${name} > ul`);
-  //       if (ul) { ul.parentNode.removeChild(ul); }
-  //     }
-  //   }
-  //   createUl(reachTypes, 'reach');
-  //   createUl(posTypes, 'pos');
-  //   document.getElementById('reach--all').checked = true;
-  //   document.getElementById('pos--all').checked = true;
-  // }
+  function buildWordsLinksAnn(text) {
+    let data = parseAnn(text);
+    let mentions = {};
+
+    // build words
+    let words = data.tokens.map((token, i) => {
+      return new Word(token.word, i)
+    });
+    data.texts.forEach(tbm => {
+      words[tbm.tokenId].setTag(tbm.label);
+      words[tbm.tokenId].addEventId(tbm.id);
+      mentions[tbm.id] = words[tbm.tokenId];
+    });
+
+    // build links
+    let links = [];
+    for (let m in data.mentions) {
+      let mention = data.mentions[m];
+      if (m[0] === 'E') {
+        if (data.mentions[mention.trigger] &&
+          mention.arguments.every(arg => data.mentions[arg.id])) {
+
+          let trigger = mentions[mention.trigger];
+          let args = mention.arguments.map(arg => {
+            return {
+              anchor: mentions[arg.id],
+              type: arg.type
+            };
+          });
+
+          let newLink = new Link(mention.id, trigger, args);
+          mentions[mention.id] = newLink;
+          links.push(newLink);
+        }
+      } else if (m[0] === 'R') {
+        if (mention.arguments.every(arg => data.mentions[arg.id])) {
+          let args = mention.arguments.map(arg => {
+            return {
+              anchor: mentions[arg.id],
+              type: arg.type
+            };
+          });
+
+          let newLink = new Link(mention.id, null, args, mention.label);
+          mentions[mention.id] = newLink;
+          links.push(newLink);
+        }
+      }
+    }
+
+    return [words, links, []];
+  }
 
   // export public functions
   return {

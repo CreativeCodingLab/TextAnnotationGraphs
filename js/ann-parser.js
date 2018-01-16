@@ -36,13 +36,13 @@ const parseAnn = (function() {
 
     const re = /:+(?=[TER]\d+$)/;
 
-    function parseTextBoundMention(tokens, text) {
+    function parseTextBoundMention(tokens, textLength) {
         const id = +tokens[0].slice(1),
             label = tokens[1],
             charStart = +tokens[2],
             charEnd = +tokens[3];
 
-        if (id > 0 && charStart >= 0 && charStart < charEnd && charEnd < text.length) {
+        if (id > 0 && charStart >= 0 && charStart < charEnd && charEnd <= textLength) {
             return new TextBoundMention('T' + id, label, charStart, charEnd);
         }    
     }
@@ -113,6 +113,8 @@ const parseAnn = (function() {
             relations: [],
             attributes: [],
             unparsedLines: [],
+            text: null,
+            tokens: [],
             mentions: {}
         }
 
@@ -124,6 +126,7 @@ const parseAnn = (function() {
             return output;
         }
 
+        let textLength = text.length;
         let unparsedLines = [];
         let mentions = {};
 
@@ -147,10 +150,11 @@ const parseAnn = (function() {
 
             switch (tokens[0].charAt(0)) {
                 case 'T':
-                    let tbm = parseTextBoundMention(tokens, text);
+                    let tbm = parseTextBoundMention(tokens, textLength);
                     if (tbm) {
                         output.texts.push(tbm);
                         mentions[tbm.id] = tbm;
+                        parseIsSuccessful = true;
                     }
                     break;
                 case 'E':
@@ -158,6 +162,7 @@ const parseAnn = (function() {
                     if (em) {
                         output.events.push(em);
                         mentions[em.id] = em;
+                        parseIsSuccessful = true;
                     }
                     break;
                 case 'R':
@@ -165,6 +170,7 @@ const parseAnn = (function() {
                     if (rm) {
                         output.relations.push(rm);
                         mentions[rm.id] = rm;
+                        parseIsSuccessful = true;
                     }
                     break;
                 case 'A':
@@ -172,6 +178,7 @@ const parseAnn = (function() {
                     if (a) {
                         output.attributes.push(a);
                         mentions[a.id] = a;
+                        parseIsSuccessful = true;
                     }
                     break;
             }
@@ -181,6 +188,58 @@ const parseAnn = (function() {
             }
         }
 
+        // split text into tokens
+        output.texts.sort((a,b) => {
+            if (a.charEnd - b.charEnd != 0) {
+                return a.charEnd - b.charEnd;
+            }
+            else {
+                return a.charStart - b.charStart;
+            }
+        });
+
+        let tokens = [];
+        let tbm_i = 0;
+        let token_start = 0;
+        for (let ch = 0; ch < textLength; ++ch) {
+            let tbm = output.texts[tbm_i];
+            while (text[token_start] === ' ') {
+                ++token_start;
+            }
+            if (tbm && tbm.charStart <= ch) {
+                tokens.push({
+                    word: text.slice(tbm.charStart, tbm.charEnd),
+                    start: tbm.charStart,
+                    end: tbm.charEnd
+                });
+                token_start = tbm.charEnd;
+
+                while(output.texts[tbm_i] && output.texts[tbm_i].charStart <= ch){
+                    output.texts[tbm_i].tokenId = tokens.length - 1;
+                    ++tbm_i;
+                }
+            }
+            else if (text[ch] === ' ') {
+                if (token_start < ch) {
+                    tokens.push({
+                        word: text.slice(token_start, ch),
+                        start: token_start,
+                        end: ch
+                    });
+                    token_start = ch + 1;
+                }
+            }
+        }
+        if (token_start < textLength) {
+            tokens.push({
+                word: text.slice(token_start, textLength),
+                start: token_start,
+                end: textLength
+            });
+        }
+
+        output.tokens = tokens;
+        output.text = text;
         output.mentions = mentions;
         output.unparsedLines = unparsedLines;
 

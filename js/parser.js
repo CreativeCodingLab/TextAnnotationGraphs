@@ -104,7 +104,7 @@ const Parser = (function() {
     readJson(path, callback) {
 
       load(path).then((data) => {
-        parseData(data);
+        parseData(JSON.parse(data));
         if (callback) {
           callback();
         }

@@ -1,0 +1,11 @@
+Induction of p21 by p53 following DNA damage inhibits both Cdk4 and Cdk2 activities.
+T1  Gene_or_gene_product 13 16  p21
+T2  Gene_or_gene_product 20 23  p53
+T3  BioProcess 34 44    DNA damage
+T4  Gene_or_gene_product 59 63  Cdk4
+T5  Gene_or_gene_product 68 72  Cdk2
+T6  Positive_activation 0 9  Induction
+T7  Negative_regulation 45 53    inhibits
+E1  Positive_activation:T6 Controller:T2 Controlled:T1
+E2  Negative_regulation::T7 Controller:E1 Controlled:T4
+E3  Negative_regulation::T7 Controller:E1 Controlled:T5
