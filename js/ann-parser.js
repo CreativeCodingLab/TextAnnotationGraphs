@@ -105,7 +105,7 @@ const parseAnn = (function() {
         }
     }
 
-    function parse(input) {
+    function parse(textInput, annInput) {
 
         var output = {
             texts: [],
@@ -118,9 +118,17 @@ const parseAnn = (function() {
             mentions: {}
         }
 
-        let lines = input.split('\n');
+        let text, lines;
 
-        let text = lines[0];
+        if (!annInput) {
+            let splitLines = textInput.split('\n');
+            text = splitLines[0];
+            lines = splitLines.slice(1);
+        } else {
+            text = textInput;
+            lines = annInput.split('\n');
+        }
+
         if (!text) {
             output.unparsedLines = lines;
             return output;
@@ -130,7 +138,7 @@ const parseAnn = (function() {
         let unparsedLines = [];
         let mentions = {};
 
-        for (let i = 1; i < lines.length; ++i) {
+        for (let i = 0; i < lines.length; ++i) {
             const line = lines[i].trim();
             if (!line) { continue; }
 

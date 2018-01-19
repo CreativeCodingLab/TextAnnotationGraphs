@@ -111,6 +111,10 @@ const Parser = (function() {
       })
     }
 
+    parseJson(json) {
+      parseData(json);
+    }
+
     get tokens() { return _tokens; }
     get text() { return _text; }
     get data() { return _data; }

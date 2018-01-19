@@ -25,11 +25,8 @@ const Main = (function() {
   /**
    * init:  set up singleton classes and create initial drawing
    */
-  let _initialized = false;
   function init() {
     // setup
-    if (_initialized) { return; }
-    _initialized = true;
     body = document.body.getBoundingClientRect();
     svg = SVG('main')
       .size(body.width, window.innerHeight - body.top - 10);
@@ -44,6 +41,12 @@ const Main = (function() {
     // load and render initial dataset by default
     changeDataset();
 
+    setupSVGListeners();
+    setupUIListeners();
+  } // end init
+
+
+  function setupSVGListeners() {
     // svg event listeners
     svg.on('row-resize', function(e) {
       lm.stopEditing();
@@ -104,7 +107,9 @@ const Main = (function() {
         tree.resize();
       }
     });
+  }
 
+  function setupUIListeners() {
     // window event listeners
     // resize function
     function resizeWindow() {
@@ -215,7 +220,114 @@ const Main = (function() {
         e.target.classList.remove('open');
       }
     });
+
+    document.getElementById('file-input').onchange = loadFile;
   }
+
+  function printErrorMessage(text) {
+    document.getElementById('error-message').textContent = text;
+  }
+  function clearErrorMessage() {
+    document.getElementById('error-message').textContent = '';
+  }
+  function clearFile() {
+    document.getElementById('form').reset();
+    document.getElementById('text-input') = '';
+  }
+
+  /**
+   * loadFile:  read file 
+   */
+  function loadFile(e) {
+    let files = e.target.files;
+    console.log(files);
+
+    // get extension
+    if (files.length === 1) {
+      const file = files[0];
+      let fr = new FileReader();
+      fr.readAsText(file);
+      fr.onload = parseFile;
+
+      function parseFile() {
+        clearErrorMessage();
+        const text = fr.result;
+
+        // try to coerce it into an accepted format
+        try {
+          let w, l, c;
+          if (file.type === 'application/json') {
+            // reach json
+            parser.parseJson(JSON.parse(text));
+            [w, l, c] = buildWordsAndLinks();
+          } else if (!file.type) {
+            // brat standoff
+            [w, l, c] = buildWordsLinksAnn(text);
+          } else {
+            printErrorMessage("Could not read file type: " + file.type);
+          }
+
+          if (w && l && c) {
+            clear();
+            [words, links, clusters] = [w, l, c];
+            setSyntaxVisibility();
+            draw();
+            document.getElementById('text-input').textContent = text;
+          }
+        } catch(e) {
+          console.log(fr.result, e);
+          printErrorMessage("See error in console");
+        }
+      }
+    }
+    else if (files.length > 1) {
+      // search for matching .ann and .txt file
+
+      // sort by name
+      let sortedFiles = [].slice.call(files).sort((a,b) => a.name.localeCompare(b.name));
+
+      let prev = 0;
+
+      for (let i = 1; i < sortedFiles.length; ++i) {
+        let f1 = sortedFiles[prev].name.toLowerCase(),
+          f2 = sortedFiles[i].name.toLowerCase();
+        let prefixesMatch = f1.slice(0, f1.lastIndexOf('.')) === f2.slice(0, f2.lastIndexOf('.'));
+        let typesMatch = f1.endsWith('.ann') || f2.endsWith('.ann');
+        if (prefixesMatch && typesMatch && f1 !== f2) {
+          // matching files found
+          let fr = new FileReader();
+          fr.readAsText(sortedFiles[prev]);
+          fr.onload = function() {
+            let f1Text = fr.result;
+            fr.readAsText(sortedFiles[i]);
+            fr.onload = function() {
+              let w, l, c, text;
+              if (f1.endsWith('.ann')) {
+                text = fr.result;
+                [w, l, c] = buildWordsLinksAnn(fr.result, f1Text);
+              }
+              else {
+                text = f1Text;
+                [w, l, c] = buildWordsLinksAnn(f1Text, fr.result);
+              }
+
+              if (w && l && c) {
+                clear();
+                [words, links, clusters] = [w, l, c];
+                setSyntaxVisibility();
+                draw();
+                document.getElementById('text-input').textContent = text;
+              }
+            }
+          };
+          break;
+        } else {
+          prev = i;
+        }
+      }
+    }
+  }
+
 
   /**
    * changeDataset:  read and parse data from a json file in the /data folder
@@ -327,7 +439,6 @@ const Main = (function() {
       w.setSyntaxId(token.id);
       return w;
     });
-    console.log('words',words);
     const clusters = [];
 
     [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
@@ -407,8 +518,8 @@ const Main = (function() {
     return [ words, links, clusters ];
   }
 
-  function buildWordsLinksAnn(text) {
-    let data = parseAnn(text);
+  function buildWordsLinksAnn(text, ann) {
+    let data = parseAnn(text, ann);
     let mentions = {};
 
     // build words

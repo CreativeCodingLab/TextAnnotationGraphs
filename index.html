@@ -30,14 +30,14 @@
 <div id="brat-input" class="modal">
   <div>
     <header>
-      <span class="tab active">Load file</span>
+      <span class="tab active">Custom annotation</span>
     </header>
     <div class="page active">
-      <div>
-        <button><label for="file-input">Upload</label></button>
-        <input type="file" id="file-input" style="display:none;">
-      </div>
-      <textarea></textarea>
+      <form id="form">
+        <label for="file-input">Upload file(s)</label>
+        <input type="file" id="file-input" style="display:none;" multiple>
+      </form>
+      <textarea id="text-input"></textarea>
       <div id="error-message"></div>
     </div>
   </div>
