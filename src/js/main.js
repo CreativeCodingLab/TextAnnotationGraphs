@@ -1,3 +1,9 @@
+import Parser from './parser.js';
+import LabelManager from './managers/labelmanager.js';
+import RowManager from './managers/rowmanager.js';
+import Taxonomy from './managers/taxonomy.js';
+import Tooltip from './managers/tooltip.js';
+
 const Main = (function() {
   // classes
   let parser, lm, rm, tm;
@@ -273,7 +279,7 @@ const Main = (function() {
   function debounce(func, wait, immediate) {
   	var timeout;
   	return function() {
-  		var context = this, args = arguments;
+  		var context = this, args = args;
   		var later = function() {
   			timeout = null;
   			if (!immediate) func.apply(context, args);
@@ -352,21 +358,21 @@ const Main = (function() {
     // construct links from events and relations
     const links = [];
     parser.data.events.forEach(evt => {
-      // create a link between the trigger and each of its arguments
+      // create a link between the trigger and each of its args
       const trigger = entities.find(word => word.eventIds.indexOf(evt.trigger) > -1);
-      const arguments = evt.arguments.map(searchForEntity);
+      const args = evt.args.map(searchForEntity);
 
       // create link
-      const link = new Link(evt.id, trigger, arguments);
+      const link = new Link(evt.id, trigger, args);
 
       // push link to link array
       links.push(link);
     });
 
     parser.data.relations.forEach(rel => {
-      const arguments = rel.arguments.map(searchForEntity);
+      const args = rel.args.map(searchForEntity);
       // create link
-      const link = new Link(rel.id, null, arguments, rel.type);
+      const link = new Link(rel.id, null, args, rel.type);
 
       // push link to link array
       links.push(link);
@@ -374,15 +380,15 @@ const Main = (function() {
 
     // syntax data
     parser.data.syntax.forEach(syn => {
-      // create a link between the trigger and each of its arguments
+      // create a link between the trigger and each of its args
       const trigger = entities.find(word => word.syntaxId === syn.trigger);
-      const arguments = syn.arguments.map(arg => {
+      const args = syn.args.map(arg => {
         let anchor = words.find(w => w.syntaxId === arg.id);
         return { anchor, type: arg.type };
       });
 
       // create link
-      const link = new Link(syn.id, trigger, arguments, null, false);
+      const link = new Link(syn.id, trigger, args, null, false);
 
       // push link to link array
       links.push(link);
@@ -408,7 +414,7 @@ const Main = (function() {
   //           return l.reltype === id[1] || (l.trigger instanceof Word && l.trigger.tag.val === id[1]);
   //         }
   //         else if (!l.top && id[0] === 'pos') {
-  //           return l.arguments.some(arg => arg.type === id[1]);
+  //           return l.args.some(arg => arg.type === id[1]);
   //         }
   //       }
   //
@@ -453,7 +459,7 @@ const Main = (function() {
   //       }
   //     }
   //     else {
-  //       link.arguments.forEach(arg => {
+  //       link.args.forEach(arg => {
   //         if (posTypes[arg.type]) {
   //           posTypes[arg.type].push(link);
   //         }
@@ -493,3 +499,5 @@ const Main = (function() {
   };
 
 })();
+
+Main.init();
