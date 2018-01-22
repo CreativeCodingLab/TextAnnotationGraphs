@@ -334,26 +334,32 @@ const Main = (function() {
    *   and generate visualization from it
    */
   function changeDataset(index = 6) {
+    let path;
     if (index >= 6) {
-      load(`./data/example${index - 5}.ann`).then(text => {
-        clear();
-        [words, links, clusters] = buildWordsLinksAnn(text);
-        draw();
-      });
-    } else {
-      parser.readJson(`./data/data${index}.json`, function() {
-        clear();
+      path = `./data/example${index - 5}.ann`;
+    }
+    else {
+      path = `./data/data${index}.json`;
+    }
+
+    parser.loadFile(path)
+      .then(data => {
         ymlToJson.convert('taxonomy.yml.txt', function(taxonomy) {
-          [words, links, clusters] = buildWordsAndLinks();
+          clear();
+          words = data.words;
+          links = data.links;
+          clusters = data.clusters;
           setSyntaxVisibility();
           draw();
-
+          
           tm.buildTree(taxonomy);
           tm.buildTagTypes(words);
           tm.populateTaxonomy();
         });
+      })
+      .catch(err => {
+        console.log('ERROR: ', err);
       });
-    }
   };
 
   /**
@@ -429,146 +435,6 @@ const Main = (function() {
     if (rm.rows.length > 0) {
       rm.resizeAll();
     }
-  }
-
-  function buildWordsAndLinks() {
-    // construct word objects and tags from tokens, entities, and triggers
-    const words = parser.tokens.map((token, i) => {
-      let w = new Word(token.text, i);
-      w.setSyntaxTag(token.type);
-      w.setSyntaxId(token.id);
-      return w;
-    });
-    const clusters = [];
-
-    [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
-      if (el.tokenIndex[0] === el.tokenIndex[1]) {
-        words[el.tokenIndex[0]].setTag(el.type);  // TODO: enable setting multiple tags
-        words[el.tokenIndex[0]].addEventId(el.id);
-      }
-      else {
-        let cluster = [];
-        for (let i = el.tokenIndex[0]; i <= el.tokenIndex[1]; ++i) {
-          cluster.push(words[i]);
-        }
-        const wordCluster = new WordCluster(cluster, el.type);
-        wordCluster.addEventId(el.id);
-        clusters.push(wordCluster);
-      }
-    });
-
-    const entities = words.concat(clusters);
-
-    function searchForEntity(argument) {
-      let anchor;
-      switch (argument.id.charAt(0)) {
-        case 'E':
-        case 'R':
-          anchor = links.find(link => link.eventId === argument.id);
-          break;
-        case 'T':
-          anchor = entities.find(word => word.eventIds.indexOf(argument.id) > -1);
-          break;
-        default:
-          console.log('unhandled argument type', argument);
-          break;
-      }
-      return { anchor, type: argument.type };
-    }
-
-    // construct links from events and relations
-    const links = [];
-    parser.data.events.forEach(evt => {
-      // create a link between the trigger and each of its arguments
-      const trigger = entities.find(word => word.eventIds.indexOf(evt.trigger) > -1);
-      const arguments = evt.arguments.map(searchForEntity);
-
-      // create link
-      const link = new Link(evt.id, trigger, arguments);
-
-      // push link to link array
-      links.push(link);
-    });
-
-    parser.data.relations.forEach(rel => {
-      const arguments = rel.arguments.map(searchForEntity);
-      // create link
-      const link = new Link(rel.id, null, arguments, rel.type);
-
-      // push link to link array
-      links.push(link);
-    });
-
-    // syntax data
-    parser.data.syntax.forEach(syn => {
-      // create a link between the trigger and each of its arguments
-      const trigger = entities.find(word => word.syntaxId === syn.trigger);
-      const arguments = syn.arguments.map(arg => {
-        let anchor = words.find(w => w.syntaxId === arg.id);
-        return { anchor, type: arg.type };
-      });
-
-      // create link
-      const link = new Link(syn.id, trigger, arguments, null, false);
-
-      // push link to link array
-      links.push(link);
-    });
-
-    return [ words, links, clusters ];
-  }
-
-  function buildWordsLinksAnn(text, ann) {
-    let data = parseAnn(text, ann);
-    let mentions = {};
-
-    // build words
-    let words = data.tokens.map((token, i) => {
-      return new Word(token.word, i)
-    });
-    data.texts.forEach(tbm => {
-      words[tbm.tokenId].setTag(tbm.label);
-      words[tbm.tokenId].addEventId(tbm.id);
-      mentions[tbm.id] = words[tbm.tokenId];
-    });
-
-    // build links
-    let links = [];
-    for (let m in data.mentions) {
-      let mention = data.mentions[m];
-      if (m[0] === 'E') {
-        if (data.mentions[mention.trigger] &&
-          mention.arguments.every(arg => data.mentions[arg.id])) {
-
-          let trigger = mentions[mention.trigger];
-          let args = mention.arguments.map(arg => {
-            return {
-              anchor: mentions[arg.id],
-              type: arg.type
-            };
-          });
-
-          let newLink = new Link(mention.id, trigger, args);
-          mentions[mention.id] = newLink;
-          links.push(newLink);
-        }
-      } else if (m[0] === 'R') {
-        if (mention.arguments.every(arg => data.mentions[arg.id])) {
-          let args = mention.arguments.map(arg => {
-            return {
-              anchor: mentions[arg.id],
-              type: arg.type
-            };
-          });
-
-          let newLink = new Link(mention.id, null, args, mention.label);
-          mentions[mention.id] = newLink;
-          links.push(newLink);
-        }
-      }
-    }
-
-    return [words, links, []];
   }
 
   // export public functions
