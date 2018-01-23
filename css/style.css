@@ -180,9 +180,9 @@ label[for="file-input"] {
 #taxonomy input[type="checkbox"] {
   margin-right: 0.5em;
 }
-#taxonomy input.jscolor {
+#taxonomy input.colorpicker {
   margin-left: 0.5em;
-  width:4em;
+  width:5em;
   text-align:center;
   display:inline-block;
   outline:none;
@@ -191,12 +191,18 @@ label[for="file-input"] {
   border-radius: 3px;
   cursor: pointer;
   box-shadow: 0 0 8px rgba(0,0,0,0.2);
+  text-transform:uppercase;
+  -moz-osx-font-smoothing:initial;
+  -webkit-font-smoothing:initial;
 }
-#taxonomy input.jscolor[disabled="true"] {
+#taxonomy input.colorpicker[disabled="true"] {
   border-color:#ccc;
   box-shadow: none;
   pointer-events:none;
   opacity:0.5;
+}
+.cp-app {
+  z-index:1001;
 }
 
 body > #tree-svg {

@@ -352,9 +352,10 @@ const Main = (function() {
           setSyntaxVisibility();
           draw();
           
-          tm.buildTree(taxonomy);
-          tm.buildTagTypes(words);
-          tm.populateTaxonomy();
+          tm.draw(taxonomy, words);
+          // tm.buildTree(taxonomy);
+          // tm.buildTagTypes(words);
+          // tm.populateTaxonomy();
         });
       })
       .catch(err => {
