@@ -53,11 +53,11 @@ const Main = (function() {
       rm.resizeRow(e.detail.object.idx, e.detail.y);
     });
 
-    svg.on('label-updated', function(e) {
-      // TODO: so so incomplete
-      let color = tm.getColor(e.detail.label, e.detail.object);
-      e.detail.object.node.style.fill = color;
-    });
+    // svg.on('label-updated', function(e) {
+    //   // TODO: so so incomplete
+    //   let color = tm.getColor(e.detail.label, e.detail.object);
+    //   e.detail.object.node.style.fill = color;
+    // });
 
     svg.on('word-move-start', function() {
       if (!options.showLinksOnMove && options.showSyntax) {
@@ -77,10 +77,10 @@ const Main = (function() {
       }
     });
 
-    svg.on('tag-remove', function(e) {
-      e.detail.object.remove();
-      tm.remove(e.detail.object);
-    });
+    // svg.on('tag-remove', function(e) {
+    //   e.detail.object.remove();
+    //   tm.remove(e.detail.object);
+    // });
 
     svg.on('row-recalculate-slots', function(e) {
       links.forEach(link => {
@@ -353,9 +353,6 @@ const Main = (function() {
           draw();
           
           tm.draw(taxonomy, words);
-          // tm.buildTree(taxonomy);
-          // tm.buildTagTypes(words);
-          // tm.populateTaxonomy();
         });
       })
       .catch(err => {
