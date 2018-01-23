@@ -1,8 +1,14 @@
+import * as SVG from 'svg.js';
 import Parser from './parser.js';
+import TreeLayout from './treelayout.js';
+import ymlToJson from './ymljson.js';
 import LabelManager from './managers/labelmanager.js';
 import RowManager from './managers/rowmanager.js';
 import Taxonomy from './managers/taxonomy.js';
 import Tooltip from './managers/tooltip.js';
+import Word from './components/word.js';
+import WordCluster from './components/wordcluster.js';
+import Link from './components/link.js';
 
 const Main = (function() {
   // classes
@@ -33,10 +39,9 @@ const Main = (function() {
    */
   function init() {
     // setup
-    body = document.body.getBoundingClientRect();
-    svg = SVG('main')
+    let body = document.body.getBoundingClientRect();
+    svg = new SVG.Doc('main')
       .size(body.width, window.innerHeight - body.top - 10);
-
     tooltip = new Tooltip('tooltip', svg);
     parser  = new Parser();
     rm      = new RowManager(svg);
@@ -317,7 +322,6 @@ const Main = (function() {
       w.setSyntaxId(token.id);
       return w;
     });
-    console.log('words',words);
     const clusters = [];
 
     [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
@@ -360,7 +364,7 @@ const Main = (function() {
     parser.data.events.forEach(evt => {
       // create a link between the trigger and each of its args
       const trigger = entities.find(word => word.eventIds.indexOf(evt.trigger) > -1);
-      const args = evt.args.map(searchForEntity);
+      const args = evt.arguments.map(searchForEntity);
 
       // create link
       const link = new Link(evt.id, trigger, args);
@@ -370,7 +374,7 @@ const Main = (function() {
     });
 
     parser.data.relations.forEach(rel => {
-      const args = rel.args.map(searchForEntity);
+      const args = rel.arguments.map(searchForEntity);
       // create link
       const link = new Link(rel.id, null, args, rel.type);
 
@@ -382,7 +386,7 @@ const Main = (function() {
     parser.data.syntax.forEach(syn => {
       // create a link between the trigger and each of its args
       const trigger = entities.find(word => word.syntaxId === syn.trigger);
-      const args = syn.args.map(arg => {
+      const args = syn.arguments.map(arg => {
         let anchor = words.find(w => w.syntaxId === arg.id);
         return { anchor, type: arg.type };
       });
@@ -490,6 +494,7 @@ const Main = (function() {
   //   document.getElementById('reach--all').checked = true;
   //   document.getElementById('pos--all').checked = true;
   // }
+
 
   // export public functions
   return {

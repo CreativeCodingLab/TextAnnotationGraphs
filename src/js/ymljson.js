@@ -1,5 +1,5 @@
 // non-comprehensive function to convert yml file to json
-const ymlToJson = (function() {
+module.exports = (function() {
   function convert(url, callback) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {

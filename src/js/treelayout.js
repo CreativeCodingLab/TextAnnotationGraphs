@@ -1,4 +1,6 @@
-const TreeLayout = (function() {
+import * as d3 from 'd3';
+
+module.exports = (function() {
 
     // depth of recursion
     let maxDepth;

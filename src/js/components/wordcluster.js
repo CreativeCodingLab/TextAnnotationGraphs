@@ -180,3 +180,4 @@ class WordCluster {
     return -28;
   }
 }
+module.exports = WordCluster;

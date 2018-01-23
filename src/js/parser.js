@@ -1,4 +1,4 @@
-const Parser = (function() {
+module.exports = (function() {
 
   let _text;
   let _tokens;

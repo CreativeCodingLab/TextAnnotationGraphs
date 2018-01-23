@@ -1,4 +1,6 @@
-const Taxonomy = (function() {
+import Word from '../components/word.js';
+
+module.exports = (function() {
   let colors = [
     '#3fa1d1',
     '#ed852a',

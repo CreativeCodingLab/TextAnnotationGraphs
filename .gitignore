@@ -1,3 +1,7 @@
+# build files
+build/
+dist/
+
 # npm related
 
 /node_modules/*
