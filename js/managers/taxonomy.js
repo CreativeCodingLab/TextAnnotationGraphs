@@ -14,6 +14,7 @@ const Taxonomy = (function() {
     '#a6761d',
     '#7f7f7f'
   ];
+  let div = {};
   let tagTypes = {};
 
   function updateColor(word, color) {
@@ -25,12 +26,27 @@ const Taxonomy = (function() {
     }
   };
 
-  let div = {};
+  function updateTagColor(tag, color) {
+    tagTypes[tag].forEach(word => updateColor(word, color));
+  };
 
   class Taxonomy {
     constructor(id) {
       this.tree = {};
       div = document.getElementById('taxonomy');
+    }
+
+    draw(taxonomy, words) {
+      if (taxonomy) {
+        this.buildTree(taxonomy);
+
+        if (words) {
+          this.buildTagTypes(words);
+        }
+
+        this.populateTaxonomy();
+        this.attachHandlers();
+      }
     }
 
     buildTagTypes(words) {
@@ -95,113 +111,175 @@ const Taxonomy = (function() {
       };
     }
 
+    // populate modal window with list of taxonomic classes
     populateTaxonomy() {
-      let keys = Object.keys(tagTypes);
-
-      // populate taxonomy
       div.innerHTML = '<span id="toggle-taxonomy">Filter unused labels</span>';
 
+      // build list of inputs in DOM
       let ul = document.createElement('ul');
       div.appendChild(ul);
 
-      function createLi(el, ul) {
+      let nli = 1;  // number of list items
+      function createLi(node, parent) {
         let li = document.createElement('li');
-        el.el = li;
 
         // create checkbox
         let cbox = document.createElement('input');
         cbox.setAttribute('type', 'checkbox');
-        li.appendChild(cbox);
+        cbox.id = 'cb-' + nli;
 
-        // text span
-        li.appendChild(document.createTextNode(el.val));
+        // create label for checkbox
+        let label = document.createElement('label');
+        label.setAttribute('for', cbox.id);
+        label.textContent = node.val;
+        node.cbox = cbox;
 
         // create color picker input
         let picker = document.createElement('input');
-        picker.className = 'jscolor';
+        picker.className = 'colorpicker';
+        picker.value = '#000000';
+        picker.setAttribute('disabled', true);
+        picker.node = node;
+        node.picker = picker;
 
-        // set initial value
-        let i = keys.indexOf(el.val);
-        if (i > -1) {
-          cbox.checked = true;
-          picker.value = colors[i] || '#000000';
-
-          // propagate color to colorless ancestors
-          let parent = el.parent;
-          while (parent && parent.el && !parent.el.querySelector('input.jscolor').value) {
-            parent.el.querySelector('input.jscolor').value = picker.value;
-            parent = parent.parent;
-          }
-        }
-        picker.setAttribute('disabled', !cbox.checked);
+        li.appendChild(cbox);
+        li.appendChild(label);
         li.appendChild(picker);
+        parent.appendChild(li);
+        ++nli;
 
-        // recursively update picker colors
-        function updateChildColors() {
-          let color = this.value;
-          console.log('color', color);
-          function recurse(el) {
-            if (tagTypes[el.val]) {
-              tagTypes[el.val].forEach(word => updateColor(word, color));
-            }
-            if (el.children) {
-              el.children.forEach(recurse);
-            }
-          }
-          recurse(el);
-        }
-
-        // attach listeners
-        cbox.onclick = function() {
-          // TODO: update children colors on click
-          if (this.checked) {
-            // enable current picker and disable children inputs
-            picker.removeAttribute('disabled');
-            li.querySelectorAll('input').forEach(input => {
-              if (input.parentNode !== li) {
-                input.setAttribute('disabled', true);
-              }
-            });
-            updateChildColors.bind(picker);
-          }
-          else {
-            // enable children inputs
-            picker.setAttribute('disabled', true);
-            let checkboxes = li.querySelectorAll('input[type="checkbox"]');
-            let pickers = li.querySelectorAll('input.jscolor');
-            checkboxes.forEach((cbox, i) => {
-              cbox.removeAttribute('disabled');
-              pickers[i].setAttribute('disabled', !cbox.checked);
-            });
-            updateChildColors();
-          }
-        }
-        picker.onchange = updateChildColors;
-
-        if (el.children) {
+        if (node.children) {
           let childUl = document.createElement('ul');
           li.appendChild(childUl);
-          el.children.forEach(child => createLi(child, childUl));
+
+          node.children.forEach(child => {
+            createLi(child, childUl);
+          })
         }
-        ul.appendChild(li);
-      }
-      this.tree.hierarchy.forEach(el => createLi(el, ul));
-      jscolor.installByClassName('jscolor');
-
-      document.getElementById('toggle-taxonomy').onclick = function() {
-          if (ul.className === 'filtered') {
-            ul.className = '';
-            this.innerHTML = 'Show all labels';
-          }
-          else {
-            ul.className = 'filtered';
-            this.innerHTML = 'Filter unused labels';
-          }
       }
 
-      keys.forEach((tag, i) => {
-        tagTypes[tag].forEach(word => updateColor(word, colors[i]));
+      this.tree.hierarchy.forEach(node => {
+        createLi(node, ul);
       });
+    }
+
+    // bind events to data
+    attachHandlers() {
+      // initialize colorpicker
+      let self = this;
+      jsColorPicker('input.colorpicker', {
+        customBG: '#000',
+        init: function(elm, colors) {
+          elm.style.backgroundColor = elm.value || '#000';
+          elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
+        },
+        renderCallback: function(colors, mode) {
+          /* ---- code taken from jsColor.js ---- */
+          var options = this,
+            input = options.input,
+            patch = options.patch,
+            RGB = colors.RND.rgb,
+            HSL = colors.RND.hsl,
+            AHEX = options.isIE8 ? (colors.alpha < 0.16 ? '0' : '') +
+              (Math.round(colors.alpha * 100)).toString(16).toUpperCase() + colors.HEX : '',
+            RGBInnerText = RGB.r + ', ' + RGB.g + ', ' + RGB.b,
+            RGBAText = 'rgba(' + RGBInnerText + ', ' + colors.alpha + ')',
+            isAlpha = colors.alpha !== 1 && !options.isIE8,
+            colorMode = input.getAttribute('data-colorMode');
+
+          patch.style.cssText =
+            'color:' + (colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd') + ';' + // Black...???
+            'background-color:' + RGBAText + ';' +
+            'filter:' + (options.isIE8 ? 'progid:DXImageTransform.Microsoft.gradient(' + // IE<9
+              'startColorstr=#' + AHEX + ',' + 'endColorstr=#' + AHEX + ')' : '');
+
+          input.value = (colorMode === 'HEX' && !isAlpha ? '#' + (options.isIE8 ? AHEX : colors.HEX) :
+            colorMode === 'rgb' || (colorMode === 'HEX' && isAlpha) ?
+            (!isAlpha ? 'rgb(' + RGBInnerText + ')' : RGBAText) :
+            ('hsl' + (isAlpha ? 'a(' : '(') + HSL.h + ', ' + HSL.s + '%, ' + HSL.l + '%' +
+              (isAlpha ? ', ' + colors.alpha : '') + ')')
+          );
+
+          if (options.displayCallback) {
+            options.displayCallback(colors, mode, options);
+          }
+
+          /* -- manually invoke callback -- */
+          self.setColor(this.input.node);
+        }
+      });
+
+      const keys = Object.keys(tagTypes);
+      this.tree.flat.forEach(node => {
+        // disable/enable color picking on a node
+        node.cbox.onclick = () => this.onCheckboxClick(node);
+
+        // check if tag type exists in document
+        if (tagTypes[node.val]) {
+          this.setColor(node, colors[keys.indexOf(node.val)]);
+          node.cbox.click();
+        }
+      });
+
+      // update colors of existing data
+      Object.keys(tagTypes).forEach((tag, i) => updateTagColor(tag, colors[i]));
+    }
+
+    /* handle event when checkbox state changes */
+    onCheckboxClick(node) {
+      if (node.cbox.checked) {
+        // activate node
+        // propagate color to all descendants
+        node.picker.removeAttribute('disabled');
+        this.setColor(node);
+      } else {
+        // deactivate node
+        // undo color propagation to all descendants
+        node.picker.setAttribute('disabled', true);
+        if (node.parent) {
+          this.setColor(node, node.parent.picker.value);
+        } else {
+          this.setColor(node, '#000000');
+        }
+      }
+    }
+
+    /* change the color of a node */
+    setColor(node, color) {
+      let picker = node.picker;
+
+      // manually set color
+      if (color) {
+        const c = new Colors({ color: color });
+        const labelColor = c.colors.RGBLuminance > 0.22 ? '#222' : '#ddd';
+        picker.value = color;
+        picker.style.cssText = `color:${labelColor}; background-color:${color};`;
+      }
+
+      if (tagTypes[node.val]) {
+        updateTagColor(node.val, picker.value);
+      }
+
+      // set color of input and descendant inputs
+      function inheritColor(child) {
+        if (!child.cbox.checked) {
+          // set color and style
+          child.picker.value = picker.value;
+          child.picker.style.cssText = picker.style.cssText || child.picker.style.cssText;
+          if (tagTypes[child.val]) {
+            updateTagColor(child.val, picker.value);
+          }
+
+          // recursively propagate value to all children
+          if (child.children) {
+            child.children.forEach(inheritColor);
+          }
+        }
+      }
+
+      if (node.children) {
+        node.children.forEach(inheritColor);
+      }
     }
 
     remove(object) {

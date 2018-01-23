@@ -39,19 +39,25 @@ const Main = (function() {
     tree    = new TreeLayout('#tree', svg);
 
     // load and render initial dataset by default
-    changeDataset(6);
+    changeDataset();
 
+    setupSVGListeners();
+    setupUIListeners();
+  } // end init
+
+
+  function setupSVGListeners() {
     // svg event listeners
     svg.on('row-resize', function(e) {
       lm.stopEditing();
       rm.resizeRow(e.detail.object.idx, e.detail.y);
     });
 
-    svg.on('label-updated', function(e) {
-      // TODO: so so incomplete
-      let color = tm.getColor(e.detail.label, e.detail.object);
-      e.detail.object.node.style.fill = color;
-    });
+    // svg.on('label-updated', function(e) {
+    //   // TODO: so so incomplete
+    //   let color = tm.getColor(e.detail.label, e.detail.object);
+    //   e.detail.object.node.style.fill = color;
+    // });
 
     svg.on('word-move-start', function() {
       if (!options.showLinksOnMove && options.showSyntax) {
@@ -71,10 +77,10 @@ const Main = (function() {
       }
     });
 
-    svg.on('tag-remove', function(e) {
-      e.detail.object.remove();
-      tm.remove(e.detail.object);
-    });
+    // svg.on('tag-remove', function(e) {
+    //   e.detail.object.remove();
+    //   tm.remove(e.detail.object);
+    // });
 
     svg.on('row-recalculate-slots', function(e) {
       links.forEach(link => {
@@ -101,7 +107,24 @@ const Main = (function() {
         tree.resize();
       }
     });
+  }
 
+  function setActiveTab(pageId, modalId="modal") {
+    let m = document.getElementById(modalId);
+    if (pageId == null) {
+      m.classList.remove('open');
+    }
+    else {
+      m.classList.add('open');
+
+      m.querySelector('.tab.active').classList.remove('active');
+      m.querySelector('.page.active').classList.remove('active');
+      m.querySelector('header span[data-id="' + pageId + '"]').classList.add('active');
+      document.getElementById(pageId).classList.add('active');
+    }
+  }
+
+  function setupUIListeners() {
     // window event listeners
     // resize function
     function resizeWindow() {
@@ -138,21 +161,6 @@ const Main = (function() {
         }
       };
     });
-
-    function setActiveTab(pageId, modalId="modal") {
-      let m = document.getElementById(modalId);
-      if (pageId == null) {
-        m.classList.remove('open');
-      }
-      else {
-        m.classList.add('open');
-
-        m.querySelector('.tab.active').classList.remove('active');
-        m.querySelector('.page.active').classList.remove('active');
-        m.querySelector('header span[data-id="' + pageId + '"]').classList.add('active');
-        document.getElementById(pageId).classList.add('active');
-      }
-    }
 
     let modalHeader = document.querySelector('#modal header');
     let modalDrag = null;
@@ -198,34 +206,97 @@ const Main = (function() {
       }
     });
 
+    document.getElementById('custom-annotation').onclick = function() {
+      document.getElementById('input-modal').classList.add('open');
+    }
+
     document.getElementById('options-toggle').onclick = function() {
         setActiveTab('options');
     }
     document.getElementById('taxonomy-toggle').onclick = function() {
         setActiveTab('taxonomy');
     }
-    document.getElementById('modal').onclick = function(e) {
-      e.target.classList.remove('open');
-    }
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.onclick = function(e) {
+        e.target.classList.remove('open');
+      }
+    });
+
+    // upload file
+    document.getElementById('file-input').onchange = uploadFile;
+
+    // upload file via drag and drop
+    document.body.addEventListener('dragenter', (e) => e.preventDefault());
+    document.body.addEventListener('dragover', (e) => e.preventDefault());
+    document.body.addEventListener('drop', uploadFile);
   }
+
+  /* read an externally loaded file */
+  function uploadFile(e) {
+    e.preventDefault();
+    let files = (this === document.body) ? e.dataTransfer.files : e.target.files;
+
+    // read blobs with FileReader
+    const promises = [...files].map(file => {
+      const fr = new FileReader();
+      fr.readAsText(file);
+      return new Promise((resolve, reject) => {
+        fr.onload = function() {
+          resolve({
+            name: file.name,
+            type: file.type,
+            content: fr.result
+          });
+        };
+      });
+    });
+
+    Promise.all(promises).then(files => {
+      try {
+        let message = parser.parseFiles(files);
+        if (message) {
+          redrawVisualization();
+          printMessage(message);
+        }
+      }
+      catch(err) {
+        console.log('ERROR: ', err);
+        printMessage(err);
+      }
+      document.getElementById('form').reset();
+    });
+  }
+
+  function printMessage(text) {
+    document.getElementById('message').textContent = text;
+  }
+  function clearMessage() {
+    document.getElementById('message').textContent = '';
+  }
+
 
   /**
    * changeDataset:  read and parse data from a json file in the /data folder
    *   and generate visualization from it
    */
-  function changeDataset(index = 1) {
-    parser.readJson(`./data/data${index}.json`, function() {
-      clear();
-      ymlToJson.convert('taxonomy.yml.txt', function(taxonomy) {
-        [words, links, clusters] = buildWordsAndLinks();
-        setSyntaxVisibility();
-        draw();
+  function changeDataset(index = 6) {
+    let path;
+    if (index >= 6) {
+      path = `./data/example${index - 5}.ann`;
+    }
+    else {
+      path = `./data/data${index}.json`;
+    }
 
-        tm.buildTree(taxonomy);
-        tm.buildTagTypes(words);
-        tm.populateTaxonomy();
+    parser.loadFile(path)
+      .then(data => {
+        redrawVisualization();
+        clearMessage();
+      })
+      .catch(err => {
+        console.log('ERROR: ', err);
+        printMessage(err);
       });
-    });
   };
 
   /**
@@ -236,6 +307,20 @@ const Main = (function() {
       rm.removeRow();
     }
     links.forEach(link => link.svg && link.svg.remove());
+  }
+
+  function redrawVisualization() {
+    let data = parser.parsedData;
+    ymlToJson.convert('taxonomy.yml.txt', function(taxonomy) {
+      clear();
+      words = data.words;
+      links = data.links;
+      clusters = data.clusters;
+      setSyntaxVisibility();
+      draw();
+      
+      tm.draw(taxonomy, words);
+    });
   }
 
   /**
@@ -302,188 +387,6 @@ const Main = (function() {
       rm.resizeAll();
     }
   }
-
-  function buildWordsAndLinks() {
-    // construct word objects and tags from tokens, entities, and triggers
-    const words = parser.tokens.map((token, i) => {
-      let w = new Word(token.text, i);
-      w.setSyntaxTag(token.type);
-      w.setSyntaxId(token.id);
-      return w;
-    });
-    console.log('words',words);
-    const clusters = [];
-
-    [].concat(parser.data.entities, parser.data.triggers).forEach(el => {
-      if (el.tokenIndex[0] === el.tokenIndex[1]) {
-        words[el.tokenIndex[0]].setTag(el.type);  // TODO: enable setting multiple tags
-        words[el.tokenIndex[0]].addEventId(el.id);
-      }
-      else {
-        let cluster = [];
-        for (let i = el.tokenIndex[0]; i <= el.tokenIndex[1]; ++i) {
-          cluster.push(words[i]);
-        }
-        const wordCluster = new WordCluster(cluster, el.type);
-        wordCluster.addEventId(el.id);
-        clusters.push(wordCluster);
-      }
-    });
-
-    const entities = words.concat(clusters);
-
-    function searchForEntity(argument) {
-      let anchor;
-      switch (argument.id.charAt(0)) {
-        case 'E':
-        case 'R':
-          anchor = links.find(link => link.eventId === argument.id);
-          break;
-        case 'T':
-          anchor = entities.find(word => word.eventIds.indexOf(argument.id) > -1);
-          break;
-        default:
-          console.log('unhandled argument type', argument);
-          break;
-      }
-      return { anchor, type: argument.type };
-    }
-
-    // construct links from events and relations
-    const links = [];
-    parser.data.events.forEach(evt => {
-      // create a link between the trigger and each of its arguments
-      const trigger = entities.find(word => word.eventIds.indexOf(evt.trigger) > -1);
-      const arguments = evt.arguments.map(searchForEntity);
-
-      // create link
-      const link = new Link(evt.id, trigger, arguments);
-
-      // push link to link array
-      links.push(link);
-    });
-
-    parser.data.relations.forEach(rel => {
-      const arguments = rel.arguments.map(searchForEntity);
-      // create link
-      const link = new Link(rel.id, null, arguments, rel.type);
-
-      // push link to link array
-      links.push(link);
-    });
-
-    // syntax data
-    parser.data.syntax.forEach(syn => {
-      // create a link between the trigger and each of its arguments
-      const trigger = entities.find(word => word.syntaxId === syn.trigger);
-      const arguments = syn.arguments.map(arg => {
-        let anchor = words.find(w => w.syntaxId === arg.id);
-        return { anchor, type: arg.type };
-      });
-
-      // create link
-      const link = new Link(syn.id, trigger, arguments, null, false);
-
-      // push link to link array
-      links.push(link);
-    });
-
-    return [ words, links, clusters ];
-  }
-
-  // function populateOptions() {
-  //   document.querySelector('.reach').onclick = toggleEdgeVisibility;
-  //   document.querySelector('.pos').onclick = toggleEdgeVisibility;
-  //
-  //   let reachTypes = {};
-  //   let posTypes = {};
-  //
-  //   function toggleEdgeVisibility(e) {
-  //     if (e.target.nodeName === 'INPUT') {
-  //       let id = e.target.id.split('--');
-  //       let checked = e.target.checked;
-  //
-  //       function linkMatchesId(l) {
-  //         if (l.top && id[0] === 'reach') {
-  //           return l.reltype === id[1] || (l.trigger instanceof Word && l.trigger.tag.val === id[1]);
-  //         }
-  //         else if (!l.top && id[0] === 'pos') {
-  //           return l.arguments.some(arg => arg.type === id[1]);
-  //         }
-  //       }
-  //
-  //       if (checked) {
-  //         if (id[1] === 'all') {
-  //           document.querySelectorAll(`.${id[0]} > ul input`).forEach(i => {
-  //             i.disabled = false;
-  //             toggleEdgeVisibility({target: i});
-  //           });
-  //         }
-  //         else {
-  //           links.forEach(l => linkMatchesId(l) && l.show());
-  //         }
-  //       }
-  //       else {
-  //         if (id[1] === 'all') {
-  //           document.querySelectorAll(`.${id[0]} > ul input`).forEach(i => {
-  //             links.forEach(l => {
-  //               if (l.top == (id[0] === 'reach')) {
-  //                 l.hide();
-  //               }
-  //             });
-  //             i.disabled = true;
-  //           });
-  //         }
-  //         else {
-  //           links.forEach(l => linkMatchesId(l) && l.hide());
-  //         }
-  //       }
-  //     }
-  //   }
-  //
-  //   // find link types
-  //   links.forEach(link => {
-  //     if (link.top) {
-  //       let type = link.trigger instanceof Word ? link.trigger.tag : link.reltype;
-  //       if (reachTypes[type]) {
-  //         reachTypes[type].push(link);
-  //       }
-  //       else {
-  //         reachTypes[type] = [link];
-  //       }
-  //     }
-  //     else {
-  //       link.arguments.forEach(arg => {
-  //         if (posTypes[arg.type]) {
-  //           posTypes[arg.type].push(link);
-  //         }
-  //         else {
-  //           posTypes[arg.type] = [link];
-  //         }
-  //       });
-  //     }
-  //   });
-  //
-  //   // add to options
-  //   function createUl(types, name) {
-  //     if (Object.keys(types).length > 0) {
-  //       let li = Object.keys(types).sort().map(type =>
-  //         `<li><input id="${name}--${type}" type="checkbox" checked><label for="${name}--${type}">${type}</label></li>`
-  //       );
-  //       let ul = document.querySelector(`.${name} > ul`) || document.createElement('ul');
-  //       ul.innerHTML = li.join('');
-  //       document.querySelector(`.${name}`).appendChild(ul);
-  //     }
-  //     else {
-  //       let ul = document.querySelector(`.${name} > ul`);
-  //       if (ul) { ul.parentNode.removeChild(ul); }
-  //     }
-  //   }
-  //   createUl(reachTypes, 'reach');
-  //   createUl(posTypes, 'pos');
-  //   document.getElementById('reach--all').checked = true;
-  //   document.getElementById('pos--all').checked = true;
-  // }
 
   // export public functions
   return {
