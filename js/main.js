@@ -109,6 +109,21 @@ const Main = (function() {
     });
   }
 
+  function setActiveTab(pageId, modalId="modal") {
+    let m = document.getElementById(modalId);
+    if (pageId == null) {
+      m.classList.remove('open');
+    }
+    else {
+      m.classList.add('open');
+
+      m.querySelector('.tab.active').classList.remove('active');
+      m.querySelector('.page.active').classList.remove('active');
+      m.querySelector('header span[data-id="' + pageId + '"]').classList.add('active');
+      document.getElementById(pageId).classList.add('active');
+    }
+  }
+
   function setupUIListeners() {
     // window event listeners
     // resize function
@@ -146,21 +161,6 @@ const Main = (function() {
         }
       };
     });
-
-    function setActiveTab(pageId, modalId="modal") {
-      let m = document.getElementById(modalId);
-      if (pageId == null) {
-        m.classList.remove('open');
-      }
-      else {
-        m.classList.add('open');
-
-        m.querySelector('.tab.active').classList.remove('active');
-        m.querySelector('.page.active').classList.remove('active');
-        m.querySelector('header span[data-id="' + pageId + '"]').classList.add('active');
-        document.getElementById(pageId).classList.add('active');
-      }
-    }
 
     let modalHeader = document.querySelector('#modal header');
     let modalDrag = null;
