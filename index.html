@@ -9,6 +9,8 @@
 
 <body>
 
+<div id="fill"></div>
+
 <header id="header">
   Examples:
   <select id="dataset">
@@ -27,7 +29,7 @@
   <button id="options-toggle">Options</button>
 </header>
 
-<div id="brat-input" class="modal">
+<div id="input-modal" class="modal">
   <div>
     <header>
       <span class="tab active">Custom annotation</span>
@@ -37,12 +39,10 @@
         <label for="file-input">Upload file(s)</label>
         <input type="file" id="file-input" style="display:none;" multiple>
       </form>
-      <textarea id="text-input"></textarea>
-      <div id="error-message"></div>
+      <pre id="message"></pre>
     </div>
   </div>
 </div>
-
 
 <div id="main">
   <div id="tooltip">

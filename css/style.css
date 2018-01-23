@@ -1,3 +1,12 @@
+#fill {
+  /* ensure body takes up entire window */
+  position:absolute;
+  z-index:-1;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+}
 body {
   margin:0;
   -moz-osx-font-smoothing:grayscale;
@@ -65,16 +74,16 @@ header > button:hover {
 
 
 /* input */
-#brat-input {
+#input-modal {
 }
-#brat-input textarea {
+#input-modal textarea {
   width:100%;
   height:300px;
   padding:5px;
   font-size:15px;
 }
 label[for="file-input"] {
-  padding:15px;
+  padding:10px 15px;
   cursor:pointer;
   background:steelblue;
   color:white;

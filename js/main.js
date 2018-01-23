@@ -207,8 +207,9 @@ const Main = (function() {
     });
 
     document.getElementById('custom-annotation').onclick = function() {
-      document.getElementById('brat-input').classList.add('open');
+      document.getElementById('input-modal').classList.add('open');
     }
+
     document.getElementById('options-toggle').onclick = function() {
         setActiveTab('options');
     }
@@ -221,111 +222,56 @@ const Main = (function() {
       }
     });
 
-    document.getElementById('file-input').onchange = loadFile;
+    // upload file
+    document.getElementById('file-input').onchange = uploadFile;
+
+    // upload file via drag and drop
+    document.body.addEventListener('dragenter', (e) => e.preventDefault());
+    document.body.addEventListener('dragover', (e) => e.preventDefault());
+    document.body.addEventListener('drop', uploadFile);
   }
 
-  function printErrorMessage(text) {
-    document.getElementById('error-message').textContent = text;
-  }
-  function clearErrorMessage() {
-    document.getElementById('error-message').textContent = '';
-  }
-  function clearFile() {
-    document.getElementById('form').reset();
-    document.getElementById('text-input') = '';
-  }
+  /* read an externally loaded file */
+  function uploadFile(e) {
+    e.preventDefault();
+    let files = (this === document.body) ? e.dataTransfer.files : e.target.files;
 
-  /**
-   * loadFile:  read file 
-   */
-  function loadFile(e) {
-    let files = e.target.files;
-    console.log(files);
-
-    // get extension
-    if (files.length === 1) {
-      const file = files[0];
-      let fr = new FileReader();
+    // read blobs with FileReader
+    const promises = [...files].map(file => {
+      const fr = new FileReader();
       fr.readAsText(file);
-      fr.onload = parseFile;
+      return new Promise((resolve, reject) => {
+        fr.onload = function() {
+          resolve({
+            name: file.name,
+            type: file.type,
+            content: fr.result
+          });
+        };
+      });
+    });
 
-      function parseFile() {
-        clearErrorMessage();
-        const text = fr.result;
-
-        // try to coerce it into an accepted format
-        try {
-          let w, l, c;
-          if (file.type === 'application/json') {
-            // reach json
-            parser.parseJson(JSON.parse(text));
-            [w, l, c] = buildWordsAndLinks();
-          } else if (!file.type) {
-            // brat standoff
-            [w, l, c] = buildWordsLinksAnn(text);
-          } else {
-            printErrorMessage("Could not read file type: " + file.type);
-          }
-
-          if (w && l && c) {
-            clear();
-            [words, links, clusters] = [w, l, c];
-            setSyntaxVisibility();
-            draw();
-            document.getElementById('text-input').textContent = text;
-          }
-        } catch(e) {
-          console.log(fr.result, e);
-          printErrorMessage("See error in console");
+    Promise.all(promises).then(files => {
+      try {
+        let message = parser.parseFiles(files);
+        if (message) {
+          redrawVisualization();
+          printMessage(message);
         }
       }
-    }
-    else if (files.length > 1) {
-      // search for matching .ann and .txt file
-
-      // sort by name
-      let sortedFiles = [].slice.call(files).sort((a,b) => a.name.localeCompare(b.name));
-
-      let prev = 0;
-
-      for (let i = 1; i < sortedFiles.length; ++i) {
-        let f1 = sortedFiles[prev].name.toLowerCase(),
-          f2 = sortedFiles[i].name.toLowerCase();
-        let prefixesMatch = f1.slice(0, f1.lastIndexOf('.')) === f2.slice(0, f2.lastIndexOf('.'));
-        let typesMatch = f1.endsWith('.ann') || f2.endsWith('.ann');
-        if (prefixesMatch && typesMatch && f1 !== f2) {
-          // matching files found
-          let fr = new FileReader();
-          fr.readAsText(sortedFiles[prev]);
-          fr.onload = function() {
-            let f1Text = fr.result;
-            fr.readAsText(sortedFiles[i]);
-            fr.onload = function() {
-              let w, l, c, text;
-              if (f1.endsWith('.ann')) {
-                text = fr.result;
-                [w, l, c] = buildWordsLinksAnn(fr.result, f1Text);
-              }
-              else {
-                text = f1Text;
-                [w, l, c] = buildWordsLinksAnn(f1Text, fr.result);
-              }
-
-              if (w && l && c) {
-                clear();
-                [words, links, clusters] = [w, l, c];
-                setSyntaxVisibility();
-                draw();
-                document.getElementById('text-input').textContent = text;
-              }
-            }
-          };
-          break;
-        } else {
-          prev = i;
-        }
+      catch(err) {
+        console.log('ERROR: ', err);
+        printMessage(err);
       }
-    }
+      document.getElementById('form').reset();
+    });
+  }
+
+  function printMessage(text) {
+    document.getElementById('message').textContent = text;
+  }
+  function clearMessage() {
+    document.getElementById('message').textContent = '';
   }
 
 
@@ -344,19 +290,12 @@ const Main = (function() {
 
     parser.loadFile(path)
       .then(data => {
-        ymlToJson.convert('taxonomy.yml.txt', function(taxonomy) {
-          clear();
-          words = data.words;
-          links = data.links;
-          clusters = data.clusters;
-          setSyntaxVisibility();
-          draw();
-          
-          tm.draw(taxonomy, words);
-        });
+        redrawVisualization();
+        clearMessage();
       })
       .catch(err => {
         console.log('ERROR: ', err);
+        printMessage(err);
       });
   };
 
@@ -368,6 +307,20 @@ const Main = (function() {
       rm.removeRow();
     }
     links.forEach(link => link.svg && link.svg.remove());
+  }
+
+  function redrawVisualization() {
+    let data = parser.parsedData;
+    ymlToJson.convert('taxonomy.yml.txt', function(taxonomy) {
+      clear();
+      words = data.words;
+      links = data.links;
+      clusters = data.clusters;
+      setSyntaxVisibility();
+      draw();
+      
+      tm.draw(taxonomy, words);
+    });
   }
 
   /**

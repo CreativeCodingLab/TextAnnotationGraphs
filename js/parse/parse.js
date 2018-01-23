@@ -37,6 +37,20 @@ class Parser {
     })
   }
 
+  parseFiles(files) {
+    console.log(files);
+    if (files.length === 1) {
+      const file = files[0];
+      if (file.type === 'application/json') {
+        this.parseJson(JSON.parse(file.content));
+      }
+      else if (file.type === '') {
+        this.parseText(file.content);
+      }
+      return file.name;
+    }
+  }
+
   parseJson(data) {
     this.reach.parse(data);
     this.parsedData = this.reach.data;
