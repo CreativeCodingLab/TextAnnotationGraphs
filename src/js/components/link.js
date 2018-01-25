@@ -394,10 +394,10 @@ class Link {
 
     // helper function to return a path string for an arrowhead
     arrowhead(handle) {
-      const s = 4;
+      const s = 4, s2 = 6;
       return this.top ?
-          'M' + [handle.x - s, handle.y - s] + 'l' + [s,s * 1.5] + 'l' + [s,-s * 1.5] :
-          'M' + [handle.x - s, handle.y + s] + 'l' + [s, -s * 1.5] + 'l' + [s, s * 1.5];
+          'M' + [handle.x - s, handle.y - s] + 'l' + [s, s2] + 'l' + [s, -s2] :
+          'M' + [handle.x - s, handle.y + s] + 'l' + [s, -s2] + 'l' + [s, s2];
     }
 
     remove() {

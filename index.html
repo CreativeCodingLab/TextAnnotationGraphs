@@ -9,7 +9,10 @@
 
 <body>
 
+<div id="fill"></div>
+
 <header id="header">
+  Examples:
   <select id="dataset">
     <option>-- select dataset --</option>
     <option>data1</option>
@@ -21,9 +24,25 @@
     <option>morpheme2</option>
     <option>event annotation</option>
   </select>
+  <button id="custom-annotation">Custom annotation</button>
   <button id="taxonomy-toggle">Taxonomy</button>
   <button id="options-toggle">Options</button>
 </header>
+
+<div id="input-modal" class="modal">
+  <div>
+    <header>
+      <span class="tab active">Custom annotation</span>
+    </header>
+    <div class="page active">
+      <form id="form">
+        <label for="file-input">Upload file(s)</label>
+        <input type="file" id="file-input" style="display:none;" multiple>
+      </form>
+      <pre id="message"></pre>
+    </div>
+  </div>
+</div>
 
 <div id="main">
   <div id="tooltip">
@@ -47,10 +66,9 @@
       <p><input type="checkbox" data-option="tree"> Open tree view in modal</p>
     </div>
   </div>
+
 </div>
 
-<script src="libs/jscolor.min.js"></script>
 <script src="dist/tag/js/tag.min.js"></script>
-
 </body>
 </html>

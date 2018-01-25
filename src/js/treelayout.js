@@ -302,11 +302,15 @@ module.exports = (function() {
                     + 'v7h' + (x2 - x1 + 20) + 'v-7';
                 }
                 else if (d.type === 'child') {
+                  let offset = 0;
+                  if (d.source.node.arguments) {
+                    offset = -7;
+                  }
                   return 'M' + [d.source.offset, d.source.depth * rh + 5]
                     + 'C' + [
                       d.source.offset, d.source.depth * rh + 25,
                       d.target.offset, d.target.depth * rh - 40,
-                      d.target.offset, d.target.depth * rh - 15
+                      d.target.offset, d.target.depth * rh - 15 + offset
                     ];
                 }
               });
@@ -318,7 +322,12 @@ module.exports = (function() {
               .attr('class', 'edgeLabel')
               .attr('font-size', '0.65em')
             .merge(edgeLabel)
-              .text(d => d.source.node.arguments[0].type)
+              .text((d, i) => {
+                let arg = d.source.node.arguments.find(arg => arg.anchor === d.target.node);
+                if (arg) {
+                  return arg.type;
+                }
+              })
               .transition()
                 .attr('transform', d => 'translate(' + [d.target.offset, d.target.depth * rh - 13] + ')');
         }
