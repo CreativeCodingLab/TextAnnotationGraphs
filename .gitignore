@@ -1,6 +1,7 @@
 # build files
 build/
-dist/
+# needed for GH Pages
+#dist/
 
 # npm related
 
