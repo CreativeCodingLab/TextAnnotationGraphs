@@ -210,8 +210,8 @@ label[for="file-input"] {
   pointer-events:none;
   opacity:0.5;
 }
-.cp-app {
-  z-index:1001;
+#taxonomy input.colorpicker:focus {
+  border-color: white;
 }
 
 body > #tree-svg {

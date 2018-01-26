@@ -61,8 +61,6 @@
   },
   "homepage": "https://github.com/CreativeCodingLab/TextAnnotationGraphs#readme",
   "dependencies": {
-    "chroma-js": "^1.3.5",
-    "colorPicker": "git+https://github.com/PitPik/colorPicker.git",
     "d3": "^4.12.2",
     "lodash": "^4.17.4",
     "svg.draggable.js": "^2.2.1",

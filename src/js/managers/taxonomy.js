@@ -1,4 +1,4 @@
-import * as jsColorPicker from 'colorPicker/colorPicker.js';
+import ColorPicker from '../colorpicker.js';
 import Word from '../components/word.js';
 
 module.exports = (function() {
@@ -169,46 +169,10 @@ module.exports = (function() {
     // bind events to data
     attachHandlers() {
       // initialize colorpicker
-      let self = this;
-      jsColorPicker('input.colorpicker', {
-        customBG: '#000',
-        init: function(elm, colors) {
-          elm.style.backgroundColor = elm.value || '#000';
-          elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
-        },
-        renderCallback: function(colors, mode) {
-          /* ---- code taken from jsColor.js ---- */
-          var options = this,
-            input = options.input,
-            patch = options.patch,
-            RGB = colors.RND.rgb,
-            HSL = colors.RND.hsl,
-            AHEX = options.isIE8 ? (colors.alpha < 0.16 ? '0' : '') +
-              (Math.round(colors.alpha * 100)).toString(16).toUpperCase() + colors.HEX : '',
-            RGBInnerText = RGB.r + ', ' + RGB.g + ', ' + RGB.b,
-            RGBAText = 'rgba(' + RGBInnerText + ', ' + colors.alpha + ')',
-            isAlpha = colors.alpha !== 1 && !options.isIE8,
-            colorMode = input.getAttribute('data-colorMode');
-
-          patch.style.cssText =
-            'color:' + (colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd') + ';' + // Black...???
-            'background-color:' + RGBAText + ';' +
-            'filter:' + (options.isIE8 ? 'progid:DXImageTransform.Microsoft.gradient(' + // IE<9
-              'startColorstr=#' + AHEX + ',' + 'endColorstr=#' + AHEX + ')' : '');
-
-          input.value = (colorMode === 'HEX' && !isAlpha ? '#' + (options.isIE8 ? AHEX : colors.HEX) :
-            colorMode === 'rgb' || (colorMode === 'HEX' && isAlpha) ?
-            (!isAlpha ? 'rgb(' + RGBInnerText + ')' : RGBAText) :
-            ('hsl' + (isAlpha ? 'a(' : '(') + HSL.h + ', ' + HSL.s + '%, ' + HSL.l + '%' +
-              (isAlpha ? ', ' + colors.alpha : '') + ')')
-          );
-
-          if (options.displayCallback) {
-            options.displayCallback(colors, mode, options);
-          }
-
-          /* -- manually invoke callback -- */
-          self.setColor(this.input.node);
+      this.colorpicker = new ColorPicker('colorpicker', {
+        initialColor: '#000000',
+        changeCallback: (input) => {
+          this.setColor(input.node);
         }
       });
 
@@ -253,10 +217,7 @@ module.exports = (function() {
 
       // manually set color
       if (color) {
-        const c = new Colors({ color: color });
-        const labelColor = c.colors.RGBLuminance > 0.22 ? '#222' : '#ddd';
-        picker.value = color;
-        picker.style.cssText = `color:${labelColor}; background-color:${color};`;
+        this.colorpicker.setColor(picker, color);
       }
 
       if (tagTypes[node.val]) {
@@ -286,7 +247,7 @@ module.exports = (function() {
     }
 
     remove(object) {
-      // TODO: fix the fuck out of this
+      // FIXME
       return;
       let tag = object.val;
       let entity = object.entity;
@@ -302,7 +263,7 @@ module.exports = (function() {
     }
 
     getColor(label, object) {
-      //FIXME: fix me the fuck up
+      //FIXME
       return;
       let keys = Object.keys(tagTypes);
       if (tagTypes[label]) {

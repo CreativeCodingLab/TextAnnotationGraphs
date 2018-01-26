@@ -139,7 +139,7 @@ const Main = (function() {
     // window event listeners
     // resize function
     function resizeWindow() {
-      body = document.body.getBoundingClientRect();
+      let body = document.body.getBoundingClientRect();
       links.forEach(l => l.hide());
       svg.width(body.width);
       rm.width(body.width);
