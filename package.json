@@ -40,9 +40,9 @@
     "dist:js:app": "cpy build/js/tag.min.js dist/tag/js/",
     "watch": "npm-run-all --parallel watch:css watch:js",
     "prewatch:css": "colors --white \" - \" --cyan \"Watching for updates to app.css. (Minified)\"",
-    "watch:css": "onchange src/css/app.css -- cleancss -d -o dist/tag/css/tag.min.css src/css/app.css",
+    "watch:css": "onchange src/css/main.css -- cleancss -d -o dist/tag/css/tag.min.css",
     "prewatch:js": "colors --white \" - \" --cyan \"Watching for updates to main.js. (Recompiled verbatim; run 'build' task for minification)\"",
-    "watch:js": "watchify -g deamdify src/js/main.js -o dist/tag/js/tag.min.js -v"
+    "watch:js": "watchify src/js/main.js -t -t [ babelify --presets [ es2015 ] ] --outfile dist/tag/js/tag.min.js -v"
   },
   "repository": {
     "type": "git",
