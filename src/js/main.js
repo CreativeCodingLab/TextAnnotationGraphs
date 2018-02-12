@@ -241,6 +241,24 @@ const Main = (function() {
     document.body.addEventListener('dragenter', (e) => e.preventDefault());
     document.body.addEventListener('dragover', (e) => e.preventDefault());
     document.body.addEventListener('drop', uploadFile);
+
+
+    function exportFile() {
+      let exportedSVG = svg.svg();
+      let a = document.getElementById('download');
+      a.setAttribute('href', 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(exportedSVG));
+      a.setAttribute('download', 'tag.svg');
+      a.click();
+    }
+    document.getElementById('download-button').onclick = exportFile;
+    document.addEventListener('keydown', (e) => {
+      let key = e.keyCode || e.which;
+      let ctrl = e.ctrlKey || (e.metaKey && !e.ctrlKey);
+      if (key === 83 && ctrl) {
+        e.preventDefault();
+        exportFile();
+      }
+    })
   }
 
   /* read an externally loaded file */
