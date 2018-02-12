@@ -1,3 +1,7 @@
+import WordTag from './tag.js';
+import Word from './word.js';
+import * as draggable from 'svg.draggable.js';
+
 class Link {
     constructor(eventId, trigger, args, reltype, top = true) {
       this.eventId = eventId;
@@ -572,3 +576,4 @@ class Link {
       return this.reltype || this.trigger.reltype || (this.trigger.tag && this.trigger.tag.val) || this.trigger.val;
     }
 }
+module.exports = Link;

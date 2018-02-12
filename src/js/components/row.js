@@ -1,3 +1,5 @@
+import * as draggable from 'svg.draggable.js';
+
 class Row {
   constructor(svg, idx = 0, ry = 0, rh = 100) {
     this.idx = idx;
@@ -139,3 +141,4 @@ class Row {
     return 60 + this.maxSlot * 15;
   }
 }
+module.exports = Row;

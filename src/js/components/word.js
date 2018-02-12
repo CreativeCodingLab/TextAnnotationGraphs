@@ -1,3 +1,6 @@
+import WordTag from './tag.js';
+import * as draggable from 'svg.draggable.js';
+
 class Word {
     constructor(val, idx, tag, svg, row) {
       this.eventIds = [];
@@ -172,3 +175,4 @@ class Word {
       return this.svgText.length();
     }
 }
+module.exports = Word;

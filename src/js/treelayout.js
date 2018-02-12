@@ -1,4 +1,8 @@
-const TreeLayout = (function() {
+import * as d3 from 'd3';
+import Word from './components/word.js';
+import Link from './components/link.js';
+
+module.exports = (function() {
 
     // depth of recursion
     let maxDepth;

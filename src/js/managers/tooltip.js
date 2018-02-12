@@ -1,4 +1,4 @@
-const Tooltip = (function() {
+module.exports = (function() {
   let div = {};
   let _svg = {};
   let activeObject = null;
