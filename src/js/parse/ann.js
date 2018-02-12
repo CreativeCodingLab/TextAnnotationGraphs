@@ -238,7 +238,7 @@ class BratParser {
       trigger = tokens[1],
       args = tokens.slice(2);
 
-    if (id > 0 && trigger) {
+    if (id > 0 && trigger & args.length > 0) {
       let split = trigger.split(this.re);
       if (split[0].length > 0 && mentions[split[1]]) {
 
