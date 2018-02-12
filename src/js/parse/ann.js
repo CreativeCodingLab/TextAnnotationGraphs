@@ -133,7 +133,7 @@ class BratParser {
           ++tbm_i;
         }
       }
-      else if (text[ch] === ' ') {
+      else if (/\s/.test(text[ch])) {
         if (token_start < ch) {
           tokens.push({
             word: text.slice(token_start, ch),
@@ -265,42 +265,42 @@ class BratParser {
   }
 
   parseRelationMention(tokens, mentions) {
-  const id = +tokens[0].slice(1),
-    label = tokens[1],
-    arg1 = tokens[2],
-    arg2 = tokens[3];
+    const id = +tokens[0].slice(1),
+      label = tokens[1],
+      arg1 = tokens[2],
+      arg2 = tokens[3];
 
-  if (id > 0 && arg2) {
-    const split1 = arg1.split(this.re),
-      split2 = arg2.split(this.re);
+    if (id > 0 && arg2) {
+      const split1 = arg1.split(this.re),
+        split2 = arg2.split(this.re);
 
-    if (mentions[split1[1]] && mentions[split2[1]]) {
-      return {
-        id: 'R' + id,
-        label,
-        arguments: [{
-          type: split1[0],
-          id: split1[1]
-        }, {
-          type: split2[0],
-          id: split2[1]
-        }]
-      };
+      if (mentions[split1[1]] && mentions[split2[1]]) {
+        return {
+          id: 'R' + id,
+          label,
+          arguments: [{
+            type: split1[0],
+            id: split1[1]
+          }, {
+            type: split2[0],
+            id: split2[1]
+          }]
+        };
+      }
     }
   }
-  }
 
-  parseAttributes(tokens, mentions) {
-  const id = +tokens[0].slice(1),
-    attribute = tokens[1],
-    target = tokens[2];
+  parseAttribute(tokens, mentions) {
+    const id = +tokens[0].slice(1),
+      attribute = tokens[1],
+      target = tokens[2];
 
-  if (id > 0 && mentions[target]) {
-    return {
-      id,
-      target,
-      attribute,
-      value: tokens.slice(3).join(' ')
+    if (id > 0 && mentions[target]) {
+      return {
+        id,
+        target,
+        attribute,
+        value: tokens.slice(3).join(' ')
       };
     }
   }
