@@ -252,27 +252,15 @@ const Main = (function() {
     function exportFile() {
 
       let exportedSVG = svg.svg();
-
-      let i = exportedSVG.indexOf('<defs');
+      console.log(css);
+      let i = exportedSVG.indexOf('</defs>');
       exportedSVG = exportedSVG.slice(0, i)
-        + '<style>text{text-anchor:middle;}' + css + '</style>'
+        + '<style>' + css + 'text{text-anchor:middle;}</style>'
         + exportedSVG.slice(i);
       let a = document.getElementById('download');
       a.setAttribute('href', 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(exportedSVG));
       a.setAttribute('download', 'tag.svg');
       a.click();
-
-      // let exportedSVG = svg.svg();
-
-      // let i = exportedSVG.indexOf('<defs');
-      // exportedSVG = exportedSVG.slice(0, i)
-      //   + '<style type="text/css">.link { fill: red; }</style>'
-      //   + exportedSVG.slice(i);
-      // console.log(exportedSVG);
-      // let a = document.getElementById('download');
-      // a.setAttribute('href', 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(exportedSVG));
-      // a.setAttribute('download', 'tag.svg');
-      // a.click();
     }
     document.getElementById('download-button').onclick = exportFile;
     document.addEventListener('keydown', (e) => {
