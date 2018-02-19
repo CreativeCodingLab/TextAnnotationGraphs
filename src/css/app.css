@@ -1,5 +1,3 @@
-@import url(http://fonts.googleapis.com/css?family=Nunito:400,600);
-
 #fill {
   /* ensure body takes up entire window */
   position:absolute;
@@ -282,79 +280,4 @@ body > #tree-svg #tree-close {
   margin-top:100px;
   margin-bottom:20px;
   position:relative;
-}
-#main text {
-  text-anchor: middle;
-}
-.row-drag {
-  stroke-width:2;
-  stroke-dasharray: 2,1;
-  stroke:rgba(100,100,100,0.3);
-  transition: stroke 300ms ease;
-  cursor: row-resize;
-}
-.row-drag:hover {
-  stroke-dasharray:none;
-  stroke:rgba(100,100,100,0.8);
-}
-
-.word text {
-  font-size:16px;
-  fill:black;
-}
-.word path {
-  stroke:#333;
-  fill:none;
-}
-.word .word-text {
-  cursor: pointer;
-}
-
-.word-cluster text,
-.word .word-tag {
-  font-size: 12px;
-  cursor: text;
-}
-
-.word-cluster text,
-.word .word-tag {
-  fill:#333;
-}
-.word .syntax-tag {
-  fill: rgb(208, 150, 143);
-}
-.toggle-syntax .syntax-tag, .toggle-syntax .syntax-link {
-  display:none;
-}
-
-.editing .word-tag,
-.editing-text,
-.editing text {
-  fill: #fff !important;
-}
-
-.editing-rect,
-.editing rect {
-  fill:#a94442;
-}
-
-.link path.polyline {
-  stroke: #6590b4;
-  fill: none;
-}
-.link {
-  font-size: 12px;
-  fill:#6590b4;
-  stroke-width:1.5px;
-}
-.link.syntax-link {
-  fill: #999;
-}
-.syntax-link path.polyline {
-  stroke: #999;
-  fill: none;
-}
-
-.link:hover {
-  stroke-width:2.5px;
 }

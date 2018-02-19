@@ -15,10 +15,9 @@ const Main = (function() {
   // classes
   let parser, lm, rm, tm;
 
-  let css;
-
   // main svg element
   let svg;
+  let css = '';
 
   // node-link objects
   let words = [];
@@ -52,8 +51,9 @@ const Main = (function() {
     tm      = new Taxonomy('taxonomy');
     tree    = new TreeLayout('#tree', svg);
 
-    load('/dist/tag/css/tag.min.css')
-      .then((text) => css = text);
+    if (document.getElementById('svgStyles')) {
+      css = document.getElementById('svgStyles').innerHTML;
+    }
 
     // load and render initial dataset by default
     changeDataset();
@@ -252,10 +252,9 @@ const Main = (function() {
     function exportFile() {
 
       let exportedSVG = svg.svg();
-      console.log(css);
       let i = exportedSVG.indexOf('</defs>');
       exportedSVG = exportedSVG.slice(0, i)
-        + '<style>' + css + 'text{text-anchor:middle;}</style>'
+        + '<style>' + css + '</style>'
         + exportedSVG.slice(i);
       let a = document.getElementById('download');
       a.setAttribute('href', 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(exportedSVG));
