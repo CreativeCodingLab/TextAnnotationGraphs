@@ -9,10 +9,13 @@ import Tooltip from './managers/tooltip.js';
 import Word from './components/word.js';
 import WordCluster from './components/wordcluster.js';
 import Link from './components/link.js';
+import load from './xhr.js';
 
 const Main = (function() {
   // classes
   let parser, lm, rm, tm;
+
+  let css;
 
   // main svg element
   let svg;
@@ -48,6 +51,9 @@ const Main = (function() {
     lm      = new LabelManager(svg);
     tm      = new Taxonomy('taxonomy');
     tree    = new TreeLayout('#tree', svg);
+
+    load('/dist/tag/css/tag.min.css')
+      .then((text) => css = text);
 
     // load and render initial dataset by default
     changeDataset();
@@ -241,6 +247,30 @@ const Main = (function() {
     document.body.addEventListener('dragenter', (e) => e.preventDefault());
     document.body.addEventListener('dragover', (e) => e.preventDefault());
     document.body.addEventListener('drop', uploadFile);
+
+
+    function exportFile() {
+
+      let exportedSVG = svg.svg();
+      console.log(css);
+      let i = exportedSVG.indexOf('</defs>');
+      exportedSVG = exportedSVG.slice(0, i)
+        + '<style>' + css + 'text{text-anchor:middle;}</style>'
+        + exportedSVG.slice(i);
+      let a = document.getElementById('download');
+      a.setAttribute('href', 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(exportedSVG));
+      a.setAttribute('download', 'tag.svg');
+      a.click();
+    }
+    document.getElementById('download-button').onclick = exportFile;
+    document.addEventListener('keydown', (e) => {
+      let key = e.keyCode || e.which;
+      let ctrl = e.ctrlKey || (e.metaKey && !e.ctrlKey);
+      if (key === 83 && ctrl) {
+        e.preventDefault();
+        exportFile();
+      }
+    })
   }
 
   /* read an externally loaded file */
