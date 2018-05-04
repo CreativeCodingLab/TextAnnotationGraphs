@@ -295,8 +295,8 @@ const Main = (function() {
     Promise.all(promises).then(files => {
       try {
         let message = parser.parseFiles(files);
+        redrawVisualization();
         if (message) {
-          redrawVisualization();
           printMessage(message);
         }
       }
