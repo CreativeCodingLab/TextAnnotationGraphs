@@ -57,39 +57,45 @@ class Parser {
       return file.name;
     }
     else if (files.length > 1) {
-      // find two files that match in name
+      // find 2 or 3 files that match in name
       files.sort((a, b) => a.name.localeCompare(b.name));
 
-      // file to check against
+      let matchingFiles = [];
+
       let i = 0;
       let iname = files[i].name.match(re);
-
-      let annRe = /a/;
-      let txtRe = /s/;
-
       for (let j = 1; j < files.length; ++j) {
         let jname = files[j].name.match(re);
-        if (jname[1] && jname[1] !== 'txt' && jname[1] !== 'ann') {
-          // not a valid extension
-          ++i;
-          continue;
-        }
+        if (jname[1] && jname[0] === iname[0]) {
+          matchingFiles.push(files[i], files[j]);
 
-        // check if name matches
-        if (jname[0] === iname[0]) {
-          if (iname[1] === 'ann' && jname[1] !== 'ann') {
-            this.parseText(files[j].content, files[i].content);
-            return;
+          let k = j + 1;
+          while (k < files.length) {
+            let kname = files[k].name.match(re);
+            if (kname[1] && kname[0] === iname[0]) {
+              matchingFiles.push(files[k]);
+            } else {
+              break;
+            }
+            ++k;
           }
-          else if ((iname[1] === 'txt' || !iname[1]) && jname[1] === 'ann') {
-            this.parseText(files[i].content, files[j].content);
-            return;
-          }
+          break;
         }
+      }
 
-        // iterate to next file
-        ++i;
-        iname = jname;
+      // found matching files
+      if (matchingFiles.length === 2) {
+        // find text content
+        let text = matchingFiles.find(file => file.name.endsWith('.txt'));
+        let standoff = matchingFiles.find(file => !file.name.endsWith('.txt'));
+        this.parseText(text.content, standoff.content);
+      } else {
+        let text = matchingFiles.find(file => file.name.endsWith('.txt'));
+        let entities = matchingFiles.find(file => file.name.endsWith('.a1'));
+        let evts = matchingFiles.find(file => file.name.endsWith('.a2'));
+        if (text && evts && entities) {
+          this.parseText(text.content, entities.content, evts.content)
+        }
       }
     }
   }
@@ -99,8 +105,8 @@ class Parser {
     this.parsedData = this.reach.data;
   }
 
-  parseText(text, ann) {
-    this.ann.parse(text, ann);
+  parseText() {
+    this.ann.parse.apply(this.ann, arguments);
     this.parsedData = this.ann.data;
   }
 }

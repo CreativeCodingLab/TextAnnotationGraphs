@@ -1,3 +1,5 @@
+import Link from '../components/link.js';
+
 module.exports = (function() {
   let _svg;
   let activeObject = null;

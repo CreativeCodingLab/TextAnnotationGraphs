@@ -10,8 +10,9 @@ class BratParser {
 /*
   @param textInput : Source text     or  input in standoff format
   @param annInput  : BRAT annotation or  {undefined}
+  @param evtInput  : event annotations or {undefined}
  */
-  parse(textInput, annInput) {
+  parse(textInput, annInput, evtInput) {
     var output = {
       texts: [],
       events: [],
@@ -33,6 +34,10 @@ class BratParser {
     } else {
       text = textInput;
       lines = annInput.split('\n');
+      if (evtInput) {
+        lines = lines.concat(
+          evtInput.split('\n'));
+      }
     }
 
     if (!text) {
@@ -238,7 +243,7 @@ class BratParser {
       trigger = tokens[1],
       args = tokens.slice(2);
 
-    if (id > 0 && trigger & args.length > 0) {
+    if (id > 0 && trigger && args.length > 0) {
       let split = trigger.split(this.re);
       if (split[0].length > 0 && mentions[split[1]]) {
 
