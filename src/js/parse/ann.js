@@ -62,16 +62,18 @@ class BratParser {
       }
     }
 
+    let n = graph.words.length;
     this.textArray.forEach((t, i) => {
       if (t.entity === null) {
         let text = this.text.slice(t.charStart, t.charEnd).trim();
 
         text.split(/\s+/).forEach(token => {
-          let word = new Word(token, graph.words.length);
+          let word = new Word(token, graph.words.length - n + 1);
           graph.words.push(word);
         });
       } else {
-        t.entity.idx = graph.words.length;
+        --n;
+        t.entity.idx = graph.words.length - n;
       }
     });
     graph.words.sort((a, b) => a.idx - b.idx);
