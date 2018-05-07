@@ -71,7 +71,7 @@ class BratParser {
           graph.words.push(word);
         });
       } else {
-        t.entity.idx = i;
+        t.entity.idx = graph.words.length;
       }
     });
     graph.words.sort((a, b) => a.idx - b.idx);
