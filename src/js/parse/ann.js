@@ -5,308 +5,250 @@ class BratParser {
   constructor() {
     this.data = {};
     this.re = /:+(?=[TER]\d+$)/;    // regular expression for reading in a mention
+    this.text = "";
+    this.mentions = {};
   }
 
 /*
-  @param textInput : Source text     or  input in standoff format
-  @param annInput  : BRAT annotation or  {undefined}
+  @param textInput : Source text     or  text + input in standoff format
+  @param entInput  : entity annotation or input in standoff format
   @param evtInput  : event annotations or {undefined}
  */
-  parse(textInput, annInput, evtInput) {
-    var output = {
-      texts: [],
-      events: [],
-      relations: [],
-      attributes: [],
-      unparsedLines: [],
-      text: null,
-      tokens: [],
-      mentions: {}
-    }
-
-    let text, lines;
+  parse(textInput, entInput, evtInput) {
+    this.mentions = {};
+    let lines;
 
     // separate source text and annotation
-    if (!annInput) {
+    if (!entInput) {
       let splitLines = textInput.split('\n');
-      text = splitLines[0];
+      this.text = splitLines[0];
       lines = splitLines.slice(1);
     } else {
-      text = textInput;
-      lines = annInput.split('\n');
+      this.text = textInput;
+      lines = entInput.split('\n');
       if (evtInput) {
         lines = lines.concat(
           evtInput.split('\n'));
       }
     }
 
-    if (!text) {
-      output.unparsedLines = lines;
-      return output;
-    }
-
-    let textLength = text.length;
-    let unparsedLines = [];
-    let mentions = {};
-
-    for (let i = 0; i < lines.length; ++i) {
-      const line = lines[i].trim();
-      if (!line) { continue; }
-
-      let tokens = line.split(/\s+/);
-
-      let parseIsSuccessful = false;
-
-      /** The following IDs are currently supported:
-
-      T: text-bound annotation
-      E: event
-      R: relation
-      A: attribute
-
-      Normalizations, notes, and equivalence relations are not currently supported
-      */
-
-      switch (tokens[0].charAt(0)) {
-        case 'T':
-          let tbm = this.parseTextBoundMention(tokens, textLength);
-          if (tbm) {
-            output.texts.push(tbm);
-            mentions[tbm.id] = tbm;
-            parseIsSuccessful = true;
-          }
-          break;
-        case 'E':
-          let em = this.parseEventMention(tokens, mentions);
-          if (em) {
-            output.events.push(em);
-            mentions[em.id] = em;
-            parseIsSuccessful = true;
-          }
-          break;
-        case 'R':
-          let rm = this.parseRelationMention(tokens, mentions);
-          if (rm) {
-            output.relations.push(rm);
-            mentions[rm.id] = rm;
-            parseIsSuccessful = true;
-          }
-          break;
-        case 'A':
-          let a = this.parseAttribute(tokens, mentions);
-          if (a) {
-            output.attributes.push(a);
-            mentions[a.id] = a;
-            parseIsSuccessful = true;
-          }
-          break;
-      }
-
-      if (!parseIsSuccessful) {
-        unparsedLines.push(line);
-      }
-    }
-
-    // split text into tokens
-    output.texts.sort((a,b) => {
-      if (a.charEnd - b.charEnd != 0) {
-        return a.charEnd - b.charEnd;
-      }
-      else {
-        return a.charStart - b.charStart;
+    // filter out non-annotation lines
+    lines.forEach(line => {
+      let tokens = line.trim().split(/\s+/);
+      if (tokens[0] && tokens[0].match(/[TER]\d+/)) {
+        this.mentions[tokens[0]] = {
+          annotation: tokens,
+          object: null
+        }
       }
     });
 
-    let tokens = [];
-    let tbm_i = 0;
-    let token_start = 0;
-    for (let ch = 0; ch < textLength; ++ch) {
-      let tbm = output.texts[tbm_i];
-      while (text[token_start] === ' ') {
-        ++token_start;
-      }
-      if (tbm && tbm.charStart <= ch) {
-        tokens.push({
-          word: text.slice(tbm.charStart, tbm.charEnd),
-          start: tbm.charStart,
-          end: tbm.charEnd
-        });
-        token_start = tbm.charEnd;
-
-        while(output.texts[tbm_i] && output.texts[tbm_i].charStart <= ch){
-          output.texts[tbm_i].tokenId = tokens.length - 1;
-          ++tbm_i;
-        }
-      }
-      else if (/\s/.test(text[ch])) {
-        if (token_start < ch) {
-          tokens.push({
-            word: text.slice(token_start, ch),
-            start: token_start,
-            end: ch
-          });
-          token_start = ch + 1;
-        }
-      }
-    }
-    if (token_start < textLength) {
-      tokens.push({
-        word: text.slice(token_start, textLength),
-        start: token_start,
-        end: textLength
-      });
-    }
-
-    output.tokens = tokens;
-    output.text = text;
-    output.mentions = mentions;
-    output.unparsedLines = unparsedLines;
-
-    this.buildWordsAndLinks(output);
-  }
-
-  buildWordsAndLinks(data) {
-    let mentions = {};
-    let links = [];
-    let clusters = [];
-
-    // build words
-    let words = data.tokens.map((token, i) => new Word(token.word, i));
-    data.texts.forEach(tbm => {
-    words[tbm.tokenId].setTag(tbm.label);
-    words[tbm.tokenId].addEventId(tbm.id);
-    mentions[tbm.id] = words[tbm.tokenId];
-    });
-
-    // build links
-    for (let m in data.mentions) {
-      let mention = data.mentions[m];
-      if (m[0] === 'E') {
-        if (data.mentions[mention.trigger] &&
-        mention.arguments.every(arg => data.mentions[arg.id])) {
-
-        let trigger = mentions[mention.trigger];
-        let args = mention.arguments.map(arg => {
-          return {
-            anchor: mentions[arg.id],
-            type: arg.type
-          };
-        });
-
-        let newLink = new Link(mention.id, trigger, args);
-        mentions[mention.id] = newLink;
-        links.push(newLink);
-        }
-      } else if (m[0] === 'R') {
-        if (mention.arguments.every(arg => data.mentions[arg.id])) {
-        let args = mention.arguments.map(arg => {
-          return {
-          anchor: mentions[arg.id],
-          type: arg.type
-          };
-        });
-
-        let newLink = new Link(mention.id, null, args, mention.label);
-        mentions[mention.id] = newLink;
-        links.push(newLink);
-        }
-      }
-    }
-
-    this.data = {
-      words,
-      links,
-      clusters
+    // recursively build graph
+    let graph = {
+      words: [],
+      links: [],
+      clusters: []
     };
-  }
 
+    this.textArray = [{
+      charStart: 0,
+      charEnd: this.text.length,
+      entity: null
+    }];
 
-  /* ------- parse specific kinds of mentions ------ */
-  parseTextBoundMention(tokens, textLength) {
-    const id = +tokens[0].slice(1),
-      label = tokens[1],
-      charStart = +tokens[2],
-      charEnd = +tokens[3];
-
-    if (id > 0 && charStart >= 0 && charStart < charEnd && charEnd <= textLength) {
-      return {
-        id: 'T' + id,
-        label,
-        charStart,
-        charEnd
-      };
+    for (let id in this.mentions) {
+      if (this.mentions[id] && this.mentions[id].object === null) {
+        this.parseAnnotation(id, graph);
+      }
     }
-  }
 
-  parseEventMention(tokens, mentions) {
-    const id = +tokens[0].slice(1),
-      trigger = tokens[1],
-      args = tokens.slice(2);
+    this.textArray.forEach((t, i) => {
+      if (t.entity === null) {
+        let text = this.text.slice(t.charStart, t.charEnd).trim();
 
-    if (id > 0 && trigger && args.length > 0) {
-      let split = trigger.split(this.re);
-      if (split[0].length > 0 && mentions[split[1]]) {
-
-        const em = {
-          id: 'E' + id,
-          label: split[0],
-          trigger: split[1],
-          arguments: []
-        };
-
-        args.forEach(argument => {
-          let splitArgument = argument.split(this.re);
-          if (splitArgument[0].length > 0 && mentions[splitArgument[1]]) {
-            em.arguments.push({
-              type: splitArgument[0],
-              id: splitArgument[1]
-            });
-          }
+        text.split(/\s+/).forEach(token => {
+          let word = new Word(token, graph.words.length);
+          graph.words.push(word);
         });
-
-        return em;
+      } else {
+        t.entity.idx = i;
       }
-    }
+    });
+    graph.words.sort((a, b) => a.idx - b.idx);
+
+    this.data = graph;
   }
 
-  parseRelationMention(tokens, mentions) {
-    const id = +tokens[0].slice(1),
-      label = tokens[1],
-      arg1 = tokens[2],
-      arg2 = tokens[3];
-
-    if (id > 0 && arg2) {
-      const split1 = arg1.split(this.re),
-        split2 = arg2.split(this.re);
-
-      if (mentions[split1[1]] && mentions[split2[1]]) {
-        return {
-          id: 'R' + id,
-          label,
-          arguments: [{
-            type: split1[0],
-            id: split1[1]
-          }, {
-            type: split2[0],
-            id: split2[1]
-          }]
-        };
-      }
+  parseAnnotation(id, graph) {
+    // check if mention exists & has been parsed already
+    let m = this.mentions[id];
+    if (m === undefined) {
+      return null;
     }
+    if (m.object !== null) {
+      return m.object;
+    }
+
+    // parse annotation
+    let tokens = m.annotation;
+    switch (tokens[0].charAt(0)) {
+      case 'T':
+        let tbm = this.parseTextMention(tokens);
+        if (tbm === null) {
+          // invalid line
+          delete this.mentions[id];
+          return null;
+        } else {
+          // valid line; add Word
+          graph.words.push(tbm);
+          m.object = tbm;
+          return tbm;
+        }
+      case 'E':
+        let em = this.parseEventMention(tokens, graph);
+        if (em === null) {
+          // invalid event
+          delete this.mentions[id];
+          return null;
+        } else {
+          // valid event; add Link
+          graph.links.push(em);
+          m.object = em;
+          return em;
+        }
+      case 'R':
+        let rm = this.parseRelationMention(tokens, graph);
+        if (rm === null) {
+          // invalid event
+          delete this.mentions[id];
+          return null;
+        } else {
+          // valid event; add Link
+          graph.links.push(rm);
+          m.object = rm;
+          return rm;
+        }
+      case 'A':
+        break;
+    }
+    return null;
   }
 
-  parseAttribute(tokens, mentions) {
-    const id = +tokens[0].slice(1),
-      attribute = tokens[1],
-      target = tokens[2];
+  parseTextMention(tokens) {
+    const id = tokens[0].slice(1);
+    const label = tokens[1];
+    const charStart = Number(tokens[2]);
+    const charEnd = Number(tokens[3]);
 
-    if (id > 0 && mentions[target]) {
-      return {
-        id,
-        target,
-        attribute,
-        value: tokens.slice(3).join(' ')
+    if (charStart >= 0 && charStart < charEnd && charEnd <= this.text.length) {
+      // create Word
+      let word = new Word(this.text.slice(charStart, charEnd), Number(id));
+      word.setTag(label);
+      word.addEventId(id);
+
+      // cut textArray
+      let textWord = {
+        charStart,
+        charEnd,
+        entity: word
       };
+
+      let i = this.textArray.findIndex(token => token.charEnd > charStart);
+      if (i === -1) {
+        console.log('// mistake in tokenizing string')
+      } else if (this.textArray[i].charStart < charStart) {
+        // textArray[i] starts to the left of the word
+        let tempEnd = this.textArray[i].charEnd;
+        this.textArray[i].charEnd = charStart;
+
+        // insert word into array
+        if (tempEnd > charEnd) {
+          this.textArray.splice(i + 1, 0, textWord, {
+            charStart: charEnd,
+            charEnd: tempEnd,
+            entity: null
+          });
+        } else {
+          this.textArray.splice(i + 1, 0, textWord);
+        }
+      } else {
+        // textArray[i] starts at the same place or to the right of the word
+        if (this.textArray[i].charEnd === charEnd) {
+          this.textArray[i].entity = word;
+        } else {
+          this.textArray.splice(i, 0, textWord);
+          this.textArray[i + 1].charStart = charEnd;
+          this.textArray[i + 1].entity = null;
+        }
+      }
+      return word;
+    } else {
+      return null;
+    }
+  }
+
+  searchBackwards(arr, fn) {
+    for (let i = arr.length - 1; i >= 0; --i) {
+      if (fn(arr[i])) {
+        return arr[i];
+      }
+    }
+    return null;
+  }
+
+  parseEventMention(tokens, graph) {
+    let successfulParse = true;
+    const id = tokens[0];
+    const args = tokens.slice(1)
+        .map((token, i) => {
+            let [label, id] = token.split(this.re);
+            let object = this.parseAnnotation(id, graph)
+            if (object !== null) {
+              return {
+                type: label,
+                anchor: object
+              };
+            } else {
+              if (i === 0) {
+                successfulParse = false;
+              }
+              return null;
+            }
+        })
+        .filter(arg => arg);
+    if (successfulParse && args.length > 1) {
+      // create link
+      return new Link(id, args[0].anchor, args.slice(1));
+    } else {
+      return null;
+    }
+  }
+
+  parseRelationMention(tokens, graph) {
+    if (tokens.length < 4) {
+      return null;
+    }
+    let successfulParse = true;
+    const id = tokens[0];
+    const reltype = tokens[1];
+    const args = tokens.slice(2, 4)
+      .map(token => {
+        let [label, id] = token.split(this.re);
+        let object = this.parseAnnotation(id, graph);
+        if (object !== null) {
+          return {
+            type: label,
+            anchor: object
+          };
+        } else {
+          successfulParse = false;
+        }
+      });
+
+    if (successfulParse === true) {
+      return new Link(id, null, args, reltype)
+    } else {
+      return null;
     }
   }
 }

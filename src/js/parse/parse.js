@@ -45,7 +45,7 @@ class Parser {
   }
 
   parseFiles(files) {
-    console.log(files);
+    // console.log(files);
     if (files.length === 1) {
       const file = files[0];
       if (file.type === 'application/json') {
@@ -89,6 +89,7 @@ class Parser {
         let text = matchingFiles.find(file => file.name.endsWith('.txt'));
         let standoff = matchingFiles.find(file => !file.name.endsWith('.txt'));
         this.parseText(text.content, standoff.content);
+        return [text.name, standoff.name].join('\n');
       } else {
         let text = matchingFiles.find(file => file.name.endsWith('.txt'));
         let entities = matchingFiles.find(file => file.name.endsWith('.a1'));
@@ -96,6 +97,7 @@ class Parser {
         if (text && evts && entities) {
           this.parseText(text.content, entities.content, evts.content)
         }
+        return [text.name, entities.name, evts.name].join('\n');
       }
     }
   }

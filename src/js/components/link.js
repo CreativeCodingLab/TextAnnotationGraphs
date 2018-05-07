@@ -39,6 +39,8 @@ class Link {
     }
 
     init(svg) {
+      this.arguments.sort((a,b) => a.anchor.idx - b.anchor.idx);
+
       this.mainSVG = svg;
       this.svg = svg.group().addClass(this.top ? 'link' : 'link syntax-link');
       if (!this.visible) { this.svg.hide(); }
