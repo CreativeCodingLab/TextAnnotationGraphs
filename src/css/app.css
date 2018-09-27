@@ -1,3 +1,12 @@
+#fill {
+  /* ensure body takes up entire window */
+  position:absolute;
+  z-index:-1;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+}
 body {
   margin:0;
   -moz-osx-font-smoothing:grayscale;
@@ -63,6 +72,27 @@ header > button:hover {
   border-bottom:1px solid grey;
 }
 
+
+/* input */
+#input-modal {
+}
+#input-modal textarea {
+  width:100%;
+  height:300px;
+  padding:5px;
+  font-size:15px;
+}
+label[for="file-input"] {
+  padding:10px 15px;
+  cursor:pointer;
+  background:steelblue;
+  color:white;
+  margin:10px 0;
+  display:inline-block;
+  border-radius:5px;
+}
+
+/* modal */
 .modal {
   color:#222;
   background:rgba(0,0,0,0.3);
@@ -159,9 +189,9 @@ header > button:hover {
 #taxonomy input[type="checkbox"] {
   margin-right: 0.5em;
 }
-#taxonomy input.jscolor {
+#taxonomy input.colorpicker {
   margin-left: 0.5em;
-  width:4em;
+  width:5em;
   text-align:center;
   display:inline-block;
   outline:none;
@@ -170,12 +200,19 @@ header > button:hover {
   border-radius: 3px;
   cursor: pointer;
   box-shadow: 0 0 8px rgba(0,0,0,0.2);
+  text-transform:uppercase;
+  -moz-osx-font-smoothing:initial;
+  -webkit-font-smoothing:initial;
 }
-#taxonomy input.jscolor[disabled="true"] {
+#taxonomy input.colorpicker[disabled="true"] {
   border-color:#ccc;
   box-shadow: none;
   pointer-events:none;
   opacity:0.5;
+}
+
+#taxonomy input.colorpicker:focus {
+  border-color: white;
 }
 
 body > #tree-svg {
@@ -244,79 +281,4 @@ body > #tree-svg #tree-close {
   margin-top:100px;
   margin-bottom:20px;
   position:relative;
-}
-#main text {
-  text-anchor: middle;
-}
-.row-drag {
-  stroke-width:2;
-  stroke-dasharray: 2,1;
-  stroke:rgba(100,100,100,0.3);
-  transition: stroke 300ms ease;
-  cursor: row-resize;
-}
-.row-drag:hover {
-  stroke-dasharray:none;
-  stroke:rgba(100,100,100,0.8);
-}
-
-.word text {
-  font-size:16px;
-  fill:black;
-}
-.word path {
-  stroke:#333;
-  fill:none;
-}
-.word .word-text {
-  cursor: pointer;
-}
-
-.word-cluster text,
-.word .word-tag {
-  font-size: 12px;
-  cursor: text;
-}
-
-.word-cluster text,
-.word .word-tag {
-  fill:#333;
-}
-.word .syntax-tag {
-  fill: rgb(208, 150, 143);
-}
-.toggle-syntax .syntax-tag, .toggle-syntax .syntax-link {
-  display:none;
-}
-
-.editing .word-tag,
-.editing-text,
-.editing text {
-  fill: #fff !important;
-}
-
-.editing-rect,
-.editing rect {
-  fill:#a94442;
-}
-
-.link path.polyline {
-  stroke: #6590b4;
-  fill: none;
-}
-.link {
-  font-size: 12px;
-  fill:#6590b4;
-  stroke-width:1.5px;
-}
-.link.syntax-link {
-  fill: #999;
-}
-.syntax-link path.polyline {
-  stroke: #999;
-  fill: none;
-}
-
-.link:hover {
-  stroke-width:2.5px;
 }

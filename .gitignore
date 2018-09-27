@@ -1,3 +1,12 @@
+# build files
+build/
+# needed for GH Pages
+#dist/
+
+# npm related
+
+/node_modules/*
+
 #OS files and Swap Files
 *~
 *.lock

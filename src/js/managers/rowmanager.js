@@ -1,4 +1,7 @@
-const RowManager = (function() {
+import Row from '../components/row.js';
+import Link from '../components/link.js';
+
+module.exports = (function() {
   const ROW_PADDING = 10;
   const _rows = [];
   let _svg;

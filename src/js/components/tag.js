@@ -105,3 +105,4 @@ class WordTag {
     return this.position ? -28 : 20;
   }
 }
+module.exports = WordTag;
