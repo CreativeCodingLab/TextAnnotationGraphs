@@ -51,6 +51,12 @@ TAG can be built and installed using [`npm`](https://docs.npmjs.com/getting-star
 npm install git+https://github.com/CreativeCodingLab/TextAnnotationGraphs.git
 ```
 
+After installation, you can run the TAG demo using `node demo/server.js` and directing your browser to `localhost:8080`.
+
+## Usage
+
+In order to use TAG with your own annotations, you will need to include a valid set of [Bootstrap 4](http://getbootstrap.com/) CSS sources on your page.
+
 ## Development
 
 Tasks are managed with [`npm` scripts](https://docs.npmjs.com/misc/scripts).

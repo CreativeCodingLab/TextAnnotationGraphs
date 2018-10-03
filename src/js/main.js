@@ -1,23 +1,28 @@
-import * as SVG from 'svg.js';
-import Parser from './parse/parse.js';
-import TreeLayout from './treelayout.js';
-import * as ymljson from './ymljson.js';
-import LabelManager from './managers/labelmanager.js';
-import RowManager from './managers/rowmanager.js';
-import Taxonomy from './managers/taxonomy.js';
-import Tooltip from './managers/tooltip.js';
-import Word from './components/word.js';
-import WordCluster from './components/wordcluster.js';
-import Link from './components/link.js';
-import load from './xhr.js';
+import * as SVG from "svg.js";
+import Parser from "./parse/parse.js";
+import TreeLayout from "./treelayout.js";
+import * as ymljson from "./ymljson.js";
+import LabelManager from "./managers/labelmanager.js";
+import RowManager from "./managers/rowmanager.js";
+import Taxonomy from "./managers/taxonomy.js";
+import Tooltip from "./managers/tooltip.js";
+import Word from "./components/word.js";
+import WordCluster from "./components/wordcluster.js";
+import Link from "./components/link.js";
+import load from "./xhr.js";
 
-const Main = (function() {
+const $ = require("jquery");
+
+// UI
+const uploader = require("./ui/upload");
+
+const Main = (function () {
   // classes
   let parser, lm, rm, tm;
 
   // main svg element
   let svg;
-  let css = '';
+  let css = "";
 
   // node-link objects
   let words = [];
@@ -42,17 +47,17 @@ const Main = (function() {
   function init() {
     // setup
     let body = document.body.getBoundingClientRect();
-    svg = new SVG.Doc('main')
+    svg = new SVG.Doc("main")
       .size(body.width, window.innerHeight - body.top - 10);
-    tooltip = new Tooltip('tooltip', svg);
-    parser  = new Parser();
-    rm      = new RowManager(svg);
-    lm      = new LabelManager(svg);
-    tm      = new Taxonomy('taxonomy');
-    tree    = new TreeLayout('#tree', svg);
+    tooltip = new Tooltip("tooltip", svg);
+    parser = new Parser();
+    rm = new RowManager(svg);
+    lm = new LabelManager(svg);
+    tm = new Taxonomy("taxonomy");
+    tree = new TreeLayout("#tree", svg);
 
-    if (document.getElementById('svgStyles')) {
-      css = document.getElementById('svgStyles').innerHTML;
+    if (document.getElementById("svgStyles")) {
+      css = document.getElementById("svgStyles").innerHTML;
     }
 
     // load and render initial dataset by default
@@ -65,7 +70,7 @@ const Main = (function() {
 
   function setupSVGListeners() {
     // svg event listeners
-    svg.on('row-resize', function(e) {
+    svg.on("row-resize", function (e) {
       lm.stopEditing();
       rm.resizeRow(e.detail.object.idx, e.detail.y);
     });
@@ -76,19 +81,19 @@ const Main = (function() {
     //   e.detail.object.node.style.fill = color;
     // });
 
-    svg.on('word-move-start', function() {
+    svg.on("word-move-start", function () {
       if (!options.showLinksOnMove && options.showSyntax) {
         setSyntaxVisibility(false);
       }
     });
 
-    svg.on('word-move', function(e) {
-      tooltip.clear()
+    svg.on("word-move", function (e) {
+      tooltip.clear();
       lm.stopEditing();
       rm.moveWordOnRow(e.detail.object, e.detail.x);
     });
 
-    svg.on('word-move-end', function(e) {
+    svg.on("word-move-end", function (e) {
       if (!options.showLinksOnMove && options.showSyntax) {
         setSyntaxVisibility(true);
       }
@@ -99,7 +104,7 @@ const Main = (function() {
     //   tm.remove(e.detail.object);
     // });
 
-    svg.on('row-recalculate-slots', function(e) {
+    svg.on("row-recalculate-slots", function (e) {
       links.forEach(link => {
         link.resetSlotRecalculation();
       });
@@ -109,10 +114,10 @@ const Main = (function() {
       });
     });
 
-    svg.on('build-tree', function(e) {
-      document.body.classList.remove('tree-closed');
+    svg.on("build-tree", function (e) {
+      document.body.classList.remove("tree-closed");
       if (tree.isInModal) {
-        setActiveTab('tree');
+        setActiveTab("tree");
       }
       else {
         setActiveTab(null);
@@ -126,18 +131,18 @@ const Main = (function() {
     });
   }
 
-  function setActiveTab(pageId, modalId="modal") {
+  function setActiveTab(pageId, modalId = "modal-tag") {
     let m = document.getElementById(modalId);
     if (pageId == null) {
-      m.classList.remove('open');
+      m.classList.remove("open");
     }
     else {
-      m.classList.add('open');
+      m.classList.add("open");
 
-      m.querySelector('.tab.active').classList.remove('active');
-      m.querySelector('.page.active').classList.remove('active');
-      m.querySelector('header span[data-id="' + pageId + '"]').classList.add('active');
-      document.getElementById(pageId).classList.add('active');
+      m.querySelector(".tab.active").classList.remove("active");
+      m.querySelector(".page.active").classList.remove("active");
+      m.querySelector("header span[data-id=\"" + pageId + "\"]").classList.add("active");
+      document.getElementById(pageId).classList.add("active");
     }
   }
 
@@ -151,56 +156,60 @@ const Main = (function() {
       rm.width(body.width);
       setSyntaxVisibility();
     }
+
     window.onresize = debounce(resizeWindow, 200);
 
-    document.getElementById('dataset').onchange = function(e) {
+    document.getElementById("dataset").onchange = function (e) {
       if (this.selectedIndex > 0) {
         // FIXME: this can be improved by instead receiving the file name, rather than an index.
         changeDataset(this.selectedIndex);
       }
-    }
+    };
 
-    document.querySelectorAll('#options input').forEach(input => {
-      input.onclick = function() {
-        let option = this.getAttribute('data-option');
-        switch(option) {
-          case 'syntax':
+    document.querySelectorAll("#options input").forEach(input => {
+      input.onclick = function () {
+        let option = this.getAttribute("data-option");
+        switch (option) {
+          case "syntax":
             options.showSyntax = this.checked;
             setSyntaxVisibility();
             break;
-          case 'links':
+          case "links":
             options.showLinksOnMove = this.checked;
             break;
-          case 'tree':
+          case "tree":
             options.showTreeInModal = this.checked;
             // document.querySelector('.tab[data-id="tree"]').style.display = this.checked ? 'inline-block' : 'none';
             break;
-          default: ;
+          default:
+            ;
         }
       };
     });
 
-    let modalHeader = document.querySelector('#modal header');
+    let modalHeader = document.querySelector("#modal-tag header");
     let modalDrag = null;
-    let modalWindow = document.querySelector('#modal > div');
-    modalHeader.onmousedown = function(e) {
+    let modalWindow = document.querySelector("#modal-tag > div");
+    modalHeader.onmousedown = function (e) {
       modalDrag = e;
-    }
-    document.addEventListener('mousemove', function(e) {
+    };
+    document.addEventListener("mousemove", function (e) {
       if (modalDrag) {
         let dx = e.x - modalDrag.x;
         let dy = e.y - modalDrag.y;
         modalDrag = e;
-        let transform = modalWindow.style.transform.match(/-?\d+/g) || [0,0];
+        let transform = modalWindow.style.transform.match(/-?\d+/g) || [0, 0];
         transform[0] = +transform[0] + dx || dx;
         transform[1] = +transform[1] + dy || dy;
         modalWindow.style.transform = `translate(${transform[0]}px, ${transform[1]}px)`;
       }
     });
-    document.addEventListener('mouseup', function() {
+    document.addEventListener("mouseup", function () {
       modalDrag = null;
       let transform = modalWindow.style.transform.match(/-?\d+/g);
-      if (!transform) { return; }
+      if (!transform) {
+        return;
+      }
 
       let rect = modalWindow.getBoundingClientRect();
       if (rect.left > window.innerWidth - 50) {
@@ -218,58 +227,57 @@ const Main = (function() {
       modalWindow.style.transform = `translate(${transform[0]}px, ${transform[1]}px)`;
     });
 
-    document.querySelectorAll('.modal header .tab').forEach(tab => {
-      tab.onclick = function() {
-        setActiveTab(this.getAttribute('data-id'));
-      }
+    document.querySelectorAll(".modal-tag header .tab").forEach(tab => {
+      tab.onclick = function () {
+        setActiveTab(this.getAttribute("data-id"));
+      };
     });
 
-    document.getElementById('custom-annotation').onclick = function() {
-      document.getElementById('input-modal').classList.add('open');
-    }
-
-    document.getElementById('options-toggle').onclick = function() {
-        setActiveTab('options');
-    }
-    document.getElementById('taxonomy-toggle').onclick = function() {
-        setActiveTab('taxonomy');
-    }
-    document.querySelectorAll('.modal').forEach(modal => {
-      modal.onclick = function(e) {
-        e.target.classList.remove('open');
-      }
+    $("#custom-annotation").on("click", () => {
+      const $modal = uploader.showUploadModal();
+      $modal.find("#input-upload-file").on("change", uploadFile);
     });
 
-    // upload file
-    document.getElementById('file-input').onchange = uploadFile;
+    document.getElementById("options-toggle").onclick = function () {
+      setActiveTab("options");
+    };
+    document.getElementById("taxonomy-toggle").onclick = function () {
+      setActiveTab("taxonomy");
+    };
+    document.querySelectorAll(".modal-tag").forEach(modal => {
+      modal.onclick = function (e) {
+        e.target.classList.remove("open");
+      };
+    });
 
     // upload file via drag and drop
-    document.body.addEventListener('dragenter', (e) => e.preventDefault());
-    document.body.addEventListener('dragover', (e) => e.preventDefault());
-    document.body.addEventListener('drop', uploadFile);
+    document.body.addEventListener("dragenter", (e) => e.preventDefault());
+    document.body.addEventListener("dragover", (e) => e.preventDefault());
+    document.body.addEventListener("drop", uploadFile);
 
 
     function exportFile() {
 
       let exportedSVG = svg.svg();
-      let i = exportedSVG.indexOf('</defs>');
+      let i = exportedSVG.indexOf("</defs>");
       exportedSVG = exportedSVG.slice(0, i)
-        + '<style>' + css + '</style>'
+        + "<style>" + css + "</style>"
         + exportedSVG.slice(i);
-      let a = document.getElementById('download');
-      a.setAttribute('href', 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(exportedSVG));
-      a.setAttribute('download', 'tag.svg');
+      let a = document.getElementById("download");
+      a.setAttribute("href", "data:image/svg+xml;charset=utf-8," + encodeURIComponent(exportedSVG));
+      a.setAttribute("download", "tag.svg");
       a.click();
     }
-    document.getElementById('download-button').onclick = exportFile;
-    document.addEventListener('keydown', (e) => {
+
+    document.getElementById("download-button").onclick = exportFile;
+    document.addEventListener("keydown", (e) => {
       let key = e.keyCode || e.which;
       let ctrl = e.ctrlKey || (e.metaKey && !e.ctrlKey);
       if (key === 83 && ctrl) {
         e.preventDefault();
         exportFile();
       }
-    })
+    });
   }
 
   /* read an externally loaded file */
@@ -282,7 +290,7 @@ const Main = (function() {
       const fr = new FileReader();
       fr.readAsText(file);
       return new Promise((resolve, reject) => {
-        fr.onload = function() {
+        fr.onload = function () {
           resolve({
             name: file.name,
             type: file.type,
@@ -300,19 +308,20 @@ const Main = (function() {
           printMessage(message);
         }
       }
-      catch(err) {
-        console.log('ERROR: ', err);
+      catch (err) {
+        console.log("ERROR: ", err);
         printMessage(err);
       }
-      document.getElementById('form').reset();
+      document.getElementById("form").reset();
     });
   }
 
   function printMessage(text) {
-    document.getElementById('message').textContent = text;
+    document.getElementById("message").textContent = text;
   }
+
   function clearMessage() {
-    document.getElementById('message').textContent = '';
+    document.getElementById("message").textContent = "";
   }
 
 
@@ -335,7 +344,7 @@ const Main = (function() {
         clearMessage();
       })
       .catch(err => {
-        console.log('ERROR: ', err);
+        console.log("ERROR: ", err);
         printMessage(err);
       });
   };
@@ -352,7 +361,7 @@ const Main = (function() {
 
   function redrawVisualization() {
     let data = parser.parsedData;
-    ymljson.convert('taxonomy.yml', function(taxonomy) {
+    ymljson.convert("taxonomy.yml", function (taxonomy) {
       clear();
       words = data.words;
       links = data.links;
@@ -381,7 +390,7 @@ const Main = (function() {
     links.forEach(link => {
       link.recalculateSlots(words);
       link.draw();
-    })
+    });
     rm.resizeAll();
   }
 
@@ -397,18 +406,18 @@ const Main = (function() {
   // N milliseconds. If `immediate` is passed, trigger the function on the
   // leading edge, instead of the trailing.
   function debounce(func, wait, immediate) {
-  	var timeout;
-  	return function() {
-  		var context = this, args = args;
-  		var later = function() {
-  			timeout = null;
-  			if (!immediate) func.apply(context, args);
-  		};
-  		var callNow = immediate && !timeout;
-  		clearTimeout(timeout);
-  		timeout = setTimeout(later, wait);
-  		if (callNow) func.apply(context, args);
-  	};
+    var timeout;
+    return function () {
+      var context = this, args = args;
+      var later = function () {
+        timeout = null;
+        if (!immediate) func.apply(context, args);
+      };
+      var callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+    };
   };
 
 

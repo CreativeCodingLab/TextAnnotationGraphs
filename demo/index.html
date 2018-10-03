@@ -3,7 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <link href="https://fonts.googleapis.com/css?family=Nunito:400,600" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
   <link href="dist/tag/css/tag.min.css" rel="stylesheet">
 
   <style id="svgStyles">
@@ -111,26 +114,11 @@
   <button id="download-button">Download (CTRL+S)<a id="download" download></a></button>
 </header>
 
-<div id="input-modal" class="modal">
-  <div>
-    <header>
-      <span class="tab active">Custom annotation</span>
-    </header>
-    <div class="page active">
-      <form id="form">
-        <label for="file-input">Upload file(s)</label>
-        <input type="file" id="file-input" style="display:none;" multiple>
-      </form>
-      <pre id="message"></pre>
-    </div>
-  </div>
-</div>
-
 <div id="main">
   <div id="tooltip">
   </div>
 </div>
-<div class="modal" id="modal">
+<div class="modal-tag" id="modal-tag">
   <div>
     <header>
       <span class="tab active" data-id="taxonomy">Taxonomy</span>
