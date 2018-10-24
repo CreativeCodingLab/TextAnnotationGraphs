@@ -59,14 +59,14 @@ In order to use TAG with your own annotations, you will need to include a valid 
 
 ## Development
 
-Tasks are managed with [`npm` scripts](https://docs.npmjs.com/misc/scripts).
+Tasks are managed via [`npm` scripts](https://docs.npmjs.com/misc/scripts) and the [`runjs` build tool](https://github.com/pawelgalazka/runjs).  The most commonly used tasks are listed in `package.json`, and details for the various sub-tasks can be found in `runfile.js`.
 
 ### Building the source
-Assuming you've cloned the repository, simply run `npm run all` to install dependencies and transpile the source to ES2015.
+Assuming you've cloned the repository, simply run `npm install && npm run build` to install dependencies and transpile the source to ES2015.
 
 ### Live monitoring of changes
 
-For convience, you can monitor changes to the library's source (css + js) with the following `npm` task:
+For convenience, you can monitor changes to the library's sources (css + js) with the following `npm` task:
 
 ```
 npm run watch
