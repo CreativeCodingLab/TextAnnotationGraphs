@@ -1,13 +1,15 @@
 {
-  "name": "tag",
+  "name": "text-annotation-graphs",
   "version": "0.0.1",
   "description": "A modular annotation system that supports complex, interactive annotation graphs embedded on top of sequences of text.",
-  "main": "main.js",
+  "main": "src/tag.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "run build:all",
     "quick": "run build:quick",
-    "watch": "run watch:quick"
+    "watch": "run watch:quick",
+    "demo-build": "run demo:build",
+    "demo": "run demo:run"
   },
   "repository": {
     "type": "git",

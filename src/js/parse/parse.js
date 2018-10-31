@@ -1,6 +1,6 @@
-import ReachParser from './reach.js';
-import BratParser from './ann.js';
-import load from '../xhr.js';
+import ReachParser from "./reach.js";
+import BratParser from "./ann.js";
+import load from "../xhr.js";
 
 const re = /.*(?=\.(\S+))|.*/;
 
@@ -23,35 +23,35 @@ class Parser {
     if (!format) {
       const extension = path.toLowerCase().match(re)[1];
 
-      if (extension === 'json') {
-        format = 'json';
+      if (extension === "json") {
+        format = "json";
       }
       else {
-        format = 'brat';
+        format = "brat";
       }
     }
 
     // load and parse file
     return load(path).then(data => {
-      if (format === 'json') {
+      if (format === "json") {
         this.parseJson(JSON.parse(data));
       }
-      else if (format === 'brat') {
+      else if (format === "brat") {
         this.parseText(data);
       }
 
       return this.parsedData;
-    })
+    });
   }
 
   parseFiles(files) {
     // console.log(files);
     if (files.length === 1) {
       const file = files[0];
-      if (file.type === 'application/json') {
+      if (file.type === "application/json") {
         this.parseJson(JSON.parse(file.content));
       }
-      else if (file.type === '') {
+      else if (file.type === "") {
         this.parseText(file.content);
       }
       return file.name;
@@ -86,20 +86,36 @@ class Parser {
       // found matching files
       if (matchingFiles.length === 2) {
         // find text content
-        let text = matchingFiles.find(file => file.name.endsWith('.txt'));
-        let standoff = matchingFiles.find(file => !file.name.endsWith('.txt'));
+        let text = matchingFiles.find(file => file.name.endsWith(".txt"));
+        let standoff = matchingFiles.find(file => !file.name.endsWith(".txt"));
         this.parseText(text.content, standoff.content);
-        return [text.name, standoff.name].join('\n');
+        return [text.name, standoff.name].join("\n");
       } else {
-        let text = matchingFiles.find(file => file.name.endsWith('.txt'));
-        let entities = matchingFiles.find(file => file.name.endsWith('.a1'));
-        let evts = matchingFiles.find(file => file.name.endsWith('.a2'));
+        let text = matchingFiles.find(file => file.name.endsWith(".txt"));
+        let entities = matchingFiles.find(file => file.name.endsWith(".a1"));
+        let evts = matchingFiles.find(file => file.name.endsWith(".a2"));
         if (text && evts && entities) {
-          this.parseText(text.content, entities.content, evts.content)
+          this.parseText(text.content, entities.content, evts.content);
         }
-        return [text.name, entities.name, evts.name].join('\n');
+        return [text.name, entities.name, evts.name].join("\n");
       }
     }
+  }
+
+  /**
+   * Loads annotation data directly into the parser
+   * @param data
+   * @param format
+   */
+  loadData(data, format) {
+    if (format === "json") {
+      this.parseJson(data);
+    } else if (format === "brat") {
+      this.parseText(data);
+    } else {
+      throw `Unknown annotation format: ${format}`;
+    }
+    return this.parsedData;
   }
 
   parseJson(data) {

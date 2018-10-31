@@ -1,3 +1,4 @@
+import * as SVG from "svg.js";
 import * as draggable from 'svg.draggable.js';
 
 class Row {

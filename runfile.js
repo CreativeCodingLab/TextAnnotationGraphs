@@ -29,11 +29,12 @@ const config = {
   stylesDir: "css"
 };
 
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 // Build tasks
 // -----------
 const build = {};
 
-// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// ---------
 // App tasks
 // ---------
 // Generates various scripts and styles from app-specific sources, putting
@@ -103,7 +104,7 @@ build.app.styles = {
     // Autoprefixer
     await run(`postcss ${output} --use autoprefixer --replace`, {async: true});
     // Minify
-    run(`cleancss ${output} -o ${output}`, {async: true});
+    return run(`cleancss ${output} -o ${output}`, {async: true});
   },
 
   // All/Quick
@@ -133,7 +134,7 @@ build.app.quick = async () => {
   ]);
 };
 
-// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// ------------
 // Vendor tasks
 // ------------
 // Copies and post-processes various vendor scripts and styles from the
@@ -158,7 +159,7 @@ build.vendor.styles = {
     } else {
       // Cleancss chokes if the output directory is not present
       run(`mkdirp ${config.assetsDir}/${config.stylesDir}`);
-      run(`cleancss ${input} -o ${output}`, {async: true});
+      return run(`cleancss ${input} -o ${output}`, {async: true});
     }
   },
 
@@ -187,7 +188,7 @@ build.vendor.quick = async () => {
   ]);
 };
 
-// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// -------------------
 // Comprehensive tasks
 // -------------------
 build.all = async () => {
@@ -218,6 +219,7 @@ build.quick = async () => {
   console.log(`${colourInfo(doneString)}`);
 };
 
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 // Watch tasks
 // -----------
 const watch = {};
@@ -265,7 +267,7 @@ watch.styles = {
 
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-    run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace"`, {async: true});
+    return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace"`, {async: true});
   },
 
   all() {
@@ -292,7 +294,43 @@ watch.quick = async () => {
   ]);
 };
 
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// Demo tasks
+// ----------
+const demo = {
+  async build() {
+    const input = "demo/src/demo.js";
+    const output = `demo/demo.min.js`;
+    const type = "Build";
+    const desc = "TAG demo JS bundle";
+
+    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+
+    await run(`browserify ${input} -t [ babelify ] -p [ tinyify ] -o ${output} -v`, {async: true});
+    return demo.run();
+  },
+
+  // For ease of demo development; intentionally left undocumented
+  // (end-users should be importing the library into their own projects
+  // rather than building directly off the demo script)
+  watch() {
+    const input = "demo/src/demo.js";
+    const output = `demo/demo.min.js`;
+    const type = "Watch";
+    const desc = "TAG demo JS bundle";
+
+    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+
+    return run(`watchify ${input} -t [ babelify ] -o ${output} -v --poll=500`, {async: true});
+  },
+
+  run() {
+    return run(`cd demo && node server.js`);
+  }
+};
+
 module.exports = {
   build,
-  watch
+  watch,
+  demo
 };

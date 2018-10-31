@@ -1,5 +1,6 @@
 import WordTag from './tag.js';
 import Word from './word.js';
+import * as SVG from "svg.js";
 import * as draggable from 'svg.draggable.js';
 
 class Link {
