@@ -2,7 +2,7 @@
  * Initialisation and static functions
  */
 
-import Main from "./main-new.js";
+import Main from "./main-new";
 
 /**
  * Initialises a TAG visualisation on the given element
@@ -11,9 +11,7 @@ import Main from "./main-new.js";
  *     native/jQuery object)
  */
 function tag(container) {
-  const instance = new Main();
-  instance.initSVG(container);
-  return instance;
+  return new Main(container);
 }
 
 module.exports = {

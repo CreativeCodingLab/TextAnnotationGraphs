@@ -69,7 +69,7 @@ build.app.scripts = {
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
     run(`mkdirp ${config.assetsDir}/${config.scriptsDir}`);
-    return run(`browserify ${input} -t [ hbsfy ] -o ${output} -v`, {async: true});
+    return run(`browserify ${input} -t [ babelify ] -t [ hbsfy ] -o ${output} -v`, {async: true});
   },
 
   // All/Quick
@@ -93,7 +93,7 @@ build.app.styles = {
   // Main TAG Sass
   // ----------------
   async tag() {
-    const input = "src/css/app.scss";
+    const input = "src/css/tag.scss";
     const output = `${config.assetsDir}/${config.stylesDir}/tag.min.css`;
     const type = "Build";
     const desc = "Main TAG CSS bundle";
@@ -298,30 +298,73 @@ watch.quick = async () => {
 // Demo tasks
 // ----------
 const demo = {
-  async build() {
-    const input = "demo/src/demo.js";
-    const output = `demo/demo.min.js`;
-    const type = "Build";
-    const desc = "TAG demo JS bundle";
+  build: {
+    async scripts() {
+      const input = "demo/src/demo.js";
+      const output = `demo/demo.min.js`;
+      const type = "Build";
+      const desc = "TAG demo JS bundle";
 
-    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+      console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-    await run(`browserify ${input} -t [ babelify ] -p [ tinyify ] -o ${output} -v`, {async: true});
-    return demo.run();
+      return run(`browserify ${input} -t [ babelify ] -p [ tinyify ] -o ${output} -v`, {async: true});
+    },
+
+    async styles() {
+      const input = "demo/src/demo.scss";
+      const output = `demo/demo.min.css`;
+      const type = "Build";
+      const desc = "TAG demo CSS bundle";
+
+      console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+
+      await run(`sass ${input} ${output}`, {async: true});
+      // Autoprefixer
+      await run(`postcss ${output} --use autoprefixer --replace`, {async: true});
+      // Minify
+      return run(`cleancss ${output} -o ${output}`, {async: true});
+    },
+
+    async all() {
+      return Promise.all([
+        demo.build.scripts(),
+        demo.build.styles()
+      ]);
+    }
   },
 
   // For ease of demo development; intentionally left undocumented
   // (end-users should be importing the library into their own projects
   // rather than building directly off the demo script)
-  watch() {
-    const input = "demo/src/demo.js";
-    const output = `demo/demo.min.js`;
-    const type = "Watch";
-    const desc = "TAG demo JS bundle";
+  watch: {
+    async scripts() {
+      const input = "demo/src/demo.js";
+      const output = `demo/demo.min.js`;
+      const type = "Watch";
+      const desc = "TAG demo JS bundle";
 
-    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+      console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-    return run(`watchify ${input} -t [ babelify ] -o ${output} -v --poll=500`, {async: true});
+      return run(`watchify ${input} -t [ babelify ] -o ${output} -v --poll=500`, {async: true});
+    },
+
+    async styles() {
+      const input = "demo/src/demo.scss";
+      const output = `demo/demo.min.css`;
+      const type = "Build";
+      const desc = "TAG demo CSS bundle";
+
+      console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+
+      return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace"`, {async: true});
+    },
+
+    async all() {
+      return Promise.all([
+        demo.watch.scripts(),
+        demo.watch.styles()
+      ]);
+    }
   },
 
   run() {
