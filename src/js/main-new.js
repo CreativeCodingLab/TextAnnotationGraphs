@@ -9,6 +9,7 @@ import * as SVG from "svg.js";
 import Parser from "./parse/parse.js";
 import RowManager from "./managers/rowmanager.js";
 import LabelManager from "./managers/labelmanager.js";
+import Taxonomy from "./managers/taxonomy.js";
 
 class Main {
   /**
@@ -36,6 +37,7 @@ class Main {
     this.parser = new Parser();
     this.rowManager = new RowManager(this.svg);
     this.labelManager = new LabelManager(this.svg);
+    this.taxonomyManager = new Taxonomy();
 
     // Node-link objects
     this.words = [];
@@ -144,6 +146,7 @@ class Main {
    * Draws elements (rows, words, links, etc.) onto the visualisation
    */
   draw() {
+    // Add tokens and links
     const data = this.parser.parsedData;
     if (data.words.length > 0 && !this.rowManager.lastRow) {
       this.rowManager.appendRow();
@@ -161,6 +164,9 @@ class Main {
       link.draw();
     });
     this.rowManager.resizeAll();
+
+    // Change token colours based on the current taxonomy, if loaded
+    this.taxonomyManager.draw([], data.words);
   }
 
   /**
