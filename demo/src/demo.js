@@ -10,18 +10,25 @@
  */
 
 // For your own projects, use `require("text-annotation-graphs")` instead
-const TAG = require("../../src/js/tag.js");
+// const TAG = require("../../src/js/tag.js");
+import TAG from "../../src/js/tag";
 
 const $ = require("jquery");
 
 // Main function
 $(function () {
-  // The `.tag()` function can take either the ID of the main element or the
-  // main element itself (as either a jQuery or native object)
   const $container = $("#demoContainer");
-  const graph = TAG.tag($container);
+  const graph = TAG.tag({
+    // The `container` parameter can take either the ID of the main element or
+    // the main element itself (as either a jQuery or native object)
+    container: $container,
 
-  // The data to load into the visualisation can be loaded using the
+    // The initial data to load
+    data: require("../data/data6.json"),
+    format: "json"
+  });
+
+  // A new set of data can be loaded into the visualisation using the
   // `.loadData()` function
   const sampleData = require("../data/data7.json");
   graph.loadData(sampleData, "json");

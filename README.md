@@ -17,7 +17,7 @@ A modular annotation system that supports complex, interactive annotation graphs
 
 
 ## Development
-TAG was developed by Angus Forbes (UC Santa Cruz) and Kristine Lee (University of Illinios at Chicago), in collaboration with Gus Hahn-Powell, Marco Antonio Valenzuela Escárcega, and Mihai Surdeanu (University of Arizona). Contact angus@ucsc.edu for more information.
+TAG was developed by Angus Forbes (UC Santa Cruz) and Kristine Lee (University of Illinios at Chicago), in collaboration with Gus Hahn-Powell, Marco Antonio Valenzuela Escárcega, Zechy Wong, and Mihai Surdeanu (University of Arizona). Contact angus@ucsc.edu for more information.
 
 # Citing TAG
 
@@ -51,17 +51,42 @@ TAG can be built and installed using [`npm`](https://docs.npmjs.com/getting-star
 npm install git+https://github.com/CreativeCodingLab/TextAnnotationGraphs.git
 ```
 
-After installation, you can run the TAG demo using `node demo/server.js` and directing your browser to `localhost:8080`.
+After installation, you can run the TAG demo using `npm run demo` and directing your browser to `localhost:8080`.
 
 ## Usage
 
-In order to use TAG with your own annotations, you will need to include a valid set of [Bootstrap 4](http://getbootstrap.com/) CSS sources on your page.
+To use TAG with your own applications, first include the library in your script:
+
+#### Browserify (CommonJS)
+
+```
+const TAG = require("text-annotation-graphs");
+```
+
+#### ES6
+
+```
+import TAG from "text-annotation-graphs";
+```
+
+Then initialise the visualisation on an element, optionally specifying the initial data set to load.  For more details, consult the API documentation below.
+
+```
+const graph = TAG.tag({
+  container: $container,
+  data: <...>,
+  format: "json"
+});
+```
 
 ## Development
 
 Tasks are managed via [`npm` scripts](https://docs.npmjs.com/misc/scripts) and the [`runjs` build tool](https://github.com/pawelgalazka/runjs).  The most commonly used tasks are listed in `package.json`, and details for the various sub-tasks can be found in `runfile.js`.
 
 ### Building the source
+
+TAG is written in ES6, and uses [Sass](https://sass-lang.com/) for its styles.
+
 Assuming you've cloned the repository, simply run `npm install && npm run build` to install dependencies and transpile the source to ES2015.
 
 ### Live monitoring of changes

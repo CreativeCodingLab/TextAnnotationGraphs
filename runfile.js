@@ -50,7 +50,7 @@ build.app.scripts = {
   // Main TAG bundle
   // -----------------
   async tag() {
-    const input = "src/js/main.js";
+    const input = "src/js/main-new.js";
     const output = `${config.assetsDir}/${config.scriptsDir}/tag.min.js`;
     const type = "Build";
     const desc = "Main TAG JS bundle";

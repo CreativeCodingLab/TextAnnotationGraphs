@@ -59,6 +59,7 @@ class Main {
    * N.B.: Event listeners will change the execution context by default, so
    * either provide a closure to the main library instance or use arrow
    * functions to preserve the original context
+   * cf. http://es6-features.org/#Lexicalthis
    */
   setupSVGListeners() {
     // svg event listeners
@@ -132,14 +133,6 @@ class Main {
   loadData(data, format) {
     this.parser.loadData(data, format);
     this.redraw();
-
-    // const $ = require("jquery");
-    // $("#demoContainer").html(`
-    // Will load:<br>
-    // ${format}<br>
-    // <pre>${JSON.stringify(data, null, 2)}</pre>
-    // `);
-    // console.log(this.parser.parsedData);
   }
 
   /**
