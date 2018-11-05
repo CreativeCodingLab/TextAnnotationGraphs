@@ -4,12 +4,40 @@
   <meta charset="UTF-8">
   <title>TAG Demo</title>
 
+  <!-- Optional styling: Bootstrap 4 styles for full-UI demo -->
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+
+  <!-- Core TAG styles -->
   <link href="dist/tag/css/tag.min.css" rel="stylesheet">
+
+  <!-- Demo-specific styles (fonts, positioning, etc.) -->
   <link href="demo.min.css" rel="stylesheet">
 </head>
 <body>
-<div id="demoContainer"
-     style="width: 75vw; height: 75vh; margin: 10vh auto; border: solid 1px lightgray">
+<div class="container py-5">
+  <h2 class="mb-5">TextAnnotationGraphs (TAG) Demo</h2>
+
+  <div class="row">
+    <div class="col">
+      <h4>Basic example</h4>
+      <p>
+        For a minimal embedded TAG visualisation, simply specify the container
+        element, the annotation data to load, and the format that the data is
+        in.
+      </p>
+      <p>
+        See the source for this example in the "Basic example" section of <code
+          class="bg-light">src/demo.js</code>.
+      </p>
+      <div id="basicContainer" style="border: solid 1px lightgray">
+      </div>
+
+    </div>
+  </div>
+
 </div>
 
 <div id="taxonomy" style="display:none">

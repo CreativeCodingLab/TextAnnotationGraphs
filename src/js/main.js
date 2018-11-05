@@ -30,8 +30,7 @@ class Main {
     // That said, we need to set the SVG Doc's size using absolute units
     // (since they are used for calculating the widths of rows and other
     // elements).  We use jQuery to get the parent's size.
-    const $container = $(this.svg.node).parent();
-    this.svg.size($container.innerWidth(), $container.innerHeight());
+    this.$parent = $(this.svg.node).parent();
 
     // Managers/Components
     this.parser = new Parser();
@@ -51,7 +50,9 @@ class Main {
     };
 
     // Initialisation
+    this.resize();
     this._setupSVGListeners();
+    this._setupUIListeners();
   }
 
   /**
@@ -119,6 +120,14 @@ class Main {
   }
 
   /**
+   * Fits the SVG canvas and its children to the size of its container
+   */
+  resize() {
+    this.svg.size(this.$parent.innerWidth(), this.$parent.innerHeight());
+    this.rowManager.resizeAll();
+  }
+
+  /**
    * Changes the visibility of the links from the syntax parse in the
    * current visualisation
    * (To be exact, changes the visibility of any links that are drawn below,
@@ -145,6 +154,7 @@ class Main {
    * either provide a closure to the main library instance or use arrow
    * functions to preserve the original context
    * cf. http://es6-features.org/#Lexicalthis
+   * @private
    */
   _setupSVGListeners() {
     this.svg.on("row-resize", (event) => {
@@ -207,6 +217,17 @@ class Main {
     //     tree.resize();
     //   }
     // });
+  }
+
+  /**
+   * Sets up listeners for general browser events
+   * @private
+   */
+  _setupUIListeners() {
+    // Browser window resize
+    $(window).on("resize", _.throttle(() => {
+      this.resize();
+    }, 50));
   }
 }
 

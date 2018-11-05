@@ -16,23 +16,35 @@ const $ = require("jquery");
 
 // Main function
 $(function () {
-  const $container = $("#demoContainer");
-  const tagInstance = TAG.tag({
+  // -------------
+  // Basic example
+  // -------------
+  const $basicContainer = $("#basicContainer");
+  const basicTag = TAG.tag({
     // The `container` parameter can take either the ID of the main element or
     // the main element itself (as either a jQuery or native object)
-    container: $container,
+    container: $basicContainer,
 
-    // The initial data to load
-    data: require("../data/data7.json"),
+    // The initial data to load.
+    // Different formats might expect different types for `data`:
+    // E.g., the "json" format expects the annotations as an
+    // (already-parsed) Object, while the "brat" format expects them as a raw
+    // String.
+    // See the full documentation for details.
+    data: require("../data/data8.json"),
     format: "json"
   });
 
+  // -------------------
+  // Advanced/UI example
+  // -------------------
   // A new set of data can be loaded into the visualisation using the
   // `.loadData()` function
-  const sampleData = require("../data/data8.json");
-  tagInstance.loadData(sampleData, "json");
+
+  // const sampleData = require("../data/data8.json");
+  // basicTag.loadData(sampleData, "json");
 
   // Debug
   window._ = require("lodash");
-  window.tagInstance = tagInstance;
+  window.basicTag = basicTag;
 });

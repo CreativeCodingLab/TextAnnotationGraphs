@@ -362,7 +362,7 @@ const Main = (function () {
   }
 
   function redrawVisualization() {
-    let data = parser.parsedData;
+    let data = parser.getParsedData();
     ymljson.convert("taxonomy.yml", function (taxonomy) {
       clear();
       words = data.words;
@@ -444,13 +444,9 @@ const Main = (function () {
   return {
     init,
     draw,
-    changeDataset,
-
-    redrawVisualization
+    changeDataset
   };
 
 })();
 
 Main.init();
-
-window.tagInstance = Main;

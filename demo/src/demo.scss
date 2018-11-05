@@ -26,7 +26,7 @@ svg text {
   height: 100%;
 }
 
-body {
+body.full-demo {
   margin: 0;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -48,7 +48,7 @@ body {
   font: 14px/1.5em helvetica, arial, sans-serif;
 }
 
-header > div {
+body.full-demo header > div {
   float: right;
   display: inline-block;
   background: inherit;
@@ -56,7 +56,7 @@ header > div {
 }
 
 #dataset,
-header > button {
+body.full-demo header > button {
   color: inherit;
   background: none;
   outline: none;
@@ -79,7 +79,7 @@ header > button {
   background: #fafafa;
 }
 
-header > button:hover {
+body.full-demo header > button:hover {
   border-bottom: 1px solid grey;
 }
 
@@ -94,7 +94,7 @@ header > button:hover {
   font-size: 15px;
 }
 
-label[for="file-input"] {
+body.full-demo label[for="file-input"] {
   padding: 10px 15px;
   cursor: pointer;
   background: steelblue;
@@ -239,7 +239,7 @@ label[for="file-input"] {
   border-color: white;
 }
 
-body > #tree-svg {
+body.full-demo > #tree-svg {
   border-top: 1px solid #ccc;
   /*box-shadow: 0 0 1em #aaa;*/
   background: hsl(5, 5%, 98%);
@@ -251,7 +251,7 @@ body > #tree-svg {
   max-height: 40vh;
 }
 
-body {
+body.full-demo {
   margin-bottom: 200px;
 }
 
@@ -263,7 +263,7 @@ body.tree-closed > #tree-svg {
   display: none;
 }
 
-body > #tree-svg #tree-close {
+body.full-demo > #tree-svg #tree-close {
   display: inline-block;
 }
 

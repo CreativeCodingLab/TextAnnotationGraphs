@@ -11,14 +11,17 @@ module.exports = (function() {
     }
 
     resizeAll() {
+      this.width(_svg.width());
+
       _rows.forEach(row => {
         this.recalculateRowSlots(row);
       });
-      this.resizeRow(0);      
+      this.resizeRow(0);
     }
 
     resizeRow(i, dy = 0) {
-      let row = _rows[i];
+      const row = _rows[i];
+      if (row === undefined) return;
       if (i > 0) {
         let adjust = _rows[i - 1].ry2 + ROW_PADDING - row.ry;
         row.move(row.ry + adjust);
