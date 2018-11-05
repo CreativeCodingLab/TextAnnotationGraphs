@@ -2,7 +2,7 @@
  * Initialisation and static functions
  */
 
-import Main from "./main-new";
+import Main from "./main";
 
 /**
  * Initialises a TAG visualisation on the given element

@@ -13,7 +13,7 @@ import * as yaml from "js-yaml";
 describe("The `js-yaml` parser", () => {
   it("generates the same JS object as the previous implementation", () => {
     // Pull the sample taxonomy file
-    const yamlData = fs.readFileSync("demo/taxonomy.yml", "utf8");
+    const yamlData = fs.readFileSync("./src/__tests__/data/taxonomy.yml", "utf8");
 
     // Native implementation
     let converted = ymljson.convertData(yamlData);

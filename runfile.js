@@ -50,7 +50,7 @@ build.app.scripts = {
   // Main TAG bundle
   // -----------------
   async tag() {
-    const input = "src/js/main-new.js";
+    const input = "src/js/main-old.js";
     const output = `${config.assetsDir}/${config.scriptsDir}/tag.min.js`;
     const type = "Build";
     const desc = "Main TAG JS bundle";
@@ -61,10 +61,10 @@ build.app.scripts = {
     return run(`browserify ${input} -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v`, {async: true});
   },
   async quickTag() {
-    const input = "src/js/main.js";
+    const input = "src/js/main-old.js";
     const output = `${config.assetsDir}/${config.scriptsDir}/tag.min.js`;
     const type = "Build";
-    const desc = "Main TAG JS bundle (No Babelify/Tinyify)";
+    const desc = "Main TAG JS bundle (No Tinyify)";
 
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
@@ -226,7 +226,7 @@ const watch = {};
 
 watch.scripts = {
   async tag() {
-    const input = "src/js/main.js";
+    const input = "src/js/main-old.js";
     const output = `${config.assetsDir}/${config.scriptsDir}/tag.min.js`;
     const type = "Watch";
     const desc = "Main TAG JS bundle (No Tinyify)";
@@ -236,14 +236,14 @@ watch.scripts = {
     return run(`watchify ${input} -t [ babelify ] -t [ hbsfy ] -o ${output} -v --poll=500`, {async: true});
   },
   async quickTag() {
-    const input = "src/js/main.js";
+    const input = "src/js/main-old.js";
     const output = `${config.assetsDir}/${config.scriptsDir}/tag.min.js`;
     const type = "Watch";
-    const desc = "Main TAG JS bundle (No Babelify/Tinyify)";
+    const desc = "Main TAG JS bundle (No Tinyify)";
 
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-    return run(`watchify ${input} -t [ hbsfy ] -o ${output} -v --poll=500`, {async: true});
+    return run(`watchify ${input} -t [ babelify ] -t [ hbsfy ] -o ${output} -v --poll=500`, {async: true});
   },
 
   all() {

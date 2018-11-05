@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 import ReachParser from "./reach.js";
 import BratParser from "./ann.js";
 import load from "../xhr.js";
@@ -7,7 +9,7 @@ const re = /.*(?=\.(\S+))|.*/;
 class Parser {
   constructor() {
     /* output */
-    this.parsedData = {
+    this._parsedData = {
       words: [],
       links: [],
       clusters: []
@@ -40,7 +42,7 @@ class Parser {
         this.parseText(data);
       }
 
-      return this.parsedData;
+      return this.getParsedData();
     });
   }
 
@@ -115,17 +117,25 @@ class Parser {
     } else {
       throw `Unknown annotation format: ${format}`;
     }
-    return this.parsedData;
+    return this.getParsedData();
+  }
+
+  /**
+   * Returns a cloned copy of the most recently parsed data, with circular
+   * references (e.g., between Words and Links) intact
+   */
+  getParsedData() {
+    return _.cloneDeep(this._parsedData);
   }
 
   parseJson(data) {
     this.reach.parse(data);
-    this.parsedData = this.reach.data;
+    this._parsedData = this.reach.data;
   }
 
   parseText() {
     this.ann.parse.apply(this.ann, arguments);
-    this.parsedData = this.ann.data;
+    this._parsedData = this.ann.data;
   }
 }
 

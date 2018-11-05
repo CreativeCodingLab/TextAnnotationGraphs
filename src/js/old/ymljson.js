@@ -1,4 +1,4 @@
-import load from "./xhr.js";
+import load from "../xhr.js";
 
 // non-comprehensive function to convert yml file to json
 export function convert(url, callback) {

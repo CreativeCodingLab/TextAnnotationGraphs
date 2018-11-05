@@ -4,7 +4,7 @@
   "description": "A modular annotation system that supports complex, interactive annotation graphs embedded on top of sequences of text.",
   "main": "src/tag.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --verbose",
     "build": "run build:all",
     "quick": "run build:quick",
     "watch": "run watch:quick",
