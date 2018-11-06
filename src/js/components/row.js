@@ -23,6 +23,7 @@ class Row {
   init(svg) {
     this.svg = svg.group()
       .transform({y: this.ry})
+      .addClass("tag-element")
       .addClass('row');
 
     // group element to contain word elements
@@ -35,6 +36,7 @@ class Row {
     // add draggable rectangle
     this.draggable = this.svg.line(0, 0, this.rw, 0)
       .y(this.rh)
+      .addClass("tag-element")
       .addClass('row-drag')
       .draggable();
 

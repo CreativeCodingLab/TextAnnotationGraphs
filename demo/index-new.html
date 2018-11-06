@@ -20,7 +20,7 @@
 <div class="container py-5">
   <h2 class="mb-5">TextAnnotationGraphs (TAG) Demo</h2>
 
-  <div class="row">
+  <div class="row mb-5">
     <div class="col">
       <h4>Basic example</h4>
       <p>
@@ -38,7 +38,34 @@
     </div>
   </div>
 
+  <div class="row mb-5">
+    <div class="col">
+      <h4>Extended UI example</h4>
+      <p>
+        It is also possible to build a UI around the TAG visualisation using the
+        various API functions.
+      </p>
+      <p>
+        This example uses Bootstrap 4 styles and components. See the source in
+        the "Advanced/UI example" section of <code
+          class="bg-light">src/demo.js</code>.
+      </p>
+      <div class="btn-group mb-2" role="group" aria-label="TAG Controls">
+        <!--<button type="button" class="btn btn-success">Left</button>-->
+        <!--<button type="button" class="btn btn-success">Middle</button>-->
+        <button type="button" class="btn btn-success" id="tag-download">
+          Download as SVG
+        </button>
+      </div>
+      <div id="uiContainer" style="border: solid 1px lightgray">
+      </div>
+
+    </div>
+  </div>
+
 </div>
+
+<div id="test"></div>
 
 <div id="taxonomy" style="display:none">
   Hardcoded reference in taxonomy.js -- To be removed

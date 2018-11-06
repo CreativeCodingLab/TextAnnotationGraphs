@@ -31,20 +31,32 @@ $(function () {
     // (already-parsed) Object, while the "brat" format expects them as a raw
     // String.
     // See the full documentation for details.
-    data: require("../data/data8.json"),
+    data: require("../data/data7.json"),
     format: "json"
   });
 
   // -------------------
   // Advanced/UI example
   // -------------------
+  const $uiContainer = $("#uiContainer");
+  const uiTag = TAG.tag({
+    container: $uiContainer
+  });
+
+  // The `.exportFile()` function can be used to save the
+  $("#tag-download").on("click", () => {
+    uiTag.exportFile();
+  });
+
   // A new set of data can be loaded into the visualisation using the
   // `.loadData()` function
 
-  // const sampleData = require("../data/data8.json");
-  // basicTag.loadData(sampleData, "json");
+  const sampleData = require("../data/data8.json");
+  uiTag.loadData(sampleData, "json");
 
   // Debug
   window._ = require("lodash");
+  window.$ = require("jquery");
   window.basicTag = basicTag;
+  window.uiTag = uiTag;
 });

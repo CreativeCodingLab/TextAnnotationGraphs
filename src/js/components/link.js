@@ -43,7 +43,9 @@ class Link {
       this.arguments.sort((a,b) => a.anchor.idx - b.anchor.idx);
 
       this.mainSVG = svg;
-      this.svg = svg.group().addClass(this.top ? 'link' : 'link syntax-link');
+      this.svg = svg.group()
+        .addClass("tag-element")
+        .addClass(this.top ? 'link' : 'link syntax-link');
       if (!this.visible) { this.svg.hide(); }
 
       // init handles
@@ -65,6 +67,7 @@ class Link {
         if (this.trigger) {
           let text = this.svg.text(arg.type)
             .y(-7)
+            .addClass("tag-element")
             .addClass('link-text');
           this.svgTexts.push(text);
         }
@@ -74,6 +77,7 @@ class Link {
       if (this.reltype) {
         let text = this.svg.text(this.reltype)
           .y(-7)
+          .addClass("tag-element")
           .addClass('link-text');
         this.svgTexts.push(text);
       }
@@ -90,6 +94,7 @@ class Link {
       });
 
       this.line = this.svg.path()
+        .addClass("tag-element")
         .addClass('polyline');
 
       // apply drag events to line
@@ -489,13 +494,16 @@ class Link {
       this.isEditing = true;
 
       let bbox = e.detail.text.bbox();
-      e.detail.text.addClass('editing-text');
+      e.detail.text
+        .addClass("tag-element")
+        .addClass('editing-text');
       this.editingText = e.detail.text;
       this.editingRect = this.svg.rect(bbox.width + 8, bbox.height + 4)
         .x(bbox.x - 4)
         .y(bbox.y - 2)
         .rx(2)
         .ry(2)
+        .addClass("tag-element")
         .addClass('editing-rect')
         .back();
     }

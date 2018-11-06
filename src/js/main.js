@@ -11,6 +11,8 @@ import RowManager from "./managers/rowmanager.js";
 import LabelManager from "./managers/labelmanager.js";
 import Taxonomy from "./managers/taxonomy.js";
 
+import * as Util from "./util.js";
+
 class Main {
   /**
    * Initialises a TAG instance with the given parameters
@@ -30,7 +32,7 @@ class Main {
     // That said, we need to set the SVG Doc's size using absolute units
     // (since they are used for calculating the widths of rows and other
     // elements).  We use jQuery to get the parent's size.
-    this.$parent = $(this.svg.node).parent();
+    this.$container = $(this.svg.node).parent();
 
     // Managers/Components
     this.parser = new Parser();
@@ -120,10 +122,37 @@ class Main {
   }
 
   /**
+   * Exports the current visualisation as an SVG file
+   */
+  exportFile() {
+    // Get the raw SVG definition
+    let exportedSVG = this.svg.svg();
+
+    // We also need to inline a copy of the relevant SVG styles, which might
+    // have been modified/overwritten by the user
+    const svgRules = Util.getCssRules(
+      this.$container.find(".tag-element").toArray()
+    );
+
+    const i = exportedSVG.indexOf("</defs>");
+    exportedSVG = exportedSVG.slice(0, i)
+      + "<style>" + svgRules.join("\n") + "</style>"
+      + exportedSVG.slice(i);
+
+    // Create a virtual download link and simulate a click on it (using the
+    // native `.click()` method, since jQuery cannot `.trigger()` it
+    $(`<a 
+      href="data:image/svg+xml;charset=utf-8,${encodeURIComponent(exportedSVG)}"
+      download="tag.svg"></a>`)
+      .appendTo($("body"))[0]
+      .click();
+  }
+
+  /**
    * Fits the SVG canvas and its children to the size of its container
    */
   resize() {
-    this.svg.size(this.$parent.innerWidth(), this.$parent.innerHeight());
+    this.svg.size(this.$container.innerWidth(), this.$container.innerHeight());
     this.rowManager.resizeAll();
   }
 

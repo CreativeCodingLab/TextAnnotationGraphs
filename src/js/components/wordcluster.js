@@ -1,3 +1,10 @@
+/**
+ * Tags for cases where multiple words make up a single entity
+ * E.g.: The two words "DNA damage" as a single "BioProcess"
+ *
+ *   Word -> WordTag / [WordCluster] -> Row
+ */
+
 class WordCluster {
   constructor(words = [], val) {
     this.eventIds = [];
@@ -66,6 +73,7 @@ class WordCluster {
       }
       else {
         let svg = this.svgs[i] = word.svg.group()
+          .addClass("tag-element")
           .addClass('word-cluster');
 
         // TODO: recalculate offset when tag is added/removed
@@ -76,7 +84,8 @@ class WordCluster {
           svg.y(this.tagOffset);
         }
 
-        this.lines[i] = svg.path();
+        this.lines[i] = svg.path()
+          .addClass("tag-element");
         if (i === 0) {
           this.svgText = svg.text(this.val);
           this.svgText.node.oncontextmenu = (e) => {
@@ -142,7 +151,9 @@ class WordCluster {
     this.isEditing = true;
     let bbox = this.svgText.bbox();
 
-    this.svgs[0].addClass('editing');
+    this.svgs[0]
+      .addClass("tag-element")
+      .addClass('editing');
     this.editingRect = this.svgs[0].rect(bbox.width + 8, bbox.height + 4)
       .x(bbox.x - 4)
       .y(bbox.y - 2)

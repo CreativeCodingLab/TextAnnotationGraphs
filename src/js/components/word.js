@@ -1,3 +1,9 @@
+/**
+ * Raw entity/token strings
+ *
+ *   [Word] -> WordTag / WordCluster -> Row
+ */
+
 import WordTag from './tag.js';
 import * as SVG from "svg.js";
 import * as draggable from 'svg.draggable.js';
@@ -72,10 +78,13 @@ class Word {
     init(svg) {
       this.mainSVG = svg;
       this.svg = svg.group()
+        .addClass("tag-element")
         .addClass('word');
 
       // draw text
-      this.svgText = this.svg.text(this.val).addClass('word-text');
+      this.svgText = this.svg.text(this.val)
+        .addClass("tag-element")
+        .addClass('word-text');
 
       // draw tag
       if (this.tag && !(this.tag instanceof WordTag)) {

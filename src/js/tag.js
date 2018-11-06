@@ -1,5 +1,5 @@
 /**
- * Initialisation and static functions
+ * Instantiation and static functions
  */
 
 import Main from "./main";

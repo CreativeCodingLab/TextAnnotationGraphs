@@ -1,3 +1,9 @@
+/**
+ * Tags for single entities/tokens
+ *
+ *   Word -> [WordTag] / WordCluster -> Row
+ */
+
 class WordTag {
   constructor(val, word, above = true) {
     this.val = val;
@@ -12,6 +18,7 @@ class WordTag {
     this.svg = word.svg.group()
       .y(this.tagOffset);
     this.svgText = this.svg.text(this.val)
+      .addClass("tag-element")
       .addClass(above ? 'word-tag' : 'word-tag syntax-tag');
     this.ww = this.svgText.length();
 
@@ -80,7 +87,9 @@ class WordTag {
     this.isEditing = true;
     let bbox = this.svgText.bbox();
 
-    this.svg.addClass('editing');
+    this.svg
+      .addClass("tag-element")
+      .addClass('editing');
     this.editingRect = this.svg.rect(bbox.width + 8, bbox.height + 4)
       .x(bbox.x - 4)
       .y(bbox.y - 2)
