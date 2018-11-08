@@ -13,6 +13,14 @@
 const TAG = require("../../src/js/tag.js");
 
 const $ = require("jquery");
+const _ = require("lodash");
+
+// Bootstrap includes for the full UI demo
+require("popper.js");
+require("bootstrap");
+
+// Prism for syntax highlighting
+require("prismjs");
 
 // Main function
 $(function () {
@@ -43,16 +51,56 @@ $(function () {
     container: $uiContainer
   });
 
-  // The `.exportFile()` function can be used to save the
+  // Data can be loaded after initialisation using the `.loadData()` function
+  const sampleData = require("../data/data8.json");
+  uiTag.loadData(sampleData, "json");
+
+  // Data from an external URL can also be loaded into the visualisation
+  // using the `.loadUrlAsync()` function.  The data will be read and displayed
+  // asynchronously.
+  $("#tag-change-dataset").on("click", ".tag-dataset", (event) => {
+    event.preventDefault();
+    const $link = $(event.target);
+    return uiTag.loadUrlAsync($link.data("path"), $link.data("format"));
+  });
+
+  // Custom annotation files can also be uploaded by the user and loaded
+  // using the `.loadFilesAsync()` function.  The file(s) will be read and
+  // displayed asynchronously.
+  $("#tag-upload-input").on("change", (event) => {
+    // Show the names of the selected files
+    const names =
+      _.map(event.target.files, file => file.name)
+        .join(", ");
+    $("#tag-upload-label").text(names);
+  });
+  // Upload them when the user confirms the selection
+  $("#tag-upload-confirm").on("click", async () => {
+    const files = $("#tag-upload-input")[0].files;
+    const format = $("#tag-upload-format").val();
+
+    if (files.length > 0) {
+      // Upload the file(s), reset the form elements, hide the modal
+      // (In that order: We need to load the files before resetting the
+      // form, or the reference to the FileList gets lost)
+      await uiTag.loadFilesAsync(files, format);
+
+      const $modal = $("#tag-upload");
+
+      $modal.wrap("<form>").closest("form").get(0).reset();
+      $modal.unwrap();
+      $("#tag-upload-label").text("Choose file(s)");
+
+      $modal.modal("hide");
+    }
+  });
+
+  // The `.exportFile()` function can be used to save the current
+  // visualisation as an SVG file
   $("#tag-download").on("click", () => {
     uiTag.exportFile();
   });
 
-  // A new set of data can be loaded into the visualisation using the
-  // `.loadData()` function
-
-  const sampleData = require("../data/data8.json");
-  uiTag.loadData(sampleData, "json");
 
   // Debug
   window._ = require("lodash");

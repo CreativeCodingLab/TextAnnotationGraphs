@@ -1,0 +1,89 @@
+/**
+ * Core styles for the library
+ */
+.tag-element text {
+  text-anchor: middle;
+}
+
+.row-drag {
+  stroke-width: 2;
+  stroke-dasharray: 2, 1;
+  stroke: rgba(100, 100, 100, 0.3);
+  transition: stroke 300ms ease;
+  cursor: row-resize;
+}
+
+.row-drag:hover {
+  stroke-dasharray: none;
+  stroke: rgba(100, 100, 100, 0.8);
+}
+
+.word text {
+  font-size: 16px;
+  fill: black;
+}
+
+.word path {
+  stroke: #333;
+  fill: none;
+}
+
+.word .word-text {
+  cursor: pointer;
+}
+
+.word-cluster text,
+.word .word-tag {
+  font-size: 12px;
+  cursor: text;
+}
+
+.word-cluster text,
+.word .word-tag {
+  fill: #333;
+}
+
+.word .syntax-tag {
+  fill: #d0968f;
+}
+
+.toggle-syntax .syntax-tag, .toggle-syntax .syntax-link {
+  display: none;
+}
+
+.editing .word-tag,
+.editing-text,
+.editing text {
+  fill: #fff !important;
+}
+
+.editing-rect,
+.editing rect {
+  fill: #a94442;
+}
+
+.link path.polyline {
+  stroke: #6590b4;
+  fill: none;
+}
+
+.link {
+  font-size: 12px;
+  fill: #6590b4;
+  stroke-width: 1.5px;
+}
+
+.link.syntax-link {
+  fill: #999;
+}
+
+.syntax-link path.polyline {
+  stroke: #999;
+  fill: none;
+}
+
+.link:hover {
+  stroke-width: 2.5px;
+}
+
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NyYy9jc3MvdGFnLnNjc3MiLCJ0YWcuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUFBO0FBSUE7RUFDRSxvQkFBQTtDQ0FEOztBREVEO0VBQ0UsZ0JBQUE7RUFDQSx1QkFBQTtFQUNBLGlDQUFBO0VBQ0EsOEJBQUE7RUFDQSxtQkFBQTtDQ0NEOztBRENEO0VBQ0UsdUJBQUE7RUFDQSxpQ0FBQTtDQ0VEOztBRENEO0VBQ0UsZ0JBQUE7RUFDQSxZQUFBO0NDRUQ7O0FEQUQ7RUFDRSxhQUFBO0VBQ0EsV0FBQTtDQ0dEOztBREREO0VBQ0UsZ0JBQUE7Q0NJRDs7QURERDs7RUFFRSxnQkFBQTtFQUNBLGFBQUE7Q0NJRDs7QURERDs7RUFFRSxXQUFBO0NDSUQ7O0FERkQ7RUFDRSxjQUFBO0NDS0Q7O0FESEQ7RUFDRSxjQUFBO0NDTUQ7O0FESEQ7OztFQUdFLHNCQUFBO0NDTUQ7O0FESEQ7O0VBRUUsY0FBQTtDQ01EOztBREhEO0VBQ0UsZ0JBQUE7RUFDQSxXQUFBO0NDTUQ7O0FESkQ7RUFDRSxnQkFBQTtFQUNBLGNBQUE7RUFDQSxvQkFBQTtDQ09EOztBRExEO0VBQ0UsV0FBQTtDQ1FEOztBRE5EO0VBQ0UsYUFBQTtFQUNBLFdBQUE7Q0NTRDs7QURORDtFQUNFLG9CQUFBO0NDU0QiLCJmaWxlIjoidGFnLmNzcyJ9 */

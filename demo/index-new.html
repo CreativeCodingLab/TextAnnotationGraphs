@@ -4,16 +4,10 @@
   <meta charset="UTF-8">
   <title>TAG Demo</title>
 
-  <!-- Optional styling: Bootstrap 4 styles for full-UI demo -->
-  <link rel="stylesheet"
-        href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
-        crossorigin="anonymous">
-
-  <!-- Core TAG styles -->
-  <link href="dist/tag/css/tag.min.css" rel="stylesheet">
-
-  <!-- Demo-specific styles (fonts, positioning, etc.) -->
+  <!-- Demo-specific styles (fonts, positioning, etc.)
+    -- The core TAG styles, as well as the Bootstrap/Prism styles used for the UI demo below, are also imported within
+    -- `demo.scss`.
+    -->
   <link href="demo.min.css" rel="stylesheet">
 </head>
 <body>
@@ -24,16 +18,22 @@
     <div class="col">
       <h4>Basic example</h4>
       <p>
-        For a minimal embedded TAG visualisation, simply specify the container
-        element, the annotation data to load, and the format that the data is
-        in.
+        For a minimal embedded TAG visualisation, simply specify the container element, the annotation data to load, and
+        the format that the data is in.
       </p>
       <p>
-        See the source for this example in the "Basic example" section of <code
-          class="bg-light">src/demo.js</code>.
+        See the full source for this example in the "Basic example" section of
+        <code class="bg-light">src/demo.js</code>.
       </p>
-      <div id="basicContainer" style="border: solid 1px lightgray">
-      </div>
+
+      <pre class="mb-4">
+<code class="language-javascript">const tag = TAG.tag({
+  container: "container-id",
+  data: {...},
+  format: "json"
+});</code></pre>
+
+      <div id="basicContainer" style="border: solid 1px lightgray"></div>
 
     </div>
   </div>
@@ -42,35 +42,112 @@
     <div class="col">
       <h4>Extended UI example</h4>
       <p>
-        It is also possible to build a UI around the TAG visualisation using the
-        various API functions.
+        It is also possible to build a UI around the TAG visualisation using the various API functions.
       </p>
       <p>
-        This example uses Bootstrap 4 styles and components. See the source in
-        the "Advanced/UI example" section of <code
-          class="bg-light">src/demo.js</code>.
+        This example uses Bootstrap 4 styles and components. See the source in the "Advanced/UI example" section of
+        <code class="bg-light">src/demo.js</code>.
       </p>
-      <div class="btn-group mb-2" role="group" aria-label="TAG Controls">
-        <!--<button type="button" class="btn btn-success">Left</button>-->
-        <!--<button type="button" class="btn btn-success">Middle</button>-->
-        <button type="button" class="btn btn-success" id="tag-download">
-          Download as SVG
+
+      <!-- Control buttons -->
+      <div class="mb-2">
+        <!-- Sample dataset loader -->
+        <div class="btn-group" id="tag-change-dataset">
+          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false">
+            Load sample dataset
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item tag-dataset" data-path="data/data1.json" data-format="json" href="#">
+              Sentence 1 (data1.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/data2.json" data-format="json" href="#">
+              Sentence 2 (data2.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/data3.json" data-format="json" href="#">
+              Paragraph (data3.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/data4.json" data-format="json" href="#">
+              Passage 1 (data4.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/data5.json" data-format="json" href="#">
+              Passage 2 (data5.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/example1.ann" data-format="brat" href="#">
+              Morphology 1 (example1.ann)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/example2.ann" data-format="brat" href="#">
+              Morphology 2 (example2.ann)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/example3.ann" data-format="brat" href="#">
+              Brat event annotations (example3.ann)
+            </a>
+          </div>
+        </div>
+
+        <!-- Upload button/modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tag-upload">
+          Custom annotation
         </button>
+
+        <div class="modal" id="tag-upload" tabindex="-1" role="dialog"
+             aria-labelledby="upload-title" aria-hidden="true"
+             data-backdrop="static">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="upload-title">Custom Annotation</h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                Upload a custom annotation to display:
+                <div class="custom-file mt-1">
+                  <input type="file" class="custom-file-input" id="tag-upload-input" multiple>
+                  <label class="custom-file-label" for="tag-upload-input"
+                         id="tag-upload-label">
+                    Choose file(s)
+                  </label>
+                </div>
+
+                <div class="d-flex align-items-center mt-3">
+                  <div>Format:</div>
+                  <select class="custom-select ml-3" id="tag-upload-format">
+                    <option value="json">JSON (Reach)</option>
+                    <option value="brat">Brat</option>
+                  </select>
+                </div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" id="tag-upload-confirm" class="btn btn-success">
+                  Upload
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Download button -->
+        <button type="button" class="btn btn-primary" id="tag-download">Download as SVG</button>
       </div>
-      <div id="uiContainer" style="border: solid 1px lightgray">
-      </div>
+
+      <div id="uiContainer" style="border: solid 1px lightgray"></div>
 
     </div>
   </div>
 
 </div>
 
-<div id="test"></div>
-
 <div id="taxonomy" style="display:none">
   Hardcoded reference in taxonomy.js -- To be removed
 </div>
 
+<!-- Main demo bundle
+  -- The Bootstrap/Prism code used for the UI demo is also included directly into the bundle.
+  -->
 <script src="demo.min.js"></script>
 </body>
 </html>

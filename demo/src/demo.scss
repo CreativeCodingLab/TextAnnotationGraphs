@@ -1,6 +1,12 @@
 /*
  * Styles for the demo
  */
+// Import Bootstrap 4 styles
+@import "../../node_modules/bootstrap/scss/bootstrap";
+// Import Prismjs styles
+@import "../../node_modules/prismjs/themes/prism";
+// Core TAG styles
+@import "../../dist/tag/css/tag";
 // Fonts used in the visualisation
 @import url("https://fonts.googleapis.com/css?family=Nunito:400,600");
 

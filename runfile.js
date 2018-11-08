@@ -62,9 +62,9 @@ build.app.scripts = {
   },
   async quickTag() {
     const input = "src/js/main-old.js";
-    const output = `${config.assetsDir}/${config.scriptsDir}/tag.min.js`;
+    const output = `${config.assetsDir}/${config.scriptsDir}/tag.js`;
     const type = "Build";
-    const desc = "Main TAG JS bundle (No Tinyify)";
+    const desc = "Main TAG JS bundle (Unminified)";
 
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
@@ -76,7 +76,8 @@ build.app.scripts = {
   // ---------
   all() {
     return Promise.all([
-      build.app.scripts.tag()
+      build.app.scripts.tag(),
+      build.app.scripts.quickTag()
     ]);
   },
   quick() {
@@ -106,16 +107,31 @@ build.app.styles = {
     // Minify
     return run(`cleancss ${output} -o ${output}`, {async: true});
   },
+  async quickTag() {
+    const input = "src/css/tag.scss";
+    const output = `${config.assetsDir}/${config.stylesDir}/tag.css`;
+    const type = "Build";
+    const desc = "Main TAG CSS bundle (Unminified)";
+
+    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+
+    await run(`sass ${input} ${output}`, {async: true});
+    // Autoprefixer
+    return run(`postcss ${output} --use autoprefixer --replace`, {async: true});
+  },
 
   // All/Quick
   // ---------
   all() {
     return Promise.all([
-      build.app.styles.tag()
+      build.app.styles.tag(),
+      build.app.styles.quickTag()
     ]);
   },
   quick() {
-    return build.app.styles.all();
+    return Promise.all([
+      build.app.styles.quickTag()
+    ]);
   }
 };
 
@@ -229,17 +245,17 @@ watch.scripts = {
     const input = "src/js/main-old.js";
     const output = `${config.assetsDir}/${config.scriptsDir}/tag.min.js`;
     const type = "Watch";
-    const desc = "Main TAG JS bundle (No Tinyify)";
+    const desc = "Main TAG JS bundle";
 
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-    return run(`watchify ${input} -t [ babelify ] -t [ hbsfy ] -o ${output} -v --poll=500`, {async: true});
+    return run(`watchify ${input} -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v --poll=500`, {async: true});
   },
   async quickTag() {
     const input = "src/js/main-old.js";
-    const output = `${config.assetsDir}/${config.scriptsDir}/tag.min.js`;
+    const output = `${config.assetsDir}/${config.scriptsDir}/tag.js`;
     const type = "Watch";
-    const desc = "Main TAG JS bundle (No Tinyify)";
+    const desc = "Main TAG JS bundle (Unminified)";
 
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
@@ -248,7 +264,8 @@ watch.scripts = {
 
   all() {
     return Promise.all([
-      watch.scripts.tag()
+      watch.scripts.tag(),
+      watch.scripts.quickTag()
     ]);
   },
   quick() {
@@ -267,16 +284,29 @@ watch.styles = {
 
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
+    return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && cleancss ${output} -o ${output}"`, {async: true});
+  },
+  async quickTag() {
+    const input = "src/css/app.scss";
+    const output = `${config.assetsDir}/${config.stylesDir}/tag.css`;
+    const type = "Watch";
+    const desc = "Main TAG CSS bundle (Unminified)";
+
+    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+
     return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace"`, {async: true});
   },
 
   all() {
     return Promise.all([
-      watch.styles.tag()
+      watch.styles.tag(),
+      watch.styles.quickTag()
     ]);
   },
   quick() {
-    return watch.styles.all();
+    return Promise.all([
+      watch.styles.quickTag()
+    ]);
   }
 };
 

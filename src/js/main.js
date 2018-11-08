@@ -13,6 +13,13 @@ import Taxonomy from "./managers/taxonomy.js";
 
 import * as Util from "./util.js";
 
+/**
+ * Take a small performance hit from `autobind` to ensure that the scope of
+ * `this` is always correct for all our API methods
+ */
+import autobind from "autobind-decorator";
+
+@autobind
 class Main {
   /**
    * Initialises a TAG instance with the given parameters
@@ -57,8 +64,11 @@ class Main {
     this._setupUIListeners();
   }
 
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Loading data into the parser
+
   /**
-   * Loads the given annotation data onto the TAG canvas
+   * Loads the given annotation data onto the TAG visualisation
    * @param {Object} data - The data to load
    * @param {String} format - One of the supported format identifiers for
    *     the data
@@ -67,6 +77,51 @@ class Main {
     this.parser.loadData(data, format);
     this.redraw();
   }
+
+  /**
+   * Reads the given data file asynchronously and loads it onto the TAG
+   * visualisation
+   * @param {Object} path - The path pointing to the data
+   * @param {String} format - One of the supported format identifiers for
+   *     the data
+   */
+  async loadUrlAsync(path, format) {
+    const data = await $.ajax(path);
+    this.parser.loadData(data, format);
+    this.redraw();
+  }
+
+  /**
+   * Reads the given annotation files and loads them onto the TAG
+   * visualisation
+   * @param {FileList} fileList - We generally expect only one file here, but
+   *     some formats (e.g., Brat) involve multiple files per dataset
+   * @param {String} format
+   */
+  async loadFilesAsync(fileList, format) {
+    // Instantiate FileReaders for all the given files, and wait until they
+    // are read
+    const readPromises = _.map(fileList, (file) => {
+      const reader = new FileReader();
+      reader.readAsText(file);
+      return new Promise((resolve, reject) => {
+        reader.onload = () => {
+          resolve({
+            name: file.name,
+            type: file.type,
+            content: reader.result
+          });
+        };
+      });
+    });
+
+    const files = await Promise.all(readPromises);
+    this.parser.loadFiles(files, format);
+    this.redraw();
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Controlling the SVG element
 
   /**
    * Draws elements (rows, words, links, etc.) onto the visualisation
@@ -122,6 +177,17 @@ class Main {
   }
 
   /**
+   * Fits the SVG element and its children to the size of its container
+   */
+  resize() {
+    this.svg.size(this.$container.innerWidth(), this.$container.innerHeight());
+    this.rowManager.resizeAll();
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Higher-level API functions
+
+  /**
    * Exports the current visualisation as an SVG file
    */
   exportFile() {
@@ -149,14 +215,6 @@ class Main {
   }
 
   /**
-   * Fits the SVG canvas and its children to the size of its container
-   */
-  resize() {
-    this.svg.size(this.$container.innerWidth(), this.$container.innerHeight());
-    this.rowManager.resizeAll();
-  }
-
-  /**
    * Changes the visibility of the links from the syntax parse in the
    * current visualisation
    * (To be exact, changes the visibility of any links that are drawn below,
@@ -176,6 +234,8 @@ class Main {
     }
   }
 
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Private helper/setup functions
 
   /**
    * Sets up listeners for custom SVG.js events
