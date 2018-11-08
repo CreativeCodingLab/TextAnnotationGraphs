@@ -2,6 +2,10 @@
  * Sets up an Express server to serve the demo files
  */
 
+const config = {
+  port: 8080
+};
+
 const express = require("express");
 const http = require("http");
 const path = require("path");
@@ -20,10 +24,10 @@ app.use("/dist", express.static(path.join(__dirname, "..", "dist")));
 
 // Set up HTTP interface
 // ---------------------
-app.set("port", 8080);
+app.set("port", config.port);
 
 const server = http.createServer(app);
-server.listen(8080);
+server.listen(config.port);
 server.on("error", onError);
 server.on("listening", onListening);
 
