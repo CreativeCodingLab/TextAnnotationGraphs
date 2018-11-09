@@ -22,6 +22,7 @@ class RowManager {
     this.resizeRow(0);
   }
 
+  // Resizes *all* rows starting from the one with index `i`
   resizeRow(i, dy = 0) {
     const row = this._rows[i];
     if (row === undefined) return;
@@ -33,6 +34,7 @@ class RowManager {
     dy = Math.max(-row.rh + row.minHeight, dy);
     row.height(row.rh + dy);
     row.words.forEach(word => word.redrawLinks());
+
     for (let j = i + 1; j < this._rows.length; ++j) {
       if (this._rows[j - 1].ry2 + ROW_PADDING > this._rows[j].ry + dy) {
         this._rows[j].move(this._rows[j - 1].ry2 + ROW_PADDING);

@@ -147,14 +147,15 @@ class Main {
       link.recalculateSlots(this.words);
       link.draw();
     });
-    this.rowManager.resizeAll();
 
     // Change token colours based on the current taxonomy, if loaded
     // (The first argument to the `.draw()` function is a taxonomy file)
     this.taxonomyManager.draw([], this.words);
 
     // Hide the syntax links if necessary
-    this.setSyntaxVisibility(this.options.showSyntax);
+    this.options.showSyntax ? this.showSyntax() : this.hideSyntax();
+
+    this.rowManager.resizeAll();
   }
 
   /**
@@ -215,23 +216,51 @@ class Main {
   }
 
   /**
-   * Changes the visibility of the links from the syntax parse in the
-   * current visualisation
+   * Changes the value of the given option setting
+   * (Redraw to see changes)
+   * @param {String} option
+   * @param value
+   */
+  setOption(option, value) {
+    this.options[option] = value;
+  }
+
+  /**
+   * Gets the current value for the given option setting
+   * @param {String} option
+   */
+  getOption(option) {
+    return this.options[option];
+  }
+
+  /**
+   * Shows links from the syntactic parse in the visualisation
    * (To be exact, changes the visibility of any links that are drawn below,
    * rather than above, the row)
-   * @param newState
+   * Note: Does not change the persistent "Show syntax tree" setting
    */
-  setSyntaxVisibility(newState) {
+  showSyntax() {
     this.links.forEach(link => {
-      if (!newState && !link.top) {
-        link.hide();
-      } else {
+      if (!link.top) {
         link.show();
       }
     });
-    if (this.rowManager.rows.length > 0) {
-      this.rowManager.resizeAll();
-    }
+    this.rowManager.resizeAll();
+  }
+
+  /**
+   * Hides links from the syntactic parse in the visualisation
+   * (To be exact, changes the visibility of any links that are drawn below,
+   * rather than above, the row)
+   * Note: Does not change the persistent "Show syntax tree" setting
+   */
+  hideSyntax() {
+    this.links.forEach(link => {
+      if (!link.top) {
+        link.hide();
+      }
+    });
+    this.rowManager.resizeAll();
   }
 
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -259,7 +288,7 @@ class Main {
 
     this.svg.on("word-move-start", () => {
       if (!this.options.showLinksOnMove && this.options.showSyntax) {
-        this.setSyntaxVisibility(false);
+        this.hideSyntax();
       }
     });
 
@@ -271,7 +300,7 @@ class Main {
 
     this.svg.on("word-move-end", () => {
       if (!this.options.showLinksOnMove && this.options.showSyntax) {
-        this.setSyntaxVisibility(true);
+        this.showSyntax();
       }
     });
 

@@ -375,7 +375,7 @@ const demo = {
 
       console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-      return run(`watchify ${input} -t [ babelify ] -o ${output} -v --poll=500`, {async: true});
+      return run(`watchify ${input} -t [ babelify ] -p [ tinyify ] -o ${output} -v --poll=500`, {async: true});
     },
 
     async styles() {
@@ -386,7 +386,7 @@ const demo = {
 
       console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-      return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace"`, {async: true});
+      return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && cleancss ${output} -o ${output}"`, {async: true});
     },
 
     async all() {

@@ -95,6 +95,17 @@ $(function () {
     }
   });
 
+  // The `.setOption()` function can be used to change various advanced
+  // options.  The visualisation will need to be redrawn to show any changes.
+  const $optionSyntax = $("#tag-option-syntax");
+  $optionSyntax
+    .prop("checked", uiTag.getOption("showSyntax"))
+    .on("change", () => {
+      uiTag.setOption("showSyntax", $optionSyntax[0].checked);
+      uiTag.redraw();
+    });
+
+
   // The `.exportFile()` function can be used to save the current
   // visualisation as an SVG file
   $("#tag-download").on("click", () => {

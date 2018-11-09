@@ -91,8 +91,7 @@
         </button>
 
         <div class="modal" id="tag-upload" tabindex="-1" role="dialog"
-             aria-labelledby="upload-title" aria-hidden="true"
-             data-backdrop="static">
+             aria-labelledby="upload-title" aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
@@ -102,6 +101,7 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
+
               <div class="modal-body">
                 Upload a custom annotation to display:
                 <div class="custom-file mt-1">
@@ -119,12 +119,46 @@
                     <option value="brat">Brat</option>
                   </select>
                 </div>
-
               </div>
+
               <div class="modal-footer">
                 <button type="button" id="tag-upload-confirm" class="btn btn-success">
                   Upload
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Options button/modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tag-options">
+          Options
+        </button>
+
+        <div class="modal" id="tag-options" tabindex="-1" role="dialog"
+             aria-labelledby="options-title" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="options-title">Options</h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body">
+                <div class="p-3">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="tag-option-syntax">
+                    <label class="custom-control-label" for="tag-option-syntax">Show syntax tree</label>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
