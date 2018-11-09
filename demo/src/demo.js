@@ -96,13 +96,21 @@ $(function () {
   });
 
   // The `.setOption()` function can be used to change various advanced
-  // options.  The visualisation will need to be redrawn to show any changes.
+  // options.  The visualisation will need to be redrawn to show any
+  // changes, if applicable.
   const $optionSyntax = $("#tag-option-syntax");
   $optionSyntax
     .prop("checked", uiTag.getOption("showSyntax"))
     .on("change", () => {
       uiTag.setOption("showSyntax", $optionSyntax[0].checked);
       uiTag.redraw();
+    });
+
+  const $optionLinksOnMove = $("#tag-option-links-on-move");
+  $optionLinksOnMove
+    .prop("checked", uiTag.getOption("showLinksOnMove"))
+    .on("change", () => {
+      uiTag.setOption("showLinksOnMove", $optionLinksOnMove[0].checked);
     });
 
 
