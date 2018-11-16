@@ -34,6 +34,7 @@
     "jquery": "^3.3.1",
     "js-yaml": "^3.12.0",
     "lodash": "^4.17.11",
+    "randomcolor": "^0.5.3",
     "svg.draggable.js": "^2.2.1",
     "svg.js": "^2.6.3"
   },

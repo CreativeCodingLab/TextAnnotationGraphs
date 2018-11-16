@@ -149,8 +149,7 @@ class Main {
     });
 
     // Change token colours based on the current taxonomy, if loaded
-    // (The first argument to the `.draw()` function is a taxonomy file)
-    this.taxonomyManager.draw([], this.words);
+    this.taxonomyManager.colour(this.words);
 
     // Hide the syntax links if necessary
     this.options.showSyntax ? this.showSyntax() : this.hideSyntax();

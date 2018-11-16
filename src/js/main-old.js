@@ -4,7 +4,7 @@ import TreeLayout from "./treelayout.js";
 import * as ymljson from "./old/ymljson.js";
 import LabelManager from "./managers/labelmanager.js";
 import RowManager from "./managers/rowmanager.js";
-import Taxonomy from "./managers/taxonomy.js";
+import Taxonomy from "./old/taxonomy.js";
 import Tooltip from "./managers/tooltip.js";
 import Word from "./components/word.js";
 import WordCluster from "./components/wordcluster.js";
