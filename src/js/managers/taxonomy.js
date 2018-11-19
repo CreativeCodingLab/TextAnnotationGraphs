@@ -4,14 +4,18 @@
  */
 
 const randomColor = require("randomcolor");
+const yaml = require("js-yaml");
 
 import ColorPicker from "../colorpicker.js";
 import Word from "../components/word.js";
 
 class TaxonomyManager {
   constructor() {
-    // The currently loaded taxonomy
+    // The currently loaded taxonomy (as a JS object)
     this.taxonomy = [];
+
+    // The originally-loaded taxonomy string (as a YAML document)
+    this.taxonomyYaml = "";
 
     // Tag->Colour assignments for the currently loaded taxonomy
     this.tagColours = {};
@@ -36,11 +40,20 @@ class TaxonomyManager {
   }
 
   /**
-   * Loads a new taxonomy specification into the module
-   * @param taxonomy
+   * Loads a new taxonomy specification (in YAML form) into the module
+   * @param {String} taxonomyYaml - A YAML string representing the taxonomy
+   *   object
    */
-  loadTaxonomy(taxonomy) {
-    this.taxonomy = taxonomy;
+  loadTaxonomyYaml(taxonomyYaml) {
+    this.taxonomy = yaml.safeLoad(taxonomyYaml);
+    this.taxonomyYaml = taxonomyYaml;
+  }
+
+  /**
+   * Returns a YAML representation of the currently loaded taxonomy
+   */
+  getTaxonomyYaml() {
+    return this.taxonomyYaml;
   }
 
   /**
@@ -109,6 +122,8 @@ class TaxonomyManager {
       return randomColor();
     }
   }
+
+
 }
 
 module.exports = TaxonomyManager;

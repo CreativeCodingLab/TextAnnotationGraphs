@@ -54264,13 +54264,13 @@ IncomingMessage.prototype._onXHRProgress = function () {
 },{}],102:[function(require,module,exports){
 /*!
 * svg.js - A lightweight library for manipulating and animating SVG.
-* @version 2.6.6
+* @version 2.7.0
 * https://svgdotjs.github.io/
 *
 * @copyright Wout Fierens <wout@mick-wout.com>
 * @license MIT
 *
-* BUILT: Thu Aug 30 2018 11:37:58 GMT+0200 (GMT+02:00)
+* BUILT: Tue Nov 13 2018 21:10:01 GMT+0100 (GMT+01:00)
 */;
 (function(root, factory) {
   /* istanbul ignore next */
@@ -54426,7 +54426,7 @@ SVG.prepare = function() {
   // Create parser object
   SVG.parser = {
     body: body || document.documentElement
-  , draw: draw.style('opacity:0;position:absolute;left:-100%;top:-100%;overflow:hidden').node
+  , draw: draw.style('opacity:0;position:absolute;left:-100%;top:-100%;overflow:hidden').attr('focusable', 'false').node
   , poly: draw.polyline().node
   , path: draw.path().node
   , native: SVG.create('svg')
@@ -55296,6 +55296,7 @@ SVG.Element = SVG.invent({
     // make stroke value accessible dynamically
     this._stroke = SVG.defaults.attrs.stroke
     this._event = null
+    this._events = {}
 
     // initialize data object
     this.dom = {}
@@ -55304,6 +55305,7 @@ SVG.Element = SVG.invent({
     if (this.node = node) {
       this.type = node.nodeName
       this.node.instance = this
+      this._events = node._events || {}
 
       // store current attribute value
       this._stroke = node.getAttribute('stroke') || this._stroke
@@ -55469,7 +55471,7 @@ SVG.Element = SVG.invent({
       // loop trough ancestors if type is given
       while(parent && parent.node instanceof window.SVGElement){
         if(typeof type === 'string' ? parent.matches(type) : parent instanceof type) return parent
-        if(!parent.node.parentNode || parent.node.parentNode.nodeName == '#document') return null // #759, #720
+        if(!parent.node.parentNode || parent.node.parentNode.nodeName == '#document' || parent.node.parentNode.nodeName == '#document-fragment') return null // #759, #720
         parent = SVG.adopt(parent.node.parentNode)
       }
     }
@@ -57664,146 +57666,142 @@ SVG.ViewBox = SVG.invent({
 
 })
 // Add events to elements
-;[  'click'
-  , 'dblclick'
-  , 'mousedown'
-  , 'mouseup'
-  , 'mouseover'
-  , 'mouseout'
-  , 'mousemove'
-  // , 'mouseenter' -> not supported by IE
-  // , 'mouseleave' -> not supported by IE
-  , 'touchstart'
-  , 'touchmove'
-  , 'touchleave'
-  , 'touchend'
-  , 'touchcancel' ].forEach(function(event) {
 
-  // add event to SVG.Element
-  SVG.Element.prototype[event] = function(f) {
-    // bind event to element rather than element node
-    SVG.on(this.node, event, f)
-    return this
-  }
-})
+;[ 'click',
+  'dblclick',
+  'mousedown',
+  'mouseup',
+  'mouseover',
+  'mouseout',
+  'mousemove',
+  'mouseenter',
+  'mouseleave',
+  'touchstart',
+  'touchmove',
+  'touchleave',
+  'touchend',
+  'touchcancel' ].forEach(function (event) {
+    // add event to SVG.Element
+    SVG.Element.prototype[event] = function (f) {
+      // bind event to element rather than element node
+      if (f == null) {
+        SVG.off(this, event)
+      } else {
+        SVG.on(this, event, f)
+      }
+      return this
+    }
+  })
 
-// Initialize listeners stack
-SVG.listeners = []
-SVG.handlerMap = []
 SVG.listenerId = 0
 
 // Add event binder in the SVG namespace
-SVG.on = function(node, event, listener, binding, options) {
-  // create listener, get object-index
-  var l     = listener.bind(binding || node.instance || node)
-    , index = (SVG.handlerMap.indexOf(node) + 1 || SVG.handlerMap.push(node)) - 1
-    , ev    = event.split('.')[0]
-    , ns    = event.split('.')[1] || '*'
+SVG.on = function (node, events, listener, binding, options) {
+  var l = listener.bind(binding || node)
+  var n = node instanceof SVG.Element ? node.node : node
 
+  // ensure instance object for nodes which are not adopted
+  n.instance = n.instance || {_events: {}}
 
-  // ensure valid object
-  SVG.listeners[index]         = SVG.listeners[index]         || {}
-  SVG.listeners[index][ev]     = SVG.listeners[index][ev]     || {}
-  SVG.listeners[index][ev][ns] = SVG.listeners[index][ev][ns] || {}
+  var bag = n.instance._events
 
-  if(!listener._svgjsListenerId)
-    listener._svgjsListenerId = ++SVG.listenerId
+  // add id to listener
+  if (!listener._svgjsListenerId) { listener._svgjsListenerId = ++SVG.listenerId }
 
-  // reference listener
-  SVG.listeners[index][ev][ns][listener._svgjsListenerId] = l
+  events.split(SVG.regex.delimiter).forEach(function (event) {
+    var ev = event.split('.')[0]
+    var ns = event.split('.')[1] || '*'
 
-  // add listener
-  node.addEventListener(ev, l, options || false)
+    // ensure valid object
+    bag[ev] = bag[ev] || {}
+    bag[ev][ns] = bag[ev][ns] || {}
+
+    // reference listener
+    bag[ev][ns][listener._svgjsListenerId] = l
+
+    // add listener
+    n.addEventListener(ev, l, options || false)
+  })
 }
 
 // Add event unbinder in the SVG namespace
-SVG.off = function(node, event, listener) {
-  var index = SVG.handlerMap.indexOf(node)
-    , ev    = event && event.split('.')[0]
-    , ns    = event && event.split('.')[1]
-    , namespace = ''
+SVG.off = function (node, events, listener, options) {
+  var n = node instanceof SVG.Element ? node.node : node
+  if (!n.instance) return
 
-  if(index == -1) return
-
-  if (listener) {
-    if(typeof listener == 'function') listener = listener._svgjsListenerId
-    if(!listener) return
-
-    // remove listener reference
-    if (SVG.listeners[index][ev] && SVG.listeners[index][ev][ns || '*']) {
-      // remove listener
-      node.removeEventListener(ev, SVG.listeners[index][ev][ns || '*'][listener], false)
-
-      delete SVG.listeners[index][ev][ns || '*'][listener]
-    }
-
-  } else if (ns && ev) {
-    // remove all listeners for a namespaced event
-    if (SVG.listeners[index][ev] && SVG.listeners[index][ev][ns]) {
-      for (listener in SVG.listeners[index][ev][ns])
-        SVG.off(node, [ev, ns].join('.'), listener)
-
-      delete SVG.listeners[index][ev][ns]
-    }
-
-  } else if (ns){
-    // remove all listeners for a specific namespace
-    for(event in SVG.listeners[index]){
-        for(namespace in SVG.listeners[index][event]){
-            if(ns === namespace){
-                SVG.off(node, [event, ns].join('.'))
-            }
-        }
-    }
-
-  } else if (ev) {
-    // remove all listeners for the event
-    if (SVG.listeners[index][ev]) {
-      for (namespace in SVG.listeners[index][ev])
-        SVG.off(node, [ev, namespace].join('.'))
-
-      delete SVG.listeners[index][ev]
-    }
-
-  } else {
-    // remove all listeners on a given node
-    for (event in SVG.listeners[index])
-      SVG.off(node, event)
-
-    delete SVG.listeners[index]
-    delete SVG.handlerMap[index]
-
+  // listener can be a function or a number
+  if (typeof listener === 'function') {
+    listener = listener._svgjsListenerId
+    if (!listener) return
   }
+
+  var bag = n.instance._events
+
+  ;(events || '').split(SVG.regex.delimiter).forEach(function (event) {
+    var ev = event && event.split('.')[0]
+    var ns = event && event.split('.')[1]
+    var namespace, l
+
+    if (listener) {
+      // remove listener reference
+      if (bag[ev] && bag[ev][ns || '*']) {
+        // removeListener
+        n.removeEventListener(ev, bag[ev][ns || '*'][listener], options || false)
+
+        delete bag[ev][ns || '*'][listener]
+      }
+    } else if (ev && ns) {
+      // remove all listeners for a namespaced event
+      if (bag[ev] && bag[ev][ns]) {
+        for (l in bag[ev][ns]) { SVG.off(n, [ev, ns].join('.'), l) }
+
+        delete bag[ev][ns]
+      }
+    } else if (ns) {
+      // remove all listeners for a specific namespace
+      for (event in bag) {
+        for (namespace in bag[event]) {
+          if (ns === namespace) { SVG.off(n, [event, ns].join('.')) }
+        }
+      }
+    } else if (ev) {
+      // remove all listeners for the event
+      if (bag[ev]) {
+        for (namespace in bag[ev]) { SVG.off(n, [ev, namespace].join('.')) }
+
+        delete bag[ev]
+      }
+    } else {
+      // remove all listeners on a given node
+      for (event in bag) { SVG.off(n, event) }
+
+      n.instance._events = {}
+    }
+  })
 }
 
-//
 SVG.extend(SVG.Element, {
   // Bind given event to listener
-  on: function(event, listener, binding, options) {
-    SVG.on(this.node, event, listener, binding, options)
-
+  on: function (event, listener, binding, options) {
+    SVG.on(this, event, listener, binding, options)
     return this
-  }
+  },
   // Unbind event from listener
-, off: function(event, listener) {
+  off: function (event, listener) {
     SVG.off(this.node, event, listener)
-
     return this
-  }
-  // Fire given event
-, fire: function(event, data) {
-
+  },
+  fire: function (event, data) {
     // Dispatch event
-    if(event instanceof window.Event){
-        this.node.dispatchEvent(event)
-    }else{
-        this.node.dispatchEvent(event = new SVG.CustomEvent(event, {detail:data, cancelable: true}))
+    if (event instanceof window.Event) {
+      this.node.dispatchEvent(event)
+    } else {
+      this.node.dispatchEvent(event = new window.CustomEvent(event, {detail: data, cancelable: true}))
     }
-
     this._event = event
     return this
-  }
-, event: function() {
+  },
+  event: function() {
     return this._event
   }
 })
@@ -57923,7 +57921,7 @@ SVG.Doc = SVG.invent({
     }
     // custom parent method
   , parent: function() {
-      if(!this.node.parentNode || this.node.parentNode.nodeName == '#document') return null
+      if(!this.node.parentNode || this.node.parentNode.nodeName == '#document' || this.node.parentNode.nodeName == '#document-fragment') return null
       return this.node.parentNode
     }
     // Fix for possible sub-pixel offset. See:
@@ -59405,8 +59403,11 @@ SVG.extend(SVG.Parent, SVG.Text, SVG.Tspan, SVG.FX, {
 SVG.Set = SVG.invent({
   // Initialize
   create: function(members) {
-    // Set initial state
-    Array.isArray(members) ? this.members = members : this.clear()
+    if (members instanceof SVG.Set) {
+      this.members = members.members.slice()
+    } else {
+      Array.isArray(members) ? this.members = members : this.clear()
+    }
   }
 
   // Add class methods
@@ -59547,8 +59548,6 @@ SVG.Set.inherit = function() {
     }
   })
 }
-
-
 
 
 SVG.extend(SVG.Element, {
@@ -63045,7 +63044,7 @@ var _labelmanager = _interopRequireDefault(require("./managers/labelmanager.js")
 
 var _rowmanager = _interopRequireDefault(require("./managers/rowmanager.js"));
 
-var _taxonomy = _interopRequireDefault(require("./managers/taxonomy.js"));
+var _taxonomy = _interopRequireDefault(require("./old/taxonomy.js"));
 
 var _tooltip = _interopRequireDefault(require("./managers/tooltip.js"));
 
@@ -63500,7 +63499,7 @@ var Main = function () {
 
 Main.init();
 
-},{"./components/link.js":111,"./components/word.js":114,"./components/wordcluster.js":115,"./managers/labelmanager.js":117,"./managers/rowmanager.js":118,"./managers/taxonomy.js":119,"./managers/tooltip.js":120,"./old/ymljson.js":121,"./parse/parse.js":123,"./treelayout.js":125,"./ui/upload":126,"./xhr.js":127,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/helpers/toConsumableArray":12,"jquery":78,"svg.js":102}],117:[function(require,module,exports){
+},{"./components/link.js":111,"./components/word.js":114,"./components/wordcluster.js":115,"./managers/labelmanager.js":117,"./managers/rowmanager.js":118,"./managers/tooltip.js":119,"./old/taxonomy.js":120,"./old/ymljson.js":121,"./parse/parse.js":123,"./treelayout.js":125,"./ui/upload":126,"./xhr.js":127,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/helpers/toConsumableArray":12,"jquery":78,"svg.js":102}],117:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -63670,7 +63669,8 @@ function () {
       });
 
       this.resizeRow(0);
-    }
+    } // Resizes *all* rows starting from the one with index `i`
+
   }, {
     key: "resizeRow",
     value: function resizeRow(i) {
@@ -63989,6 +63989,153 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
+module.exports = function () {
+  var div = {};
+  var _svg = {};
+  var activeObject = null;
+  var yOffset = 0;
+
+  var Tooltip = function Tooltip(id, svg) {
+    (0, _classCallCheck2.default)(this, Tooltip);
+    div = document.getElementById(id);
+    yOffset = svg.node.getBoundingClientRect().top;
+    this.clear = clear;
+    _svg = svg; // listeners to open tooltip
+
+    svg.on('tag-right-click', openTooltip);
+    svg.on('word-right-click', openTooltip);
+    svg.on('link-label-right-click', openTooltip);
+    svg.on('link-right-click', openTooltip);
+  }; // function to show tooltip and populate div
+
+
+  function openTooltip(e) {
+    var width = document.body.getBoundingClientRect().width - 175 - 5;
+    activeObject = e.detail.object;
+    var html = '';
+
+    if (activeObject instanceof Word) {
+      if (activeObject.tag) {
+        html += '<p id="menu--edit-tag">Edit tag</p><p id="menu--remove-tag">Remove tag</p>';
+      } else {
+        html += '<p id="menu--add-tag">Add tag</p>';
+      }
+
+      html += '<p id="menu--add-link">Add link</p><hr><p id="menu--tree">Tree visualization</p>';
+    } else if (activeObject instanceof WordTag || activeObject instanceof WordCluster) {
+      html += '<p id="menu--remove-tag">Remove</p>';
+    } else if (activeObject instanceof Link) {
+      if (e.detail.type === 'text') {
+        html += '<p id="menu--edit-link-label">Edit label</p><p id="menu--remove-link">Remove link</p>';
+      } else {
+        html += '<p id="menu--remove-link">Remove link</p>';
+      }
+
+      html += '<hr><p id="menu--tree">Tree visualization</p>';
+    }
+
+    if (html) {
+      div.innerHTML = html;
+      div.style.left = Math.min(e.detail.event.x, width) + 'px';
+      div.style.top = e.detail.event.y + document.body.scrollTop - yOffset + 'px';
+      div.className = 'active';
+    } else {
+      activeObject = null;
+    }
+  }
+
+  ; // function to hide div
+
+  function clear() {
+    div.className = null;
+    activeObject = null;
+  } // window listeners
+  // function to listen for a click outside the tooltip
+
+
+  document.addEventListener('mousedown', function (e) {
+    if (e.target !== div && e.target.parentNode !== div) {
+      clear();
+    }
+  }); // listen for a click inside the tooltip;
+
+  document.addEventListener('click', function (e) {
+    if (e.target.parentNode === div && activeObject) {
+      switch (e.target.id) {
+        // tag management events
+        case 'menu--remove-tag':
+          var tag1 = activeObject instanceof Word && activeObject.tag ? activeObject.tag : activeObject;
+
+          _svg.fire('tag-remove', {
+            object: tag1
+          });
+
+          break;
+
+        case 'menu--add-tag':
+          var tag2 = activeObject.setTag('?');
+
+          _svg.fire('tag-edit', {
+            object: tag2
+          });
+
+          break;
+
+        case 'menu--edit-tag':
+          _svg.fire('tag-edit', {
+            object: activeObject.tag
+          });
+
+          break;
+
+        case 'menu--edit-link-label':
+          _svg.fire('link-label-edit', {
+            object: activeObject,
+            text: activeObject.selectedLabel
+          });
+
+          activeObject.selectedLabel = null;
+          break;
+
+        case 'menu--remove-link':
+          activeObject.remove();
+
+          _svg.fire('row-recalculate-slots', {
+            object: activeObject
+          });
+
+          break;
+
+        case 'menu--tree':
+          _svg.fire('build-tree', {
+            object: activeObject
+          });
+
+          break;
+
+        default:
+          ;
+      }
+
+      console.log(e.target.id, activeObject && activeObject.val);
+      clear();
+    }
+  });
+  document.addEventListener('contextmenu', function (e) {
+    if (tooltip.className === 'active') {
+      e.preventDefault();
+    }
+  });
+  return Tooltip;
+}();
+
+},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],120:[function(require,module,exports){
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
 var _colorpicker = _interopRequireDefault(require("../colorpicker.js"));
@@ -64291,154 +64438,7 @@ module.exports = function () {
   return Taxonomy;
 }();
 
-},{"../colorpicker.js":110,"../components/word.js":114,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],120:[function(require,module,exports){
-"use strict";
-
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-module.exports = function () {
-  var div = {};
-  var _svg = {};
-  var activeObject = null;
-  var yOffset = 0;
-
-  var Tooltip = function Tooltip(id, svg) {
-    (0, _classCallCheck2.default)(this, Tooltip);
-    div = document.getElementById(id);
-    yOffset = svg.node.getBoundingClientRect().top;
-    this.clear = clear;
-    _svg = svg; // listeners to open tooltip
-
-    svg.on('tag-right-click', openTooltip);
-    svg.on('word-right-click', openTooltip);
-    svg.on('link-label-right-click', openTooltip);
-    svg.on('link-right-click', openTooltip);
-  }; // function to show tooltip and populate div
-
-
-  function openTooltip(e) {
-    var width = document.body.getBoundingClientRect().width - 175 - 5;
-    activeObject = e.detail.object;
-    var html = '';
-
-    if (activeObject instanceof Word) {
-      if (activeObject.tag) {
-        html += '<p id="menu--edit-tag">Edit tag</p><p id="menu--remove-tag">Remove tag</p>';
-      } else {
-        html += '<p id="menu--add-tag">Add tag</p>';
-      }
-
-      html += '<p id="menu--add-link">Add link</p><hr><p id="menu--tree">Tree visualization</p>';
-    } else if (activeObject instanceof WordTag || activeObject instanceof WordCluster) {
-      html += '<p id="menu--remove-tag">Remove</p>';
-    } else if (activeObject instanceof Link) {
-      if (e.detail.type === 'text') {
-        html += '<p id="menu--edit-link-label">Edit label</p><p id="menu--remove-link">Remove link</p>';
-      } else {
-        html += '<p id="menu--remove-link">Remove link</p>';
-      }
-
-      html += '<hr><p id="menu--tree">Tree visualization</p>';
-    }
-
-    if (html) {
-      div.innerHTML = html;
-      div.style.left = Math.min(e.detail.event.x, width) + 'px';
-      div.style.top = e.detail.event.y + document.body.scrollTop - yOffset + 'px';
-      div.className = 'active';
-    } else {
-      activeObject = null;
-    }
-  }
-
-  ; // function to hide div
-
-  function clear() {
-    div.className = null;
-    activeObject = null;
-  } // window listeners
-  // function to listen for a click outside the tooltip
-
-
-  document.addEventListener('mousedown', function (e) {
-    if (e.target !== div && e.target.parentNode !== div) {
-      clear();
-    }
-  }); // listen for a click inside the tooltip;
-
-  document.addEventListener('click', function (e) {
-    if (e.target.parentNode === div && activeObject) {
-      switch (e.target.id) {
-        // tag management events
-        case 'menu--remove-tag':
-          var tag1 = activeObject instanceof Word && activeObject.tag ? activeObject.tag : activeObject;
-
-          _svg.fire('tag-remove', {
-            object: tag1
-          });
-
-          break;
-
-        case 'menu--add-tag':
-          var tag2 = activeObject.setTag('?');
-
-          _svg.fire('tag-edit', {
-            object: tag2
-          });
-
-          break;
-
-        case 'menu--edit-tag':
-          _svg.fire('tag-edit', {
-            object: activeObject.tag
-          });
-
-          break;
-
-        case 'menu--edit-link-label':
-          _svg.fire('link-label-edit', {
-            object: activeObject,
-            text: activeObject.selectedLabel
-          });
-
-          activeObject.selectedLabel = null;
-          break;
-
-        case 'menu--remove-link':
-          activeObject.remove();
-
-          _svg.fire('row-recalculate-slots', {
-            object: activeObject
-          });
-
-          break;
-
-        case 'menu--tree':
-          _svg.fire('build-tree', {
-            object: activeObject
-          });
-
-          break;
-
-        default:
-          ;
-      }
-
-      console.log(e.target.id, activeObject && activeObject.val);
-      clear();
-    }
-  });
-  document.addEventListener('contextmenu', function (e) {
-    if (tooltip.className === 'active') {
-      e.preventDefault();
-    }
-  });
-  return Tooltip;
-}();
-
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],121:[function(require,module,exports){
+},{"../colorpicker.js":110,"../components/word.js":114,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],121:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");

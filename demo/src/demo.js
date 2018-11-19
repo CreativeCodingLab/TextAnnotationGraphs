@@ -17,13 +17,17 @@ const _ = require("lodash");
 
 // Bootstrap includes for the full UI demo
 require("popper.js");
-require("bootstrap");
+require("bootstrap/js/dist/dropdown");
+require("bootstrap/js/dist/modal");
 
 // Prism for syntax highlighting
 require("prismjs");
 
+// CodeFlask for editing the taxonomy on the fly
+const CodeFlask = require("codeflask");
+
 // Main function
-$(function () {
+$(async () => {
   // -------------
   // Basic example
   // -------------
@@ -55,6 +59,8 @@ $(function () {
   const sampleData = require("../data/data8.json");
   uiTag.loadData(sampleData, "json");
 
+  // --------------------------------------------------------------------------
+
   // Data from an external URL can also be loaded into the visualisation
   // using the `.loadUrlAsync()` function.  The data will be read and displayed
   // asynchronously.
@@ -63,6 +69,8 @@ $(function () {
     const $link = $(event.target);
     return uiTag.loadUrlAsync($link.data("path"), $link.data("format"));
   });
+
+  // --------------------------------------------------------------------------
 
   // Custom annotation files can also be uploaded by the user and loaded
   // using the `.loadFilesAsync()` function.  The file(s) will be read and
@@ -95,6 +103,8 @@ $(function () {
     }
   });
 
+  // --------------------------------------------------------------------------
+
   // The `.setOption()` function can be used to change various advanced
   // options.  The visualisation will need to be redrawn to show any
   // changes, if applicable.
@@ -113,6 +123,7 @@ $(function () {
       uiTag.setOption("showLinksOnMove", $optionLinksOnMove[0].checked);
     });
 
+  // --------------------------------------------------------------------------
 
   // The `.exportFile()` function can be used to save the current
   // visualisation as an SVG file
@@ -120,10 +131,98 @@ $(function () {
     uiTag.exportFile();
   });
 
+  // --------------------------------------------------------------------------
+
+  // The taxonomy-related functions manage a representation of the taxonomic
+  // relations between various entities in the visualisation, and are also
+  // used to control the colouring of the corresponding tags/labels.
+
+  // The taxonomy can be read/set as a YAML document.  Here, we load the
+  // sample taxonomy served with the demo files.
+  const sampleTaxonomy = await $.ajax("/taxonomy.yml");
+  uiTag.loadTaxonomyYaml(sampleTaxonomy);
+
+  // A simple editor allowing the user to tweak the taxonomy on the fly
+  const editor = new CodeFlask("#tag-taxonomy-editor", {language: "yaml"});
+
+  // Copying the Prism YAML syntax definition here for syntax highlighting,
+  // since CodeFlask can't load it automatically
+  editor.addLanguage("yaml", {
+    "scalar": {
+      pattern: /([\-:]\s*(?:![^\s]+)?[ \t]*[|>])[ \t]*(?:((?:\r?\n|\r)[ \t]+)[^\r\n]+(?:\2[^\r\n]+)*)/,
+      lookbehind: true,
+      alias: "string"
+    },
+    "comment": /#.*/,
+    "key": {
+      pattern: /(\s*(?:^|[:\-,[{\r\n?])[ \t]*(?:![^\s]+)?[ \t]*)[^\r\n{[\]},#\s]+?(?=\s*:\s)/,
+      lookbehind: true,
+      alias: "atrule"
+    },
+    "directive": {
+      pattern: /(^[ \t]*)%.+/m,
+      lookbehind: true,
+      alias: "important"
+    },
+    "datetime": {
+      pattern: /([:\-,[{]\s*(?:![^\s]+)?[ \t]*)(?:\d{4}-\d\d?-\d\d?(?:[tT]|[ \t]+)\d\d?:\d{2}:\d{2}(?:\.\d*)?[ \t]*(?:Z|[-+]\d\d?(?::\d{2})?)?|\d{4}-\d{2}-\d{2}|\d\d?:\d{2}(?::\d{2}(?:\.\d*)?)?)(?=[ \t]*(?:$|,|]|}))/m,
+      lookbehind: true,
+      alias: "number"
+    },
+    "boolean": {
+      pattern: /([:\-,[{]\s*(?:![^\s]+)?[ \t]*)(?:true|false)[ \t]*(?=$|,|]|})/im,
+      lookbehind: true,
+      alias: "important"
+    },
+    "null": {
+      pattern: /([:\-,[{]\s*(?:![^\s]+)?[ \t]*)(?:null|~)[ \t]*(?=$|,|]|})/im,
+      lookbehind: true,
+      alias: "important"
+    },
+    "string": {
+      pattern: /([:\-,[{]\s*(?:![^\s]+)?[ \t]*)("|')(?:(?!\2)[^\\\r\n]|\\.)*\2(?=[ \t]*(?:$|,|]|}))/m,
+      lookbehind: true,
+      greedy: true
+    },
+    "number": {
+      pattern: /([:\-,[{]\s*(?:![^\s]+)?[ \t]*)[+-]?(?:0x[\da-f]+|0o[0-7]+|(?:\d+\.?\d*|\.?\d+)(?:e[+-]?\d+)?|\.inf|\.nan)[ \t]*(?=$|,|]|})/im,
+      lookbehind: true
+    },
+    "tag": /![^\s]+/,
+    "important": /[&*][\w]+/,
+    "punctuation": /---|[:[\]{}\-,|>?]|\.\.\./
+  });
+
+  $("#tag-taxonomy-stop-edit").on("click", () => {
+    // Try to save the new taxonomy YAML, letting the user know if anything
+    // broke
+    const $errors = $("#tag-taxonomy-editor-errors");
+    try {
+      $errors.hide();
+      const newYaml = editor.getCode();
+      uiTag.loadTaxonomyYaml(newYaml);
+    } catch (err) {
+      $errors.text(err);
+      return $errors.show();
+    }
+
+    $("#tag-taxonomy-view").show();
+    $("#tag-taxonomy-edit").hide();
+  });
+
+  // Start with the editor hidden
+  $("#tag-taxonomy-edit").hide();
+  $("#tag-taxonomy-start-edit").on("click", () => {
+    editor.updateCode(uiTag.getTaxonomyYaml());
+    $("#tag-taxonomy-view").hide();
+    $("#tag-taxonomy-edit").show();
+  });
 
   // Debug
   window._ = require("lodash");
   window.$ = require("jquery");
   window.basicTag = basicTag;
   window.uiTag = uiTag;
+  window.editor = editor;
+  window.yaml = require("js-yaml");
 });

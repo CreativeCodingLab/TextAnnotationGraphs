@@ -7,6 +7,38 @@
 @import "../../node_modules/prismjs/themes/prism";
 // Core TAG styles
 @import "../../dist/tag/css/tag";
+
+// Styles for on-the-fly taxonomy YAML editor
+// Including overrides to prevent conflicts with default Prism styling
+#tag-taxonomy-editor {
+  border: 1px solid lightgray;
+}
+
+#tag-taxonomy-editor pre {
+  background: none;
+
+  padding: 10px;
+  font-size: 13px;
+  line-height: 20px;
+  white-space: pre;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: auto;
+  margin: 0 !important;
+  outline: none;
+  text-align: left;
+}
+
+#tag-taxonomy-editor code {
+  line-height: 20px;
+}
+
+#tag-taxonomy-editor .codeflask {
+  min-height: 400px;
+  position: relative;
+}
+
 // Fonts used in the visualisation
 @import url("https://fonts.googleapis.com/css?family=Nunito:400,600");
 

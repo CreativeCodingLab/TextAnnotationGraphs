@@ -185,6 +185,24 @@ class Main {
   }
 
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Controlling taxonomic information and associated colours
+
+  /**
+   * Loads a new taxonomy specification (in YAML form) into the module
+   * @param {String} taxonomy - A YAML string representing the taxonomy object
+   */
+  loadTaxonomyYaml(taxonomy) {
+    return this.taxonomyManager.loadTaxonomyYaml(taxonomy);
+  }
+
+  /**
+   * Returns a YAML representation of the currently loaded taxonomy
+   */
+  getTaxonomyYaml() {
+    return this.taxonomyManager.getTaxonomyYaml();
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // Higher-level API functions
 
   /**
