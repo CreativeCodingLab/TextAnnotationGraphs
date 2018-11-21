@@ -11,7 +11,7 @@ import Word from "../components/word.js";
 
 class TaxonomyManager {
   constructor() {
-    // The currently loaded taxonomy (as a JS object)
+    // The currently loaded taxonomy (as a JS Array representing the tree)
     this.taxonomy = [];
 
     // The originally-loaded taxonomy string (as a YAML document)
@@ -54,6 +54,38 @@ class TaxonomyManager {
    */
   getTaxonomyYaml() {
     return this.taxonomyYaml;
+  }
+
+  /**
+   * Returns the currently loaded taxonomy as an Array.
+   * Simple labels are stored as Strings in Arrays, and category labels are
+   * stored as single-key objects.
+   *
+   * E.g., a YAML document like the following:
+   *
+   *  - Label A
+   *  - Category 1:
+   *    - Label B
+   *    - Label C
+   *  - Label D
+   *
+   * Parses to the following taxonomy object:
+   *
+   *  [
+   *    "Label A",
+   *    {
+   *      "Category 1": [
+   *        "Label B",
+   *        "Label C"
+   *      ]
+   *    },
+   *    "Label D"
+   *  ]
+   *
+   * @return {Array}
+   */
+  getTaxonomyTree() {
+    return this.taxonomy;
   }
 
   /**

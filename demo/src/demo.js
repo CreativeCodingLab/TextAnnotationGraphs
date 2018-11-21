@@ -17,6 +17,7 @@ const _ = require("lodash");
 
 // Bootstrap includes for the full UI demo
 require("popper.js");
+require("bootstrap/js/dist/collapse");
 require("bootstrap/js/dist/dropdown");
 require("bootstrap/js/dist/modal");
 
@@ -25,6 +26,11 @@ require("prismjs");
 
 // CodeFlask for editing the taxonomy on the fly
 const CodeFlask = require("codeflask");
+
+// Handlebars recursive template for the taxonomy colour picker demo
+const tplTaxonomy = require("./taxonomy.hbs");
+const Handlebars = require("hbsfy/runtime");
+Handlebars.registerPartial("taxonomySubtree", tplTaxonomy);
 
 // Main function
 $(async () => {
@@ -137,12 +143,94 @@ $(async () => {
   // relations between various entities in the visualisation, and are also
   // used to control the colouring of the corresponding tags/labels.
 
-  // The taxonomy can be read/set as a YAML document.  Here, we load the
-  // sample taxonomy served with the demo files.
+  // Here, we load up the sample taxonomy served with the demo files.
   const sampleTaxonomy = await $.ajax("/taxonomy.yml");
   uiTag.loadTaxonomyYaml(sampleTaxonomy);
 
-  // A simple editor allowing the user to tweak the taxonomy on the fly
+  // We can then render the taxonomy tree as an accordion list with colour
+  // pickers for each label.
+
+  /**
+   * In order to render the taxonomy tree more easily using a Handlebars
+   * template, we convert the full tree object into a slightly flatter Array
+   * of plain Object blocks:
+   *   - Consecutive leaf nodes are grouped together within a single Object
+   *   - Branches of the tree are given one Object each, with a `children`
+   *     property that can recursively contain more leaf/branch blocks
+   */
+  function refreshTaxonomyTree() {
+    const rawTaxonomy = uiTag.getTaxonomyTree();
+
+    // We also pre-calculate the left-padding for nested branches here
+    const paddingIncrement = 20;
+
+    // Recursive render block generator
+    const flattenTaxonomy = (taxonomy, depth) => {
+      depth = depth || 0;
+
+      const flatTaxonomy = [];
+      let currentLeafBlock = [];
+      for (let node of taxonomy) {
+        if (!_.isObject(node)) {
+          // This is a leaf node - Add it to the open leaf block and continue
+          currentLeafBlock.push(node);
+          continue;
+        }
+
+        // This is a branch node - See if we need to close the open leaf
+        // block
+        if (currentLeafBlock.length > 0) {
+          flatTaxonomy.push({
+            leaves: currentLeafBlock,
+            padding: paddingIncrement * depth
+          });
+          currentLeafBlock = [];
+        }
+
+        // Get the label and recurse.
+        // There should only be a single key for this object, and it should be
+        // used as the label.  The key should point to an Array of children to
+        // recurse with.
+        // We also need a normalised label to use as the id of the rendered
+        // HTML element.
+        const label = _.keys(node)[0];
+        flatTaxonomy.push({
+          label,
+          id: _.kebabCase(label),
+          children: flattenTaxonomy(node[label], depth + 1),
+          padding: paddingIncrement * depth
+        });
+      }
+
+      // Done flattening all the children under this sub-tree.  Close out the
+      // open leaf block if we have to, then return
+      if (currentLeafBlock.length > 0) {
+        flatTaxonomy.push({
+          leaves: currentLeafBlock,
+          padding: paddingIncrement * depth
+        });
+      }
+      return flatTaxonomy;
+    };
+
+    // Process
+    const renderTaxonomy = flattenTaxonomy(rawTaxonomy);
+
+    $("#tag-taxonomy-tree").html(
+      tplTaxonomy({
+        children: renderTaxonomy
+      })
+    );
+  }
+
+  refreshTaxonomyTree();
+
+  // --------------------------------------------------------------------------
+
+  // The taxonomy can also be read/set directly as a YAML document, allowing
+  // us to tweak the taxonomy on the fly
+
+  // A simple editor allowing the user to edit the taxonomy directly
   const editor = new CodeFlask("#tag-taxonomy-editor", {language: "yaml"});
 
   // Copying the Prism YAML syntax definition here for syntax highlighting,
@@ -201,6 +289,7 @@ $(async () => {
       $errors.hide();
       const newYaml = editor.getCode();
       uiTag.loadTaxonomyYaml(newYaml);
+      refreshTaxonomyTree();
     } catch (err) {
       $errors.text(err);
       return $errors.show();
@@ -217,6 +306,8 @@ $(async () => {
     $("#tag-taxonomy-view").hide();
     $("#tag-taxonomy-edit").show();
   });
+
+  // --------------------------------------------------------------------------
 
   // Debug
   window._ = require("lodash");

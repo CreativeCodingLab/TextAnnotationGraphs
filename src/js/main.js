@@ -202,6 +202,38 @@ class Main {
     return this.taxonomyManager.getTaxonomyYaml();
   }
 
+  /**
+   * Returns the currently loaded taxonomy as an Array.
+   * Simple labels are stored as Strings in Arrays, and category labels are
+   * stored as single-key objects.
+   *
+   * E.g., a YAML document like the following:
+   *
+   *  - Label A
+   *  - Category 1:
+   *    - Label B
+   *    - Label C
+   *  - Label D
+   *
+   * Parses to the following taxonomy object:
+   *
+   *  [
+   *    "Label A",
+   *    {
+   *      "Category 1": [
+   *        "Label B",
+   *        "Label C"
+   *      ]
+   *    },
+   *    "Label D"
+   *  ]
+   *
+   * @return {Array}
+   */
+  getTaxonomyTree() {
+    return this.taxonomyManager.getTaxonomyTree();
+  }
+
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // Higher-level API functions
 

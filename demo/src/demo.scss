@@ -39,6 +39,22 @@
   position: relative;
 }
 
+// Styles for the taxonomy colour picker accordion
+
+// Missing borders above some accordion headers
+#tag-taxonomy-tree div.collapse + a.card-header {
+  border-top: 1px solid rgba(0, 0, 0, .125);
+}
+
+// Icons for accordion headers
+[data-toggle="collapse"] i:before {
+  content: "\f0d7";
+}
+
+[data-toggle="collapse"].collapsed i:before {
+  content: "\f0da";
+}
+
 // Fonts used in the visualisation
 @import url("https://fonts.googleapis.com/css?family=Nunito:400,600");
 

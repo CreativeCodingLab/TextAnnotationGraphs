@@ -337,7 +337,7 @@ const demo = {
 
       console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-      return run(`browserify ${input} -t [ babelify ] -p [ tinyify ] -o ${output} -v`, {async: true});
+      return run(`browserify ${input} -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v`, {async: true});
     },
 
     async styles() {
@@ -375,7 +375,7 @@ const demo = {
 
       console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-      return run(`watchify ${input} -t [ babelify ] -p [ tinyify ] -o ${output} -v --poll=500`, {async: true});
+      return run(`watchify ${input} -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v --poll=500`, {async: true});
     },
 
     async styles() {

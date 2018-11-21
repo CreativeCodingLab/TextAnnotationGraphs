@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <title>TAG Demo</title>
 
+  <!-- Font Awesome webfont for icons -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+        integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
   <!-- Demo-specific styles (fonts, positioning, etc.)
     -- The core TAG styles, as well as the Bootstrap/Prism styles used for the UI demo below, are also imported within
     -- `demo.scss`.
@@ -191,12 +195,20 @@
               </div>
 
               <div class="modal-body">
+                <!-- Taxonomy viewer/colour picker -->
                 <div id="tag-taxonomy-view">
+
                   <button type="button" class="btn btn-primary" id="tag-taxonomy-start-edit">
                     Edit taxonomy
                   </button>
+
+                  <!-- Will be dynamically generated using a Handlebars template -->
+                  <div class="card mt-2" id="tag-taxonomy-tree">
+
+                  </div>
                 </div>
 
+                <!-- On-the-fly editor -->
                 <div id="tag-taxonomy-edit">
                   <div id="tag-taxonomy-editor"></div>
                   <div id="tag-taxonomy-editor-errors" class="invalid-feedback"></div>
