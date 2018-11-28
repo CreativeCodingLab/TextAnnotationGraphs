@@ -234,6 +234,26 @@ class Main {
     return this.taxonomyManager.getTaxonomyTree();
   }
 
+  /**
+   * Given some label (either for a WordTag or WordCluster), return the
+   * colour that the taxonomy manager has assigned to it
+   * @param label
+   */
+  getColour(label) {
+    return this.taxonomyManager.getColour(label);
+  }
+
+  /**
+   * Sets the colour for some label (either for a WordTag or WordCluster)
+   * and redraws the visualisation
+   * @param label
+   * @param colour
+   */
+  setColour(label, colour) {
+    this.taxonomyManager.assignColour(label, colour);
+    this.taxonomyManager.colour(this.words);
+  }
+
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // Higher-level API functions
 

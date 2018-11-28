@@ -340,6 +340,18 @@ const demo = {
       return run(`browserify ${input} -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v`, {async: true});
     },
 
+    async BSColourPicker() {
+      const input = "node_modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js";
+      const output = `demo/`;
+      const type = "Build (Vendor)";
+      const desc = "Bootstrap Colorpicker Library";
+
+      // `cpy` takes a directory rather than a file as its target
+      console.log(`\n[${colourType(type)}: ${colourOutput(output + "bootstrap-colorpicker.min.js")}] ${colourInfo(desc)}`);
+
+      return run(`cpy ${input} ${output}`, {async: true});
+    },
+
     async styles() {
       const input = "demo/src/demo.scss";
       const output = `demo/demo.min.css`;
@@ -358,9 +370,10 @@ const demo = {
     async all() {
       return Promise.all([
         demo.build.scripts(),
+        demo.build.BSColourPicker(),
         demo.build.styles()
       ]);
-    }
+    },
   },
 
   // For ease of demo development; intentionally left undocumented
@@ -378,6 +391,18 @@ const demo = {
       return run(`watchify ${input} -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v --poll=500`, {async: true});
     },
 
+    async BSColourPicker() {
+      const input = "node_modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js";
+      const output = `demo/`;
+      const type = "Build (Vendor)";
+      const desc = "Bootstrap Colorpicker Library";
+
+      // `cpy` takes a directory rather than a file as its target
+      console.log(`\n[${colourType(type)}: ${colourOutput(output + "bootstrap-colorpicker.min.js")}] ${colourInfo(desc)}`);
+
+      return run(`chokidar ${input} --initial -c "cpy ${input} ${output}"`, {async: true});
+    },
+
     async styles() {
       const input = "demo/src/demo.scss";
       const output = `demo/demo.min.css`;
@@ -392,6 +417,7 @@ const demo = {
     async all() {
       return Promise.all([
         demo.watch.scripts(),
+        demo.watch.BSColourPicker(),
         demo.watch.styles()
       ]);
     }

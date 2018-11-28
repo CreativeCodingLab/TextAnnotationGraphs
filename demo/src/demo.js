@@ -20,6 +20,7 @@ require("popper.js");
 require("bootstrap/js/dist/collapse");
 require("bootstrap/js/dist/dropdown");
 require("bootstrap/js/dist/modal");
+require("bootstrap/js/dist/popover");
 
 // Prism for syntax highlighting
 require("prismjs");
@@ -31,6 +32,12 @@ const CodeFlask = require("codeflask");
 const tplTaxonomy = require("./taxonomy.hbs");
 const Handlebars = require("hbsfy/runtime");
 Handlebars.registerPartial("taxonomySubtree", tplTaxonomy);
+
+// The colour picker script itself is included in the main HTML, because it
+// doesn't play nice with Browserify.  Here we expose the jquery globals it
+// needs.
+window.$ = $;
+window.jQuery = $;
 
 // Main function
 $(async () => {
@@ -157,6 +164,11 @@ $(async () => {
    *   - Consecutive leaf nodes are grouped together within a single Object
    *   - Branches of the tree are given one Object each, with a `children`
    *     property that can recursively contain more leaf/branch blocks
+   *   - The assigned colour from the taxonomy manager for the given label is
+   *     also recorded
+   *
+   * The flattened array is then passed to the Handlebars recursive template
+   * for rendering.
    */
   function refreshTaxonomyTree() {
     const rawTaxonomy = uiTag.getTaxonomyTree();
@@ -172,8 +184,13 @@ $(async () => {
       let currentLeafBlock = [];
       for (let node of taxonomy) {
         if (!_.isObject(node)) {
-          // This is a leaf node - Add it to the open leaf block and continue
-          currentLeafBlock.push(node);
+          // This is a leaf node - Add the raw and normalised label to the open
+          // leaf block and continue
+          currentLeafBlock.push({
+            label: node,
+            id: _.kebabCase(node),
+            colour: uiTag.getColour(node)
+          });
           continue;
         }
 
@@ -197,6 +214,7 @@ $(async () => {
         flatTaxonomy.push({
           label,
           id: _.kebabCase(label),
+          colour: uiTag.getColour(label),
           children: flattenTaxonomy(node[label], depth + 1),
           padding: paddingIncrement * depth
         });
@@ -213,7 +231,7 @@ $(async () => {
       return flatTaxonomy;
     };
 
-    // Process
+    // Render HTML, refresh pickers
     const renderTaxonomy = flattenTaxonomy(rawTaxonomy);
 
     $("#tag-taxonomy-tree").html(
@@ -221,6 +239,17 @@ $(async () => {
         children: renderTaxonomy
       })
     );
+    $(".tag-cp")
+      .colorpicker({
+        format: "hex"
+      })
+      .on("change", (event) => {
+        /**
+         * When a new colour is selected, update the taxonomy manager
+         */
+        const $this = $(event.target);
+        uiTag.setColour($this.data("label"), $this.val());
+      });
   }
 
   refreshTaxonomyTree();
@@ -311,7 +340,6 @@ $(async () => {
 
   // Debug
   window._ = require("lodash");
-  window.$ = require("jquery");
   window.basicTag = basicTag;
   window.uiTag = uiTag;
   window.editor = editor;

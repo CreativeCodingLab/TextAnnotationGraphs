@@ -101,7 +101,7 @@ class TaxonomyManager {
       if (word.tag) {
         if (!this.tagColours[word.tag.val]) {
           // We have yet to assign this tag a colour
-          this.tagColours[word.tag.val] = this.getNewColour();
+          this.assignColour(word.tag.val, this.getNewColour());
         }
         TaxonomyManager.setColour(word, this.tagColours[word.tag.val]);
       }
@@ -110,7 +110,7 @@ class TaxonomyManager {
       if (word.clusters.length > 0) {
         word.clusters.forEach(cluster => {
           if (!this.tagColours[cluster.val]) {
-            this.tagColours[cluster.val] = this.getNewColour();
+            this.assignColour(cluster.val, this.getNewColour());
           }
           TaxonomyManager.setColour(cluster, this.tagColours[cluster.val]);
         });
@@ -127,6 +127,14 @@ class TaxonomyManager {
     return this.colour(words);
   }
 
+  /**
+   * Given some label in the visualisation (either for a WordTag or a
+   * WordCluster), assigns it a colour that will be reflected the next time
+   * `.colour()` is called.
+   */
+  assignColour(label, colour) {
+    this.tagColours[label] = colour;
+  }
 
   /**
    * Given some element in the visualisation, change its colour
@@ -141,6 +149,15 @@ class TaxonomyManager {
       // Set the colour of the element itself
       element.svgText.node.style.fill = colour;
     }
+  }
+
+  /**
+   * Given some label (either for a WordTag or WordCluster), return the
+   * colour that the taxonomy manager has assigned to it
+   * @param label
+   */
+  getColour(label) {
+    return this.tagColours[label];
   }
 
   /**

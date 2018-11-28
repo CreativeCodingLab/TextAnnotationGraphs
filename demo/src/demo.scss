@@ -47,12 +47,19 @@
 }
 
 // Icons for accordion headers
-[data-toggle="collapse"] i:before {
+[data-toggle="collapse"] i.fas:before {
   content: "\f0d7";
 }
 
-[data-toggle="collapse"].collapsed i:before {
+[data-toggle="collapse"].collapsed i.fas:before {
   content: "\f0da";
+}
+
+// Styles for the taxonomy colour picker plugin
+@import "../../node_modules/bootstrap-colorpicker/dist/css/bootstrap-colorpicker";
+
+.tag-cp input[type=text] {
+  width: 100px;
 }
 
 // Fonts used in the visualisation
