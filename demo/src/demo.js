@@ -241,7 +241,8 @@ $(async () => {
     );
     $(".tag-cp")
       .colorpicker({
-        format: "hex"
+        format: "hex",
+        autoInputFallback: false
       })
       .on("change", (event) => {
         /**
