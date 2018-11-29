@@ -217,14 +217,16 @@ class Link {
     }
   }
 
-  draw(anchor) {
-    if (this.eventId === "R2") {
-      window.debugLink = this;
-      window.debugAnchor = anchor;
-    }
-
-    if (!anchor) {
+  /**
+   *
+   * @param changedAnchor - Probably passed in when the `.draw()` is in
+   *     response to a moved anchor? ¯\_(ツ)_/¯
+   */
+  draw(changedAnchor) {
+    if (!changedAnchor) {
       // initialize offsets
+      // (x-offsets along the draggable width of the handle, from 0 to the
+      // width of whatever element the handle rests on)
       this.handles.forEach(h => {
         if (h.offset === null) {
           let l = h.anchor.links
@@ -234,6 +236,9 @@ class Link {
           let w = 10; // magic number => TODO: resize this to tag width?
 
           if (l.length > 1) {
+            // The handle's anchor has multiple links associated with it;
+            // stagger them horizontally by setting this handle's offset
+            // based on its index in the anchor's list of links.
             if (h.anchor instanceof Link && h.anchor.trigger.idx === h.anchor.endpoints[0].idx) {
               h.offset = l.indexOf(this) / l.length * 2 * w;
             }
@@ -246,6 +251,8 @@ class Link {
             }
           }
           else {
+            // The handle's anchor only has one link, this one.
+            // It can have offset 0.
             h.offset = 0;
           }
         }
@@ -254,26 +261,29 @@ class Link {
     else {
       // redraw handles if word or link was moved
 
-      /**
-       * Small recursive function to find the given anchor within the link's
-       * handles, even if it is nested
-       */
-      const findAnchor = (thisHandle) => {
-        if (thisHandle.anchor === anchor) {
-          // Found an un-nested anchor
-          return thisHandle;
-        } else if (thisHandle.anchor instanceof Link) {
-          if (thisHandle.anchor.handles.find(findAnchor)) {
-            return thisHandle;
+      // Find the handle corresponding to the anchor whose position changed
+      let thisHandle = this.handles.find(handle => (handle.anchor === changedAnchor));
+      if (thisHandle) {
+        thisHandle.x = changedAnchor.cx + thisHandle.offset;
+        thisHandle.y = this.top ? changedAnchor.absoluteY : changedAnchor.absoluteDescent;
+
+        // Two possibilities: The anchor is a Word (/WordCluster?), or it is a
+        // Link.
+        // If the anchor is itself a Link, we have to make sure we don't let
+        // this Link overshoot its bounds.
+        if (changedAnchor instanceof Link) {
+          // Check to make sure we don't overshoot the right-side bound
+          let maxX = 0;
+          for (let handle of changedAnchor.handles) {
+            maxX = Math.max(maxX, handle.anchor.cx);
+          }
+          const rightOvershoot = thisHandle.x - maxX;
+          if (rightOvershoot > 0) {
+            // We overshot it; rein in the x-position and offset respectively.
+            thisHandle.x -= rightOvershoot;
+            thisHandle.offset -= rightOvershoot;
           }
         }
-      };
-
-      let h = this.handles.find(findAnchor);
-      console.log(this.eventId, h);
-      if (h) {
-        h.x = anchor.cx + h.offset;
-        h.y = this.top ? anchor.absoluteY : anchor.absoluteDescent;
       }
     }
 
@@ -435,7 +445,6 @@ class Link {
           .y(y - 10);
 
       }
-      window.debugPath = d;
       this.line.plot(d);
     }
 
