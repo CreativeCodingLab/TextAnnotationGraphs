@@ -95,6 +95,13 @@ class BratParser {
     let tokens = m.annotation;
     switch (tokens[0].charAt(0)) {
       case 'T':
+        /**
+         * Entity annotations have:
+         * - Unique ID
+         * - Type
+         * - Character span
+         * - Raw text
+         */
         let tbm = this.parseTextMention(tokens);
         if (tbm === null) {
           // invalid line
@@ -107,6 +114,12 @@ class BratParser {
           return tbm;
         }
       case 'E':
+        /**
+         * Event annotations have:
+         * - Unique ID
+         * - Type:ID string representing the trigger entity
+         * - Role:ID strings representing the argument entities
+         */
         let em = this.parseEventMention(tokens, graph);
         if (em === null) {
           // invalid event
@@ -119,6 +132,12 @@ class BratParser {
           return em;
         }
       case 'R':
+        /**
+         * Binary relations have:
+         * - Unique ID
+         * - Type
+         * - Role:ID strings representing the argument entities (x2)
+         */
         let rm = this.parseRelationMention(tokens, graph);
         if (rm === null) {
           // invalid event
