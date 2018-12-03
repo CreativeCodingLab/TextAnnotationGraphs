@@ -345,4 +345,8 @@ $(async () => {
   window.uiTag = uiTag;
   window.editor = editor;
   window.yaml = require("js-yaml");
+
+  // await uiTag.loadUrlAsync("data/example2.ann", "brat");
+  // uiTag.setOption("showSyntax", true);
+  // uiTag.redraw();
 });

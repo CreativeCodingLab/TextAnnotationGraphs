@@ -251,6 +251,15 @@ class RowManager {
       .reduce((acc, val) => this.getSlotRange(acc, val), [0, 0]);
   }
 
+  /**
+   * Return the Row that the given point would be contained in, if any
+   * @param x
+   * @param y
+   */
+  whichRow(x, y) {
+    return this._rows.find(row => row.contains(x, y));
+  }
+
   get lastRow() {
     return this._rows[this._rows.length - 1];
   }

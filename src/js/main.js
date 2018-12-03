@@ -141,7 +141,7 @@ class Main {
     });
 
     this.links.forEach(link => {
-      link.init(this.svg);
+      link.init(this);
     });
     this.links.forEach(link => {
       link.recalculateSlots(this.words);

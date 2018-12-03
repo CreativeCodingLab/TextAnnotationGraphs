@@ -1,5 +1,5 @@
 import * as SVG from "svg.js";
-import * as draggable from 'svg.draggable.js';
+import * as draggable from "svg.draggable.js";
 
 class Row {
   constructor(svg, idx = 0, ry = 0, rh = 100) {
@@ -20,11 +20,12 @@ class Row {
       this.init(svg);
     }
   }
+
   init(svg) {
     this.svg = svg.group()
       .transform({y: this.ry})
       .addClass("tag-element")
-      .addClass('row');
+      .addClass("row");
 
     // group element to contain word elements
     this.wordGroup = this.svg.group()
@@ -37,20 +38,23 @@ class Row {
     this.draggable = this.svg.line(0, 0, this.rw, 0)
       .y(this.rh)
       .addClass("tag-element")
-      .addClass('row-drag')
+      .addClass("row-drag")
       .draggable();
 
     let row = this;
     let y = 0;
     this.draggable
-      .on('dragstart', function(e) { y = e.detail.p.y; })
-      .on('dragmove', (e) => {
+      .on("dragstart", function (e) {
+        y = e.detail.p.y;
+      })
+      .on("dragmove", (e) => {
         e.preventDefault();
         let dy = e.detail.p.y - y;
         y = e.detail.p.y;
-        svg.fire('row-resize', { object: this, y: dy });
+        svg.fire("row-resize", {object: this, y: dy});
       });
   }
+
   remove() {
     return this.svg.remove();
   }
@@ -70,16 +74,19 @@ class Row {
     this.wordGroup.y(this.rh);
     this.draggable.y(this.rh);
   }
+
   width(rw) {
     this.rw = rw;
-    this.draggable.attr('x2', this.rw);
+    this.draggable.attr("x2", this.rw);
   }
 
   addWord(word, i, ignorePosition) {
-    if (isNaN(i)) { i = this.words.length; }
+    if (isNaN(i)) {
+      i = this.words.length;
+    }
 
     word.row = this;
-    this.words.splice(i,0,word);
+    this.words.splice(i, 0, word);
     this.wordGroup.add(word.svg);
 
     if (!ignorePosition) {
@@ -123,25 +130,45 @@ class Row {
       ++i;
     }
   }
+
   removeWord(word) {
     this.words.splice(this.words.indexOf(word), 1);
     this.wordGroup.removeElement(word.svg);
     return word;
   }
+
   removeLastWord() {
     const word = this.words.pop();
     this.wordGroup.removeElement(word.svg);
     return word;
   }
+
   removeFirstWord() {
     const word = this.words.shift();
     this.wordGroup.removeElement(word.svg);
     return word;
   }
 
-  get ry2() { return this.ry + this.rh + 20 - this.minSlot * 15; }
+  /**
+   * Returns true if the given point is within the bounds of this row
+   * @param x
+   * @param y
+   */
+  contains(x, y) {
+    return x <= this.rw && y >= this.ry && y <= this.ry2;
+  }
+
+  /**
+   * Returns the lower bound of the Row on the y-axis
+   * @return {number}
+   */
+  get ry2() {
+    return this.ry + this.rh + 20 - this.minSlot * 15;
+  }
+
   get minHeight() {
     return 60 + this.maxSlot * 15;
   }
 }
+
 module.exports = Row;

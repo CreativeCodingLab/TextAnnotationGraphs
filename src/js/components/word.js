@@ -30,6 +30,9 @@ class Word {
     if (svg) {
       this.init(svg, row);
     }
+
+    // Will be set when this Word is added to a Row
+    this.row = null;
   }
 
   addEventId(id) {
@@ -182,15 +185,31 @@ class Word {
     row.addWord(this, i, ignorePosition);
   }
 
+  /**
+   * Returns the y-position of the bottom of this Word's syntax tag's box +
+   * some tolerance.
+   * If the Word has no syntax tag, returns the y-position of the bottom of
+   * the Word's box + some tolerance.
+   * @return {number}
+   */
   get absoluteDescent() {
     return this.row ? this.row.ry + this.row.rh + this.descendHeight + 8 : 0;
   }
 
+  /**
+   * Returns the y-position of the top of this Word's box
+   * @return {number}
+   */
   get absoluteY() {
     // console.log(this.svgText.bbox().height);
     return this.row ? this.row.ry + this.row.rh - this.boxHeight : 0;
   }
 
+  /**
+   * Returns the x-position of the centre of this Word's box
+   *
+   * @return {number}
+   */
   get cx() {
     return this.x + this.boxWidth / 2;
   }
