@@ -61858,7 +61858,7 @@ function () {
         var d = ''; // draw a polyline between the trigger and each of its arguments
 
         if (this.trigger) {
-          var y = this.getY(this.handles[1]);
+          var y = this.getLineY(this.handles[1]);
           var rowCrossed = false;
 
           for (var i = 0, il = this.arguments.length; i < il; ++i) {
@@ -61872,7 +61872,7 @@ function () {
               if (rowCrossed) {
                 rowCrossed = false;
                 d += 'L' + [width, y] + 'M0,';
-                y = this.getY(handle1);
+                y = this.getLineY(handle1);
                 d += y;
               }
 
@@ -61883,12 +61883,12 @@ function () {
               }
             } else if (!leftOfTrigger) {
               // start drawing from the trigger
-              y = this.getY(this.handles[0]);
+              y = this.getLineY(this.handles[0]);
               d += 'M' + [this.handles[0].x, this.handles[0].y] + 'C' + [this.handles[0].x, y, this.handles[0].x, y, this.handles[0].x - dx, y]; // check if crossing over a row
 
               if (this.handles[0].anchor.row.idx < this.handles[1].anchor.row.idx) {
                 d += 'L' + [width, y] + 'M0,';
-                y = this.getY(this.handles[1]);
+                y = this.getLineY(this.handles[1]);
                 d += y;
               }
 
@@ -61906,8 +61906,8 @@ function () {
 
             if (handlePrecedesTrigger && rowCrossed) {
               // if row is crossed
-              var tempY = this.getY(handle1);
-              y = this.getY(this.handles[0]);
+              var tempY = this.getLineY(handle1);
+              y = this.getLineY(this.handles[0]);
               d += 'M' + [handle1.x, handle1.y] + 'C' + [handle1.x, tempY, handle1.x, tempY, handle1.x + dx, tempY] + 'm' + [textlen, 0] + 'L' + [width, tempY] + 'M' + [0, y];
               rowCrossed = false;
               this.svgTexts[i].y(tempY - 10);
@@ -61931,7 +61931,7 @@ function () {
           }
         } else if (this.reltype) {
           // draw lines between a non-trigger relationship
-          var _y = this.getY(this.handles[0]);
+          var _y = this.getLineY(this.handles[0]);
 
           var endHandle = this.handles[this.handles.length - 1];
 
@@ -61949,7 +61949,7 @@ function () {
             avg = (this.handles[0].x + width) / 2;
             d = 'M' + [this.handles[0].x, this.handles[0].y] + 'C' + [this.handles[0].x, _y, this.handles[0].x, _y, this.handles[0].x + 5, _y] + 'L' + [avg - _textlen / 2, _y] + 'm' + [_textlen, 0] + 'L' + [width, _y];
 
-            var _tempY = this.getY(endHandle);
+            var _tempY = this.getLineY(endHandle);
 
             d += 'M0,' + _tempY + 'L' + [endHandle.x - 5, _tempY] + 'C' + [endHandle.x, _tempY, endHandle.x, _tempY, endHandle.x, endHandle.y] + this.arrowhead(this.handles[0]) + this.arrowhead(endHandle);
           }
@@ -61966,7 +61966,7 @@ function () {
     } // helper function to calculate line-height in draw()
 
   }, {
-    key: "getY",
+    key: "getLineY",
     value: function getY(handle) {
       var r = handle.anchor.row;
       return this.top ? r.rh + r.ry - 45 - 15 * this.slot : r.rh + r.ry + 25 - 15 * this.slot;

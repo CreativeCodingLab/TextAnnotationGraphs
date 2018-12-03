@@ -3,33 +3,54 @@ import Word from "./word.js";
 import * as SVG from "svg.js";
 import * as draggable from "svg.draggable.js";
 
+const $ = require("jquery");
+
 class Link {
+  /**
+   * Creates a new Link between other entities
+   *
+   * @param {String} eventId - Unique ID
+   * @param {Word} trigger - Text-bound entity that indicates the presence of
+   *     this event
+   * @param {Object[]} args - The arguments to this Link. An Array of
+   *     Objects specifying `anchor` and `type`
+   * @param {String} reltype - For (binary) relational Links, a String
+   *     identifying the relationship type
+   * @param {Boolean} top - Whether or not this Link should be drawn above
+   *     the text row (if false, it will be drawn below)
+   */
   constructor(eventId, trigger, args, reltype, top = true) {
     this.eventId = eventId;
+
+    // Links can be either Event or Relation annotations, to borrow the BRAT
+    // terminology.  Event annotations have a `trigger` entity from the text
+    // that specifies the event, whereas Relation annotations have a `type`
+    // that may not be bound to any particular part of the raw text.
+    // Both types of Links have arguments, which may themselves be nested links.
     this.trigger = trigger;
-    this.arguments = args.sort((a, b) => a.anchor.idx - b.anchor.idx);
-    this.links = [];
     this.reltype = reltype;
+
+    this.arguments = args.sort((a, b) => a.anchor.idx - b.anchor.idx);
+
+    // Contains references to higher-level Links that have this Link as an
+    // argument
+    this.links = [];
+
     this.top = top;
     this.visible = true;
 
+    // Slots are the y-intervals at which links may be drawn.
     this.resetSlotRecalculation();
 
-    if (this.top) {
-      // top links
-      if (this.trigger) {
-        this.trigger.links.push(this);
-      }
-      this.arguments.forEach(arg => {
-        arg.anchor.links.push(this);
-      });
-    }
-    else {
-      // bottom links
+    // Fill in references in this Link's trigger/arguments
+    if (this.trigger) {
       this.trigger.links.push(this);
-      this.arguments.forEach(arg => arg.anchor.links.push(this));
     }
+    this.arguments.forEach(arg => {
+      arg.anchor.links.push(this);
+    });
 
+    // The leftmost and rightmost anchors for this Link
     this.endpoints = this.getEndpoints();
 
     this.mainSVG = null;
@@ -107,29 +128,35 @@ class Link {
       .addClass("tag-element")
       .addClass("polyline");
 
-    // apply drag events to line
+    // Closure for identifying dragged handles
     let draggedHandle = null;
     let x = 0;
 
-    this.line.dblclick((e) => svg.fire("build-tree", {object: this, event: e}));
-    this.line.node.oncontextmenu = (e) => {
-      e.preventDefault();
-      svg.fire("link-right-click", {object: this, type: "link", event: e});
-    };
-
     this.line.draggable()
       .on("dragstart", (e) => {
-        let closestHandle = this.handles.reduce((acc, val) =>
-            Math.abs(val.x - e.detail.p.x) < Math.abs(acc.x - e.detail.p.x)
-              ? val
-              : acc,
-          this.handles[0]);
+        // We use the x and y values (with a little tolerance) to make sure
+        // that the user is dragging near one of the Link's handles, and not
+        // just in the middle of the Link's line.
+        const dragX = e.detail.p.x;
 
-        // 8 is a "magic number" for tolerance of closeness to the endpoint of
-        // the handle
-        if (Math.abs(closestHandle.x - e.detail.p.x) < 5) {
-          draggedHandle = closestHandle;
-          x = e.detail.p.x;
+        // `dragY` is adjusted for the document's scroll position, but we
+        // want to compare it against our internal container coordinates
+        const dragY = e.detail.p.y - $(window).scrollTop();
+
+        for (let handle of this.handles) {
+          // Is this handle close enough?
+          // `distX` should be less than 5, and `closeY` should be true
+          let distX = Math.abs(handle.x - dragX);
+          let closeY = dragY >= this.getLineY(handle) - 5 &&
+            dragY < handle.y + 5;
+
+          // If it is, is it closer than any previous candidate?
+          if (distX < 5 && closeY) {
+            if (!draggedHandle || distX < Math.abs(draggedHandle.x - dragX)) {
+              draggedHandle = handle;
+              x = e.detail.p.x;
+            }
+          }
         }
       })
       .on("dragmove", (e) => {
@@ -184,12 +211,20 @@ class Link {
               }
             });
           });
+          console.log("Redrawing", draggedHandle.anchor);
           this.draw(draggedHandle.anchor);
         }
       })
       .on("dragend", () => {
         draggedHandle = null;
       });
+
+
+    this.line.dblclick((e) => svg.fire("build-tree", {object: this, event: e}));
+    this.line.node.oncontextmenu = (e) => {
+      e.preventDefault();
+      svg.fire("link-right-click", {object: this, type: "link", event: e});
+    };
   }
 
   toggle() {
@@ -218,9 +253,11 @@ class Link {
   }
 
   /**
+   * (Re-)draw some Link onto the main visualisation
    *
-   * @param changedAnchor - Probably passed in when the `.draw()` is in
-   *     response to a moved anchor? ¯\_(ツ)_/¯
+   * @param {Word|Link} changedAnchor - Passed for more efficient
+   *     calculations when we know that (only) a specific anchor has
+   *     changed position since the last redraw
    */
   draw(changedAnchor) {
     if (!changedAnchor) {
@@ -261,6 +298,9 @@ class Link {
     else {
       // redraw handles if word or link was moved
 
+      window.debugLink = this;
+      window.debugAnchor = changedAnchor;
+
       // Find the handle corresponding to the anchor whose position changed
       let thisHandle = this.handles.find(handle => (handle.anchor === changedAnchor));
       if (thisHandle) {
@@ -299,7 +339,7 @@ class Link {
       // draw a polyline between the trigger and each of its arguments
       // https://www.w3.org/TR/SVG/paths.html#PathData
       if (this.trigger) {
-        let y = this.getY(this.handles[1]);
+        let y = this.getLineY(this.handles[1]);
         let rowCrossed = false;
 
         for (let i = 0, il = this.arguments.length; i < il; ++i) {
@@ -315,7 +355,7 @@ class Link {
             if (rowCrossed) {
               rowCrossed = false;
               d += "L" + [width, y] + "M0,";
-              y = this.getY(handle1);
+              y = this.getLineY(handle1);
               d += y;
             }
             if (leftOfTrigger) {
@@ -327,14 +367,14 @@ class Link {
           }
           else if (!leftOfTrigger) {
             // start drawing from the trigger
-            y = this.getY(this.handles[0]);
+            y = this.getLineY(this.handles[0]);
             d += "M" + [this.handles[0].x, this.handles[0].y]
               + "C" + [this.handles[0].x, y, this.handles[0].x, y, this.handles[0].x - dx, y];
 
             // check if crossing over a row
             if (this.handles[0].anchor.row.idx < this.handles[1].anchor.row.idx) {
               d += "L" + [width, y] + "M0,";
-              y = this.getY(this.handles[1]);
+              y = this.getLineY(this.handles[1]);
               d += y;
             }
             d += "L" + [this.handles[1].x + dx + textlen, y];
@@ -357,8 +397,8 @@ class Link {
           // draw an arrow segment coming from each argument
           if (handlePrecedesTrigger && rowCrossed) {
             // if row is crossed
-            let tempY = this.getY(handle1);
-            y = this.getY(this.handles[0]);
+            let tempY = this.getLineY(handle1);
+            y = this.getLineY(this.handles[0]);
 
             d += "M" + [handle1.x, handle1.y]
               + "C" + [handle1.x, tempY, handle1.x, tempY, handle1.x + dx, tempY]
@@ -398,7 +438,7 @@ class Link {
       else if (this.reltype) {
 
         // draw lines between a non-trigger relationship
-        let y = this.getY(this.handles[0]);
+        let y = this.getLineY(this.handles[0]);
         let endHandle = this.handles[this.handles.length - 1];
         // Width of the link's label
         let textlen = this.svgTexts[0].length();
@@ -434,7 +474,7 @@ class Link {
             + "m" + [textlen, 0]
             + "L" + [width, y];
 
-          let tempY = this.getY(endHandle);
+          let tempY = this.getLineY(endHandle);
           d += "M0," + tempY
             + "L" + [endHandle.x - 5, tempY]
             + "C" + [endHandle.x, tempY, endHandle.x, tempY, endHandle.x, endHandle.y]
@@ -451,11 +491,18 @@ class Link {
     this.links.forEach(l => l.draw(this));
   }
 
-  // helper function to calculate line-height in draw()
-  getY(handle) {
+  /**
+   * Returns the y-coordinate of the Link line as drawn above the given handle.
+   * (As opposed to the y-coordinate of the handle itself, which is at the
+   * bottom of the relevant arrowhead)
+   *
+   * @param handle
+   * @return {number}
+   */
+  getLineY(handle) {
     let r = handle.anchor.row;
-    return this.top ?
-      r.rh + r.ry - 45 - 15 * this.slot
+    return this.top
+      ? r.rh + r.ry - 45 - 15 * this.slot
       : r.rh + r.ry + 25 - 15 * this.slot;
   }
 
