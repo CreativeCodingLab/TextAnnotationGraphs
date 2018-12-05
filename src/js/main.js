@@ -11,6 +11,8 @@ import RowManager from "./managers/rowmanager.js";
 import LabelManager from "./managers/labelmanager.js";
 import Taxonomy from "./managers/taxonomy.js";
 
+import Config from "./config.js";
+
 import * as Util from "./util.js";
 
 /**
@@ -28,6 +30,8 @@ class Main {
    *     native/jQuery object)
    */
   constructor(container) {
+    this.config = new Config();
+
     // SVG.Doc expects either a string with the element's ID, or the element
     // itself (not a jQuery object).
     if (_.hasIn(container, "jquery")) {
@@ -43,7 +47,7 @@ class Main {
 
     // Managers/Components
     this.parser = new Parser();
-    this.rowManager = new RowManager(this.svg);
+    this.rowManager = new RowManager(this.svg, this.config);
     this.labelManager = new LabelManager(this.svg);
     this.taxonomyManager = new Taxonomy();
 

@@ -3,9 +3,6 @@ import Word from "./word.js";
 
 const $ = require("jquery");
 
-// Space between Link arrowheads and their anchors
-const HANDLE_PADDING = 2;
-
 class Link {
   /**
    * Creates a new Link between other entities
@@ -21,6 +18,8 @@ class Link {
    *     the text row (if false, it will be drawn below)
    */
   constructor(eventId, trigger, args, reltype, top = true) {
+    // ---------------
+    // Core properties
     this.eventId = eventId;
 
     // Links can be either Event or Relation annotations, to borrow the BRAT
@@ -54,14 +53,21 @@ class Link {
     // The leftmost and rightmost anchors for this Link
     this.endpoints = this.getEndpoints();
 
-    // The main API instance this Link is attached to
-    this.main = null;
+    // ---------------
+    // Visualisation-related properties
+    this.initialised = false;
 
+    // The main API/config instance this Link is attached to
+    this.main = null;
+    this.config = null;
+
+    // SVG-related properties
     this.mainSVG = null;
     this.svg = null;
     this.handles = [];
     this.line = null;
     this.svgTexts = [];
+    this.lastDrawnWidth = null;
   }
 
   /**
@@ -69,7 +75,10 @@ class Link {
    * @param main
    */
   init(main) {
+    this.initialised = true;
+
     this.main = main;
+    this.config = main.config;
 
     this.arguments.sort((a, b) => a.anchor.idx - b.anchor.idx);
 
@@ -81,28 +90,59 @@ class Link {
       this.svg.hide();
     }
 
-    // init handles
-    // get location of trigger
-    if (this.trigger) {
-      let x = this.trigger.cx;
-      let y = this.top
-        ? this.trigger.absoluteY
-        : this.trigger.absoluteDescent;
-      let row = this.main.rowManager.whichRow(x, y);
-      this.handles.push({anchor: this.trigger, x, y, row, offset: null});
+    // Sub-class for Link handles
+    const rowManager = this.main.rowManager;
+
+    class Handle {
+      constructor(anchor, x, y) {
+        this.anchor = anchor;
+        this.x = x;
+        this.y = y;
+
+        // For anchor Links, offsets start at 0 on the left bound of the Link
+        // For anchor Words/WordTags, offsets start at 0 in the centre of the
+        // Word/WordTag
+        // Calculated when the Handle is first drawn
+        this.offset = null;
+      }
+
+      /**
+       * The Row in which this handle is contained
+       * @return {Row}
+       */
+      get row() {
+        return rowManager.whichRow(this.x, this.y);
+      }
+
+      /**
+       * Returns true if this handle precedes the given handle
+       * (i.e., this handle has an earlier row, or is to its left within the
+       * same row)
+       * @param {Handle} handle
+       */
+      precedes(handle) {
+        return this.row.idx < handle.row.idx ||
+          (this.row.idx === handle.row.idx && this.x < handle.x);
+      }
     }
 
-    // draw arguments
-    this.arguments.forEach(arg => {
-      // get location of the argument
-      let x = arg.anchor.cx;
-      let y = this.top
-        ? arg.anchor.absoluteY
-        : arg.anchor.absoluteDescent;
-      let row = this.main.rowManager.whichRow(x, y);
-      this.handles.push({anchor: arg.anchor, x, y, row, offset: null});
+    // Init handles
+    if (this.trigger) {
+      this.handles.push(new Handle(
+        this.trigger,
+        this.trigger.cx,
+        this.top ? this.trigger.absoluteY : this.trigger.absoluteDescent
+      ));
+    }
 
-      // draw svgText for each trigger-argument relation
+    this.arguments.forEach(arg => {
+      this.handles.push(new Handle(
+        arg.anchor,
+        arg.anchor.cx,
+        this.top ? arg.anchor.absoluteY : arg.anchor.absoluteDescent
+      ));
+
+      // Also prepare svgTexts for each trigger-argument relation
       if (this.trigger) {
         let text = this.svg.text(arg.type)
           .y(-7)
@@ -177,8 +217,9 @@ class Link {
           }
 
           // Is this handle close enough on the x-axis?
+          // In particular, the handle arrowheads might get fairly long
           let distX = Math.abs(handle.x - dragX);
-          if (distX > 5) {
+          if (distX > this.config.linkArrowWidth) {
             continue;
           }
 
@@ -213,16 +254,6 @@ class Link {
           // edge of the lower Link
           draggedHandle.offset = Math.min(draggedHandle.offset, anchor.width);
           draggedHandle.offset = Math.max(draggedHandle.offset, 0);
-
-          // ---
-          // let handles = anchor.handles
-          //   .filter(h => h.anchor.row.idx ===
-          // anchor.handles[0].anchor.row.idx) .sort((a, b) => a.x - b.x);  let
-          // min = handles[0].x; let max = handles[handles.length - 1].x; if
-          // (handles.length < anchor.handles.length) { max =
-          // this.mainSVG.width(); } let cx = draggedHandle.anchor.cx;
-          // draggedHandle.offset = Math.min(max - cx, Math.max(min - cx,
-          // draggedHandle.offset)); ---
         } else {
           // The handle is resting on a Word/WordTag; offset 0 is the centre
           // of the Word/WordTag
@@ -234,29 +265,9 @@ class Link {
           }
 
           // Constrain the handle to be within 3px of the bounds of its base
-          draggedHandle.offset = draggedHandle.offset < 0
-            ? Math.max(-halfWidth + 3, draggedHandle.offset)
-            : Math.min(halfWidth - 3, draggedHandle.offset);
+          draggedHandle.offset = Math.min(draggedHandle.offset, halfWidth - 3);
+          draggedHandle.offset = Math.max(draggedHandle.offset, -halfWidth + 3);
         }
-
-        // also constrain links above this link
-        // let handles = this.handles
-        //   .filter(h => h.anchor.row.idx === this.handles[0].anchor.row.idx)
-        //   .sort((a, b) => a.x - b.x);
-        //
-        // let min = handles[0].x;
-        // let max = handles[handles.length - 1].x;
-        // if (handles.length < this.handles.length) {
-        //   max = this.mainSVG.width();
-        // }
-        // let cx = this.cx;
-        // this.links.forEach(link => {
-        //   link.handles.forEach(h => {
-        //     if (h.anchor === this) {
-        //       h.offset = Math.min(max - cx, Math.max(min - cx, h.offset));
-        //     }
-        //   });
-        // });
 
         this.draw(anchor);
       })
@@ -265,7 +276,10 @@ class Link {
       });
 
 
-    this.line.dblclick((e) => svg.fire("build-tree", {object: this, event: e}));
+    this.line.dblclick((e) => this.mainSVG.fire("build-tree", {
+      object: this,
+      event: e
+    }));
     this.line.node.oncontextmenu = (e) => {
       e.preventDefault();
       this.mainSVG.fire("link-right-click", {
@@ -304,15 +318,15 @@ class Link {
   /**
    * (Re-)draw some Link onto the main visualisation
    *
-   * @param {Word|Link} [changedAnchor] - Passed when we know that (only) a
+   * @param {Word|Link} [modAnchor] - Passed when we know that (only) a
    *   specific anchor has changed position since the last redraw
    */
-  draw(changedAnchor) {
+  draw(modAnchor) {
+    if (!this.initialised || !this.visible) {
+      return;
+    }
+
     // Ensure that every handle has a valid offset
-    // (x-offsets along the draggable width of the handle)
-    // For anchor Links, offsets start at 0 on the left bound of the Link
-    // For anchor Words/WordTags, offsets start at 0 in the centre of the
-    // Word/WordTag
     for (let h of this.handles) {
       if (h.offset === null) {
         let l = h.anchor.links
@@ -344,46 +358,73 @@ class Link {
       }
     }
 
-    if (changedAnchor) {
+    if (modAnchor) {
       // If an anchor was moved, recalculate the x-/y-position of the
       // corresponding handle
       window.debugLink = this;
-      window.debugAnchor = changedAnchor;
+      window.debugAnchor = modAnchor;
 
       // Find the handle corresponding to the anchor whose position changed
-      let handle = this.handles.find(handle => (handle.anchor === changedAnchor));
-      if (handle) {
-        // Two possibilities: The anchor is a Word (/WordCluster?), or it is a
-        // Link.
-        if (!(changedAnchor instanceof Link)) {
-          // No need to account for multiple rows
-          handle.x = changedAnchor.cx + handle.offset;
-          handle.y = this.top
-            ? changedAnchor.absoluteY
-            : changedAnchor.absoluteDescent;
-          handle.row = this.main.rowManager.whichRow(handle.x, handle.y);
-        } else {
-          // The anchor is a Link; the offset might extend to the next row
-          // and beyond.
-          const baseLeft = changedAnchor.leftHandle;
+      let modHandle = this.handles.find(h => (h.anchor === modAnchor));
+      // Two possibilities: The anchor is a Word (/WordCluster?), or it is a
+      // Link.
+      if (!(modAnchor instanceof Link)) {
+        // No need to account for multiple rows
+        modHandle.x = modAnchor.cx + modHandle.offset;
+        modHandle.y = this.top
+          ? modAnchor.absoluteY
+          : modAnchor.absoluteDescent;
+      } else {
+        // The anchor is a Link; the offset might extend to the next row
+        // and beyond.
+        const baseLeft = modAnchor.leftHandle;
 
-          // Handle intervening rows without modifying `handle.offset` or
-          // the anchor Link directly
-          let calcOffset = handle.offset;
-          let calcRow = baseLeft.row;
-          let calcX = baseLeft.x;
+        // First, make sure the offset doesn't overshoot the base row
+        modHandle.offset = Math.min(modHandle.offset, modAnchor.width);
+        modHandle.offset = Math.max(modHandle.offset, 0);
 
-          while (calcOffset > calcRow.rw - calcX) {
-            calcOffset -= calcRow.rw - calcX;
-            calcX = 0;
-            calcRow = this.main.rowManager.rows[calcRow.idx + 1];
-          }
+        // Handle intervening rows without modifying `handle.offset` or
+        // the anchor Link directly
+        let calcOffset = modHandle.offset;
+        let calcRow = baseLeft.row;
+        let calcX = baseLeft.x;
 
-          // Last row - Deal with remaining offset
-          handle.x = calcX + calcOffset;
-          handle.y = changedAnchor.getLineYRow(calcRow);
-          handle.row = calcRow;
+        while (calcOffset > calcRow.rw - calcX) {
+          calcOffset -= calcRow.rw - calcX;
+          calcX = 0;
+          calcRow = this.main.rowManager.rows[calcRow.idx + 1];
         }
+
+        // Last row - Deal with remaining offset
+        modHandle.x = calcX + calcOffset;
+        modHandle.y = modAnchor.getLineYRow(calcRow);
+      }
+
+      // If our width has changed, we should update the offset of any of our
+      // parent Links.
+      // The parent Link will be redrawn after we're done redrawing this
+      // one, and any adjustments will be made automatically during the redraw.
+      if (this.lastDrawnWidth === null) {
+        this.lastDrawnWidth = this.width;
+      } else {
+        const growth = this.width - this.lastDrawnWidth;
+        this.lastDrawnWidth = this.width;
+        if (growth > 500) {
+          const _ = require("lodash");
+          console.log(this.eventId, this.width, growth, this.lastDrawnWidth);
+          console.log(_.cloneDeep(this));
+          console.log(_.cloneDeep(this.handles));
+        }
+
+        // To get the parent Link's handle position to remain as constant as
+        // possible, we should adjust its offset only if modHandle precedes it
+        for (let parentLink of this.links) {
+          const parentHandle = parentLink.handles.find(h => h.anchor === this);
+          if (modHandle.precedes(parentHandle)) {
+            parentHandle.offset += growth;
+          }
+        }
+
       }
     }
 
@@ -399,6 +440,34 @@ class Link {
       // draw a polyline between the trigger and each of its arguments
       // https://www.w3.org/TR/SVG/paths.html#PathData
       if (this.trigger) {
+        // Start drawing from the trigger
+        const pTrigger = {
+          x: this.triggerHandle.x,
+          y: this.top
+            ? this.triggerHandle.y - this.config.linkHandlePadding
+            : this.triggerHandle.y + this.config.linkHandlePadding
+        };
+
+        // Draw the flat trigger arrow
+        d += "M" + [pTrigger.x, pTrigger.y]
+          + "m" + [this.config.linkArrowWidth, 0]
+          + "l" + [-2 * this.config.linkArrowWidth, 0];
+
+        // Draw the lines to each argument's handle
+        for (let handle of this.handles) {
+          if (handle === this.triggerHandle) {
+            continue;
+          }
+
+          if (handle.row.idx === this.triggerHandle.row.idx) {
+            // Same row
+            let handleOnLeft = handle.x < pTrigger.x;
+          }
+        }
+
+      } else if (this.trigger === "debug") {
+
+
         let y = this.getLineY(this.handles[1]);
         let rowCrossed = false;
 
@@ -446,7 +515,6 @@ class Link {
             .y(y - 10);
 
           // draw an arrow at the handle
-          const s = 4;
           d += this.arrowhead(handle1);
 
           let handlePrecedesTrigger = leftOfTrigger && (i + 2 > il || this.arguments[i + 1].anchor.idx >= this.trigger.idx);
@@ -494,8 +562,7 @@ class Link {
             }
           }
         }
-      }
-      else if (this.reltype) {
+      } else if (this.reltype) {
         // This is a non-trigger (binary) relation
 
         // Width/position of the Link's label (depends on whether or not the
@@ -505,47 +572,51 @@ class Link {
         let textY;
 
         // Start/end points
-        const start = {
+        const pStart = {
           x: this.leftHandle.x,
           y: this.top
-            ? this.leftHandle.y - HANDLE_PADDING
-            : this.leftHandle.y + HANDLE_PADDING
+            ? this.leftHandle.y - this.config.linkHandlePadding
+            : this.leftHandle.y + this.config.linkHandlePadding
         };
-
-        const end = {
+        const pEnd = {
           x: this.rightHandle.x,
           y: this.top
-            ? this.rightHandle.y - HANDLE_PADDING
-            : this.rightHandle.y + HANDLE_PADDING
+            ? this.rightHandle.y - this.config.linkHandlePadding
+            : this.rightHandle.y + this.config.linkHandlePadding
         };
+
+        d = "M" + [pStart.x, pStart.y];
 
         // Start and end handles on the same row
         if (this.leftHandle.row.idx === this.rightHandle.row.idx) {
-          console.log("Single");
           const lineY = this.getLineYRow(this.leftHandle.row);
 
-          textCentre = start.x + (this.width / 2);
+          textCentre = pStart.x + (this.width / 2);
           textY = lineY - 10;
           const textLeft = textCentre - textLength / 2;
 
-          d = "M" + [start.x, start.y];
-          d += textLeft < start.x
+          if (textLeft < pStart.x) {
             // Just draw the vertical lines up to the label
-            ? ("L" + [start.x, lineY]
-              + "M" + [end.x, lineY]
-              + "L" + [end.x, end.y])
-
+            d += "L" + [pStart.x, lineY]
+              + "M" + [pEnd.x, lineY]
+              + "L" + [pEnd.x, pEnd.y];
+          } else {
             // Draw curves to/from the main Link line
-            : ("C" + [start.x, lineY, start.x, lineY, Math.min(textLeft, start.x + 5), lineY]
+            let curveLeftX = pStart.x + this.config.linkCurveWidth;
+            curveLeftX = Math.min(curveLeftX, textLeft);
+            let curveRightX = pEnd.x - this.config.linkCurveWidth;
+            curveRightX = Math.max(curveRightX, textLeft + textLength);
+
+            d += "C" + [pStart.x, lineY, pStart.x, lineY, curveLeftX, lineY]
               + "L" + [textLeft, lineY]
               + "m" + [textLength, 0]
-              + "L" + [Math.max(textLeft + textLength, end.x - 5), lineY]
-              + "C" + [end.x, lineY, end.x, lineY, end.x, end.y]);
+              + "L" + [curveRightX, lineY]
+              + "C" + [pEnd.x, lineY, pEnd.x, lineY, pEnd.x, pEnd.y];
+          }
 
-          d += this.arrowhead(start)
-            + this.arrowhead(end);
+          d += this.arrowhead(pStart)
+            + this.arrowhead(pEnd);
         } else {
-          console.log("Multiple");
           // Link spans multiple rows.
 
           // Centre the text on the portion of the Link line visible on the
@@ -556,11 +627,18 @@ class Link {
           const textLeft = textCentre - textLength / 2;
 
           // Draw in the first row, including the Link label
-          d = "M" + [start.x, start.y]
-            + "C" + [start.x, firstY, start.x, firstY, start.x + 5, firstY]
-            + "L" + [textLeft, firstY]
-            + "m" + [textLength, 0]
-            + "L" + [this.leftHandle.row.rw, firstY];
+          if (textLeft < pStart.x) {
+            d += "L" + [pStart.x, firstY]
+              + "M" + [textLeft + textLength, firstY]
+              + "L" + [this.leftHandle.row.rw, firstY];
+          } else {
+            const curveLeftX = pStart.x + this.config.linkCurveWidth;
+            d = "M" + [pStart.x, pStart.y]
+              + "C" + [pStart.x, firstY, pStart.x, firstY, curveLeftX, firstY]
+              + "L" + [textLeft, firstY]
+              + "m" + [textLength, 0]
+              + "L" + [this.leftHandle.row.rw, firstY];
+          }
 
           // Draw the Link line across the intervening rows
           for (let i = this.leftHandle.row.idx + 1; i < this.rightHandle.row.idx; i++) {
@@ -570,17 +648,22 @@ class Link {
               + "L" + [thisRow.rw, lineY];
           }
 
+          // Draw in the last row
+          const curveRightX = pEnd.x - this.config.linkCurveWidth;
           let finalY = this.getLineYRow(this.rightHandle.row);
           d += "M" + [0, finalY]
-            + "L" + [end.x - 5, finalY]
-            + "C" + [end.x, finalY, end.x, finalY, end.x, end.y]
-            + this.arrowhead(start)
-            + this.arrowhead(end);
+            + "L" + [curveRightX, finalY]
+            + "C" + [pEnd.x, finalY, pEnd.x, finalY, pEnd.x, pEnd.y]
+            + this.arrowhead(pStart)
+            + this.arrowhead(pEnd);
         }
+
+        // Move label
         this.svgTexts[0].x(textCentre)
           .y(textY);
 
       }
+
       this.line.plot(d);
     }
 
@@ -604,19 +687,23 @@ class Link {
 
   /**
    * Returns the y-position that this Link's main line will have if it were
-   * drawn in the given row (based on the Row's position, and this Link's slot
+   * drawn in the given row (based on the Row's position, and this Link's slot)
    * @param {Row} row
    */
   getLineYRow(row) {
+    let calcSlot = this.slot;
+    calcSlot = Math.min(calcSlot, row.maxSlot);
+    calcSlot = Math.max(calcSlot, row.minSlot);
+
     return this.top
-      ? row.rh + row.ry - 45 - 15 * this.slot
-      : row.rh + row.ry + 25 - 15 * this.slot;
+      ? row.rh + row.ry - 45 - 15 * calcSlot
+      : row.rh + row.ry + 25 - 15 * calcSlot;
   }
 
   // helper function to return a path string for an arrowhead pointing to
   // the given point
   arrowhead(point) {
-    const s = 4, s2 = 5;
+    const s = this.config.linkArrowWidth, s2 = 5;
     return this.top
       ? "M" + [point.x - s, point.y - s2] + "l" + [s, s2] + "l" + [s, -s2]
       : "M" + [point.x - s, point.y + s2] + "l" + [s, -s2] + "l" + [s, s2];
@@ -633,7 +720,7 @@ class Link {
       if (i > -1) {
         anchor.links.splice(i, 1);
       }
-    };
+    }
 
     // remove references to link from all anchors
     if (this.trigger) {
@@ -802,11 +889,10 @@ class Link {
    */
   get leftHandle() {
     return this.handles.reduce((prev, next) => {
-      if (next.row.idx < prev.row.idx ||
-        (next.row.idx === prev.row.idx && next.x < prev.x)) {
-        return next;
-      } else {
+      if (prev.precedes(next)) {
         return prev;
+      } else {
+        return next;
       }
     }, this.handles[0]);
   }
@@ -817,13 +903,24 @@ class Link {
    */
   get rightHandle() {
     return this.handles.reduce((prev, next) => {
-      if (next.row.idx > prev.row.idx ||
-        (next.row.idx === prev.row.idx && next.x > prev.x)) {
+      if (prev.precedes(next)) {
         return next;
       } else {
         return prev;
       }
     }, this.handles[0]);
+  }
+
+  /**
+   * Returns the handle corresponding to the trigger for this Link, if one
+   * is defined
+   */
+  get triggerHandle() {
+    if (!this.trigger) {
+      return null;
+    }
+
+    return this.handles.find(handle => handle.anchor === this.trigger);
   }
 
   get rootWord() {

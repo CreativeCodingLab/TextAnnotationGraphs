@@ -180,10 +180,10 @@ class Word {
     this.mainSVG.fire("word-move", {object: this, x: 0});
   }
 
-  moveToRow(row, i, ignorePosition = true) {
-    this.row.removeWord(this);
-    row.addWord(this, i, ignorePosition);
-  }
+  // moveToRow(row, i, forceX) {
+  //   this.row.removeWord(this);
+  //   row.addWord(this, i, forceX);
+  // }
 
   /**
    * Returns the y-position of the bottom of this Word's syntax tag's box +

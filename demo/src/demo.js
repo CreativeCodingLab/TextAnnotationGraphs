@@ -69,7 +69,7 @@ $(async () => {
   });
 
   // Data can be loaded after initialisation using the `.loadData()` function
-  const sampleData = require("../data/data8.json");
+  const sampleData = require("../data/data1.json");
   uiTag.loadData(sampleData, "json");
 
   // --------------------------------------------------------------------------

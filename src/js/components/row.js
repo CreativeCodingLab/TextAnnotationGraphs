@@ -2,7 +2,9 @@ import * as SVG from "svg.js";
 import * as draggable from "svg.draggable.js";
 
 class Row {
-  constructor(svg, idx = 0, ry = 0, rh = 100) {
+  constructor(svg, config, idx = 0, ry = 0, rh = 120) {
+    this.config = config;
+
     this.idx = idx;
     this.ry = ry;     // row position from top
     this.rh = rh;     // row height
@@ -80,23 +82,122 @@ class Row {
     this.draggable.attr("x2", this.rw);
   }
 
-  addWord(word, i, ignorePosition) {
-    if (isNaN(i)) {
-      i = this.words.length;
+  /**
+   * Adds the given Word to this Row at the given index, adjusting the
+   * x-positions of any Words with higher indices.
+   * Optionally, attempts to force an x-position for the Word.
+   * If adding the Word to the Row causes any existing Words to overflow its
+   * bounds, will return the index of the first Word that no longer fits.
+   * @param word
+   * @param index
+   * @param forceX
+   * @return {number} - The index of the first Word that no longer fits, if
+   *     the additional Word causes overflow
+   */
+  addWord(word, index, forceX) {
+    if (isNaN(index)) {
+      index = this.words.length;
     }
 
     word.row = this;
-    this.words.splice(i, 0, word);
+    this.words.splice(index, 0, word);
     this.wordGroup.add(word.svg);
 
-    if (!ignorePosition) {
-      return this.moveWordRight(word);
+    // Determine the new x-position this Word should have.
+    word.x = -1;
+    let newX;
+    if (index === 0) {
+      newX = this.config.rowEdgePadding;
+    } else {
+      const prevWord = this.words[index - 1];
+      newX = prevWord.x + prevWord.boxWidth;
+      if (word.isPunct) {
+        newX += this.config.wordPunctPadding;
+      } else {
+        newX += this.config.wordPadding;
+      }
+    }
+
+    if (forceX) {
+      newX = forceX;
+    }
+
+    return this.positionWord(word, newX);
+
+  }
+
+  /**
+   * Assumes that the given Word is already on this Row.
+   * Tries to move the Word to the given x-position, adjusting the
+   * x-positions of all the following Words on the Row as well.
+   * If this ends up pushing some Words off the Row, returns the index of
+   * the first Word that no longer fits.
+   * @param word
+   * @param newX
+   * @return {number} - The index of the first Word that no longer fits, if
+   *     the additional Word causes overflow
+   */
+  positionWord(word, newX) {
+    const wordIndex = this.words.indexOf(word);
+    const prevWord = this.words[wordIndex - 1];
+    const nextWord = this.words[wordIndex + 1];
+
+    // By default, assume that no Words have overflowed the Row
+    let overflowIndex = this.words.length;
+
+    // Make sure we aren't stomping over a previous Word
+    if (prevWord) {
+      const wordPadding = word.isPunct
+        ? this.config.wordPunctPadding
+        : this.config.wordPadding;
+
+      if (newX < prevWord.x + prevWord.boxWidth + wordPadding) {
+        throw `Trying to position new Word over existing one!
+        (Row: ${this.idx}, wordIndex: ${wordIndex})`;
+      }
+    }
+
+    // Change the position of the next Word if we have to;
+    if (nextWord) {
+      const nextWordPadding = nextWord.isPunct
+        ? this.config.wordPunctPadding
+        : this.config.wordPadding;
+
+      if (nextWord.x - nextWordPadding < newX + word.boxWidth) {
+        overflowIndex = this.positionWord(
+          nextWord,
+          newX + word.boxWidth + nextWordPadding
+        );
+      }
+    }
+
+    // We have moved the next Word on the Row, or marked it as part of the
+    // overflow; at this point, we either have space to move this Word, or
+    // this Word itself is about to overflow the Row.
+    if (newX + word.boxWidth > this.rw - this.config.rowEdgePadding) {
+      // Alas.  The overflowIndex is ours.
+      return wordIndex;
+    } else {
+      // We can move.  If any of the Words that follow us overflowed, return
+      // their index.
+      word.move(newX);
+      return overflowIndex;
     }
   }
 
-  moveWordRight(word, x) {
-    const EDGE_PADDING = 10;
-    const WORD_PADDING = 5;
+  /**
+   * Assumes that the given Word is already on this Row.
+   * Tries to move the Word to the given x-position, adjusting the
+   * x-positions of all the following Words on the Row as well.
+   * If this ends up pushing some Words off the Row, returns the index of
+   * the first word that needs to be kicked down to the next Row.
+   * @param word
+   * @param x
+   * @return {number} [idx]
+   */
+  deprecateMoveWordRight(word, x) {
+    const EDGE_PADDING = this.config.rowEdgePadding;
+    const WORD_PADDING = this.config.wordPadding;
 
     let i = this.words.indexOf(word);
     let prevWord = this.words[i - 1];
@@ -119,7 +220,7 @@ class Row {
       let dx = prevWord.x + prevWord.boxWidth + (word.isPunct ? 0 : WORD_PADDING);
       if (word.x > dx) {
         // prevWord fits in space before next word; return
-        return;
+        return this.words.length;
       }
       // move next word over
       if (dx + word.boxWidth > this.rw - EDGE_PADDING) {
@@ -159,7 +260,7 @@ class Row {
   }
 
   /**
-   * Returns the lower bound of the Row on the y-axis
+   * Returns the lower bound of the Row on the y-axis, excluding padding
    * @return {number}
    */
   get ry2() {
@@ -168,6 +269,19 @@ class Row {
 
   get minHeight() {
     return 60 + this.maxSlot * 15;
+  }
+
+  /**
+   * Returns the amount of space available at the end of this Row for adding
+   * new Words
+   */
+  get availableSpace() {
+    if (this.words.length === 0) {
+      return this.rw - this.config.rowEdgePadding * 2;
+    }
+
+    const lastWord = this.words[this.words.length - 1];
+    return this.rw - this.config.rowEdgePadding - lastWord.x - lastWord.boxWidth;
   }
 }
 
