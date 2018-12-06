@@ -15,47 +15,61 @@ class WordTag {
       return;
     }
 
-    this.svg = word.svg.group()
-      .y(this.tagOffset);
+    this.svg = word.svg.group();
+    // .y(this.tagOffset);
     this.svgText = this.svg.text(this.val)
       .addClass("tag-element")
-      .addClass(above ? 'word-tag' : 'word-tag syntax-tag');
+      .addClass(above ? "word-tag" : "word-tag syntax-tag");
     this.ww = this.svgText.length();
 
     // add click and right-click listeners
     let svg = word.mainSVG;
     this.svgText.node.oncontextmenu = (e) => {
       e.preventDefault();
-      svg.fire('tag-right-click', { object: this, event: e });
+      svg.fire("tag-right-click", {object: this, event: e});
     };
-    this.svgText.click((e) => svg.fire('tag-edit', { object: this }));
+    this.svgText.click((e) => svg.fire("tag-edit", {object: this}));
 
+    // Draws a line / curly bracket between the Word and this WordTag, if
+    // it's a top tag
     this.line = this.svg.path();
     this.updateWordWidth();
+
+    const moveHeight = this.svg.bbox().height;
+    if (this.position) {
+      this.svg.y(-moveHeight);
+    } else {
+      this.svg.y(moveHeight);
+    }
   }
+
   remove() {
     this.entity.tag = null;
     this.entity.calculateBox();
     return this.svg.remove();
   }
+
   updateWordWidth() {
     if (this.position) {
       let ww = this.entity.ww;
       if (this.entity.val.length < 9) {
-        this.line.plot('M0,25,l0,8');
+        this.line.plot("M0,25,l0,8");
       }
       else {
         let diff = ww / 2;
-        this.line.plot('M0,25,c0,8,'
-          + [diff,0,diff,8]
-          + ',M0,25,c0,8,'
-          + [-diff,0,-diff,8]
+        this.line.plot("M0,25,c0,8,"
+          + [diff, 0, diff, 8]
+          + ",M0,25,c0,8,"
+          + [-diff, 0, -diff, 8]
         );
       }
     }
   }
+
   text(val) {
-    if (val === undefined) { return this.svgText; }
+    if (val === undefined) {
+      return this.svgText;
+    }
     this.val = val;
     this.svgText.text(this.val);
     this.ww = this.svgText.length();
@@ -74,6 +88,7 @@ class WordTag {
       }
     }
   }
+
   changeEntity(word) {
     if (this.entity) {
       this.entity.tag = null;
@@ -83,13 +98,14 @@ class WordTag {
     this.entity.tag = this;
     this.entity.svg.add(this.svg);
   }
+
   listenForEdit() {
     this.isEditing = true;
     let bbox = this.svgText.bbox();
 
     this.svg
       .addClass("tag-element")
-      .addClass('editing');
+      .addClass("editing");
     this.editingRect = this.svg.rect(bbox.width + 8, bbox.height + 4)
       .x(bbox.x - 4)
       .y(bbox.y - 2)
@@ -97,9 +113,10 @@ class WordTag {
       .ry(2)
       .back();
   }
+
   stopEditing() {
     this.isEditing = false;
-    this.svg.removeClass('editing');
+    this.svg.removeClass("editing");
     this.editingRect.remove();
     this.editingRect = null;
     this.val = this.val.trim();
@@ -110,8 +127,23 @@ class WordTag {
       this.entity.calculateBox();
     }
   }
+
   get tagOffset() {
     return this.position ? -28 : 20;
   }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Debug functions
+  /**
+   * Draws the outline of this Word's bounding box
+   */
+  drawBbox() {
+    const bbox = this.svg.bbox();
+    this.svg.rect(bbox.width, bbox.height)
+      .move(bbox.x, bbox.y)
+      .fill("none")
+      .stroke({width: 1});
+  }
 }
+
 module.exports = WordTag;

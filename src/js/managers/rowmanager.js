@@ -348,7 +348,15 @@ class RowManager {
    * @param y
    */
   whichRow(x, y) {
-    return this._rows.find(row => row.contains(x, y));
+    // FIXME: Row boundaries are pretty buggy
+    // return this._rows.find(row => row.contains(x, y));
+    return this._rows.reduce((prev, next) => {
+      if (next.ry < y) {
+        return next;
+      } else {
+        return prev;
+      }
+    }, this._rows[0]);
   }
 
   get lastRow() {

@@ -73,7 +73,7 @@ class Word {
         this.syntaxTag.text(tag);
       }
       else {
-        this.tag = new WordTag(tag, this, false);
+        this.syntaxTag = new WordTag(tag, this, false);
       }
       this.calculateBox();
     }
@@ -167,13 +167,20 @@ class Word {
     this.move(this.x + x);
   }
 
+  /**
+   * Calculates the dimensions of the given Word, including its tag and
+   * syntaxTag, if present.
+   */
   calculateBox() {
-    let minWidth = (this.tag instanceof WordTag) ? Math.max(this.tag.ww, this.ww) : this.ww;
+    let minWidth = (this.tag instanceof WordTag)
+      ? Math.max(this.tag.ww, this.ww)
+      : this.ww;
     // if (this.syntaxTag instanceof WordTag && this.syntaxTag.ww > minWidth) {
     // minWidth = this.syntaxTag.ww; }
     let diff = this.boxWidth - minWidth;
     this.boxWidth -= diff;
-    this.descendHeight = this.syntaxTag instanceof WordTag ? this.syntaxTag.svgText.bbox().height : 0;
+
+    this.descendHeight = this.syntaxTag instanceof WordTag ? this.syntaxTag.svg.bbox().height : 0;
     this.boxHeight = this.svg.bbox().height - this.descendHeight;
 
     this.dx(diff / 2);
@@ -186,14 +193,13 @@ class Word {
   // }
 
   /**
-   * Returns the y-position of the bottom of this Word's syntax tag's box +
-   * some tolerance.
+   * Returns the y-position of the bottom of this Word's syntax tag's box
    * If the Word has no syntax tag, returns the y-position of the bottom of
    * the Word's box + some tolerance.
    * @return {number}
    */
   get absoluteDescent() {
-    return this.row ? this.row.ry + this.row.rh + this.descendHeight + 8 : 0;
+    return this.row ? this.row.ry + this.row.rh + this.descendHeight : 0;
   }
 
   /**
@@ -216,6 +222,19 @@ class Word {
 
   get ww() {
     return this.svgText.length();
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Debug functions
+  /**
+   * Draws the outline of this Word's bounding box
+   */
+  drawBbox() {
+    const bbox = this.svg.bbox();
+    this.svg.rect(bbox.width, bbox.height)
+      .move(bbox.x, bbox.y)
+      .fill("none")
+      .stroke({width: 1});
   }
 }
 

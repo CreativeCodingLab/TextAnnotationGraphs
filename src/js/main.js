@@ -420,6 +420,16 @@ class Main {
       this.resize();
     }, 50));
   }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Debug functions
+  xLine(x) {
+    this.svg.line(x, 0, x, 1000).stroke({width: 1});
+  }
+
+  yLine(y) {
+    this.svg.line(0, y, 1000, y).stroke({width: 1});
+  }
 }
 
 module.exports = Main;
