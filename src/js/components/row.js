@@ -19,31 +19,34 @@ class Row {
     this.wordGroup = null;  // child group element
 
     if (svg) {
-      this.init(svg);
+      this.svgInit(svg);
     }
   }
 
-  init(svg) {
-    this.svg = svg.group()
-      .transform({y: this.ry})
+  /**
+   * Initialises the SVG elements related to this Row, and performs an
+   * initial draw of the baseline/resize line
+   * @param mainSvg - The main SVG document
+   */
+  svgInit(mainSvg) {
+    // All positions will be relative to the baseline for this Row
+    this.svg = mainSvg.group()
+      .transform({y: this.baseline})
       .addClass("tag-element")
       .addClass("row");
 
-    // group element to contain word elements
-    this.wordGroup = this.svg.group()
-      .y(this.rh);
+    // Group element to contain word elements
+    this.wordGroup = this.svg.group();
 
-    // set width
-    this.rw = svg.width();
+    // Row width
+    this.rw = mainSvg.width();
 
-    // add draggable rectangle
+    // Add draggable resize line
     this.draggable = this.svg.line(0, 0, this.rw, 0)
-      .y(this.rh)
       .addClass("tag-element")
       .addClass("row-drag")
       .draggable();
 
-    let row = this;
     let y = 0;
     this.draggable
       .on("dragstart", function (e) {
@@ -53,30 +56,49 @@ class Row {
         e.preventDefault();
         let dy = e.detail.p.y - y;
         y = e.detail.p.y;
-        svg.fire("row-resize", {object: this, y: dy});
+        mainSvg.fire("row-resize", {object: this, y: dy});
       });
   }
 
+  /**
+   * Removes all elements related to this Row from the main SVG document
+   * @return {*}
+   */
   remove() {
     return this.svg.remove();
   }
 
+  /**
+   * Changes the y-position of this Row's upper bound by the given amount
+   * @param y
+   */
   dy(y) {
     this.ry += y;
-    this.svg.transform({y: this.ry});
+    this.svg.transform({y: this.baseline});
   }
 
+  /**
+   * Moves this Row's upper bound vertically to the given y-position
+   * @param y
+   */
   move(y) {
     this.ry = y;
-    this.svg.transform({y: this.ry});
+    this.svg.transform({y: this.baseline});
   }
 
+  /**
+   * Sets the height of this Row
+   * @param rh
+   */
   height(rh) {
     this.rh = rh;
-    this.wordGroup.y(this.rh);
-    this.draggable.y(this.rh);
+    this.svg.transform({y: this.baseline});
   }
 
+  /**
+   * Sets the width of this Row
+   * @param rw
+   */
   width(rw) {
     this.rw = rw;
     this.draggable.attr("x2", this.rw);
@@ -209,8 +231,7 @@ class Row {
       word.move(x);
       ++i;
       prevWord = word;
-    }
-    else if (!prevWord) {
+    } else if (!prevWord) {
       word.move(EDGE_PADDING);
       ++i;
       prevWord = word;
@@ -260,7 +281,16 @@ class Row {
   }
 
   /**
+   * Gets the y-position of the Row's baseline (where the draggable resize
+   * line is, and the baseline for all the Row's words)
+   */
+  get baseline() {
+    return this.ry + this.rh;
+  }
+
+  /**
    * Returns the lower bound of the Row on the y-axis, excluding padding
+   * (this.minSlot can be negative in the current implementation?)
    * @return {number}
    */
   get ry2() {
@@ -282,6 +312,20 @@ class Row {
 
     const lastWord = this.words[this.words.length - 1];
     return this.rw - this.config.rowEdgePadding - lastWord.x - lastWord.boxWidth;
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Debug functions
+  /**
+   * Draws the outline of this component's bounding box
+   */
+  drawBbox() {
+    const bbox = this.svg.bbox();
+    this.svg.polyline([
+      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
+      [bbox.x, bbox.y]])
+      .fill("none")
+      .stroke({width: 1});
   }
 }
 

@@ -67,11 +67,17 @@ class BratParser {
       if (t.entity === null) {
         let text = this.text.slice(t.charStart, t.charEnd).trim();
 
+        if (text === "") {
+          // The un-annotated span contained only whitespace; ignore it
+          return;
+        }
+
         text.split(/\s+/).forEach(token => {
           let word = new Word(token, graph.words.length - n + 1);
           graph.words.push(word);
         });
       } else {
+        // Strange way to change word indices...
         --n;
         t.entity.idx = graph.words.length - n;
       }

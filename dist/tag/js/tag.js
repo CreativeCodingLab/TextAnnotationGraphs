@@ -21061,7 +21061,7 @@ var _logger = require('./logger');
 
 var _logger2 = _interopRequireDefault(_logger);
 
-var VERSION = '4.0.5';
+var VERSION = '4.0.12';
 exports.VERSION = VERSION;
 var COMPILER_REVISION = 7;
 
@@ -21223,9 +21223,23 @@ function Exception(message, node) {
     Error.captureStackTrace(this, Exception);
   }
 
-  if (loc) {
-    this.lineNumber = line;
-    this.column = column;
+  try {
+    if (loc) {
+      this.lineNumber = line;
+
+      // Work around issue under safari where we can't directly set the column value
+      /* istanbul ignore next */
+      if (Object.defineProperty) {
+        Object.defineProperty(this, 'column', {
+          value: column,
+          enumerable: true
+        });
+      } else {
+        this.column = column;
+      }
+    }
+  } catch (nop) {
+    /* Ignore if the browser is very particular */
   }
 }
 
@@ -21776,6 +21790,8 @@ function template(templateSpec, env) {
 
       return obj;
     },
+    // An empty object to use as replacement for null-contexts
+    nullContext: Object.seal({}),
 
     noop: env.VM.noop,
     compilerInfo: templateSpec.compiler
@@ -21794,7 +21810,7 @@ function template(templateSpec, env) {
         blockParams = templateSpec.useBlockParams ? [] : undefined;
     if (templateSpec.useDepths) {
       if (options.depths) {
-        depths = context !== options.depths[0] ? [context].concat(options.depths) : options.depths;
+        depths = context != options.depths[0] ? [context].concat(options.depths) : options.depths;
       } else {
         depths = [context];
       }
@@ -21843,7 +21859,7 @@ function wrapProgram(container, i, fn, data, declaredBlockParams, blockParams, d
     var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
     var currentDepths = depths;
-    if (depths && context !== depths[0]) {
+    if (depths && context != depths[0] && !(context === container.nullContext && depths[0] === null)) {
       currentDepths = [context].concat(depths);
     }
 
@@ -21874,6 +21890,8 @@ function resolvePartial(partial, context, options) {
 }
 
 function invokePartial(partial, context, options) {
+  // Use the current closure context to save the partial-block if this partial
+  var currentPartialBlock = options.data && options.data['partial-block'];
   options.partial = true;
   if (options.ids) {
     options.data.contextPath = options.ids[0] || options.data.contextPath;
@@ -21881,12 +21899,23 @@ function invokePartial(partial, context, options) {
 
   var partialBlock = undefined;
   if (options.fn && options.fn !== noop) {
-    options.data = _base.createFrame(options.data);
-    partialBlock = options.data['partial-block'] = options.fn;
+    (function () {
+      options.data = _base.createFrame(options.data);
+      // Wrapper function to get access to currentPartialBlock from the closure
+      var fn = options.fn;
+      partialBlock = options.data['partial-block'] = function partialBlockWrapper(context) {
+        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-    if (partialBlock.partials) {
-      options.partials = Utils.extend({}, options.partials, partialBlock.partials);
-    }
+        // Restore the partial-block from the closure for the execution of the block
+        // i.e. the part inside the block of the partial call.
+        options.data = _base.createFrame(options.data);
+        options.data['partial-block'] = currentPartialBlock;
+        return fn(context, options);
+      };
+      if (fn.partials) {
+        options.partials = Utils.extend({}, options.partials, fn.partials);
+      }
+    })();
   }
 
   if (partial === undefined && partialBlock) {
@@ -61536,117 +61565,181 @@ module.exports = ColorPicker;
 },{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],111:[function(require,module,exports){
 "use strict";
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
-
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _tag = _interopRequireDefault(require("./tag.js"));
+var _wordTag = _interopRequireDefault(require("./word-tag.js"));
 
 var _word = _interopRequireDefault(require("./word.js"));
 
-var SVG = _interopRequireWildcard(require("svg.js"));
-
-var draggable = _interopRequireWildcard(require("svg.draggable.js"));
+var $ = require("jquery");
 
 var Link =
 /*#__PURE__*/
 function () {
+  /**
+   * Creates a new Link between other entities.  Links can have Words or
+   * other Links as argument anchors.
+   *
+   * @param {String} eventId - Unique ID
+   * @param {Word} trigger - Text-bound entity that indicates the presence of
+   *     this event
+   * @param {Object[]} args - The arguments to this Link. An Array of
+   *     Objects specifying `anchor` and `type`
+   * @param {String} reltype - For (binary) relational Links, a String
+   *     identifying the relationship type
+   * @param {Boolean} top - Whether or not this Link should be drawn above
+   *     the text row (if false, it will be drawn below)
+   */
   function Link(eventId, trigger, args, reltype) {
     var _this = this;
 
     var top = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
     (0, _classCallCheck2.default)(this, Link);
-    this.eventId = eventId;
+    // ---------------
+    // Core properties
+    this.eventId = eventId; // Links can be either Event or Relation annotations, to borrow the BRAT
+    // terminology.  Event annotations have a `trigger` entity from the text
+    // that specifies the event, whereas Relation annotations have a `type`
+    // that may not be bound to any particular part of the raw text.
+    // Both types of Links have arguments, which may themselves be nested links.
+
     this.trigger = trigger;
+    this.reltype = reltype;
     this.arguments = args.sort(function (a, b) {
       return a.anchor.idx - b.anchor.idx;
-    });
+    }); // Contains references to higher-level Links that have this Link as an
+    // argument
+
     this.links = [];
-    this.reltype = reltype;
     this.top = top;
-    this.visible = true;
-    this.resetSlotRecalculation();
+    this.visible = true; // Slots are the y-intervals at which links may be drawn.
 
-    if (this.top) {
-      // top links
-      if (this.trigger) {
-        this.trigger.links.push(this);
-      }
+    this.resetSlotRecalculation(); // Fill in references in this Link's trigger/arguments
 
-      this.arguments.forEach(function (arg) {
-        arg.anchor.links.push(_this);
-      });
-    } else {
-      // bottom links
+    if (this.trigger) {
       this.trigger.links.push(this);
-      this.arguments.forEach(function (arg) {
-        return arg.anchor.links.push(_this);
-      });
     }
 
-    this.endpoints = this.getEndpoints();
+    this.arguments.forEach(function (arg) {
+      arg.anchor.links.push(_this);
+    }); // The leftmost and rightmost anchors for this Link
+
+    this.endpoints = this.getEndpoints(); // ---------------
+    // Visualisation-related properties
+
+    this.initialised = false; // The main API/config instance this Link is attached to
+
+    this.main = null;
+    this.config = null; // SVG-related properties
+
     this.mainSVG = null;
     this.svg = null;
     this.handles = [];
     this.line = null;
     this.svgTexts = [];
+    this.lastDrawnWidth = null;
   }
+  /**
+   * Initialises this Link against the main API instance
+   * @param main
+   */
+
 
   (0, _createClass2.default)(Link, [{
     key: "init",
-    value: function init(svg) {
+    value: function init(main) {
       var _this2 = this;
 
+      this.initialised = true;
+      this.main = main;
+      this.config = main.config;
       this.arguments.sort(function (a, b) {
         return a.anchor.idx - b.anchor.idx;
       });
-      this.mainSVG = svg;
-      this.svg = svg.group().addClass("tag-element").addClass(this.top ? 'link' : 'link syntax-link');
+      this.mainSVG = main.svg;
+      this.svg = main.svg.group().addClass("tag-element").addClass(this.top ? "link" : "link syntax-link");
 
       if (!this.visible) {
         this.svg.hide();
-      } // init handles
-      // get location of trigger
+      } // Sub-class for Link handles
+
+
+      var rowManager = this.main.rowManager;
+
+      var Handle =
+      /*#__PURE__*/
+      function () {
+        function Handle(anchor, x, y) {
+          (0, _classCallCheck2.default)(this, Handle);
+          this.anchor = anchor;
+          this.x = x;
+          this.y = y; // For anchor Links, offsets start at 0 on the left bound of the Link
+          // For anchor Words/WordTags, offsets start at 0 in the centre of the
+          // Word/WordTag
+          // Calculated when the Handle is first drawn
+
+          this.offset = null;
+        }
+        /**
+         * The Row in which this handle is contained
+         * @return {Row}
+         */
+
+
+        (0, _createClass2.default)(Handle, [{
+          key: "precedes",
+
+          /**
+           * Returns true if this handle precedes the given handle
+           * (i.e., this handle has an earlier row, or is to its left within the
+           * same row)
+           * @param {Handle} handle
+           */
+          value: function precedes(handle) {
+            // FIXME: Sometimes the Row boundaries aren't set properly
+            if (!this.row || !handle.row) {
+              return false;
+            }
+
+            return this.row.idx < handle.row.idx || this.row.idx === handle.row.idx && this.x < handle.x;
+          }
+        }, {
+          key: "row",
+          get: function get() {
+            var row = rowManager.whichRow(this.x, this.y);
+
+            if (!row) {
+              console.log("Couldn't find row for handle:", this);
+            }
+
+            return row;
+          }
+        }]);
+        return Handle;
+      }(); // Init handles
 
 
       if (this.trigger) {
-        var _x = this.trigger.cx;
-        var y = this.top ? this.trigger.absoluteY : this.trigger.absoluteDescent;
-        this.handles.push({
-          anchor: this.trigger,
-          x: _x,
-          y: y,
-          offset: null
-        });
-      } // draw arguments
-
+        this.handles.push(new Handle(this.trigger, this.trigger.cx, this.top ? this.trigger.absoluteY : this.trigger.absoluteDescent));
+      }
 
       this.arguments.forEach(function (arg) {
-        // get location of the argument
-        var x = arg.anchor.cx;
-        var y = _this2.top ? arg.anchor.absoluteY : arg.anchor.absoluteDescent;
-
-        _this2.handles.push({
-          anchor: arg.anchor,
-          x: x,
-          y: y,
-          offset: null
-        }); // draw svgText for each trigger-argument relation
+        _this2.handles.push(new Handle(arg.anchor, arg.anchor.cx, _this2.top ? arg.anchor.absoluteY : arg.anchor.absoluteDescent)); // Also prepare svgTexts for each trigger-argument relation
 
 
         if (_this2.trigger) {
-          var text = _this2.svg.text(arg.type).y(-7).addClass("tag-element").addClass('link-text');
+          var text = _this2.svg.text(arg.type).y(-7).addClass("tag-element").addClass("link-text");
 
           _this2.svgTexts.push(text);
         }
       }); // draw svgText for a non-trigger relation
 
       if (this.reltype) {
-        var text = this.svg.text(this.reltype).y(-7).addClass("tag-element").addClass('link-text');
+        var text = this.svg.text(this.reltype).y(-7).addClass("tag-element").addClass("link-text");
         this.svgTexts.push(text);
       } // apply click events to text
 
@@ -61655,33 +61748,133 @@ function () {
         text.node.oncontextmenu = function (e) {
           _this2.selectedLabel = text;
           e.preventDefault();
-          svg.fire('link-label-right-click', {
+
+          _this2.mainSVG.fire("link-label-right-click", {
             object: _this2,
-            type: 'text',
+            type: "text",
             event: e
           });
         };
 
         text.click(function (e) {
-          return svg.fire('link-label-edit', {
+          return _this2.mainSVG.fire("link-label-edit", {
             object: _this2,
             text: text,
             event: e
           });
         });
         text.dblclick(function (e) {
-          return svg.fire('build-tree', {
+          return _this2.mainSVG.fire("build-tree", {
             object: _this2,
             event: e
           });
         });
       });
-      this.line = this.svg.path().addClass("tag-element").addClass('polyline'); // apply drag events to line
+      this.line = this.svg.path().addClass("tag-element").addClass("polyline"); // Closure for identifying dragged handles
 
       var draggedHandle = null;
-      var x = 0;
+      var dragStartX = 0;
+      this.line.draggable().on("dragstart", function (e) {
+        // We use the x and y values (with a little tolerance) to make sure
+        // that the user is dragging near one of the Link's handles, and not
+        // just in the middle of the Link's line.
+        var dragX = e.detail.p.x; // `dragY` is adjusted for the document's scroll position, but we
+        // want to compare it against our internal container coordinates
+
+        var dragY = e.detail.p.y - $(window).scrollTop();
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = _this2.handles[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var handle = _step.value;
+
+            // Is this handle in the correct vicinity on the y-axis?
+            if (_this2.top) {
+              // The Link line will be above the handle
+              if (dragY < _this2.getLineY(handle) - 5 || dragY > handle.y + 5) {
+                continue;
+              }
+            } else {
+              // The Link line will be below the handle
+              if (dragY < handle.y - 5 || dragY > _this2.getLineY(handle) + 5) {
+                continue;
+              }
+            } // Is this handle close enough on the x-axis?
+            // In particular, the handle arrowheads might get fairly long
+
+
+            var distX = Math.abs(handle.x - dragX);
+
+            if (distX > _this2.config.linkArrowWidth) {
+              continue;
+            } // Is it closer than any previous candidate?
+
+
+            if (!draggedHandle || distX < Math.abs(draggedHandle.x - dragX)) {
+              // Sold!
+              draggedHandle = handle;
+              dragStartX = e.detail.p.x;
+            }
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+      }).on("dragmove", function (e) {
+        e.preventDefault();
+
+        if (!draggedHandle) {
+          return;
+        } // Handle the change in raw x-position for this `dragmove` iteration
+
+
+        var dx = e.detail.p.x - dragStartX;
+        dragStartX = e.detail.p.x;
+        draggedHandle.offset += dx;
+        window.debugHandle = draggedHandle; // Constrain the handle's offset so that it doesn't end up
+        // overshooting the sides of its anchor
+
+        var anchor = draggedHandle.anchor;
+
+        if (anchor instanceof Link) {
+          // The handle is resting on another Link; offset 0 is the left
+          // edge of the lower Link
+          draggedHandle.offset = Math.min(draggedHandle.offset, anchor.width);
+          draggedHandle.offset = Math.max(draggedHandle.offset, 0);
+        } else {
+          // The handle is resting on a Word/WordTag; offset 0 is the centre
+          // of the Word/WordTag
+          var halfWidth = anchor.boxWidth / 2;
+
+          if (_this2.top && anchor.tag instanceof _wordTag.default) {
+            halfWidth = anchor.tag.ww / 2;
+          } else if (!_this2.top && anchor.syntaxTag instanceof _wordTag.default) {
+            halfWidth = anchor.syntaxTag.ww / 2;
+          } // Constrain the handle to be within 3px of the bounds of its base
+
+
+          draggedHandle.offset = Math.min(draggedHandle.offset, halfWidth - 3);
+          draggedHandle.offset = Math.max(draggedHandle.offset, -halfWidth + 3);
+        }
+
+        _this2.draw(anchor);
+      }).on("dragend", function () {
+        draggedHandle = null;
+      });
       this.line.dblclick(function (e) {
-        return svg.fire('build-tree', {
+        return _this2.mainSVG.fire("build-tree", {
           object: _this2,
           event: e
         });
@@ -61689,90 +61882,13 @@ function () {
 
       this.line.node.oncontextmenu = function (e) {
         e.preventDefault();
-        svg.fire('link-right-click', {
+
+        _this2.mainSVG.fire("link-right-click", {
           object: _this2,
-          type: 'link',
+          type: "link",
           event: e
         });
       };
-
-      this.line.draggable().on('dragstart', function (e) {
-        var closestHandle = _this2.handles.reduce(function (acc, val) {
-          return Math.abs(val.x - e.detail.p.x) < Math.abs(acc.x - e.detail.p.x) ? val : acc;
-        }, _this2.handles[0]); // 8 is a "magic number" for tolerance of closeness to the endpoint of the handle
-
-
-        if (Math.abs(closestHandle.x - e.detail.p.x) < 5) {
-          draggedHandle = closestHandle;
-          x = e.detail.p.x;
-        }
-      }).on('dragmove', function (e) {
-        e.preventDefault();
-
-        if (draggedHandle) {
-          var dx = e.detail.p.x - x;
-          x = e.detail.p.x;
-          draggedHandle.offset += dx;
-          var anchor = draggedHandle.anchor;
-
-          if (anchor instanceof Link) {
-            var _handles = anchor.handles.filter(function (h) {
-              return h.anchor.row.idx === anchor.handles[0].anchor.row.idx;
-            }).sort(function (a, b) {
-              return a.x - b.x;
-            });
-
-            var _min = _handles[0].x;
-            var _max = _handles[_handles.length - 1].x;
-
-            if (_handles.length < anchor.handles.length) {
-              _max = _this2.mainSVG.width();
-            }
-
-            var _cx = draggedHandle.anchor.cx;
-            draggedHandle.offset = Math.min(_max - _cx, Math.max(_min - _cx, draggedHandle.offset));
-          } else {
-            var halfWidth = anchor.boxWidth / 2;
-
-            if (_this2.top && anchor.tag instanceof _tag.default) {
-              halfWidth = anchor.tag.ww / 2;
-            } else if (!_this2.top && anchor.syntaxTag instanceof _tag.default) {
-              halfWidth = anchor.syntaxTag.ww / 2;
-            }
-
-            halfWidth = Math.max(halfWidth, 13);
-            draggedHandle.offset = draggedHandle.offset < 0 ? Math.max(-halfWidth + 3, draggedHandle.offset) : Math.min(halfWidth - 3, draggedHandle.offset);
-          } // also constrain links above this link
-
-
-          var handles = _this2.handles.filter(function (h) {
-            return h.anchor.row.idx === _this2.handles[0].anchor.row.idx;
-          }).sort(function (a, b) {
-            return a.x - b.x;
-          });
-
-          var min = handles[0].x;
-          var max = handles[handles.length - 1].x;
-
-          if (handles.length < _this2.handles.length) {
-            max = _this2.mainSVG.width();
-          }
-
-          var cx = _this2.cx;
-
-          _this2.links.forEach(function (link) {
-            link.handles.forEach(function (h) {
-              if (h.anchor === _this2) {
-                h.offset = Math.min(max - cx, Math.max(min - cx, h.offset));
-              }
-            });
-          });
-
-          _this2.draw(draggedHandle.anchor);
-        }
-      }).on('dragend', function () {
-        draggedHandle = null;
-      });
     }
   }, {
     key: "toggle",
@@ -61804,23 +61920,44 @@ function () {
         this.svg.hide();
       }
     }
+    /**
+     * (Re-)draw some Link onto the main visualisation
+     *
+     * @param {Word|Link} [modAnchor] - Passed when we know that (only) a
+     *   specific anchor has changed position since the last redraw. If not,
+     *   the positions of all handles will be recalculated.
+     */
+
   }, {
     key: "draw",
-    value: function draw(anchor) {
+    value: function draw(modAnchor) {
       var _this3 = this;
 
-      if (!anchor) {
-        // initialize offsets
-        this.handles.forEach(function (h) {
+      if (!this.initialised || !this.visible) {
+        return;
+      } // Ensure that every handle has a valid offset
+
+
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        var _loop = function _loop() {
+          var h = _step2.value;
+
           if (h.offset === null) {
             var l = h.anchor.links.sort(function (a, b) {
               return a.slot - b.slot;
             }).filter(function (link) {
-              return link.top == _this3.top;
+              return link.top === _this3.top;
             });
             var w = 10; // magic number => TODO: resize this to tag width?
 
             if (l.length > 1) {
+              // The handle's anchor has multiple links associated with it;
+              // stagger them horizontally by setting this handle's offset
+              // based on its index in the anchor's list of links.
               if (h.anchor instanceof Link && h.anchor.trigger.idx === h.anchor.endpoints[0].idx) {
                 h.offset = l.indexOf(_this3) / l.length * 2 * w;
               } else if (h.anchor instanceof Link && h.anchor.trigger.idx === h.anchor.endpoints[1].idx) {
@@ -61832,152 +61969,508 @@ function () {
                 h.offset = (l.indexOf(_this3) + 0.5) / l.length * (h.anchor.idx > _this3.endpoints[0].idx ? -w : w);
               }
             } else {
+              // The handle's anchor only has one link, this one.
+              // It can have offset 0.
               h.offset = 0;
             }
           }
-        });
-      } else {
-        // redraw handles if word or link was moved
-        var h = this.handles.find(function (h) {
-          return anchor === h.anchor;
-        });
+        };
 
-        if (h) {
-          h.x = anchor.cx + h.offset;
-          h.y = this.top ? anchor.absoluteY : anchor.absoluteDescent;
+        for (var _iterator2 = this.handles[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          _loop();
+        } // Recalculate handle positions
+
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
         }
       }
 
-      if (!this.visible) {
-        return;
-      } // redraw line if it exists
+      var calcHandles = this.handles;
 
+      if (modAnchor) {
+        // Only one needs to be calculated
+        calcHandles = [this.handles.find(function (h) {
+          return h.anchor === modAnchor;
+        })];
+      }
 
-      if (this.line) {
-        var width = this.mainSVG.width();
-        var d = ''; // draw a polyline between the trigger and each of its arguments
+      var changedHandles = [];
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
 
-        if (this.trigger) {
-          var y = this.getLineY(this.handles[1]);
-          var rowCrossed = false;
+      try {
+        for (var _iterator3 = calcHandles[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var _handle = _step3.value;
+          var anchor = _handle.anchor; // Two possibilities: The anchor is a Word (/WordCluster?), or it is a
+          // Link.
 
-          for (var i = 0, il = this.arguments.length; i < il; ++i) {
-            var leftOfTrigger = this.arguments[i].anchor.idx < this.trigger.idx;
-            var dx = leftOfTrigger ? 5 : -5;
-            var textlen = leftOfTrigger ? this.svgTexts[i].length() : -this.svgTexts[i].length();
-            var handle1 = this.handles[i + 1]; // draw a line from the prev arrow segment
+          if (!(anchor instanceof Link)) {
+            // No need to account for multiple rows (the handle will be resting
+            // on the label for a Word/WordCluster)
+            var newX = anchor.cx + _handle.offset;
+            var newY = this.top ? anchor.absoluteY : anchor.absoluteDescent;
 
-            if (i > 0) {
-              // check if crossing over a row
-              if (rowCrossed) {
-                rowCrossed = false;
-                d += 'L' + [width, y] + 'M0,';
-                y = this.getLineY(handle1);
-                d += y;
-              }
-
-              if (leftOfTrigger) {
-                d += 'L' + [handle1.x + dx, y];
-              } else {
-                d += 'L' + [handle1.x + dx + textlen, y];
-              }
-            } else if (!leftOfTrigger) {
-              // start drawing from the trigger
-              y = this.getLineY(this.handles[0]);
-              d += 'M' + [this.handles[0].x, this.handles[0].y] + 'C' + [this.handles[0].x, y, this.handles[0].x, y, this.handles[0].x - dx, y]; // check if crossing over a row
-
-              if (this.handles[0].anchor.row.idx < this.handles[1].anchor.row.idx) {
-                d += 'L' + [width, y] + 'M0,';
-                y = this.getLineY(this.handles[1]);
-                d += y;
-              }
-
-              d += 'L' + [this.handles[1].x + dx + textlen, y];
-            } // draw the text svg
-
-
-            this.svgTexts[i].x(handle1.x + dx + textlen / 2).y(y - 10); // draw an arrow at the handle
-
-            var s = 4;
-            d += this.arrowhead(handle1);
-            var handlePrecedesTrigger = leftOfTrigger && (i + 2 > il || this.arguments[i + 1].anchor.idx >= this.trigger.idx); // check if crossing over a row
-
-            rowCrossed = handlePrecedesTrigger && this.handles[0].anchor.row.idx != handle1.anchor.row.idx || !handlePrecedesTrigger && i + 1 < il && this.handles[i + 2].anchor.row.idx != handle1.anchor.row.idx; // draw an arrow segment coming from each argument
-
-            if (handlePrecedesTrigger && rowCrossed) {
-              // if row is crossed
-              var tempY = this.getLineY(handle1);
-              y = this.getLineY(this.handles[0]);
-              d += 'M' + [handle1.x, handle1.y] + 'C' + [handle1.x, tempY, handle1.x, tempY, handle1.x + dx, tempY] + 'm' + [textlen, 0] + 'L' + [width, tempY] + 'M' + [0, y];
-              rowCrossed = false;
-              this.svgTexts[i].y(tempY - 10);
-            } else {
-              d += 'M' + [handle1.x, handle1.y] + 'C' + [handle1.x, y, handle1.x, y, handle1.x + dx, y];
-
-              if (leftOfTrigger) {
-                d += 'm' + [textlen, 0];
-              }
+            if (_handle.x !== newX || _handle.y !== newY) {
+              _handle.x = newX;
+              _handle.y = newY;
+              changedHandles.push(_handle);
             }
-
-            if (handlePrecedesTrigger) {
-              // draw trigger to the right of the arrow segment
-              if (i + 1 < il) {
-                d += 'L' + [this.handles[0].x - dx, y] + 'c' + [dx, 0, dx, 0, dx, this.handles[0].y - y] + 'm' + [dx, 0] + 'l' + [-2 * dx, 0] + 'm' + [dx, 0] + 'C' + [this.handles[0].x, y, this.handles[0].x, y, this.handles[0].x + dx, y];
-                rowCrossed = this.handles[i + 2].anchor.row.idx != this.handles[0].anchor.row.idx;
-              } else {
-                d += 'L' + [this.handles[0].x - dx, y] + 'c' + [dx, 0, dx, 0, dx, this.handles[0].y - y];
-              }
-            }
-          }
-        } else if (this.reltype) {
-          // draw lines between a non-trigger relationship
-          var _y = this.getLineY(this.handles[0]);
-
-          var endHandle = this.handles[this.handles.length - 1];
-
-          var _textlen = this.svgTexts[0].length();
-
-          var avg;
-
-          if (this.handles[0].anchor.row.idx === endHandle.anchor.row.idx) {
-            avg = this.handles.reduce(function (acc, h) {
-              return acc + h.x;
-            }, 0) / this.arguments.length;
-            var textLeft = avg - _textlen / 2;
-            d = 'M' + [this.handles[0].x, this.handles[0].y] + (textLeft < this.handles[0].x ? 'L' + [this.handles[0].x, _y] + 'M' + [endHandle.x, _y] + 'L' + [endHandle.x, endHandle.y] : 'C' + [this.handles[0].x, _y, this.handles[0].x, _y, Math.min(textLeft, this.handles[0].x + 5), _y] + 'L' + [textLeft, _y] + 'm' + [_textlen, 0] + 'L' + [Math.max(textLeft + _textlen, endHandle.x - 5), _y] + 'C' + [endHandle.x, _y, endHandle.x, _y, endHandle.x, endHandle.y]) + this.arrowhead(this.handles[0]) + this.arrowhead(endHandle);
           } else {
-            avg = (this.handles[0].x + width) / 2;
-            d = 'M' + [this.handles[0].x, this.handles[0].y] + 'C' + [this.handles[0].x, _y, this.handles[0].x, _y, this.handles[0].x + 5, _y] + 'L' + [avg - _textlen / 2, _y] + 'm' + [_textlen, 0] + 'L' + [width, _y];
+            // The anchor is a Link; the handle rests on another Link's line,
+            // and the offset might extend to the next row and beyond.
+            var baseLeft = anchor.leftHandle; // First, make sure the offset doesn't overshoot the base row
 
-            var _tempY = this.getLineY(endHandle);
+            _handle.offset = Math.min(_handle.offset, anchor.width);
+            _handle.offset = Math.max(_handle.offset, 0); // Handle intervening rows without modifying `handle.offset` or
+            // the anchor Link directly
 
-            d += 'M0,' + _tempY + 'L' + [endHandle.x - 5, _tempY] + 'C' + [endHandle.x, _tempY, endHandle.x, _tempY, endHandle.x, endHandle.y] + this.arrowhead(this.handles[0]) + this.arrowhead(endHandle);
+            var calcOffset = _handle.offset;
+            var calcRow = baseLeft.row;
+            var calcX = baseLeft.x;
+
+            while (calcOffset > calcRow.rw - calcX) {
+              calcOffset -= calcRow.rw - calcX;
+              calcX = 0;
+              calcRow = this.main.rowManager.rows[calcRow.idx + 1];
+            } // Last row - Deal with remaining offset
+
+
+            var _newX = calcX + calcOffset;
+
+            var _newY = anchor.getLineYRow(calcRow);
+
+            if (_handle.x !== _newX || _handle.y !== _newY) {
+              _handle.x = _newX;
+              _handle.y = _newY;
+              changedHandles.push(_handle);
+            }
           }
+        } // If our width has changed, we should update the offset of any of our
+        // parent Links.
+        // The parent Link will be redrawn after we're done redrawing this
+        // one, and any adjustments will be made automatically during the redraw.
 
-          this.svgTexts[0].x(avg).y(_y - 10);
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
         }
-
-        this.line.plot(d);
       }
 
+      if (this.lastDrawnWidth === null) {
+        this.lastDrawnWidth = this.width;
+      } else {
+        var growth = this.width - this.lastDrawnWidth;
+        this.lastDrawnWidth = this.width;
+
+        if (growth > 500) {
+          // Debug
+          var _ = require("lodash");
+
+          console.log(this.eventId, this.width, growth, this.lastDrawnWidth);
+          console.log(_.cloneDeep(this));
+          console.log(_.cloneDeep(this.handles));
+        } // To get the parent Link's handle position to remain as constant as
+        // possible, we should adjust its offset only if our left handle changed
+
+
+        if (changedHandles.length === 1 && changedHandles[0] === this.leftHandle) {
+          var _iteratorNormalCompletion4 = true;
+          var _didIteratorError4 = false;
+          var _iteratorError4 = undefined;
+
+          try {
+            for (var _iterator4 = this.links[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+              var parentLink = _step4.value;
+              var parentHandle = parentLink.handles.find(function (h) {
+                return h.anchor === _this3;
+              });
+              parentHandle.offset += growth;
+              parentHandle.offset = Math.max(parentHandle.offset, 0);
+            }
+          } catch (err) {
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
+                _iterator4.return();
+              }
+            } finally {
+              if (_didIteratorError4) {
+                throw _iteratorError4;
+              }
+            }
+          }
+        }
+      } // Redraw Link line
+
+
+      var width = this.mainSVG.width();
+      var d = "";
+      var leftHandle = this.leftHandle;
+      var rightHandle = this.rightHandle; // draw a polyline between the trigger and each of its arguments
+      // https://www.w3.org/TR/SVG/paths.html#PathData
+
+      if (this.trigger) {
+        // Start drawing from the trigger
+        var triggerHandle = this.triggerHandle;
+        var pTrigger = {
+          x: triggerHandle.x,
+          y: this.top ? triggerHandle.y - this.config.linkHandlePadding : triggerHandle.y + this.config.linkHandlePadding
+        }; // Draw the lines to each argument's handle
+
+        for (var i = 0; i < this.arguments.length; i++) {
+          // The trigger is always the handle with index 0
+          var handle = this.handles[i + 1];
+          var label = this.svgTexts[i];
+          var pHandle = {
+            x: handle.x,
+            y: this.top ? handle.y - this.config.linkHandlePadding : handle.y + this.config.linkHandlePadding
+          };
+          var sameRow = handle.row.idx === triggerHandle.row.idx; // Width/position of the Link's label
+
+          var textLength = label.length();
+          var textY = this.getLineYRow(handle.row) - 10;
+          var textLeft = void 0;
+
+          if (handle.precedes(triggerHandle)) {
+            textLeft = pHandle.x + this.config.linkCurveWidth;
+
+            if (textLeft + textLength > handle.row.rw) {
+              textLeft = handle.row.rw - textLength;
+            }
+          } else {
+            textLeft = pHandle.x - this.config.linkCurveWidth - textLength;
+            textLeft = Math.max(textLeft, 0);
+          }
+
+          var textCentre = textLeft + textLength / 2; // Draw line between this handle and the trigger
+
+          if (handle.precedes(triggerHandle)) {
+            // This handle is on the left of the trigger handle.
+            // Start drawing from this handle.
+            d += "M" + [pHandle.x, pHandle.y];
+            var handleY = this.getLineYRow(handle.row); // Argument handle
+
+            if (textLeft < pHandle.x) {
+              // Just draw a vertical line up to the label
+              d += "L" + [pHandle.x, handleY];
+            } else {
+              // Draw curve up to the main Link line, then, go up to the label
+              var curveLeftX = pHandle.x + this.config.linkCurveWidth;
+              curveLeftX = Math.min(curveLeftX, textLeft);
+              d += "C" + [pHandle.x, handleY, pHandle.x, handleY, curveLeftX, handleY] + "L" + [textLeft, handleY];
+            } // Trigger handle
+
+
+            if (sameRow) {
+              if (textLeft + textLength > pTrigger.x) {
+                // Just draw a vertical line down to the handle
+                d += "M" + [pTrigger.x, handleY] + "L" + [pTrigger.x, pTrigger.y];
+              } else {
+                // Draw curve down from the main Link line
+                var curveRightX = pTrigger.x - this.config.linkCurveWidth;
+                curveRightX = Math.max(curveRightX, textLeft + textLength);
+                d += "M" + [textLeft + textLength, handleY] + "L" + [curveRightX, handleY] + "C" + [pTrigger.x, handleY, pTrigger.x, handleY, pTrigger.x, pTrigger.y];
+              }
+            } else {
+              // Draw in Link line across the end of the first row, and all
+              // intervening rows
+              d += "M" + [textLeft + textLength, handleY] + "L" + [handle.row.rw, handleY];
+
+              for (var _i = handle.row.idx + 1; _i < triggerHandle.row.idx; _i++) {
+                var thisRow = this.main.rowManager.rows[_i];
+                var lineY = this.getLineYRow(thisRow);
+                d += "M" + [0, lineY] + "L" + [thisRow.rw, lineY];
+              } // Draw in the last row
+
+
+              var _curveRightX = pTrigger.x - this.config.linkCurveWidth;
+
+              _curveRightX = Math.max(_curveRightX, 0);
+              var finalY = this.getLineYRow(triggerHandle.row);
+              d += "M" + [0, finalY] + "L" + [_curveRightX, finalY] + "C" + [pTrigger.x, finalY, pTrigger.x, finalY, pTrigger.x, pTrigger.y];
+            }
+          } else {
+            // This handle is on the right of the trigger handle.
+            // Start drawing from the trigger handle.
+            d += "M" + [pTrigger.x, pTrigger.y];
+            var triggerY = this.getLineYRow(triggerHandle.row); // Trigger handle
+
+            if (textLeft < pTrigger.x) {
+              // Just draw a vertical line up to the label
+              d += "M" + [pTrigger.x, pTrigger.y] + "L" + [pTrigger.x, triggerY];
+            } else {
+              // Draw curve up to the main Link line, then, go up to the label
+              var _curveLeftX = pTrigger.x + this.config.linkCurveWidth;
+
+              _curveLeftX = Math.min(_curveLeftX, textLeft);
+              d += "C" + [pTrigger.x, triggerY, pTrigger.x, triggerY, _curveLeftX, triggerY] + "L" + [textLeft, triggerY];
+            } // Argument handle
+
+
+            if (sameRow) {
+              if (textLeft + textLength > pHandle.x) {
+                // Just draw a vertical line down to the handle
+                d += "M" + [pHandle.x, triggerY] + "L" + [pHandle.x, pHandle.y];
+              } else {
+                // Draw curve down from the main Link line
+                var _curveRightX2 = pHandle.x - this.config.linkCurveWidth;
+
+                _curveRightX2 = Math.max(_curveRightX2, textLeft + textLength);
+                d += "M" + [textLeft + textLength, triggerY] + "L" + [_curveRightX2, triggerY] + "C" + [pHandle.x, triggerY, pHandle.x, triggerY, pHandle.x, pHandle.y];
+              }
+            } else {
+              // Draw in Link line across the end of the first row, and all
+              // intervening rows
+              d += "M" + [textLeft + textLength, triggerY] + "L" + [triggerHandle.row.rw, triggerY];
+
+              for (var _i2 = triggerHandle.row.idx + 1; _i2 < handle.row.idx; _i2++) {
+                var _thisRow = this.main.rowManager.rows[_i2];
+
+                var _lineY = this.getLineYRow(_thisRow);
+
+                d += "M" + [0, _lineY] + "L" + [_thisRow.rw, _lineY];
+              } // Draw in the last row
+
+
+              var _curveRightX3 = pHandle.x - this.config.linkCurveWidth;
+
+              _curveRightX3 = Math.max(_curveRightX3, 0);
+
+              var _finalY = this.getLineYRow(handle.row);
+
+              d += "M" + [0, _finalY] + "L" + [_curveRightX3, _finalY] + "C" + [pHandle.x, _finalY, pHandle.x, _finalY, pHandle.x, pHandle.y];
+            }
+          } // Arrowheads
+          // Draw the flat trigger arrow
+
+
+          d += "M" + [pTrigger.x, pTrigger.y] + "m" + [this.config.linkArrowWidth, 0] + "l" + [-2 * this.config.linkArrowWidth, 0];
+          d += this.arrowhead(pHandle); // Move label
+
+          label.x(textCentre).y(textY);
+        }
+      } else if (this.trigger === "debug") {
+        var y = this.getLineY(this.handles[1]);
+        var rowCrossed = false;
+
+        for (var _i3 = 0, il = this.arguments.length; _i3 < il; ++_i3) {
+          var leftOfTrigger = this.arguments[_i3].anchor.idx < this.trigger.idx;
+          var dx = leftOfTrigger ? 5 : -5;
+          var textlen = leftOfTrigger ? this.svgTexts[_i3].length() : -this.svgTexts[_i3].length();
+          var handle1 = this.handles[_i3 + 1]; // draw a line from the prev arrow segment
+
+          if (_i3 > 0) {
+            // check if crossing over a row
+            if (rowCrossed) {
+              rowCrossed = false;
+              d += "L" + [width, y] + "M0,";
+              y = this.getLineY(handle1);
+              d += y;
+            }
+
+            if (leftOfTrigger) {
+              d += "L" + [handle1.x + dx, y];
+            } else {
+              d += "L" + [handle1.x + dx + textlen, y];
+            }
+          } else if (!leftOfTrigger) {
+            // start drawing from the trigger
+            y = this.getLineY(this.handles[0]);
+            d += "M" + [this.handles[0].x, this.handles[0].y] + "C" + [this.handles[0].x, y, this.handles[0].x, y, this.handles[0].x - dx, y]; // check if crossing over a row
+
+            if (this.handles[0].anchor.row.idx < this.handles[1].anchor.row.idx) {
+              d += "L" + [width, y] + "M0,";
+              y = this.getLineY(this.handles[1]);
+              d += y;
+            }
+
+            d += "L" + [this.handles[1].x + dx + textlen, y];
+          } // draw the text svg
+
+
+          this.svgTexts[_i3].x(handle1.x + dx + textlen / 2).y(y - 10); // draw an arrow at the handle
+
+
+          d += this.arrowhead(handle1);
+          var handlePrecedesTrigger = leftOfTrigger && (_i3 + 2 > il || this.arguments[_i3 + 1].anchor.idx >= this.trigger.idx); // check if crossing over a row
+
+          rowCrossed = handlePrecedesTrigger && this.handles[0].anchor.row.idx != handle1.anchor.row.idx || !handlePrecedesTrigger && _i3 + 1 < il && this.handles[_i3 + 2].anchor.row.idx != handle1.anchor.row.idx; // draw an arrow segment coming from each argument
+
+          if (handlePrecedesTrigger && rowCrossed) {
+            // if row is crossed
+            var tempY = this.getLineY(handle1);
+            y = this.getLineY(this.handles[0]);
+            d += "M" + [handle1.x, handle1.y] + "C" + [handle1.x, tempY, handle1.x, tempY, handle1.x + dx, tempY] + "m" + [textlen, 0] + "L" + [width, tempY] + "M" + [0, y];
+            rowCrossed = false;
+
+            this.svgTexts[_i3].y(tempY - 10);
+          } else {
+            d += "M" + [handle1.x, handle1.y] + "C" + [handle1.x, y, handle1.x, y, handle1.x + dx, y];
+
+            if (leftOfTrigger) {
+              d += "m" + [textlen, 0];
+            }
+          }
+
+          if (handlePrecedesTrigger) {
+            // draw trigger to the right of the arrow segment
+            if (_i3 + 1 < il) {
+              d += "L" + [this.handles[0].x - dx, y] + "c" + [dx, 0, dx, 0, dx, this.handles[0].y - y] + "m" + [dx, 0] + "l" + [-2 * dx, 0] + "m" + [dx, 0] + "C" + [this.handles[0].x, y, this.handles[0].x, y, this.handles[0].x + dx, y];
+              rowCrossed = this.handles[_i3 + 2].anchor.row.idx != this.handles[0].anchor.row.idx;
+            } else {
+              d += "L" + [this.handles[0].x - dx, y] + "c" + [dx, 0, dx, 0, dx, this.handles[0].y - y];
+            }
+          }
+        }
+      } else if (this.reltype) {
+        // This is a non-trigger (binary) relation
+        // Start/end points
+        var pStart = {
+          x: leftHandle.x,
+          y: this.top ? leftHandle.y - this.config.linkHandlePadding : leftHandle.y + this.config.linkHandlePadding
+        };
+        var pEnd = {
+          x: rightHandle.x,
+          y: this.top ? rightHandle.y - this.config.linkHandlePadding : rightHandle.y + this.config.linkHandlePadding
+        };
+
+        var _sameRow = leftHandle.row.idx === rightHandle.row.idx; // Width/position of the Link's label
+        // (Always on the first row for multi-line Links)
+
+
+        var _textLength = this.svgTexts[0].length();
+
+        var _textY = this.getLineYRow(leftHandle.row) - 10; // Centre on the segment of the Link line on the first row
+
+
+        var _textCentre = _sameRow ? (pStart.x + pEnd.x) / 2 : (pStart.x + leftHandle.row.rw) / 2;
+
+        var _textLeft = _textCentre - _textLength / 2; // Make sure it doesn't overshoot the right row boundary
+
+
+        if (_textLeft + _textLength > leftHandle.row.rw) {
+          _textLeft = leftHandle.row.rw - _textLength;
+          _textCentre = _textLeft + _textLength / 2;
+        } // Start preparing path string
+
+
+        d = "M" + [pStart.x, pStart.y]; // Left handle
+
+        var firstY = this.getLineYRow(leftHandle.row);
+
+        if (_textLeft < pStart.x) {
+          // Just draw a vertical line up to the label
+          d += "L" + [pStart.x, firstY];
+        } else {
+          // Draw curve up to the main Link line, then, go up to the label
+          var _curveLeftX2 = pStart.x + this.config.linkCurveWidth;
+
+          _curveLeftX2 = Math.min(_curveLeftX2, _textLeft);
+          d += "C" + [pStart.x, firstY, pStart.x, firstY, _curveLeftX2, firstY] + "L" + [_textLeft, firstY];
+        } // Right handle
+
+
+        if (_sameRow) {
+          if (_textLeft + _textLength > pEnd.x) {
+            // Just draw a vertical line down to the handle
+            d += "M" + [pEnd.x, firstY] + "L" + [pEnd.x, pEnd.y];
+          } else {
+            // Draw curve down from the main Link line
+            var _curveRightX4 = pEnd.x - this.config.linkCurveWidth;
+
+            _curveRightX4 = Math.max(_curveRightX4, _textLeft + _textLength);
+            d += "M" + [_textLeft + _textLength, firstY] + "L" + [_curveRightX4, firstY] + "C" + [pEnd.x, firstY, pEnd.x, firstY, pEnd.x, pEnd.y];
+          }
+        } else {
+          // Draw in Link line across the end of the first row, and all
+          // intervening rows
+          d += "M" + [_textLeft + _textLength, firstY] + "L" + [leftHandle.row.rw, firstY];
+
+          for (var _i4 = leftHandle.row.idx + 1; _i4 < rightHandle.row.idx; _i4++) {
+            var _thisRow2 = this.main.rowManager.rows[_i4];
+
+            var _lineY2 = this.getLineYRow(_thisRow2);
+
+            d += "M" + [0, _lineY2] + "L" + [_thisRow2.rw, _lineY2];
+          } // Draw in the last row
+
+
+          var _curveRightX5 = pEnd.x - this.config.linkCurveWidth;
+
+          _curveRightX5 = Math.max(_curveRightX5, 0);
+
+          var _finalY2 = this.getLineYRow(rightHandle.row);
+
+          d += "M" + [0, _finalY2] + "L" + [_curveRightX5, _finalY2] + "C" + [pEnd.x, _finalY2, pEnd.x, _finalY2, pEnd.x, pEnd.y];
+        } // Arrowheads
+
+
+        d += this.arrowhead(pStart) + this.arrowhead(pEnd); // Move label
+
+        this.svgTexts[0].x(_textCentre).y(_textY);
+      }
+
+      this.line.plot(d);
       this.links.forEach(function (l) {
         return l.draw(_this3);
       });
-    } // helper function to calculate line-height in draw()
+    }
+    /**
+     * Returns the y-coordinate of the Link line as drawn above the given handle.
+     * (As opposed to the y-coordinate of the handle itself, which is at the
+     * bottom of the relevant arrowhead)
+     *
+     * @param handle
+     * @return {number}
+     */
 
   }, {
     key: "getLineY",
-    value: function getY(handle) {
+    value: function getLineY(handle) {
       var r = handle.anchor.row;
       return this.top ? r.rh + r.ry - 45 - 15 * this.slot : r.rh + r.ry + 25 - 15 * this.slot;
-    } // helper function to return a path string for an arrowhead
+    }
+    /**
+     * Returns the y-position that this Link's main line will have if it were
+     * drawn in the given row (based on the Row's position, and this Link's slot)
+     * @param {Row} row
+     */
+
+  }, {
+    key: "getLineYRow",
+    value: function getLineYRow(row) {
+      return this.top ? row.rh + row.ry - 45 - 15 * this.slot : row.rh + row.ry + 25 - 15 * this.slot;
+    } // helper function to return a path string for an arrowhead pointing to
+    // the given point
 
   }, {
     key: "arrowhead",
-    value: function arrowhead(handle) {
-      var s = 4,
-          s2 = 6;
-      return this.top ? 'M' + [handle.x - s, handle.y - s] + 'l' + [s, s2] + 'l' + [s, -s2] : 'M' + [handle.x - s, handle.y + s] + 'l' + [s, -s2] + 'l' + [s, s2];
+    value: function arrowhead(point) {
+      var s = this.config.linkArrowWidth,
+          s2 = 5;
+      return this.top ? "M" + [point.x - s, point.y - s2] + "l" + [s, s2] + "l" + [s, -s2] : "M" + [point.x - s, point.y + s2] + "l" + [s, -s2] + "l" + [s, s2];
     }
   }, {
     key: "remove",
@@ -61991,9 +62484,8 @@ function () {
         if (i > -1) {
           anchor.links.splice(i, 1);
         }
-      }
+      } // remove references to link from all anchors
 
-      ; // remove references to link from all anchors
 
       if (this.trigger) {
         detachLink(this.trigger);
@@ -62080,9 +62572,9 @@ function () {
     value: function listenForEdit(e) {
       this.isEditing = true;
       var bbox = e.detail.text.bbox();
-      e.detail.text.addClass("tag-element").addClass('editing-text');
+      e.detail.text.addClass("tag-element").addClass("editing-text");
       this.editingText = e.detail.text;
-      this.editingRect = this.svg.rect(bbox.width + 8, bbox.height + 4).x(bbox.x - 4).y(bbox.y - 2).rx(2).ry(2).addClass("tag-element").addClass('editing-rect').back();
+      this.editingRect = this.svg.rect(bbox.width + 8, bbox.height + 4).x(bbox.x - 4).y(bbox.y - 2).rx(2).ry(2).addClass("tag-element").addClass("editing-rect").back();
     }
   }, {
     key: "text",
@@ -62099,7 +62591,7 @@ function () {
     key: "stopEditing",
     value: function stopEditing() {
       this.isEditing = false;
-      this.editingText.removeClass('editing-text');
+      this.editingText.removeClass("editing-text");
       this.editingRect.remove();
       this.editingRect = this.editingText = null;
       this.draw();
@@ -62137,6 +62629,80 @@ function () {
         }
       });
       return [minWord, maxWord];
+    }
+    /**
+     * Returns the total horizontal width of the Link, from the leftmost handle
+     * to the rightmost handle
+     */
+
+  }, {
+    key: "width",
+    get: function get() {
+      // Handles on the same row?
+      if (this.leftHandle.row === this.rightHandle.row) {
+        return this.rightHandle.x - this.leftHandle.x;
+      } // If not, calculate the width (including intervening rows)
+
+
+      var width = 0;
+      width += this.leftHandle.row.rw - this.leftHandle.x;
+
+      for (var i = this.leftHandle.row.idx + 1; i < this.rightHandle.row.idx; i++) {
+        width += this.main.rowManager.rows[i].rw;
+      }
+
+      width += this.rightHandle.x;
+      return width;
+    }
+    /**
+     * Returns the leftmost handle (smallest Row index, smallest x-position)
+     * in this Link
+     */
+
+  }, {
+    key: "leftHandle",
+    get: function get() {
+      return this.handles.reduce(function (prev, next) {
+        if (prev.precedes(next)) {
+          return prev;
+        } else {
+          return next;
+        }
+      }, this.handles[0]);
+    }
+    /**
+     * Returns the rightmost handle (largest Row index, largest x-position)
+     * in this Link
+     */
+
+  }, {
+    key: "rightHandle",
+    get: function get() {
+      return this.handles.reduce(function (prev, next) {
+        if (prev.precedes(next)) {
+          return next;
+        } else {
+          return prev;
+        }
+      }, this.handles[0]);
+    }
+    /**
+     * Returns the handle corresponding to the trigger for this Link, if one
+     * is defined
+     */
+
+  }, {
+    key: "triggerHandle",
+    get: function get() {
+      var _this5 = this;
+
+      if (!this.trigger) {
+        return null;
+      }
+
+      return this.handles.find(function (handle) {
+        return handle.anchor === _this5.trigger;
+      });
     }
   }, {
     key: "rootWord",
@@ -62189,7 +62755,7 @@ function () {
 
 module.exports = Link;
 
-},{"./tag.js":113,"./word.js":114,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"svg.draggable.js":101,"svg.js":102}],112:[function(require,module,exports){
+},{"./word-tag.js":113,"./word.js":114,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":78,"lodash":79}],112:[function(require,module,exports){
 "use strict";
 
 var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
@@ -62207,11 +62773,12 @@ var draggable = _interopRequireWildcard(require("svg.draggable.js"));
 var Row =
 /*#__PURE__*/
 function () {
-  function Row(svg) {
-    var idx = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-    var ry = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-    var rh = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 100;
+  function Row(svg, config) {
+    var idx = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    var ry = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+    var rh = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 120;
     (0, _classCallCheck2.default)(this, Row);
+    this.config = config;
     this.idx = idx;
     this.ry = ry; // row position from top
 
@@ -62229,92 +62796,217 @@ function () {
     this.wordGroup = null; // child group element
 
     if (svg) {
-      this.init(svg);
+      this.svgInit(svg);
     }
   }
+  /**
+   * Initialises the SVG elements related to this Row, and performs an
+   * initial draw of the baseline/resize line
+   * @param mainSvg - The main SVG document
+   */
+
 
   (0, _createClass2.default)(Row, [{
-    key: "init",
-    value: function init(svg) {
+    key: "svgInit",
+    value: function svgInit(mainSvg) {
       var _this = this;
 
-      this.svg = svg.group().transform({
-        y: this.ry
-      }).addClass("tag-element").addClass('row'); // group element to contain word elements
+      // All positions will be relative to the baseline for this Row
+      this.svg = mainSvg.group().transform({
+        y: this.baseline
+      }).addClass("tag-element").addClass("row"); // Group element to contain word elements
 
-      this.wordGroup = this.svg.group().y(this.rh); // set width
+      this.wordGroup = this.svg.group(); // Row width
 
-      this.rw = svg.width(); // add draggable rectangle
+      this.rw = mainSvg.width(); // Add draggable resize line
 
-      this.draggable = this.svg.line(0, 0, this.rw, 0).y(this.rh).addClass("tag-element").addClass('row-drag').draggable();
-      var row = this;
+      this.draggable = this.svg.line(0, 0, this.rw, 0).addClass("tag-element").addClass("row-drag").draggable();
       var y = 0;
-      this.draggable.on('dragstart', function (e) {
+      this.draggable.on("dragstart", function (e) {
         y = e.detail.p.y;
-      }).on('dragmove', function (e) {
+      }).on("dragmove", function (e) {
         e.preventDefault();
         var dy = e.detail.p.y - y;
         y = e.detail.p.y;
-        svg.fire('row-resize', {
+        mainSvg.fire("row-resize", {
           object: _this,
           y: dy
         });
       });
     }
+    /**
+     * Removes all elements related to this Row from the main SVG document
+     * @return {*}
+     */
+
   }, {
     key: "remove",
     value: function remove() {
       return this.svg.remove();
     }
+    /**
+     * Changes the y-position of this Row's upper bound by the given amount
+     * @param y
+     */
+
   }, {
     key: "dy",
     value: function dy(y) {
       this.ry += y;
       this.svg.transform({
-        y: this.ry
+        y: this.baseline
       });
     }
+    /**
+     * Moves this Row's upper bound vertically to the given y-position
+     * @param y
+     */
+
   }, {
     key: "move",
     value: function move(y) {
       this.ry = y;
       this.svg.transform({
-        y: this.ry
+        y: this.baseline
       });
     }
+    /**
+     * Sets the height of this Row
+     * @param rh
+     */
+
   }, {
     key: "height",
     value: function height(rh) {
       this.rh = rh;
-      this.wordGroup.y(this.rh);
-      this.draggable.y(this.rh);
+      this.svg.transform({
+        y: this.baseline
+      });
     }
+    /**
+     * Sets the width of this Row
+     * @param rw
+     */
+
   }, {
     key: "width",
     value: function width(rw) {
       this.rw = rw;
-      this.draggable.attr('x2', this.rw);
+      this.draggable.attr("x2", this.rw);
     }
+    /**
+     * Adds the given Word to this Row at the given index, adjusting the
+     * x-positions of any Words with higher indices.
+     * Optionally, attempts to force an x-position for the Word.
+     * If adding the Word to the Row causes any existing Words to overflow its
+     * bounds, will return the index of the first Word that no longer fits.
+     * @param word
+     * @param index
+     * @param forceX
+     * @return {number} - The index of the first Word that no longer fits, if
+     *     the additional Word causes overflow
+     */
+
   }, {
     key: "addWord",
-    value: function addWord(word, i, ignorePosition) {
-      if (isNaN(i)) {
-        i = this.words.length;
+    value: function addWord(word, index, forceX) {
+      if (isNaN(index)) {
+        index = this.words.length;
       }
 
       word.row = this;
-      this.words.splice(i, 0, word);
-      this.wordGroup.add(word.svg);
+      this.words.splice(index, 0, word);
+      this.wordGroup.add(word.svg); // Determine the new x-position this Word should have.
 
-      if (!ignorePosition) {
-        return this.moveWordRight(word);
+      word.x = -1;
+      var newX;
+
+      if (index === 0) {
+        newX = this.config.rowEdgePadding;
+      } else {
+        var prevWord = this.words[index - 1];
+        newX = prevWord.x + prevWord.boxWidth;
+
+        if (word.isPunct) {
+          newX += this.config.wordPunctPadding;
+        } else {
+          newX += this.config.wordPadding;
+        }
+      }
+
+      if (forceX) {
+        newX = forceX;
+      }
+
+      return this.positionWord(word, newX);
+    }
+    /**
+     * Assumes that the given Word is already on this Row.
+     * Tries to move the Word to the given x-position, adjusting the
+     * x-positions of all the following Words on the Row as well.
+     * If this ends up pushing some Words off the Row, returns the index of
+     * the first Word that no longer fits.
+     * @param word
+     * @param newX
+     * @return {number} - The index of the first Word that no longer fits, if
+     *     the additional Word causes overflow
+     */
+
+  }, {
+    key: "positionWord",
+    value: function positionWord(word, newX) {
+      var wordIndex = this.words.indexOf(word);
+      var prevWord = this.words[wordIndex - 1];
+      var nextWord = this.words[wordIndex + 1]; // By default, assume that no Words have overflowed the Row
+
+      var overflowIndex = this.words.length; // Make sure we aren't stomping over a previous Word
+
+      if (prevWord) {
+        var wordPadding = word.isPunct ? this.config.wordPunctPadding : this.config.wordPadding;
+
+        if (newX < prevWord.x + prevWord.boxWidth + wordPadding) {
+          throw "Trying to position new Word over existing one!\n        (Row: ".concat(this.idx, ", wordIndex: ").concat(wordIndex, ")");
+        }
+      } // Change the position of the next Word if we have to;
+
+
+      if (nextWord) {
+        var nextWordPadding = nextWord.isPunct ? this.config.wordPunctPadding : this.config.wordPadding;
+
+        if (nextWord.x - nextWordPadding < newX + word.boxWidth) {
+          overflowIndex = this.positionWord(nextWord, newX + word.boxWidth + nextWordPadding);
+        }
+      } // We have moved the next Word on the Row, or marked it as part of the
+      // overflow; at this point, we either have space to move this Word, or
+      // this Word itself is about to overflow the Row.
+
+
+      if (newX + word.boxWidth > this.rw - this.config.rowEdgePadding) {
+        // Alas.  The overflowIndex is ours.
+        return wordIndex;
+      } else {
+        // We can move.  If any of the Words that follow us overflowed, return
+        // their index.
+        word.move(newX);
+        return overflowIndex;
       }
     }
+    /**
+     * Assumes that the given Word is already on this Row.
+     * Tries to move the Word to the given x-position, adjusting the
+     * x-positions of all the following Words on the Row as well.
+     * If this ends up pushing some Words off the Row, returns the index of
+     * the first word that needs to be kicked down to the next Row.
+     * @param word
+     * @param x
+     * @return {number} [idx]
+     */
+
   }, {
-    key: "moveWordRight",
-    value: function moveWordRight(word, x) {
-      var EDGE_PADDING = 10;
-      var WORD_PADDING = 5;
+    key: "deprecateMoveWordRight",
+    value: function deprecateMoveWordRight(word, x) {
+      var EDGE_PADDING = this.config.rowEdgePadding;
+      var WORD_PADDING = this.config.wordPadding;
       var i = this.words.indexOf(word);
       var prevWord = this.words[i - 1];
 
@@ -62340,7 +63032,7 @@ function () {
 
         if (_word.x > dx) {
           // prevWord fits in space before next word; return
-          return;
+          return this.words.length;
         } // move next word over
 
 
@@ -62375,6 +63067,47 @@ function () {
       this.wordGroup.removeElement(word.svg);
       return word;
     }
+    /**
+     * Returns true if the given point is within the bounds of this row
+     * @param x
+     * @param y
+     */
+
+  }, {
+    key: "contains",
+    value: function contains(x, y) {
+      return x <= this.rw && y >= this.ry && y <= this.ry2;
+    }
+    /**
+     * Gets the y-position of the Row's baseline (where the draggable resize
+     * line is, and the baseline for all the Row's words)
+     */
+
+  }, {
+    key: "drawBbox",
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Debug functions
+
+    /**
+     * Draws the outline of this component's bounding box
+     */
+    value: function drawBbox() {
+      var bbox = this.svg.bbox();
+      this.svg.polyline([[bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2], [bbox.x, bbox.y]]).fill("none").stroke({
+        width: 1
+      });
+    }
+  }, {
+    key: "baseline",
+    get: function get() {
+      return this.ry + this.rh;
+    }
+    /**
+     * Returns the lower bound of the Row on the y-axis, excluding padding
+     * (this.minSlot can be negative in the current implementation?)
+     * @return {number}
+     */
+
   }, {
     key: "ry2",
     get: function get() {
@@ -62384,6 +63117,21 @@ function () {
     key: "minHeight",
     get: function get() {
       return 60 + this.maxSlot * 15;
+    }
+    /**
+     * Returns the amount of space available at the end of this Row for adding
+     * new Words
+     */
+
+  }, {
+    key: "availableSpace",
+    get: function get() {
+      if (this.words.length === 0) {
+        return this.rw - this.config.rowEdgePadding * 2;
+      }
+
+      var lastWord = this.words[this.words.length - 1];
+      return this.rw - this.config.rowEdgePadding - lastWord.x - lastWord.boxWidth;
     }
   }]);
   return Row;
@@ -62403,69 +63151,139 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/creat
 /**
  * Tags for single entities/tokens
  *
- *   Word -> [WordTag] / WordCluster -> Row
+ *   [WordTag] / WordCluster -> Word -> Row
  */
 var WordTag =
 /*#__PURE__*/
 function () {
-  function WordTag(val, word) {
-    var _this = this;
-
-    var above = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  /**
+   * Creates a new WordTag instance
+   * @param {String} val - The raw text for this WordTag
+   * @param {Word} word - The parent Word for this WordTag
+   * @param {Config} config - The Config object for the parent TAG instance
+   * @param {Boolean} top - True if this WordTag should be drawn above the
+   *     parent Word, false if it should be drawn below
+   */
+  function WordTag(val, word, config) {
+    var top = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
     (0, _classCallCheck2.default)(this, WordTag);
     this.val = val;
-    this.entity = word;
-    this.position = above;
+    this.word = word;
+    this.config = config;
+    this.top = top;
 
     if (!word.svg) {
-      console.log("error: word must have an svg element");
-      return;
+      throw "Error: Trying to initialise WordTag on Word without SVG" + " element";
     }
 
-    this.svg = word.svg.group().y(this.tagOffset);
-    this.svgText = this.svg.text(this.val).addClass("tag-element").addClass(above ? 'word-tag' : 'word-tag syntax-tag');
-    this.ww = this.svgText.length(); // add click and right-click listeners
-
-    var svg = word.mainSVG;
-
-    this.svgText.node.oncontextmenu = function (e) {
-      e.preventDefault();
-      svg.fire('tag-right-click', {
-        object: _this,
-        event: e
-      });
-    };
-
-    this.svgText.click(function (e) {
-      return svg.fire('tag-edit', {
-        object: _this
-      });
-    });
-    this.line = this.svg.path();
-    this.updateWordWidth();
+    this.draw();
   }
+  /**
+   * (Re-)draws this WordTag's SVG elements onto the visualisation
+   */
+
 
   (0, _createClass2.default)(WordTag, [{
+    key: "draw",
+    value: function draw() {
+      var _this = this;
+
+      if (this.svg) {
+        // Delete remnants of any previous draw
+        this.remove();
+      } // Prepare our SVG elements as a group within the Word's SVG element
+
+
+      this.svg = this.word.svg.group(); // Draw in the SVG text element.
+      // Note that applying classes to the text element may change its font
+      // size, and if its font size changes, the anchor point for the resizing
+      // is the text's baseline (not any of the bounding box sides).
+      // N.B.: Typographical baselines ignore descenders
+
+      this.svgText = this.svg.text(this.val).addClass("tag-element").addClass(this.top ? "word-tag" : "word-tag syntax-tag").leading(1); // Centre the WordTag horizontally
+      // (SVG text elements are positioned by their centres)
+
+      this.svgText.x(this.word.svgText.x()); // Position this WordTag above/below the main Word
+      // (It starts with its upper-left corner on the Row's main line)
+
+      var newY;
+
+      if (this.top) {
+        newY = -this.word.svgText.bbox().height - this.svgText.bbox().height - this.config.wordTopTagPadding;
+      } else {
+        newY = this.config.wordBottomTagPadding;
+      }
+
+      this.svgText.y(newY);
+      this.ww = this.svgText.length(); // add click and right-click listeners
+
+      var mainSvg = this.word.mainSvg;
+
+      this.svgText.node.oncontextmenu = function (e) {
+        e.preventDefault();
+        mainSvg.fire("tag-right-click", {
+          object: _this,
+          event: e
+        });
+      };
+
+      this.svgText.click(function (e) {
+        return mainSvg.fire("tag-edit", {
+          object: _this
+        });
+      }); // Draws a line / curly bracket between the Word and this WordTag, if
+      // it's a top tag
+
+      this.line = this.svg.path();
+      this.drawTagLine();
+    }
+    /**
+     * Removes this WordTag's SVG elements from the visualisation
+     * If this instance is not deleted, it can be redrawn with the `.draw()`
+     * method
+     * @return {*}
+     */
+
+  }, {
     key: "remove",
     value: function remove() {
-      this.entity.tag = null;
-      this.entity.calculateBox();
-      return this.svg.remove();
+      this.svg.remove();
+      this.svg = null;
     }
-  }, {
-    key: "updateWordWidth",
-    value: function updateWordWidth() {
-      if (this.position) {
-        var ww = this.entity.ww;
+    /**
+     * Draws a connecting line between this WordTag and its parent Word, if
+     * this is a top WordTag.
+     */
 
-        if (this.entity.val.length < 9) {
-          this.line.plot('M0,25,l0,8');
-        } else {
-          var diff = ww / 2;
-          this.line.plot('M0,25,c0,8,' + [diff, 0, diff, 8] + ',M0,25,c0,8,' + [-diff, 0, -diff, 8]);
-        }
+  }, {
+    key: "drawTagLine",
+    value: function drawTagLine() {
+      if (!this.top) {
+        return;
       }
+
+      var wordWidth = this.word.textWidth;
+
+      if (wordWidth < this.config.wordBraceThreshold) {
+        // Draw a single vertical line
+        this.line.plot("M 0,0, 0," + this.config.wordTagLineLength);
+      } else {
+        // Draw a curly brace
+        var height = this.config.wordTagLineLength;
+        var arm = wordWidth / 2;
+        this.line.plot("M0,0" + "c" + [0, height, arm, 0, arm, height] + "M0,0" + "c" + [0, height, -arm, 0, -arm, height]);
+      } // Centre the line between the Word and WordTag
+
+
+      this.line.cx(this.svgText.cx());
+      this.line.cy((this.svgText.bbox().y2 + this.word.svgText.bbox().y) / 2);
     }
+    /**
+     * Sets the text of this WordTag, or returns this WordTag's SVG text element
+     * @param val
+     * @return {*}
+     */
+
   }, {
     key: "text",
     value: function text(val) {
@@ -62487,30 +63305,44 @@ function () {
         }
       }
     }
+    /**
+     * Returns the width of the bounding box for this WordTag
+     */
+
+  }, {
+    key: "boxWidth",
+    value: function boxWidth() {
+      return this.svg.bbox().width;
+    }
+    /**
+     * Returns the width of the bounding box of the WordTag's SVG text element
+     * @return {Number}
+     */
+
   }, {
     key: "changeEntity",
     value: function changeEntity(word) {
-      if (this.entity) {
-        this.entity.tag = null;
+      if (this.word) {
+        this.word.tag = null;
       }
 
-      this.entity = word;
-      this.entity.tag = this;
-      this.entity.svg.add(this.svg);
+      this.word = word;
+      this.word.tag = this;
+      this.word.svg.add(this.svg);
     }
   }, {
     key: "listenForEdit",
     value: function listenForEdit() {
       this.isEditing = true;
       var bbox = this.svgText.bbox();
-      this.svg.addClass("tag-element").addClass('editing');
+      this.svg.addClass("tag-element").addClass("editing");
       this.editingRect = this.svg.rect(bbox.width + 8, bbox.height + 4).x(bbox.x - 4).y(bbox.y - 2).rx(2).ry(2).back();
     }
   }, {
     key: "stopEditing",
     value: function stopEditing() {
       this.isEditing = false;
-      this.svg.removeClass('editing');
+      this.svg.removeClass("editing");
       this.editingRect.remove();
       this.editingRect = null;
       this.val = this.val.trim();
@@ -62518,13 +63350,39 @@ function () {
       if (!this.val) {
         this.remove();
       } else {
-        this.entity.calculateBox();
+        this.word.alignBox();
       }
+    } // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Debug functions
+
+    /**
+     * Draws the outline of this component's bounding box
+     */
+
+  }, {
+    key: "drawBbox",
+    value: function drawBbox() {
+      var bbox = this.svg.bbox();
+      this.svg.polyline([[bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2], [bbox.x, bbox.y]]).fill("none").stroke({
+        width: 1
+      });
+    }
+    /**
+     * Draws the outline of the text element's bounding box
+     */
+
+  }, {
+    key: "drawTextBbox",
+    value: function drawTextBbox() {
+      var bbox = this.svgText.bbox();
+      this.svg.polyline([[bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2], [bbox.x, bbox.y]]).fill("none").stroke({
+        width: 1
+      });
     }
   }, {
-    key: "tagOffset",
+    key: "textWidth",
     get: function get() {
-      return this.position ? -28 : 20;
+      return this.svgText.bbox().width;
     }
   }]);
   return WordTag;
@@ -62543,43 +63401,78 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _tag = _interopRequireDefault(require("./tag.js"));
+var _wordTag = _interopRequireDefault(require("./word-tag.js"));
 
 var SVG = _interopRequireWildcard(require("svg.js"));
 
 var draggable = _interopRequireWildcard(require("svg.draggable.js"));
 
 /**
- * Raw entity/token strings
+ * Objects representing raw entity/token strings.
  *
- *   [Word] -> WordTag / WordCluster -> Row
+ * The SVG elements for the Word and any attendant WordTags are positioned
+ * within an SVG group such that the bounding box of the Word always has an
+ * x-value of 0.  In addition, a y-value of 0 within the bounding box
+ * corresponds to the bottom of the Word's text element (between the Word
+ * and a bottom WordTag, if one is present).
+ *
+ * Actual positioning of this Word's SVG elements is then achieved by
+ * applying an x-transformation to the SVG group as a whole.
+ *
+ *   WordTag / WordCluster -> [Word] -> Row
  */
 var Word =
 /*#__PURE__*/
 function () {
-  function Word(val, idx, tag, svg, row) {
+  /**
+   * Creates a new Word instance
+   * @param {String} text - The raw text for this Word
+   * @param {Number} idx - The index of this Word within the
+   *     currently-parsed document
+   */
+  function Word(text, idx) {
     (0, _classCallCheck2.default)(this, Word);
+    this.text = text;
+    this.idx = idx; // Optional properties that may be set later
+    // -----------------------------------------
+
     this.eventIds = [];
-    this.val = val;
-    this.idx = idx;
+    this.syntaxId = "";
+    this.tagText = "";
+    this.syntaxTagText = ""; // Backreferences that will be set when this Word is used in
+    // other structures
+    // ---------------------------------------------------------
+    // WordTag
+
+    this.tag = null;
+    this.syntaxTag = null; // WordCluster
+
+    this.clusters = []; // Link
+
+    this.links = []; // Row
+
+    this.row = null; // SVG-related properties
+    // ----------------------
+
+    this.initialised = null; // Main SVG object (for firing events, etc.)
+
+    this.mainSvg = null; // Main Config object for the parent instance
+
+    this.config = null; // SVG group containing this Word and its attendant WordTags
+
+    this.svg = null; // The x-position of the left bound of the Word's box
+
     this.x = 0;
-    this.slot = 0;
     this.boxWidth = 0;
     this.boxHeight = 0;
     this.descendHeight = 0;
-    this.isPunct = val.length === 1 && val.charCodeAt(0) < 65; // FIXME: doesn't handle fancier unicode punct | should exclude left-punctuation e.g. left-paren or left-quote
-
-    this.clusters = [];
-    this.links = [];
-
-    if (tag) {
-      this.setTag(tag);
-    }
-
-    if (svg) {
-      this.init(svg, row);
-    }
   }
+  /**
+   * Any event IDs (essentially arbitrary labels) that this Word is
+   * associated with
+   * @param id
+   */
+
 
   (0, _createClass2.default)(Word, [{
     key: "addEventId",
@@ -62588,114 +63481,125 @@ function () {
         this.eventIds.push(id);
       }
     }
+    /**
+     * The syntax ID (essentially an arbitrary label) that this Word is
+     * associated with
+     * @param id
+     */
+
   }, {
     key: "setSyntaxId",
     value: function setSyntaxId(id) {
       this.syntaxId = id;
     }
+    /**
+     * Sets the main tag text for this Word, redrawing it if it is initialised
+     * @param {String} tag
+     * @return {null}
+     */
+
   }, {
     key: "setTag",
     value: function setTag(tag) {
-      if (this.svg) {
-        if (tag instanceof _tag.default) {
-          this.tag = tag;
-        } else if (this.tag instanceof _tag.default) {
-          this.tag.text(tag);
-        } else {
-          this.tag = new _tag.default(tag, this);
+      this.tagText = tag;
+
+      if (this.initialised) {
+        if (this.tag instanceof _wordTag.default) {
+          this.tag.remove();
         }
 
-        this.calculateBox();
-      } else {
-        this.tag = tag;
+        this.tag = new _wordTag.default(tag, this, this.config);
+        this.tag.draw();
       }
-
-      return this.tag;
     }
+    /**
+     * Sets the syntax tag text for this Word, redrawing it if it is initialised
+     * @param {String} tag
+     * @return {null}
+     */
+
   }, {
     key: "setSyntaxTag",
     value: function setSyntaxTag(tag) {
-      if (this.svg) {
-        if (tag instanceof _tag.default) {
-          this.syntaxTag = tag;
-        } else if (this.syntaxTag instanceof _tag.default) {
-          this.syntaxTag.text(tag);
-        } else {
-          this.tag = new _tag.default(tag, this, false);
+      this.syntaxTagText = tag;
+
+      if (this.initialised) {
+        if (this.syntaxTag instanceof _wordTag.default) {
+          this.syntaxTag.remove();
         }
 
-        this.calculateBox();
-      } else {
-        this.syntaxTag = tag;
+        this.syntaxTag = new _wordTag.default(tag, this, this.config, false);
+        this.syntaxTag.draw();
       }
-
-      return this.syntaxTag;
     }
+    /**
+     * Initialises the SVG elements related to this Word, and performs an
+     * initial draw of it and its WordTags.
+     * The Word will be drawn in the top left corner of the canvas, but will
+     * be properly positioned when added to a Row.
+     * @param mainSvg - The main SVG document for the current TAG instance
+     * @param config - The Config object for the instance
+     */
+
   }, {
     key: "init",
-    value: function init(svg) {
+    value: function init(mainSvg, config) {
       var _this = this;
 
-      this.mainSVG = svg;
-      this.svg = svg.group().addClass("tag-element").addClass('word'); // draw text
+      this.mainSvg = mainSvg;
+      this.config = config;
+      this.svg = mainSvg.group().addClass("tag-element").addClass("word"); // Draw main word text.  We remove the default additional leading
+      // (basically vertical line-height padding) so that we can position it
+      // more precisely.
 
-      this.svgText = this.svg.text(this.val).addClass("tag-element").addClass('word-text'); // draw tag
+      this.svgText = this.svg.text(this.text).addClass("tag-element").addClass("word-text").leading(1); // The positioning anchor for the text element is its centre, so we need
+      // to translate the entire Word rightward by half its width
 
-      if (this.tag && !(this.tag instanceof _tag.default)) {
-        this.tag = new _tag.default(this.tag, this);
+      this.svgText.x(this.svgText.bbox().width / 2); // In addition, the x/y-position points at the upper-left corner of the
+      // Word's bounding box, but since we are working relative to the Row's
+      // main line, we need to move the Word upwards so that the lower-left
+      // corner meets the Row.
+
+      this.svgText.y(-this.svgText.bbox().height); // Draw in this Word's tags
+
+      if (this.tagText && !(this.tag instanceof _wordTag.default)) {
+        this.tag = new _wordTag.default(this.tagText, this, this.config); // Debug
+
+        this.syntaxTag = new _wordTag.default("TestLongTag", this, this.config, false);
       }
 
-      if (this.syntaxTag && !(this.syntaxTag instanceof _tag.default)) {
-        this.syntaxTag = new _tag.default(this.syntaxTag, this, false);
-      } // draw cluster info
+      if (this.syntaxTagText && !(this.syntaxTag instanceof _wordTag.default)) {
+        this.syntaxTag = new _wordTag.default(this.syntaxTagText, this, this.config, false);
+      } // Draw cluster info
 
 
       this.clusters.forEach(function (cluster) {
         cluster.init(_this);
-      }); // translate over by half (since the text is centered)
-
-      this.calculateBox();
-      this.svg.y(-this.svgText.bbox().y2); // attach drag listeners
-
-      var x = 0;
-      var mousemove = false;
-      this.svgText.draggable().on('dragstart', function (e) {
-        mousemove = false;
-        x = e.detail.p.x;
-        svg.fire('word-move-start');
-      }).on('dragmove', function (e) {
-        e.preventDefault();
-        var dx = e.detail.p.x - x;
-        x = e.detail.p.x;
-        svg.fire('word-move', {
-          object: _this,
-          x: dx
-        });
-
-        if (dx !== 0) {
-          mousemove = true;
-        }
-      }).on('dragend', function (e) {
-        svg.fire('word-move-end', {
-          object: _this,
-          clicked: mousemove === false
-        });
-      }); // attach right click listener
-
-      this.svgText.dblclick(function (e) {
-        return svg.fire('build-tree', {
-          object: _this,
-          event: e
-        });
       });
-
-      this.svgText.node.oncontextmenu = function (e) {
-        e.preventDefault();
-        svg.fire('word-right-click', {
-          object: _this,
-          event: e
-        });
-      };
+      this.alignBox(); // // attach drag listeners
+      // let x = 0;
+      // let mousemove = false;
+      // this.svgText.draggable()
+      //   .on("dragstart", function (e) {
+      //     mousemove = false;
+      //     x = e.detail.p.x;
+      //     svg.fire("word-move-start");
+      //   })
+      //   .on("dragmove", (e) => {
+      //     e.preventDefault();
+      //     let dx = e.detail.p.x - x;
+      //     x = e.detail.p.x;
+      //     svg.fire("word-move", {object: this, x: dx});
+      //     if (dx !== 0) {
+      //       mousemove = true;
+      //     }
+      //   })
+      //   .on("dragend", (e) => {
+      //     svg.fire("word-move-end", {object: this, clicked: mousemove ===
+      // false}); });  // attach right click listener this.svgText.dblclick((e)
+      // => svg.fire("build-tree", { object: this, event: e }));
+      // this.svgText.node.oncontextmenu = (e) => { e.preventDefault();
+      // svg.fire("word-right-click", {object: this, event: e}); };
     }
   }, {
     key: "redrawLinks",
@@ -62718,62 +63622,184 @@ function () {
         }
       });
     }
+    /**
+     * Sets the base x-position of this Word and its attendant SVG elements
+     * (including its WordTags)
+     * @param x
+     */
+
   }, {
     key: "move",
     value: function move(x) {
       this.x = x;
       this.svg.transform({
-        x: this.boxWidth / 2 + this.x
+        x: this.x
       });
       this.redrawLinks();
     }
+    /**
+     * Moves the base x-position of this Word and its attendant SVG elements
+     * by the given amount
+     * @param x
+     */
+
   }, {
     key: "dx",
     value: function dx(x) {
       this.move(this.x + x);
     }
-  }, {
-    key: "calculateBox",
-    value: function calculateBox() {
-      var minWidth = this.tag instanceof _tag.default ? Math.max(this.tag.ww, this.ww) : this.ww; // if (this.syntaxTag instanceof WordTag && this.syntaxTag.ww > minWidth) { minWidth = this.syntaxTag.ww; }
+    /**
+     * Aligns the elements of this Word and any attendant WordTags such that
+     * the entire Word's bounding box has an x-value of 0, and an x2-value
+     * equal to its width
+     */
 
-      var diff = this.boxWidth - minWidth;
-      this.boxWidth -= diff;
-      this.descendHeight = this.syntaxTag instanceof _tag.default ? this.syntaxTag.svgText.bbox().height : 0;
-      this.boxHeight = this.svg.bbox().height - this.descendHeight;
-      this.dx(diff / 2);
-      this.mainSVG.fire('word-move', {
-        object: this,
-        x: 0
+  }, {
+    key: "alignBox",
+    value: function alignBox() {
+      // Generally, we will only need to move things around if the WordTags
+      // are wider than the Word, which gives the Word's bounding box a
+      // negative x-value.
+      var diff = -this.svg.bbox().x; // We can't apply the `.x()` translation directly to this Word's SVG
+      // group, or it will simply set a transformation on the group (leaving
+      // the bounding box unchanged).  We need to move all its children instead.
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this.svg.children()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var child = _step.value;
+          child.dx(diff);
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return != null) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    }
+    /**
+     * Returns the width of the bounding box for this Word and its WordTags
+     * @return {Number}
+     */
+
+  }, {
+    key: "drawBbox",
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Debug functions
+
+    /**
+     * Draws the outline of this component's bounding box
+     */
+    value: function drawBbox() {
+      var bbox = this.svg.bbox();
+      this.svg.polyline([[bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2], [bbox.x, bbox.y]]).fill("none").stroke({
+        width: 1
+      });
+    }
+    /**
+     * Draws the outline of the text element's bounding box
+     */
+
+  }, {
+    key: "drawTextBbox",
+    value: function drawTextBbox() {
+      var bbox = this.svgText.bbox();
+      this.svg.polyline([[bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2], [bbox.x, bbox.y]]).fill("none").stroke({
+        width: 1
       });
     }
   }, {
-    key: "moveToRow",
-    value: function moveToRow(row, i) {
-      var ignorePosition = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-      this.row.removeWord(this);
-      row.addWord(this, i, ignorePosition);
-    }
-  }, {
-    key: "absoluteDescent",
+    key: "boxWidth",
     get: function get() {
-      return this.row ? this.row.ry + this.row.rh + this.descendHeight + 8 : 0;
+      return this.svg.bbox().width;
     }
+    /**
+     * Returns the extent of the bounding box for this Word above the Row's line
+     * @return {Number}
+     */
+
+  }, {
+    key: "boxHeight",
+    get: function get() {
+      // Since the Word's box is relative to the Row's line to begin with,
+      // this is simply the negative of the y-value of the box
+      return -this.svg.bbox().y;
+    }
+    /**
+     * Returns the extent of the bounding box for this Word below the Row's line
+     * @return {Number}
+     */
+
+  }, {
+    key: "descendHeight",
+    get: function get() {
+      // Since the Word's box is relative to the Row's line to begin with,
+      // this is simply the y2-value of the box
+      return this.svg.bbox().y2;
+    }
+    /**
+     * Returns the absolute y-position of the top of this Word's bounding box
+     * @return {Number}
+     */
+
   }, {
     key: "absoluteY",
     get: function get() {
-      // console.log(this.svgText.bbox().height);
-      return this.row ? this.row.ry + this.row.rh - this.boxHeight : 0;
+      return this.row ? this.row.ry + this.row.rh - this.boxHeight : this.boxHeight;
     }
+    /**
+     * Returns the absolute y-position of the bottom of this Word's bounding box
+     * @return {Number}
+     */
+
+  }, {
+    key: "absoluteDescent",
+    get: function get() {
+      return this.row ? this.row.ry + this.row.rh + this.descendHeight : this.descendHeight;
+    }
+    /**
+     * Returns the x-position of the centre of this Word's box
+     * @return {Number}
+     */
+
   }, {
     key: "cx",
     get: function get() {
       return this.x + this.boxWidth / 2;
     }
+    /**
+     * Returns the width of the bounding box of the Word's SVG text element
+     * @return {Number}
+     */
+
   }, {
-    key: "ww",
+    key: "textWidth",
     get: function get() {
-      return this.svgText.length();
+      return this.svgText.bbox().width;
+    }
+    /**
+     * Returns true if this Word contains a single punctuation character
+     *
+     * FIXME: doesn't handle fancier unicode punct | should exclude
+     * left-punctuation e.g. left-paren or left-quote
+     * @return {Boolean}
+     */
+
+  }, {
+    key: "isPunct",
+    get: function get() {
+      return this.text.length === 1 && this.text.charCodeAt(0) < 65;
     }
   }]);
   return Word;
@@ -62781,7 +63807,7 @@ function () {
 
 module.exports = Word;
 
-},{"./tag.js":113,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"svg.draggable.js":101,"svg.js":102}],115:[function(require,module,exports){
+},{"./word-tag.js":113,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"svg.draggable.js":101,"svg.js":102}],115:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -63650,12 +64676,18 @@ function () {
   /**
    * Instantiate a RowManager for some TAG instance
    * @param svg - The svg.js API object for the current TAG instance
+   * @param config - The Config object for the instance
    */
-  function RowManager(svg) {
+  function RowManager(svg, config) {
     (0, _classCallCheck2.default)(this, RowManager);
+    this.config = config;
     this._svg = svg;
     this._rows = [];
   }
+  /**
+   * Resizes all the Rows in the visualisation
+   */
+
 
   (0, _createClass2.default)(RowManager, [{
     key: "resizeAll",
@@ -63669,7 +64701,10 @@ function () {
       });
 
       this.resizeRow(0);
-    } // Resizes *all* rows starting from the one with index `i`
+    }
+    /**
+     * Resizes *all* rows starting from the one with index `i`
+     */
 
   }, {
     key: "resizeRow",
@@ -63704,24 +64739,33 @@ function () {
 
       this._svg.height(this.lastRow.ry2 + ROW_PADDING + 20);
     }
+    /**
+     * Sets the width of all the Rows in the visualisation
+     * @param {Number} rw - The new Row width
+     */
+
   }, {
     key: "width",
     value: function width(rw) {
       var _this2 = this;
 
       this._rows.forEach(function (row) {
-        row.width(rw);
+        row.width(rw); // Find any Words that no longer fit on the Row
+
         var i = row.words.findIndex(function (w) {
-          return w.x > rw;
+          return w.x + w.boxWidth > rw - _this2.config.rowEdgePadding;
         });
 
         if (i > 0) {
-          _this2.moveWordOnRow(row.words[i - 1], 0);
+          while (i < row.words.length) {
+            _this2.moveWordDownARow(row.idx);
+          }
         } else {
+          // Redraw Words/Links that might have changed
           row.words.forEach(function (word) {
             word.links.forEach(function (l) {
               if (l.endpoints[1].row !== l.endpoints[0].row) {
-                l.draw(this);
+                l.draw(word);
               }
             });
             word.redrawClusters();
@@ -63730,14 +64774,15 @@ function () {
       });
     }
     /**
-     * add a new row to the bottom of the svg and resize to match
+     * Adds a new Row to the bottom of the svg and sets the height of the main
+     * document to match
      */
 
   }, {
     key: "appendRow",
     value: function appendRow() {
       var lr = this.lastRow;
-      var row = !lr ? new _row.default(this._svg) : new _row.default(this._svg, lr.idx + 1, lr.ry2 + ROW_PADDING);
+      var row = !lr ? new _row.default(this._svg, this.config) : new _row.default(this._svg, this.config, lr.idx + 1, lr.ry2 + ROW_PADDING);
 
       this._rows.push(row);
 
@@ -63758,9 +64803,19 @@ function () {
         this._svg.height(this.lastRow.ry2 + ROW_PADDING + 20);
       }
     }
+    /**
+     * Adds the given Word to the given Row at the given index.
+     * Optionally attempts to force an x-position for the Word, which will also
+     * adjust the x-positions of any Words with higher indices on this Row.
+     * @param word
+     * @param row
+     * @param i
+     * @param forceX
+     */
+
   }, {
     key: "addWordToRow",
-    value: function addWordToRow(word, row, i, ignorePosition) {
+    value: function addWordToRow(word, row, i, forceX) {
       if (isNaN(i)) {
         i = row.words.length;
       } // get word slots
@@ -63784,7 +64839,7 @@ function () {
         this.resizeRow(row.idx);
       }
 
-      var overflow = row.addWord(word, i, ignorePosition);
+      var overflow = row.addWord(word, i, forceX);
 
       while (overflow < row.words.length) {
         this.moveWordDownARow(row.idx);
@@ -63800,134 +64855,181 @@ function () {
       }
 
       if (dx >= 0) {
-        this.moveWordRight(row, dx, word);
+        this.moveWordRight({
+          row: row,
+          wordIndex: row.words.indexOf(word),
+          dx: dx
+        });
       } else if (dx < 0) {
-        this.moveWordLeft(row, -dx, row.words.indexOf(word));
+        // this.moveWordLeft(row, -dx, row.words.indexOf(word));
+        dx = -dx;
+        this.moveWordLeft({
+          row: row,
+          wordIndex: row.words.indexOf(word),
+          dx: dx
+        });
       }
     }
     /**
-     * recursive function that moves word right and, if it runs out
-     * of space, moves all other words right or to the next row as needed
+     * Recursively attempts to move the Word at the given index on the given
+     * Row rightwards. If it runs out of space, moves all other Words right or
+     * to the next Row as needed.
+     * @param {Row} params.row
+     * @param {Number} params.wordIndex
+     * @param {Number} params.dx - A positive number specifying how far to the
+     *     right we should move the Word
      */
 
   }, {
     key: "moveWordRight",
-    value: function moveWordRight(row, dx, word) {
-      var overflow = row.moveWordRight(word, dx + word.x);
+    value: function moveWordRight(params) {
+      var row = params.row;
+      var wordIndex = params.wordIndex;
+      var dx = params.dx;
+      var word = row.words[wordIndex];
+      var nextWord = row.words[wordIndex + 1]; // First, check if we have space available directly next to this word.
 
-      while (overflow < row.words.length) {
+      var rightEdge;
+
+      if (nextWord) {
+        rightEdge = nextWord.x;
+        rightEdge -= nextWord.isPunct ? this.config.wordPunctPadding : this.config.wordPadding;
+      } else {
+        rightEdge = row.rw - this.config.rowEdgePadding;
+      }
+
+      var space = rightEdge - (word.x + word.boxWidth);
+
+      if (dx <= space) {
+        word.dx(dx);
+        return;
+      } // No space directly available; recursively move the following Words.
+
+
+      if (!nextWord) {
+        // Last word on this row
         this.moveWordDownARow(row.idx);
+      } else {
+        this.moveWordRight({
+          row: row,
+          wordIndex: wordIndex + 1,
+          dx: dx
+        });
+        word.dx(dx);
       }
     }
     /**
-     * recursive function that checks for room to move word left and, if
-     * there is space, performs the transformation in the tail
+     * Recursively attempts to move the Word at the given index on the given
+     * Row leftwards. If it runs out of space, tries to move preceding Words
+     * leftwards or to the previous Row as needed.
+     * @param {Row} params.row
+     * @param {Number} params.wordIndex
+     * @param {Number} params.dx - A positive number specifying how far to the
+     *     left we should try to move the Word
+     * @return {Boolean} True if the Word was successfully moved
      */
 
   }, {
     key: "moveWordLeft",
-    value: function moveWordLeft(row, dx, i, overflow) {
-      if (!row) {
-        return false;
-      }
+    value: function moveWordLeft(params) {
+      var row = params.row;
+      var wordIndex = params.wordIndex;
+      var dx = params.dx;
+      var word = row.words[wordIndex];
+      var prevWord = row.words[wordIndex - 1];
+      var leftPadding = word.isPunct ? this.config.wordPunctPadding : this.config.wordPadding; // First, check if we have space available directly next to this word.
 
-      var EDGE_PADDING = 10;
-      var WORD_PADDING = 5;
-      var fitsOnRow = true; // recursive flag
-      // position to place words[i]
+      var space = word.x;
 
-      var x; // remaining space to move words into
-
-      var j = i; // index at which words overflow to next row
-
-      var finalRow; // flag if recursion ends inside this call
-
-      var words = overflow ? row.words.concat(overflow) : row.words;
-
-      if (overflow || !words[i]) {
-        x = row.rw - EDGE_PADDING;
-        j = i = words.length - 1;
-        var lastWord = row.words[row.words.length - 1];
-        dx = (lastWord ? lastWord.x + lastWord.boxWidth : 0) - x;
+      if (prevWord) {
+        space -= prevWord.x + prevWord.boxWidth + leftPadding;
       } else {
-        x = words[i].x + words[i].boxWidth - dx;
+        space -= this.config.rowEdgePadding;
       }
 
-      while (j >= 0) {
-        var wordToCheck = words[j];
-        x -= words[j].boxWidth;
-
-        if (j < row.words.length && x >= words[j].x) {
-          // short-circuit: success
-          finalRow = true;
-          break;
-        }
-
-        if (x < EDGE_PADDING) {
-          // doesn't fit on row
-          fitsOnRow = this.moveWordLeft(this._rows[row.idx - 1], null, null, words.slice(0, j + 1));
-          break;
-        }
-
-        if (words[j].isPunct === false) {
-          x -= WORD_PADDING;
-        }
-
-        --j;
-      } // end head recursion
+      if (dx <= space) {
+        word.dx(-dx);
+        return true;
+      } // No space directly available; try to recursively move the preceding Words.
+      // If this is the first Word on this Row, try fitting it on the
+      // previous Row, or getting the Words on the previous Row to shift.
 
 
-      if (!fitsOnRow) {
-        return false;
-      } // if recursion turned out ok, apply transformation
+      if (wordIndex === 0) {
+        var prevRow = this._rows[row.idx - 1];
+
+        if (!prevRow) {
+          return false;
+        } // Fits on the previous Row?
 
 
-      if (overflow) {
-        x = row.rw - EDGE_PADDING;
-
-        while (i > j) {
-          x -= words[i].boxWidth;
-          words[i].move(x);
-
-          if (!words[i].isPunct) {
-            x -= WORD_PADDING;
-          }
-
-          --i;
-        }
-      } else {
-        while (i > j) {
-          words[i] && words[i].dx(-dx);
-          --i;
-        }
-      }
-
-      if (!finalRow) {
-        while (j >= 0) {
+        if (prevRow.availableSpace >= word.boxWidth + leftPadding) {
           this.moveWordUpARow(row.idx);
-          --j;
-        }
+          return true;
+        } // Can we shift the Words on the previous Row?
 
-        if (row.words.length === 0 && row.idx === this._rows.length - 1) {
-          this.removeRow();
+
+        var prevRowShift = word.boxWidth + leftPadding - prevRow.availableSpace;
+
+        var _canMove = this.moveWordLeft({
+          row: prevRow,
+          wordIndex: prevRow.words.length - 1,
+          dx: prevRowShift
+        });
+
+        if (_canMove) {
+          // Pop this word up to the previous row
+          this.moveWordUpARow(row.idx);
+          return true;
+        } else {
+          // No can do
+          return false;
         }
+      } // Not the first Word; try getting the preceding Words on this Row to shift.
+
+
+      var canMove = this.moveWordLeft({
+        row: row,
+        wordIndex: wordIndex - 1,
+        dx: dx
+      });
+
+      if (canMove) {
+        word.dx(-dx);
+        return true;
+      } else {
+        // Ah well
+        return false;
       }
-
-      return true;
     }
+    /**
+     * Move the first Word on the Row with the given index up to the end
+     * of the previous Row
+     * @param index
+     */
+
   }, {
     key: "moveWordUpARow",
     value: function moveWordUpARow(index) {
-      if (!this._rows[index - 1]) {
+      var prevRow = this._rows[index - 1];
+
+      if (!prevRow) {
         return;
       }
 
       var removedWord = this._rows[index].removeFirstWord();
 
-      this.addWordToRow(removedWord, this._rows[index - 1], undefined, true);
+      var newX = prevRow.rw - this.config.rowEdgePadding - removedWord.boxWidth;
+      this.addWordToRow(removedWord, prevRow, undefined, newX);
       removedWord.redrawClusters();
       removedWord.redrawLinks();
     }
+    /**
+     * Move the last Word on the Row with the given index down to the start of
+     * the next Row
+     * @param index
+     */
+
   }, {
     key: "moveWordDownARow",
     value: function moveWordDownARow(index) {
@@ -63944,7 +65046,7 @@ function () {
       }
 
       if (anchor.links.length === 0) {
-        return [Math.min(acc[0], anchor.slot), Math.max(acc[1], anchor.slot)];
+        return [Math.min(acc[0], 0), Math.max(acc[1], 0)]; // return [Math.min(acc[0], anchor.slot), Math.max(acc[1], anchor.slot)];
       }
 
       var a = anchor.links.reduce(function (acc, val) {
@@ -63966,6 +65068,19 @@ function () {
       row.minSlot = _row$words$reduce2[0];
       row.maxSlot = _row$words$reduce2[1];
     }
+    /**
+     * Return the Row that the given point would be contained in, if any
+     * @param x
+     * @param y
+     */
+
+  }, {
+    key: "whichRow",
+    value: function whichRow(x, y) {
+      return this._rows.find(function (row) {
+        return row.contains(x, y);
+      });
+    }
   }, {
     key: "lastRow",
     get: function get() {
@@ -63980,7 +65095,103 @@ function () {
   return RowManager;
 }();
 
-module.exports = RowManager;
+module.exports = RowManager; // --------------
+// Deprecated
+
+/**
+ * recursive function that checks for room to move word left and, if
+ * there is space, performs the transformation in the tail
+ */
+
+function moveWordLeft(row, dx, i, overflow) {
+  if (!row) {
+    return false;
+  }
+
+  var EDGE_PADDING = 10;
+  var WORD_PADDING = 5;
+  var fitsOnRow = true; // recursive flag
+  // position to place words[i]
+
+  var x; // remaining space to move words into
+
+  var j = i; // index at which words overflow to next row
+
+  var finalRow; // flag if recursion ends inside this call
+
+  var words = overflow ? row.words.concat(overflow) : row.words;
+
+  if (overflow || !words[i]) {
+    x = row.rw - EDGE_PADDING;
+    j = i = words.length - 1;
+    var lastWord = row.words[row.words.length - 1];
+    dx = (lastWord ? lastWord.x + lastWord.boxWidth : 0) - x;
+  } else {
+    x = words[i].x + words[i].boxWidth - dx;
+  }
+
+  while (j >= 0) {
+    var wordToCheck = words[j];
+    x -= words[j].boxWidth;
+
+    if (j < row.words.length && x >= words[j].x) {
+      // short-circuit: success
+      finalRow = true;
+      break;
+    }
+
+    if (x < EDGE_PADDING) {
+      // doesn't fit on row
+      fitsOnRow = this.moveWordLeft(this._rows[row.idx - 1], null, null, words.slice(0, j + 1));
+      break;
+    }
+
+    if (words[j].isPunct === false) {
+      x -= WORD_PADDING;
+    }
+
+    --j;
+  } // end head recursion
+
+
+  if (!fitsOnRow) {
+    return false;
+  } // if recursion turned out ok, apply transformation
+
+
+  if (overflow) {
+    x = row.rw - EDGE_PADDING;
+
+    while (i > j) {
+      x -= words[i].boxWidth;
+      words[i].move(x);
+
+      if (!words[i].isPunct) {
+        x -= WORD_PADDING;
+      }
+
+      --i;
+    }
+  } else {
+    while (i > j) {
+      words[i] && words[i].dx(-dx);
+      --i;
+    }
+  }
+
+  if (!finalRow) {
+    while (j >= 0) {
+      this.moveWordUpARow(row.idx);
+      --j;
+    }
+
+    if (row.words.length === 0 && row.idx === this._rows.length - 1) {
+      this.removeRow();
+    }
+  }
+
+  return true;
+}
 
 },{"../components/link.js":111,"../components/row.js":112,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":11}],119:[function(require,module,exports){
 "use strict";
@@ -64666,6 +65877,13 @@ function () {
 
       switch (tokens[0].charAt(0)) {
         case 'T':
+          /**
+           * Entity annotations have:
+           * - Unique ID
+           * - Type
+           * - Character span
+           * - Raw text
+           */
           var tbm = this.parseTextMention(tokens);
 
           if (tbm === null) {
@@ -64680,6 +65898,12 @@ function () {
           }
 
         case 'E':
+          /**
+           * Event annotations have:
+           * - Unique ID
+           * - Type:ID string representing the trigger entity
+           * - Role:ID strings representing the argument entities
+           */
           var em = this.parseEventMention(tokens, graph);
 
           if (em === null) {
@@ -64694,6 +65918,12 @@ function () {
           }
 
         case 'R':
+          /**
+           * Binary relations have:
+           * - Unique ID
+           * - Type
+           * - Role:ID strings representing the argument entities (x2)
+           */
           var rm = this.parseRelationMention(tokens, graph);
 
           if (rm === null) {

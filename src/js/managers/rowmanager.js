@@ -85,7 +85,8 @@ class RowManager {
   }
 
   /**
-   * add a new row to the bottom of the svg and resize to match
+   * Adds a new Row to the bottom of the svg and sets the height of the main
+   * document to match
    */
   appendRow() {
     const lr = this.lastRow;
@@ -331,7 +332,8 @@ class RowManager {
       return [acc[0], acc[1]];
     }
     if (anchor.links.length === 0) {
-      return [Math.min(acc[0], anchor.slot), Math.max(acc[1], anchor.slot)];
+      return [Math.min(acc[0], 0), Math.max(acc[1], 0)];
+      // return [Math.min(acc[0], anchor.slot), Math.max(acc[1], anchor.slot)];
     }
     let a = anchor.links.reduce((acc, val) => this.getSlotRange(acc, val), [0, 0]);
     return [Math.min(acc[0], a[0]), Math.max(acc[1], a[1])];
@@ -348,15 +350,7 @@ class RowManager {
    * @param y
    */
   whichRow(x, y) {
-    // FIXME: Row boundaries are pretty buggy
-    // return this._rows.find(row => row.contains(x, y));
-    return this._rows.reduce((prev, next) => {
-      if (next.ry < y) {
-        return next;
-      } else {
-        return prev;
-      }
-    }, this._rows[0]);
+    return this._rows.find(row => row.contains(x, y));
   }
 
   get lastRow() {

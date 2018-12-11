@@ -1,4 +1,4 @@
-import WordTag from "./tag.js";
+import WordTag from "./word-tag.js";
 import Word from "./word.js";
 
 const $ = require("jquery");

@@ -277,7 +277,7 @@ watch.scripts = {
 
 watch.styles = {
   async tag() {
-    const input = "src/css/app.scss";
+    const input = "src/css/tag.scss";
     const output = `${config.assetsDir}/${config.stylesDir}/tag.min.css`;
     const type = "Watch";
     const desc = "Main TAG CSS bundle";
@@ -287,7 +287,7 @@ watch.styles = {
     return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && cleancss ${output} -o ${output}"`, {async: true});
   },
   async quickTag() {
-    const input = "src/css/app.scss";
+    const input = "src/css/tag.scss";
     const output = `${config.assetsDir}/${config.stylesDir}/tag.css`;
     const type = "Watch";
     const desc = "Main TAG CSS bundle (Unminified)";
@@ -414,11 +414,23 @@ const demo = {
       return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && cleancss ${output} -o ${output}"`, {async: true});
     },
 
+    async coreStyles() {
+      const input = "src/css/tag.scss";
+      const output = `${config.assetsDir}/${config.stylesDir}/tag.css`;
+      const type = "Build";
+      const desc = "Main TAG CSS bundle (Unminified)";
+
+      console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+
+      return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace`, {async: true});
+    },
+
     async all() {
       return Promise.all([
         demo.watch.scripts(),
         demo.watch.BSColourPicker(),
-        demo.watch.styles()
+        demo.watch.styles(),
+        demo.watch.coreStyles()
       ]);
     }
   },

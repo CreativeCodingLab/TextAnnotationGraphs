@@ -139,8 +139,9 @@ class Main {
     if (this.words.length > 0 && !this.rowManager.lastRow) {
       this.rowManager.appendRow();
     }
+
     this.words.forEach(word => {
-      word.init(this.svg);
+      word.init(this.svg, this.config);
       this.rowManager.addWordToRow(word, this.rowManager.lastRow);
     });
 
