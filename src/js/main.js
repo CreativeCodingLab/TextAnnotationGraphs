@@ -136,22 +136,36 @@ class Main {
     this.words = data.words;
     this.links = data.links;
 
+    // Calculate the Link slots (vertical intervals to separate
+    // crossing/intervening Links).
+    // Because the order of the Links array affects the slot calculations,
+    // we sort it here first in case they aren't sorted in the original
+    // annotation data.
+    this.links = Util.sortForSlotting(this.links);
+    this.links.forEach(link => {
+      link.calculateSlot(this.words);
+    });
+
+    // Initialise the first Row; new ones will be added automatically as
+    // Words are drawn onto the visualisation
     if (this.words.length > 0 && !this.rowManager.lastRow) {
       this.rowManager.appendRow();
     }
 
+    // Draw the Words onto the visualisation
     this.words.forEach(word => {
       word.init(this.svg, this.config);
       this.rowManager.addWordToRow(word, this.rowManager.lastRow);
     });
 
+    // We have to initialise all the Links before we draw any of them, to
+    // account for nested Links etc.
     this.links.forEach(link => {
       link.init(this);
     });
-    this.links.forEach(link => {
-      link.recalculateSlots(this.words);
+    for (const link of this.links) {
       link.draw();
-    });
+    }
 
     // Change token colours based on the current taxonomy, if loaded
     this.taxonomyManager.colour(this.words);

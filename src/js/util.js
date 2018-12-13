@@ -43,9 +43,36 @@ function getCssRules(elements) {
   return _.uniq(ret);
 }
 
+/**
+ * Sort some given array of Links in preparation for determining their slots
+ * (vertical intervals for overlapping/crossing Links).  Needed because the
+ * order that the Parser puts Links in might not be the order we actually want:
+ *
+ * 1) Primary sort by index of left endpoint, ascending
+ * 2) Secondary sort by number of Words covered, descending
+ *
+ * @param links
+ */
+function sortForSlotting(links) {
+  const sortingArray = links.map((link, idx) => {
+    const endpoints = link.endpoints;
+    return {
+      idx,
+      leftAnchor: endpoints[0].idx,
+      width: endpoints[1].idx - endpoints[0].idx + 1
+    };
+  });
+  // Sort by number of words covered, descending
+  sortingArray.sort((a, b) => b.width - a.width);
+  // Sort by index of left endpoint, ascending
+  sortingArray.sort((a, b) => a.leftAnchor - b.leftAnchor);
+  return sortingArray.map(link => links[link.idx]);
+}
+
 // Debug
 window.getCssRules = getCssRules;
 
 module.exports = {
-  getCssRules
+  getCssRules,
+  sortForSlotting
 };

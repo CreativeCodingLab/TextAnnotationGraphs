@@ -62,7 +62,7 @@ $(async () => {
 
   // Debug
   window.basicTag = basicTag;
-  // await basicTag.loadUrlAsync("data/simple-brat.ann", "brat");
+  await basicTag.loadUrlAsync("data/simple-brat.ann", "brat");
   return;
 
   // -------------------

@@ -3,6 +3,8 @@ import Word from "./word.js";
 
 const $ = require("jquery");
 
+const Util = require("../util.js");
+
 class Link {
   /**
    * Creates a new Link between other entities.  Links can have Words or
@@ -41,18 +43,19 @@ class Link {
     this.visible = true;
 
     // Slots are the y-intervals at which links may be drawn.
-    this.resetSlotRecalculation();
+    // The main instance will need to provide the `.calculateSlot()` method
+    // with the full set of Words in the data so that we can check for
+    // crossing/intervening Links.
+    this.slot = null;
+    this.calculatingSlot = false;
 
-    // Fill in references in this Link's trigger/arguments
+    // Fill in references in this Link's trigger/argument Words
     if (this.trigger) {
       this.trigger.links.push(this);
     }
     this.arguments.forEach(arg => {
       arg.anchor.links.push(this);
     });
-
-    // The leftmost and rightmost anchors for this Link
-    this.endpoints = this.getEndpoints();
 
     // ---------------
     // Visualisation-related properties
@@ -91,65 +94,18 @@ class Link {
       this.svg.hide();
     }
 
-    // Sub-class for Link handles
-    const rowManager = this.main.rowManager;
-
-    class Handle {
-      constructor(anchor, x, y) {
-        this.anchor = anchor;
-        this.x = x;
-        this.y = y;
-
-        // For anchor Links, offsets start at 0 on the left bound of the Link
-        // For anchor Words/WordTags, offsets start at 0 in the centre of the
-        // Word/WordTag
-        // Calculated when the Handle is first drawn
-        this.offset = null;
-      }
-
-      /**
-       * The Row in which this handle is contained
-       * @return {Row}
-       */
-      get row() {
-        const row = rowManager.whichRow(this.x, this.y);
-        if (!row) {
-          console.log("Couldn't find row for handle:", this);
-        }
-        return row;
-      }
-
-      /**
-       * Returns true if this handle precedes the given handle
-       * (i.e., this handle has an earlier row, or is to its left within the
-       * same row)
-       * @param {Handle} handle
-       */
-      precedes(handle) {
-        // FIXME: Sometimes the Row boundaries aren't set properly
-        if (!this.row || !handle.row) {
-          return false;
-        }
-
-        return this.row.idx < handle.row.idx ||
-          (this.row.idx === handle.row.idx && this.x < handle.x);
-      }
-    }
-
     // Init handles
     if (this.trigger) {
       this.handles.push(new Handle(
         this.trigger,
-        this.trigger.cx,
-        this.top ? this.trigger.absoluteY : this.trigger.absoluteDescent
+        this
       ));
     }
 
     this.arguments.forEach(arg => {
       this.handles.push(new Handle(
         arg.anchor,
-        arg.anchor.cx,
-        this.top ? arg.anchor.absoluteY : arg.anchor.absoluteDescent
+        this
       ));
 
       // Also prepare svgTexts for each trigger-argument relation
@@ -216,12 +172,12 @@ class Link {
           // Is this handle in the correct vicinity on the y-axis?
           if (this.top) {
             // The Link line will be above the handle
-            if (dragY < this.getLineY(handle) - 5 || dragY > handle.y + 5) {
+            if (dragY < this.getLineYRow(handle.row) - 5 || dragY > handle.y + 5) {
               continue;
             }
           } else {
             // The Link line will be below the handle
-            if (dragY < handle.y - 5 || dragY > this.getLineY(handle) + 5) {
+            if (dragY < handle.y - 5 || dragY > this.getLineYRow(handle.row) + 5) {
               continue;
             }
           }
@@ -304,8 +260,7 @@ class Link {
     this.visible = !this.visible;
     if (this.visible) {
       this.show();
-    }
-    else {
+    } else {
       this.hide();
     }
   }
@@ -333,40 +288,10 @@ class Link {
    *   the positions of all handles will be recalculated.
    */
   draw(modAnchor) {
+    const drawStart = performance.now();
+
     if (!this.initialised || !this.visible) {
       return;
-    }
-
-    // Ensure that every handle has a valid offset
-    for (let h of this.handles) {
-      if (h.offset === null) {
-        let l = h.anchor.links
-          .sort((a, b) => a.slot - b.slot)
-          .filter(link => link.top === this.top);
-
-        let w = 10; // magic number => TODO: resize this to tag width?
-
-        if (l.length > 1) {
-          // The handle's anchor has multiple links associated with it;
-          // stagger them horizontally by setting this handle's offset
-          // based on its index in the anchor's list of links.
-          if (h.anchor instanceof Link && h.anchor.trigger.idx === h.anchor.endpoints[0].idx) {
-            h.offset = l.indexOf(this) / l.length * 2 * w;
-          }
-          else if (h.anchor instanceof Link && h.anchor.trigger.idx === h.anchor.endpoints[1].idx) {
-            h.offset = l.indexOf(this) / l.length * 2 * -w;
-          }
-          else {
-            l = l.filter(link => h.anchor.idx > link.endpoints[0].idx == h.anchor.idx > this.endpoints[0].idx);
-            h.offset = (l.indexOf(this) + 0.5) / l.length * (h.anchor.idx > this.endpoints[0].idx ? -w : w);
-          }
-        }
-        else {
-          // The handle's anchor only has one link, this one.
-          // It can have offset 0.
-          h.offset = 0;
-        }
-      }
     }
 
     // Recalculate handle positions
@@ -422,6 +347,7 @@ class Link {
         if (handle.x !== newX || handle.y !== newY) {
           handle.x = newX;
           handle.y = newY;
+          handle.row = calcRow;
           changedHandles.push(handle);
         }
       }
@@ -647,26 +573,24 @@ class Link {
           if (rowCrossed) {
             rowCrossed = false;
             d += "L" + [width, y] + "M0,";
-            y = this.getLineY(handle1);
+            y = this.getLineYRow(handle1.row);
             d += y;
           }
           if (leftOfTrigger) {
             d += "L" + [handle1.x + dx, y];
-          }
-          else {
+          } else {
             d += "L" + [handle1.x + dx + textlen, y];
           }
-        }
-        else if (!leftOfTrigger) {
+        } else if (!leftOfTrigger) {
           // start drawing from the trigger
-          y = this.getLineY(this.handles[0]);
+          y = this.getLineYRow(this.handles[0].row);
           d += "M" + [this.handles[0].x, this.handles[0].y]
             + "C" + [this.handles[0].x, y, this.handles[0].x, y, this.handles[0].x - dx, y];
 
           // check if crossing over a row
           if (this.handles[0].anchor.row.idx < this.handles[1].anchor.row.idx) {
             d += "L" + [width, y] + "M0,";
-            y = this.getLineY(this.handles[1]);
+            y = this.getLineYRow(this.handles[1].row);
             d += y;
           }
           d += "L" + [this.handles[1].x + dx + textlen, y];
@@ -688,8 +612,8 @@ class Link {
         // draw an arrow segment coming from each argument
         if (handlePrecedesTrigger && rowCrossed) {
           // if row is crossed
-          let tempY = this.getLineY(handle1);
-          y = this.getLineY(this.handles[0]);
+          let tempY = this.getLineYRow(handle1.row);
+          y = this.getLineYRow(this.handles[0].row);
 
           d += "M" + [handle1.x, handle1.y]
             + "C" + [handle1.x, tempY, handle1.x, tempY, handle1.x + dx, tempY]
@@ -699,8 +623,7 @@ class Link {
           rowCrossed = false;
 
           this.svgTexts[i].y(tempY - 10);
-        }
-        else {
+        } else {
           d += "M" + [handle1.x, handle1.y]
             + "C" + [handle1.x, y, handle1.x, y, handle1.x + dx, y];
           if (leftOfTrigger) {
@@ -718,8 +641,7 @@ class Link {
               + "m" + [dx, 0]
               + "C" + [this.handles[0].x, y, this.handles[0].x, y, this.handles[0].x + dx, y];
             rowCrossed = this.handles[i + 2].anchor.row.idx != this.handles[0].anchor.row.idx;
-          }
-          else {
+          } else {
             d += "L" + [this.handles[0].x - dx, y]
               + "c" + [dx, 0, dx, 0, dx, this.handles[0].y - y];
           }
@@ -822,25 +744,17 @@ class Link {
     }
 
     this.line.plot(d);
-
+    console.log(`Drew ${this.eventId} in ${performance.now() - drawStart}ms.`);
 
     this.links.forEach(l => l.draw(this));
   }
 
-  /**
-   * Returns the y-coordinate of the Link line as drawn above the given handle.
-   * (As opposed to the y-coordinate of the handle itself, which is at the
-   * bottom of the relevant arrowhead)
-   *
-   * @param handle
-   * @return {number}
-   */
-  getLineY(handle) {
-    let r = handle.anchor.row;
-    return this.top
-      ? r.rh + r.ry - 45 - 15 * this.slot
-      : r.rh + r.ry + 25 - 15 * this.slot;
-  }
+  // /**
+  //  * Returns the y-coordinate of the Link line as drawn above the given
+  // handle. * (As opposed to the y-coordinate of the handle itself, which is
+  // at the * bottom of the relevant arrowhead) * * @param handle * @return
+  // {number} */ getLineY(handle) { let r = handle.anchor.row; return this.top
+  // ? r.rh + r.ry - 45 - 15 * this.slot : r.rh + r.ry + 25 - 15 * this.slot; }
 
   /**
    * Returns the y-position that this Link's main line will have if it were
@@ -849,8 +763,8 @@ class Link {
    */
   getLineYRow(row) {
     return this.top
-      ? row.rh + row.ry - 45 - 15 * this.slot
-      : row.rh + row.ry + 25 - 15 * this.slot;
+      ? row.ry + row.rh - row.wordHeight - 15 * this.slot
+      : row.ry + row.rh + row.wordDescent + 15 * this.slot;
   }
 
   // helper function to return a path string for an arrowhead pointing to
@@ -882,6 +796,77 @@ class Link {
     this.arguments.forEach(arg => detachLink(arg.anchor));
   }
 
+  /**
+   * Given the full array of Words in the document, calculates this Link's
+   * slot based on other crossing/intervening/nested Links, recursively if
+   * necessary.
+   *
+   * Principles:
+   * 1) Links with no other Links intervening have priority for lowest slot
+   * 2) Links with fully slotted intervening Links (i.e., no crossings) have
+   *    second priority
+   * 3) Crossed Links have lowest priority, and are handled in order from
+   *    left to right and descending order of length (in terms of number of
+   *    Words covered)
+   *
+   * Sorting of the full Links array is handled by `Util.sortForSlotting()`
+   *
+   * @param {Word[]} words
+   */
+  calculateSlot(words) {
+    // We may already have calculated this Link's slot in a previous
+    // iteration, or *be* calculating this Link's slot in a previous
+    // iteration (i.e., in the case of crossing Links).
+    if (this.slot) {
+      // Already calculated
+      return this.slot;
+    } else if (this.calculatingSlot) {
+      // Currently trying to calculate this slot in a previous recursive
+      // iteration
+      return 0;
+    }
+
+    this.calculatingSlot = true;
+
+    // Pick up all the intervening Links
+    let intervening = [];
+    const coveredWords = words.slice(
+      this.endpoints[0].idx,
+      this.endpoints[1].idx + 1
+    );
+    for (const word of coveredWords) {
+      for (const link of word.links) {
+        // Only consider Links on the same side of the Row as this one
+        if (link !== this &&
+          link.top === this.top && intervening.indexOf(link) < 0) {
+          intervening.push(link);
+        }
+      }
+    }
+    intervening = Util.sortForSlotting(intervening);
+
+    // Map to slots, reduce to the highest number seen so far (or 0 if there
+    // are none)
+    const maxSlot = intervening
+      .map(link => link.calculateSlot(words))
+      .reduce((prev, next) => {
+        // Absolute numbers -- Slots for bottom Links are negative
+        next = Math.abs(next);
+        if (next > prev) {
+          return next;
+        } else {
+          return prev;
+        }
+      }, 0);
+
+    this.slot = maxSlot + 1;
+    if (!this.top) {
+      this.slot = this.slot * -1;
+    }
+    this.calculatingSlot = false;
+    return this.slot;
+  }
+
   resetSlotRecalculation() {
     this.isRecalculated = false;
     this.slot = 0;
@@ -898,8 +883,7 @@ class Link {
       });
 
       this.slot += 1;
-    }
-    else {
+    } else {
       // bottom links
       this.slot = -1;
     }
@@ -985,7 +969,13 @@ class Link {
     this.draw();
   }
 
-  getEndpoints() {
+  /**
+   * Gets the left-most and right-most Word anchors that come under this Link.
+   * (Nested Links are treated as extensions of this Link, so the relevant
+   * endpoint of the nested Link is recursively found and used)
+   * @return {*[]}
+   */
+  get endpoints() {
     let minWord = null;
     let maxWord = null;
 
@@ -995,15 +985,14 @@ class Link {
 
     this.arguments.forEach(arg => {
       if (arg.anchor instanceof Link) {
-        let endpts = arg.anchor.getEndpoints();
+        let endpts = arg.anchor.endpoints;
         if (!minWord || minWord.idx > endpts[0].idx) {
           minWord = endpts[0];
         }
         if (!maxWord || maxWord.idx < endpts[1].idx) {
           maxWord = endpts[1];
         }
-      }
-      else { // word or wordcluster
+      } else { // word or wordcluster
         if (!minWord || minWord.idx > arg.anchor.idx) {
           minWord = arg.anchor;
         }
@@ -1098,8 +1087,7 @@ class Link {
     if (this.line) {
       if (this.trigger) {
         return this.trigger.cx + this.handles[0].offset;
-      }
-      else {
+      } else {
         // FIXME: does not occur currently
       }
     }
@@ -1112,6 +1100,74 @@ class Link {
 
   get val() {
     return this.reltype || this.trigger.reltype || (this.trigger.tag && this.trigger.tag.val) || this.trigger.val;
+  }
+}
+
+/**
+ * Helper class for Link handles (the start/end-points for the Link's line;
+ * for each Link, there is one handle for each associated Word/nested Link)
+ * @param {Word|Link} anchor - The Word or Link anchor for this Handle
+ * @param {Link} parent - The parent Link that this Handle belongs to
+ */
+class Handle {
+  constructor(anchor, parent) {
+    this.anchor = anchor;
+    this.parent = parent;
+
+    this.x = 0;
+    this.y = 0;
+
+    // Offsets
+    // -------
+    // For anchor Links, offsets start at 0 on the left bound of the Link
+    // For anchor Words/WordTags, offsets start at 0 in the centre of the
+    // Word/WordTag
+    this.offset = 0;
+
+    // If the handle's anchor has multiple Links associated with it,
+    // stagger them horizontally by setting this handle's offset
+    // based on its index in the anchor's list of links.
+    let l = anchor.links
+      .sort((a, b) => a.slot - b.slot)
+      .filter(link => link.top === parent.top);
+
+    // Magic number for width between handles on the same anchor
+    // TODO: Base on anchor width?
+    let w = 10;
+
+    if (!(anchor instanceof Link) && l.length > 1) {
+      l = l.filter(link => anchor.idx > link.endpoints[0].idx === anchor.idx > parent.endpoints[0].idx);
+      this.offset = (l.indexOf(parent) + 0.5) / l.length * (anchor.idx > parent.endpoints[0].idx ? w : -w);
+    }
+
+    // Row
+    // ---
+    // There are two possibilities; the argument might be a Word, or it
+    // might be a Link.  For Words, the Handle is on the same Row.  For
+    // Links, the Handle is in the same Row as the Link's left endpoint.
+    let rowBase;
+    if (anchor instanceof Link) {
+      rowBase = anchor.endpoints[0];
+    } else {
+      rowBase = anchor;
+    }
+    this.row = rowBase.row;
+  }
+
+  /**
+   * Returns true if this handle precedes the given handle
+   * (i.e., this handle has an earlier Row, or is to its left within the
+   * same row)
+   * @param {Handle} handle
+   */
+  precedes(handle) {
+    // FIXME: Sometimes the Row boundaries aren't set properly
+    if (!this.row || !handle.row) {
+      return false;
+    }
+
+    return this.row.idx < handle.row.idx ||
+      (this.row.idx === handle.row.idx && this.x < handle.x);
   }
 }
 

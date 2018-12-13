@@ -2,7 +2,7 @@ import * as SVG from "svg.js";
 import * as draggable from "svg.draggable.js";
 
 class Row {
-  constructor(svg, config, idx = 0, ry = 0, rh = 120) {
+  constructor(svg, config, idx = 0, ry = 0, rh = 100) {
     this.config = config;
 
     this.idx = idx;
@@ -10,8 +10,6 @@ class Row {
     this.rh = rh;     // row height
     this.rw = 0;
     this.words = [];
-    this.maxSlot = 0;
-    this.minSlot = 0;
 
     // svg elements
     this.svg = null;    // group
@@ -208,63 +206,33 @@ class Row {
   }
 
   /**
-   * Assumes that the given Word is already on this Row.
-   * Tries to move the Word to the given x-position, adjusting the
-   * x-positions of all the following Words on the Row as well.
-   * If this ends up pushing some Words off the Row, returns the index of
-   * the first word that needs to be kicked down to the next Row.
+   * Removes the specified Word from this Row, returning it for potential
+   * further operations.
    * @param word
-   * @param x
-   * @return {number} [idx]
+   * @return {Word}
    */
-  deprecateMoveWordRight(word, x) {
-    const EDGE_PADDING = this.config.rowEdgePadding;
-    const WORD_PADDING = this.config.wordPadding;
-
-    let i = this.words.indexOf(word);
-    let prevWord = this.words[i - 1];
-    if (x) {
-      x = Math.min(this.rw, x);
-      if (x + word.boxWidth > this.rw - EDGE_PADDING) {
-        return i;
-      }
-      word.move(x);
-      ++i;
-      prevWord = word;
-    } else if (!prevWord) {
-      word.move(EDGE_PADDING);
-      ++i;
-      prevWord = word;
-    }
-    while (i < this.words.length) {
-      let word = this.words[i];
-      let dx = prevWord.x + prevWord.boxWidth + (word.isPunct ? 0 : WORD_PADDING);
-      if (word.x > dx) {
-        // prevWord fits in space before next word; return
-        return this.words.length;
-      }
-      // move next word over
-      if (dx + word.boxWidth > this.rw - EDGE_PADDING) {
-        return i;
-      }
-      word.move(dx);
-      prevWord = this.words[i];
-      ++i;
-    }
-  }
-
   removeWord(word) {
     this.words.splice(this.words.indexOf(word), 1);
     this.wordGroup.removeElement(word.svg);
     return word;
   }
 
+  /**
+   * Removes the last Word from this Row, returning it for potential
+   * further operations.
+   * @return {Word}
+   */
   removeLastWord() {
     const word = this.words.pop();
     this.wordGroup.removeElement(word.svg);
     return word;
   }
 
+  /**
+   * Removes the first Word from this Row, returning it for potential
+   * further operations.
+   * @return {Word}
+   */
   removeFirstWord() {
     const word = this.words.shift();
     this.wordGroup.removeElement(word.svg);
@@ -272,12 +240,18 @@ class Row {
   }
 
   /**
-   * Returns true if the given point is within the bounds of this row
-   * @param x
-   * @param y
+   * Redraws all the unique Links associated with all the Words in the row
    */
-  contains(x, y) {
-    return x <= this.rw && y >= this.ry && y <= this.ry2;
+  redrawLinks() {
+    const links = [];
+    for (const word of this.words) {
+      for (const link of word.links) {
+        if (links.indexOf(link) < 0) {
+          links.push(link);
+        }
+      }
+    }
+    links.forEach(link => link.draw());
   }
 
   /**
@@ -289,16 +263,87 @@ class Row {
   }
 
   /**
-   * Returns the lower bound of the Row on the y-axis, excluding padding
-   * (this.minSlot can be negative in the current implementation?)
+   * Returns the lower bound of the Row on the y-axis
    * @return {number}
    */
   get ry2() {
-    return this.ry + this.rh + 20 - this.minSlot * 15;
+    return this.ry + this.rh + this.descent;
   }
 
+  /**
+   * Returns the maximum slot occupied by Links related to Words on this Row.
+   * Considers positive slots, so only accounts for top Links.
+   */
+  get maxSlot() {
+    let maxSlot = 0;
+    for (const word of this.words) {
+      for (const link of word.links) {
+        maxSlot = Math.max(maxSlot, link.slot);
+      }
+    }
+    return maxSlot;
+  }
+
+  /**
+   * Returns the minimum slot occupied by Links related to Words on this Row.
+   * Considers negative slots, so only accounts for bottom Links.
+   */
+  get minSlot() {
+    let minSlot = 0;
+    for (const word of this.words) {
+      for (const link of word.links) {
+        minSlot = Math.min(minSlot, link.slot);
+      }
+    }
+    return minSlot;
+  }
+
+  /**
+   * Returns the maximum height above the baseline of the Word
+   * elements on the Row (accounting for their top WordTags, if present)
+   */
+  get wordHeight() {
+    let wordHeight = 0;
+    for (const word of this.words) {
+      wordHeight = Math.max(wordHeight, word.boxHeight);
+    }
+    return wordHeight;
+  }
+
+  /**
+   * Returns the maximum descent below the baseline of the Word
+   * elements on the Row (accounting for their bottom WordTags, if present)
+   */
+  get wordDescent() {
+    let wordDescent = 0;
+    for (const word of this.words) {
+      wordDescent = Math.max(wordDescent, word.descendHeight);
+    }
+    return wordDescent;
+  }
+
+  /**
+   * Returns the minimum amount of height above the baseline needed to fit
+   * all this Row's Words, top WordTags and top Links.
+   * Includes vertical Row padding.
+   * @return {number}
+   */
   get minHeight() {
-    return 60 + this.maxSlot * 15;
+    return this.wordHeight +
+      this.maxSlot * this.config.linkSlotInterval +
+      this.config.rowVerticalPadding;
+  }
+
+  /**
+   * Returns the amount of descent below the baseline needed to fit
+   * all this Row's bottom WordTags and Links.
+   * Includes vertical Row padding.
+   * @return {number}
+   */
+  get descent() {
+    return this.wordDescent +
+      Math.abs(this.minSlot) * this.config.linkSlotInterval +
+      this.config.rowVerticalPadding;
   }
 
   /**

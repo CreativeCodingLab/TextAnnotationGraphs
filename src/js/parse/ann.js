@@ -63,6 +63,7 @@ class BratParser {
     }
 
     let n = graph.words.length;
+    let idx = 0;
     this.textArray.forEach((t, i) => {
       if (t.entity === null) {
         let text = this.text.slice(t.charStart, t.charEnd).trim();
@@ -73,13 +74,13 @@ class BratParser {
         }
 
         text.split(/\s+/).forEach(token => {
-          let word = new Word(token, graph.words.length - n + 1);
+          let word = new Word(token, idx);
           graph.words.push(word);
+          idx++;
         });
       } else {
-        // Strange way to change word indices...
-        --n;
-        t.entity.idx = graph.words.length - n;
+        t.entity.idx = idx;
+        idx++;
       }
     });
     graph.words.sort((a, b) => a.idx - b.idx);

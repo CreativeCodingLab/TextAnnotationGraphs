@@ -13,6 +13,9 @@ class Config {
     // Padding on the left/right edges of each Row
     this.rowEdgePadding = 10;
 
+    // Padding on the top/bottom of each Row
+    this.rowVerticalPadding = 10;
+
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Drawing options for Words
 
@@ -39,6 +42,9 @@ class Config {
 
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Drawing options for Links in the visualisation
+
+    // Vertical distance between each Link slot (for crossing/overlapping Links)
+    this.linkSlotInterval = 15;
 
     // Vertical padding between Link arrowheads and their anchors
     this.linkHandlePadding = 2;
