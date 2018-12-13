@@ -111,9 +111,14 @@ class Link {
       // Also prepare svgTexts for each trigger-argument relation
       if (this.trigger) {
         let text = this.svg.text(arg.type)
-          .y(-7)
+          .leading(1)
           .addClass("tag-element")
           .addClass("link-text");
+        // Transform the text based on its font-size so that we can position it
+        // relative to its baseline
+        text.transform({
+          y: -parseInt($(text.node).css("font-size")) + 1
+        });
         this.svgTexts.push(text);
       }
     });
@@ -121,9 +126,14 @@ class Link {
     // draw svgText for a non-trigger relation
     if (this.reltype) {
       let text = this.svg.text(this.reltype)
-        .y(-7)
+        .leading(1)
         .addClass("tag-element")
         .addClass("link-text");
+      // Transform the text based on its font-size so that we can position it
+      // relative to its baseline
+      text.transform({
+        y: -parseInt($(text.node).css("font-size")) + 1
+      });
       this.svgTexts.push(text);
     }
 
@@ -392,6 +402,8 @@ class Link {
     // draw a polyline between the trigger and each of its arguments
     // https://www.w3.org/TR/SVG/paths.html#PathData
     if (this.trigger) {
+      this._drawAsEvent();
+    } else if (this.trigger === "mawp") {
       // Start drawing from the trigger
       const triggerHandle = this.triggerHandle;
 
@@ -650,101 +662,10 @@ class Link {
       }
     } else if (this.reltype) {
       // This is a non-trigger (binary) relation
-
-      // Start/end points
-      const pStart = {
-        x: leftHandle.x,
-        y: this.top
-          ? leftHandle.y - this.config.linkHandlePadding
-          : leftHandle.y + this.config.linkHandlePadding
-      };
-      const pEnd = {
-        x: rightHandle.x,
-        y: this.top
-          ? rightHandle.y - this.config.linkHandlePadding
-          : rightHandle.y + this.config.linkHandlePadding
-      };
-
-      const sameRow = leftHandle.row.idx === rightHandle.row.idx;
-
-      // Width/position of the Link's label
-      // (Always on the first row for multi-line Links)
-      const textLength = this.svgTexts[0].length();
-      const textY = this.getLineYRow(leftHandle.row) - 10;
-
-      // Centre on the segment of the Link line on the first row
-      let textCentre = sameRow
-        ? (pStart.x + pEnd.x) / 2
-        : (pStart.x + leftHandle.row.rw) / 2;
-      let textLeft = textCentre - textLength / 2;
-
-      // Make sure it doesn't overshoot the right row boundary
-      if (textLeft + textLength > leftHandle.row.rw) {
-        textLeft = leftHandle.row.rw - textLength;
-        textCentre = textLeft + textLength / 2;
-      }
-
-      // Start preparing path string
-      d = "M" + [pStart.x, pStart.y];
-
-      // Left handle
-      const firstY = this.getLineYRow(leftHandle.row);
-      if (textLeft < pStart.x) {
-        // Just draw a vertical line up to the label
-        d += "L" + [pStart.x, firstY];
-      } else {
-        // Draw curve up to the main Link line, then, go up to the label
-        let curveLeftX = pStart.x + this.config.linkCurveWidth;
-        curveLeftX = Math.min(curveLeftX, textLeft);
-        d += "C" + [pStart.x, firstY, pStart.x, firstY, curveLeftX, firstY]
-          + "L" + [textLeft, firstY];
-      }
-
-      // Right handle
-      if (sameRow) {
-        if (textLeft + textLength > pEnd.x) {
-          // Just draw a vertical line down to the handle
-          d += "M" + [pEnd.x, firstY]
-            + "L" + [pEnd.x, pEnd.y];
-        } else {
-          // Draw curve down from the main Link line
-          let curveRightX = pEnd.x - this.config.linkCurveWidth;
-          curveRightX = Math.max(curveRightX, textLeft + textLength);
-          d += "M" + [textLeft + textLength, firstY]
-            + "L" + [curveRightX, firstY]
-            + "C" + [pEnd.x, firstY, pEnd.x, firstY, pEnd.x, pEnd.y];
-        }
-      } else {
-        // Draw in Link line across the end of the first row, and all
-        // intervening rows
-        d += "M" + [textLeft + textLength, firstY]
-          + "L" + [leftHandle.row.rw, firstY];
-
-        for (let i = leftHandle.row.idx + 1; i < rightHandle.row.idx; i++) {
-          const thisRow = this.main.rowManager.rows[i];
-          const lineY = this.getLineYRow(thisRow);
-          d += "M" + [0, lineY]
-            + "L" + [thisRow.rw, lineY];
-        }
-
-        // Draw in the last row
-        let curveRightX = pEnd.x - this.config.linkCurveWidth;
-        curveRightX = Math.max(curveRightX, 0);
-        let finalY = this.getLineYRow(rightHandle.row);
-        d += "M" + [0, finalY]
-          + "L" + [curveRightX, finalY]
-          + "C" + [pEnd.x, finalY, pEnd.x, finalY, pEnd.x, pEnd.y];
-      }
-
-      // Arrowheads
-      d += this.arrowhead(pStart)
-        + this.arrowhead(pEnd);
-
-      // Move label
-      this.svgTexts[0].x(textCentre).y(textY);
+      this._drawAsRelation();
     }
 
-    this.line.plot(d);
+    // this.line.plot(d);
     // console.log(`Drew ${this.eventId} in ${performance.now() -
     // drawStart}ms.`);
 
@@ -766,7 +687,8 @@ class Link {
   getLineYRow(row) {
     return this.top
       ? row.ry + row.rh - row.wordHeight - 15 * this.slot
-      : row.ry + row.rh + row.wordDescent + 15 * this.slot;
+      // Bottom Links have negative slot numbers
+      : row.ry + row.rh + row.wordDescent - 15 * this.slot;
   }
 
   // helper function to return a path string for an arrowhead pointing to
@@ -831,11 +753,18 @@ class Link {
     this.calculatingSlot = true;
 
     // Pick up all the intervening Links
+    // We don't include the first and last Word since Links ending on the
+    // same Word can share the same slot if they don't otherwise overlap
     let intervening = [];
     const coveredWords = words.slice(
-      this.endpoints[0].idx,
-      this.endpoints[1].idx + 1
+      this.endpoints[0].idx + 1,
+      this.endpoints[1].idx
     );
+    // The above comments notwithstanding, the first and last Word should
+    // know that we are watching them
+    words[this.endpoints[0].idx].passingLinks.push(this);
+    words[this.endpoints[1].idx].passingLinks.push(this);
+
     for (const word of coveredWords) {
       // Let this Word know we're watching it
       word.passingLinks.push(this);
@@ -1039,6 +968,423 @@ class Link {
   get val() {
     return this.reltype || this.trigger.reltype || (this.trigger.tag && this.trigger.tag.val) || this.trigger.val;
   }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Private helper/setup functions
+
+  /**
+   * Draws this Link as an Event annotation (has a trigger)
+   * @private
+   */
+  _drawAsEvent() {
+    let d = "";
+    const triggerHandle = this.triggerHandle;
+    const pTrigger = {
+      x: triggerHandle.x,
+      y: this.top
+        ? triggerHandle.y - this.config.linkHandlePadding
+        : triggerHandle.y + this.config.linkHandlePadding
+    };
+
+    // How we draw the lines to each argument's Handle depends on which side
+    // of the trigger they're on.
+    // Collect the left and right Handles, sorted by distance from the
+    // trigger Handle, ascending
+    const lHandles = [];
+    const rHandles = [];
+    for (const handle of this.handles) {
+      if (handle === triggerHandle) {
+        continue;
+      }
+
+      if (handle.precedes(triggerHandle)) {
+        lHandles.push(handle);
+      } else {
+        rHandles.push(handle);
+      }
+    }
+    lHandles.sort((a, b) => a.precedes(b) ? 1 : -1);
+    rHandles.sort((a, b) => a.precedes(b) ? -1 : 1);
+
+    // Start drawing lines between the Handles/text.  We can't simply draw
+    // full lines from the trigger to each argument, because we don't want
+    // to draw over any intervening argument labels.
+
+    // pReference will be the point next to the last drawn argument label
+    // from which the line to the next argument should begin.
+    let pReference;
+
+    // Left handles
+    // ============
+    pReference = null;
+    for (const handle of lHandles) {
+      // Handle
+      // ------
+      const pHandle = {
+        x: handle.x,
+        y: this.top
+          ? handle.y - this.config.linkHandlePadding
+          : handle.y + this.config.linkHandlePadding
+      };
+
+      // Label
+      // -----
+      // The trigger always takes up index 0, so the index for the label is
+      // one less than the index for this handle in `this.handles`
+      const label = this.svgTexts[this.handles.indexOf(handle) - 1];
+
+      const textLength = label.length();
+      const textY = this.getLineYRow(handle.row);
+      let textLeft = pHandle.x + this.config.linkCurveWidth;
+      if (textLeft + textLength > handle.row.rw) {
+        textLeft = handle.row.rw - textLength;
+      }
+      const textCentre = textLeft + textLength / 2;
+
+      // Line
+      // ----
+      const handleY = this.getLineYRow(handle.row);
+
+      // Argument handle to label
+      d += "M" + [pHandle.x, pHandle.y];
+      if (textLeft < pHandle.x) {
+        // Just draw a vertical line up to the label
+        d += "L" + [pHandle.x, handleY];
+      } else {
+        // Draw curve up to the main Link line, then, go up to the label
+        let curveLeftX = pHandle.x + this.config.linkCurveWidth;
+        curveLeftX = Math.min(curveLeftX, textLeft);
+        d += "C" + [pHandle.x, handleY, pHandle.x, handleY, curveLeftX, handleY]
+          + "L" + [textLeft, handleY];
+      }
+
+      // Label to pReference (if set)
+      if (pReference) {
+        if (handle.row.idx === pReference.row.idx) {
+          // Same row
+          d += "M" + [textLeft + textLength, handleY]
+            + "L" + [pReference.x, pReference.y];
+        } else {
+          // Draw in Link line across the end of the first row, and all
+          // intervening rows
+          d += "M" + [textLeft + textLength, handleY]
+            + "L" + [handle.row.rw, handleY];
+
+          for (let i = handle.row.idx + 1; i < pReference.row.idx; i++) {
+            const thisRow = this.main.rowManager.rows[i];
+            const lineY = this.getLineYRow(thisRow);
+            d += "M" + [0, lineY]
+              + "L" + [thisRow.rw, lineY];
+          }
+
+          // Draw in the last row
+          let finalY = this.getLineYRow(pReference.row);
+          d += "M" + [0, finalY]
+            + "L" + [pReference.x, pReference.y];
+        }
+      }
+
+      if (pReference === null) {
+        // This is the first left handle; draw in the line to the trigger also.
+
+        // Label to Trigger handle
+        if (handle.row.idx === triggerHandle.row.idx) {
+          // Same row
+          if (textLeft + textLength > pTrigger.x) {
+            // Just draw a vertical line down to the handle
+            d += "M" + [pTrigger.x, handleY]
+              + "L" + [pTrigger.x, pTrigger.y];
+          } else {
+            // Draw curve down from the main Link line
+            let curveRightX = pTrigger.x - this.config.linkCurveWidth;
+            curveRightX = Math.max(curveRightX, textLeft + textLength);
+            d += "M" + [textLeft + textLength, handleY]
+              + "L" + [curveRightX, handleY]
+              + "C" + [pTrigger.x, handleY, pTrigger.x, handleY, pTrigger.x, pTrigger.y];
+          }
+        } else {
+          // Draw in Link line across the end of the first row, and all
+          // intervening rows
+          d += "M" + [textLeft + textLength, handleY]
+            + "L" + [handle.row.rw, handleY];
+
+          for (let i = handle.row.idx + 1; i < triggerHandle.row.idx; i++) {
+            const thisRow = this.main.rowManager.rows[i];
+            const lineY = this.getLineYRow(thisRow);
+            d += "M" + [0, lineY]
+              + "L" + [thisRow.rw, lineY];
+          }
+
+          // Draw in the last row
+          let curveRightX = pTrigger.x - this.config.linkCurveWidth;
+          curveRightX = Math.max(curveRightX, 0);
+          let finalY = this.getLineYRow(triggerHandle.row);
+          d += "M" + [0, finalY]
+            + "L" + [curveRightX, finalY]
+            + "C" + [pTrigger.x, finalY, pTrigger.x, finalY, pTrigger.x, pTrigger.y];
+        }
+      }
+
+      // pReference for the next handle will be the lower-left corner of
+      // the label
+      pReference = {
+        x: textLeft,
+        y: handleY,
+        row: handle.row
+      };
+
+      // Arrowhead
+      d += this.arrowhead(pHandle);
+
+      // Move label
+      label.x(textCentre).y(textY);
+    }
+
+    // Right handles
+    // ============
+    pReference = null;
+    for (const handle of rHandles) {
+      // Handle
+      // ------
+      const pHandle = {
+        x: handle.x,
+        y: this.top
+          ? handle.y - this.config.linkHandlePadding
+          : handle.y + this.config.linkHandlePadding
+      };
+
+      // Label
+      // -----
+      // The trigger always takes up index 0, so the index for the label is
+      // one less than the index for this handle in `this.handles`
+      const label = this.svgTexts[this.handles.indexOf(handle) - 1];
+
+      const textLength = label.length();
+      const textY = this.getLineYRow(handle.row);
+      let textLeft = pHandle.x - this.config.linkCurveWidth - textLength;
+      textLeft = Math.max(textLeft, 0);
+      const textCentre = textLeft + textLength / 2;
+
+      // Line
+      // ----
+      const handleY = this.getLineYRow(handle.row);
+
+      // Label to argument handle
+      if (textLeft + textLength > pHandle.x) {
+        // Just draw a vertical line down to the label
+        d += "M" + [pHandle.x, textY];
+        d += "L" + [pHandle.x, pHandle.y];
+      } else {
+        // Draw curve down from the main Link line
+        let curveRightX = pHandle.x - this.config.linkCurveWidth;
+        curveRightX = Math.max(curveRightX, textLeft + textLength);
+        d += "M" + [textLeft + textLength, textY]
+          + "L" + [curveRightX, textY]
+          + "C" + [pHandle.x, textY, pHandle.x, textY, pHandle.x, pHandle.y];
+      }
+
+      // pReference (if set) to label
+      if (pReference) {
+        if (pReference.row.idx === handle.row.idx) {
+          // Same row
+          d += "M" + [pReference.x, pReference.y]
+            + "L" + [textLeft, handleY];
+        } else {
+          // Draw in Link line across the end of the first row, and all
+          // intervening rows
+          d += "M" + [pReference.x, pReference.y]
+            + "L" + [pReference.row.rw, pReference.y];
+
+          for (let i = pReference.row.idx + 1; i < handle.row.idx; i++) {
+            const thisRow = this.main.rowManager.rows[i];
+            const lineY = this.getLineYRow(thisRow);
+            d += "M" + [0, lineY]
+              + "L" + [thisRow.rw, lineY];
+          }
+
+          // Draw in the last row
+          let finalY = this.getLineYRow(handle.row);
+          d += "M" + [0, finalY]
+            + "L" + [textLeft, finalY];
+        }
+      }
+
+      if (pReference === null) {
+        // This is the first right handle; draw in the line from the trigger
+        // also.
+
+        const triggerY = this.getLineYRow(triggerHandle.row);
+
+        // Trigger handle to label
+        if (triggerHandle.row.idx === handle.row.idx) {
+          // Same row
+          if (textLeft < pTrigger.x) {
+            // Just draw a vertical line up to the label
+            d += "M" + [pTrigger.x, pTrigger.y]
+              + "L" + [pTrigger.x, triggerY];
+          } else {
+            // Draw curve up to the main Link line, then, go up to the label
+            let curveLeftX = pTrigger.x + this.config.linkCurveWidth;
+            curveLeftX = Math.min(curveLeftX, textLeft);
+            d += "M" + [pTrigger.x, pTrigger.y]
+              + "C" + [pTrigger.x, triggerY, pTrigger.x, triggerY, curveLeftX, triggerY]
+              + "L" + [textLeft, triggerY];
+          }
+        } else {
+          // Draw in Link line across the end of the trigger row, and all
+          // intervening rows
+          let curveLeftX = pTrigger.x + this.config.linkCurveWidth;
+          curveLeftX = Math.min(curveLeftX, triggerHandle.row.rw);
+          d += "M" + [pTrigger.x, pTrigger.y]
+            + "C" + [pTrigger.x, triggerY, pTrigger.x, triggerY, curveLeftX, triggerY]
+            + "L" + [handle.row.rw, triggerY];
+
+          for (let i = triggerHandle.row.idx + 1; i < handle.row.idx; i++) {
+            const thisRow = this.main.rowManager.rows[i];
+            const lineY = this.getLineYRow(thisRow);
+            d += "M" + [0, lineY]
+              + "L" + [thisRow.rw, lineY];
+          }
+
+          // Draw in the last row
+          let finalY = this.getLineYRow(handle.row);
+          d += "M" + [0, finalY]
+            + "L" + [textLeft, finalY];
+        }
+      }
+
+      // pReference for the next handle will be the lower-right corner of
+      // the label
+      pReference = {
+        x: textLeft + textLength,
+        y: handleY,
+        row: handle.row
+      };
+
+      // Arrowhead
+      d += this.arrowhead(pHandle);
+
+      // Move label
+      label.x(textCentre).y(textY);
+    }
+
+    // Add flat arrowhead to trigger handle if there are both leftward and
+    // rightward handles
+    if (lHandles.length > 0 && rHandles.length > 0) {
+      d += "M" + [pTrigger.x, pTrigger.y]
+        + "m" + [this.config.linkArrowWidth, 0]
+        + "l" + [-2 * this.config.linkArrowWidth, 0];
+    }
+
+    // Perform draw
+    this.line.plot(d);
+  }
+
+  /**
+   * Draws this Link as a Relation annotation (no trigger/directionality
+   * implied)
+   * @private
+   */
+  _drawAsRelation() {
+    let d = "";
+    const leftHandle = this.leftHandle;
+    const rightHandle = this.rightHandle;
+
+    // Start/end points
+    const pStart = {
+      x: leftHandle.x,
+      y: this.top
+        ? leftHandle.y - this.config.linkHandlePadding
+        : leftHandle.y + this.config.linkHandlePadding
+    };
+    const pEnd = {
+      x: rightHandle.x,
+      y: this.top
+        ? rightHandle.y - this.config.linkHandlePadding
+        : rightHandle.y + this.config.linkHandlePadding
+    };
+
+    const sameRow = leftHandle.row.idx === rightHandle.row.idx;
+
+    // Width/position of the Link's label
+    // (Always on the first row for multi-line Links)
+    const textLength = this.svgTexts[0].length();
+    const textY = this.getLineYRow(leftHandle.row);
+
+    // Centre on the segment of the Link line on the first row
+    let textCentre = sameRow
+      ? (pStart.x + pEnd.x) / 2
+      : (pStart.x + leftHandle.row.rw) / 2;
+    let textLeft = textCentre - textLength / 2;
+
+    // Make sure it doesn't overshoot the right row boundary
+    if (textLeft + textLength > leftHandle.row.rw) {
+      textLeft = leftHandle.row.rw - textLength;
+      textCentre = textLeft + textLength / 2;
+    }
+
+    // Start preparing path string
+    d += "M" + [pStart.x, pStart.y];
+
+    // Left handle
+    const firstY = this.getLineYRow(leftHandle.row);
+    if (textLeft < pStart.x) {
+      // Just draw a vertical line up to the label
+      d += "L" + [pStart.x, firstY];
+    } else {
+      // Draw curve up to the main Link line, then, go up to the label
+      let curveLeftX = pStart.x + this.config.linkCurveWidth;
+      curveLeftX = Math.min(curveLeftX, textLeft);
+      d += "C" + [pStart.x, firstY, pStart.x, firstY, curveLeftX, firstY]
+        + "L" + [textLeft, firstY];
+    }
+
+    // Right handle
+    if (sameRow) {
+      if (textLeft + textLength > pEnd.x) {
+        // Just draw a vertical line down to the handle
+        d += "M" + [pEnd.x, firstY]
+          + "L" + [pEnd.x, pEnd.y];
+      } else {
+        // Draw curve down from the main Link line
+        let curveRightX = pEnd.x - this.config.linkCurveWidth;
+        curveRightX = Math.max(curveRightX, textLeft + textLength);
+        d += "M" + [textLeft + textLength, firstY]
+          + "L" + [curveRightX, firstY]
+          + "C" + [pEnd.x, firstY, pEnd.x, firstY, pEnd.x, pEnd.y];
+      }
+    } else {
+      // Draw in Link line across the end of the first row, and all
+      // intervening rows
+      d += "M" + [textLeft + textLength, firstY]
+        + "L" + [leftHandle.row.rw, firstY];
+
+      for (let i = leftHandle.row.idx + 1; i < rightHandle.row.idx; i++) {
+        const thisRow = this.main.rowManager.rows[i];
+        const lineY = this.getLineYRow(thisRow);
+        d += "M" + [0, lineY]
+          + "L" + [thisRow.rw, lineY];
+      }
+
+      // Draw in the last row
+      let curveRightX = pEnd.x - this.config.linkCurveWidth;
+      curveRightX = Math.max(curveRightX, 0);
+      let finalY = this.getLineYRow(rightHandle.row);
+      d += "M" + [0, finalY]
+        + "L" + [curveRightX, finalY]
+        + "C" + [pEnd.x, finalY, pEnd.x, finalY, pEnd.x, pEnd.y];
+    }
+
+    // Arrowheads
+    d += this.arrowhead(pStart)
+      + this.arrowhead(pEnd);
+
+    // Move label
+    this.svgTexts[0].x(textCentre).y(textY);
+
+    // Perform draw
+    this.line.plot(d);
+  }
 }
 
 /**
@@ -1066,7 +1412,7 @@ class Handle {
     // stagger them horizontally by setting this handle's offset
     // based on its index in the anchor's list of links.
     let l = anchor.links
-      .sort((a, b) => a.slot - b.slot)
+      .sort((a, b) => Math.abs(a.slot) - Math.abs(b.slot))
       .filter(link => link.top === parent.top);
 
     // Magic number for width between handles on the same anchor

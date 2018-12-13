@@ -144,10 +144,9 @@ class RowManager {
     }
 
     // Now that the Words are settled, make sure that the Row is high enough
-    // (in case it started too short)
-    if (row.rh < row.minHeight) {
-      this.resizeRow(row.idx);
-    }
+    // (in case it started too short) and has enough descent space, if there
+    // are Rows following.
+    this.resizeRow(row.idx);
   }
 
   moveWordOnRow(word, dx) {
