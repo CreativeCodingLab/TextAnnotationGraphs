@@ -142,9 +142,7 @@ class Main {
     // we sort it here first in case they aren't sorted in the original
     // annotation data.
     this.links = Util.sortForSlotting(this.links);
-    this.links.forEach(link => {
-      link.calculateSlot(this.words);
-    });
+    this.links.forEach(link => link.calculateSlot(this.words));
 
     // Initialise the first Row; new ones will be added automatically as
     // Words are drawn onto the visualisation
@@ -160,12 +158,8 @@ class Main {
 
     // We have to initialise all the Links before we draw any of them, to
     // account for nested Links etc.
-    this.links.forEach(link => {
-      link.init(this);
-    });
-    for (const link of this.links) {
-      link.draw();
-    }
+    this.links.forEach(link => link.init(this));
+    this.links.forEach(link => link.draw());
 
     // Change token colours based on the current taxonomy, if loaded
     this.taxonomyManager.colour(this.words);
@@ -181,7 +175,7 @@ class Main {
    */
   clear() {
     while (this.rowManager.rows.length > 0) {
-      this.rowManager.removeRow();
+      this.rowManager.removeLastRow();
     }
     this.links.forEach(link => link.svg && link.svg.remove());
   }
@@ -399,12 +393,11 @@ class Main {
 
     this.svg.on("row-recalculate-slots", () => {
       this.links.forEach(link => {
-        link.resetSlotRecalculation();
+        link.slot = null;
       });
-      this.links.forEach(link => {
-        link.recalculateSlots(this.words);
-        link.draw();
-      });
+      this.links = Util.sortForSlotting(this.links);
+      this.links.forEach(link => link.calculateSlot(this.words));
+      this.links.forEach(link => link.draw());
     });
 
     // ZW: Hardcoded dependencies on full UI

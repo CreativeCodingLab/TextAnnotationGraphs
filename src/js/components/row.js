@@ -16,6 +16,11 @@ class Row {
     this.draggable = null;  // row resizer
     this.wordGroup = null;  // child group element
 
+    // The last Word we removed, if any.
+    // In case we have a Row with no Words left but which still has Links
+    // passing through.
+    this.lastRemovedWord = null;
+
     if (svg) {
       this.svgInit(svg);
     }
@@ -212,6 +217,9 @@ class Row {
    * @return {Word}
    */
   removeWord(word) {
+    if (this.lastRemovedWord !== word) {
+      this.lastRemovedWord = word;
+    }
     this.words.splice(this.words.indexOf(word), 1);
     this.wordGroup.removeElement(word.svg);
     return word;
@@ -223,20 +231,7 @@ class Row {
    * @return {Word}
    */
   removeLastWord() {
-    const word = this.words.pop();
-    this.wordGroup.removeElement(word.svg);
-    return word;
-  }
-
-  /**
-   * Removes the first Word from this Row, returning it for potential
-   * further operations.
-   * @return {Word}
-   */
-  removeFirstWord() {
-    const word = this.words.shift();
-    this.wordGroup.removeElement(word.svg);
-    return word;
+    return this.removeWord(this.words[this.words.length - 1]);
   }
 
   /**
@@ -275,9 +270,15 @@ class Row {
    * Considers positive slots, so only accounts for top Links.
    */
   get maxSlot() {
+    let checkWords = this.words;
+    if (checkWords.length === 0 && this.lastRemovedWord !== null) {
+      // We let all our Words go; what was the last one that mattered?
+      checkWords = [this.lastRemovedWord];
+    }
+
     let maxSlot = 0;
-    for (const word of this.words) {
-      for (const link of word.links) {
+    for (const word of checkWords) {
+      for (const link of word.passingLinks) {
         maxSlot = Math.max(maxSlot, link.slot);
       }
     }
@@ -289,9 +290,15 @@ class Row {
    * Considers negative slots, so only accounts for bottom Links.
    */
   get minSlot() {
+    let checkWords = this.words;
+    if (checkWords.length === 0 && this.lastRemovedWord !== null) {
+      // We let all our Words go; what was the last one that mattered?
+      checkWords = [this.lastRemovedWord];
+    }
+
     let minSlot = 0;
-    for (const word of this.words) {
-      for (const link of word.links) {
+    for (const word of checkWords) {
+      for (const link of word.passingLinks) {
         minSlot = Math.min(minSlot, link.slot);
       }
     }
@@ -306,6 +313,12 @@ class Row {
     let wordHeight = 0;
     for (const word of this.words) {
       wordHeight = Math.max(wordHeight, word.boxHeight);
+    }
+    if (wordHeight === 0) {
+      // If we have no Words left on this Row, base our calculations on the
+      // last Word that was on this Row, for positioning any Links that are
+      // still passing through
+      wordHeight = this.lastRemovedWord.boxHeight;
     }
     return wordHeight;
   }

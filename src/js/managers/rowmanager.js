@@ -39,10 +39,10 @@ class RowManager {
     const newHeight = Math.max(row.rh + dy, row.minHeight);
     if (row.rh !== newHeight) {
       row.height(newHeight);
-      console.log("--------");
+      // console.log("--------");
       const drawStart = performance.now();
       row.redrawLinks();
-      console.log(`Redrew links in ${performance.now() - drawStart}ms.`);
+      // console.log(`Redrew links in ${performance.now() - drawStart}ms.`);
     }
 
     // Adjust the positions of all following Rows
@@ -72,7 +72,7 @@ class RowManager {
         .findIndex(w => w.x + w.boxWidth > rw - this.config.rowEdgePadding);
       if (i > 0) {
         while (i < row.words.length) {
-          this.moveWordDownARow(row.idx);
+          this.moveLastWordDown(row.idx);
         }
       } else {
         // Redraw Words/Links that might have changed
@@ -105,7 +105,7 @@ class RowManager {
   /**
    * remove last row at the bottom of the svg and resize to match
    */
-  removeRow() {
+  removeLastRow() {
     this._rows.pop().remove();
     if (this.lastRow) {
       this._svg.height(this.lastRow.ry2 + 20);
@@ -126,21 +126,27 @@ class RowManager {
       i = row.words.length;
     }
 
-    // See if this Word has Links which occupy higher/lower slots than the
-    // existing Words on the Row.
-    let minSlot = 0;
-    let maxSlot = 0;
-    for (const link of word.links) {
-      minSlot = Math.min(minSlot, link.slot);
-      maxSlot = Math.max(maxSlot, link.slot);
-    }
-    if (minSlot < row.minSlot || maxSlot > row.maxSlot) {
-      this.resizeRow(row.idx);
-    }
+    // // See if this Word has Links which occupy higher/lower slots than the
+    // // existing Words on the Row.
+    // let minSlot = 0;
+    // let maxSlot = 0;
+    // for (const link of word.links) {
+    //   minSlot = Math.min(minSlot, link.slot);
+    //   maxSlot = Math.max(maxSlot, link.slot);
+    // }
+    // if (minSlot < row.minSlot || maxSlot > row.maxSlot) {
+    //   this.resizeRow(row.idx);
+    // }
 
     let overflow = row.addWord(word, i, forceX);
     while (overflow < row.words.length) {
-      this.moveWordDownARow(row.idx);
+      this.moveLastWordDown(row.idx);
+    }
+
+    // Now that the Words are settled, make sure that the Row is high enough
+    // (in case it started too short)
+    if (row.rh < row.minHeight) {
+      this.resizeRow(row.idx);
     }
   }
 
@@ -156,7 +162,6 @@ class RowManager {
         dx
       });
     } else if (dx < 0) {
-      // this.moveWordLeft(row, -dx, row.words.indexOf(word));
       dx = -dx;
       this.moveWordLeft({
         row,
@@ -203,7 +208,7 @@ class RowManager {
     // No space directly available; recursively move the following Words.
     if (!nextWord) {
       // Last word on this row
-      this.moveWordDownARow(row.idx);
+      this.moveLastWordDown(row.idx);
     } else {
       this.moveWordRight({
         row,
@@ -260,7 +265,7 @@ class RowManager {
 
       // Fits on the previous Row?
       if (prevRow.availableSpace >= word.boxWidth + leftPadding) {
-        this.moveWordUpARow(row.idx);
+        this.moveFirstWordUp(row.idx);
         return true;
       }
 
@@ -275,7 +280,7 @@ class RowManager {
 
       if (canMove) {
         // Pop this word up to the previous row
-        this.moveWordUpARow(row.idx);
+        this.moveFirstWordUp(row.idx);
         return true;
       } else {
         // No can do
@@ -303,18 +308,25 @@ class RowManager {
    * of the previous Row
    * @param index
    */
-  moveWordUpARow(index) {
+  moveFirstWordUp(index) {
+    const row = this._rows[index];
     const prevRow = this._rows[index - 1];
-    if (!prevRow) {
+    if (!row || !prevRow) {
       return;
     }
 
-    let removedWord = this._rows[index].removeFirstWord();
-    const newX = prevRow.rw - this.config.rowEdgePadding - removedWord.boxWidth;
+    const word = row.words[0];
+    const newX = prevRow.rw - this.config.rowEdgePadding - word.boxWidth;
 
-    this.addWordToRow(removedWord, prevRow, undefined, newX);
-    removedWord.redrawClusters();
-    removedWord.redrawLinks();
+    row.removeWord(word);
+    this.addWordToRow(word, prevRow, undefined, newX);
+
+    word.redrawClusters();
+    word.redrawLinks();
+
+    if (row === this.lastRow && row.words.length === 0) {
+      this.removeLastRow();
+    }
   }
 
   /**
@@ -322,7 +334,7 @@ class RowManager {
    * the next Row
    * @param index
    */
-  moveWordDownARow(index) {
+  moveLastWordDown(index) {
     let nextRow = this._rows[index + 1] || this.appendRow();
     this.addWordToRow(this._rows[index].removeLastWord(), nextRow, 0);
   }

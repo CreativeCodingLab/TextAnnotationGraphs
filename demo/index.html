@@ -1,144 +1,245 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>TAG Demo</title>
 
-  <link href="https://fonts.googleapis.com/css?family=Nunito:400,600" rel="stylesheet">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <!-- Font Awesome webfont for icons -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+        integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 
-  <link href="dist/tag/css/tag.min.css" rel="stylesheet">
+  <!-- Demo-specific styles (fonts, positioning, etc.)
+    -- The core TAG styles, as well as the Bootstrap/Prism styles used for the UI demo below, are also imported within
+    -- `demo.scss`.
+    -->
   <link href="demo.min.css" rel="stylesheet">
-
-  <style id="svgStyles">
-    @import url(https://fonts.googleapis.com/css?family=Nunito:400,600);
-
-    text {
-      text-anchor: middle;
-    }
-    .row-drag {
-      stroke-width:2;
-      stroke-dasharray: 2,1;
-      stroke:rgba(100,100,100,0.3);
-      transition: stroke 300ms ease;
-      cursor: row-resize;
-    }
-    .row-drag:hover {
-      stroke-dasharray:none;
-      stroke:rgba(100,100,100,0.8);
-    }
-
-    .word text {
-      font-size:16px;
-      fill:black;
-    }
-    .word path {
-      stroke:#333;
-      fill:none;
-    }
-    .word .word-text {
-      cursor: pointer;
-    }
-
-    .word-cluster text,
-    .word .word-tag {
-      font-size: 12px;
-      cursor: text;
-    }
-
-    .word-cluster text,
-    .word .word-tag {
-      fill:#333;
-    }
-    .word .syntax-tag {
-      fill: rgb(208, 150, 143);
-    }
-    .toggle-syntax .syntax-tag, .toggle-syntax .syntax-link {
-      display:none;
-    }
-
-    .editing .word-tag,
-    .editing-text,
-    .editing text {
-      fill: #fff !important;
-    }
-
-    .editing-rect,
-    .editing rect {
-      fill:#a94442;
-    }
-
-    .link path.polyline {
-      stroke: #6590b4;
-      fill: none;
-    }
-    .link {
-      font-size: 12px;
-      fill:#6590b4;
-      stroke-width:1.5px;
-    }
-    .link.syntax-link {
-      fill: #999;
-    }
-    .syntax-link path.polyline {
-      stroke: #999;
-      fill: none;
-    }
-
-    .link:hover {
-      stroke-width:2.5px;
-    }
-  </style>
-
 </head>
+<body>
+<div class="container py-5">
+  <h2 class="mb-5">TextAnnotationGraphs (TAG) Demo</h2>
 
-<body class="full-demo">
+  <div class="row mb-5">
+    <div class="col">
+      <h4>Basic example</h4>
+      <p>
+        For a minimal embedded TAG visualisation, simply specify the container element, the annotation data to load, and
+        the format that the data is in.
+      </p>
+      <p>
+        See the full source for this example in the "Basic example" section of
+        <code class="bg-light">src/demo.js</code>.
+      </p>
 
-<div id="fill"></div>
+      <pre class="mb-4">
+<code class="language-javascript">const tag = TAG.tag({
+  container: "container-id",
+  data: {...},
+  format: "json"
+});</code></pre>
 
-<header id="header">
-  Examples:
-  <select id="dataset">
-    <option>-- select dataset --</option>
-    <option>data1</option>
-    <option>data2</option>
-    <option>paragraph</option>
-    <option>passage1</option>
-    <option>passage2</option>
-    <option>morpheme1</option>
-    <option>morpheme2</option>
-    <option>event annotation</option>
-  </select>
-  <button id="custom-annotation">Custom annotation</button>
-  <button id="taxonomy-toggle">Taxonomy</button>
-  <button id="options-toggle">Options</button>
-  <button id="download-button">Download (CTRL+S)<a id="download" download></a></button>
-</header>
+      <div id="basicContainer" style="border: solid 1px lightgray"></div>
 
-<div id="main">
-  <div id="tooltip">
-  </div>
-</div>
-<div class="modal-tag" id="modal-tag">
-  <div>
-    <header>
-      <span class="tab active" data-id="taxonomy">Taxonomy</span>
-      <span class="tab" data-id="tree">Tree View</span>
-      <span class="tab" data-id="graph">Graph</span>
-      <span class="tab" data-id="options">Options</span>
-    </header>
-    <div class="page active" id="taxonomy"></div>
-    <div class="page" id="tree">
-    </div>
-    <div class="page" id="graph"></div>
-    <div class="page" id="options">
-      <p><input type="checkbox" data-option="syntax"> Show syntax tree</p>
-      <p><input type="checkbox" data-option="links"> Show links when moving words</p>
-      <p><input type="checkbox" data-option="tree"> Open tree view in modal</p>
     </div>
   </div>
+
+  <div class="row mb-5">
+    <div class="col">
+      <h4>Extended UI example</h4>
+      <p>
+        It is also possible to build a UI around the TAG visualisation using the various API functions.
+      </p>
+      <p>
+        This example uses Bootstrap 4 styles and components. See the source in the "Advanced/UI example" section of
+        <code class="bg-light">src/demo.js</code>.
+      </p>
+
+      <!-- Control buttons -->
+      <div class="mb-2">
+        <!-- Sample dataset loader -->
+        <div class="btn-group" id="tag-change-dataset">
+          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false">
+            Load sample dataset
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item tag-dataset" data-path="data/data1.json" data-format="json" href="#">
+              Sentence 1 (data1.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/data2.json" data-format="json" href="#">
+              Sentence 2 (data2.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/data3.json" data-format="json" href="#">
+              Paragraph (data3.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/data4.json" data-format="json" href="#">
+              Passage 1 (data4.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/data5.json" data-format="json" href="#">
+              Passage 2 (data5.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/example1.ann" data-format="brat" href="#">
+              Morphology 1 (example1.ann)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/example2.ann" data-format="brat" href="#">
+              Morphology 2 (example2.ann)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/example3.ann" data-format="brat" href="#">
+              Brat event annotations (example3.ann)
+            </a>
+          </div>
+        </div>
+
+        <!-- Upload button/modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tag-upload">
+          Custom annotation
+        </button>
+
+        <div class="modal" id="tag-upload" tabindex="-1" role="dialog"
+             aria-labelledby="upload-title" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="upload-title">Custom Annotation</h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body">
+                Upload a custom annotation to display:
+                <div class="custom-file mt-1">
+                  <input type="file" class="custom-file-input" id="tag-upload-input" multiple>
+                  <label class="custom-file-label" for="tag-upload-input"
+                         id="tag-upload-label">
+                    Choose file(s)
+                  </label>
+                </div>
+
+                <div class="d-flex align-items-center mt-3">
+                  <div>Format:</div>
+                  <select class="custom-select ml-3" id="tag-upload-format">
+                    <option value="json">JSON (Reach)</option>
+                    <option value="brat">Brat</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" id="tag-upload-confirm" class="btn btn-success">
+                  Upload
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Options button/modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tag-options">
+          Options
+        </button>
+
+        <div class="modal" id="tag-options" tabindex="-1" role="dialog"
+             aria-labelledby="options-title" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="options-title">Options</h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body">
+                <div class="p-3">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="tag-option-syntax">
+                    <label class="custom-control-label" for="tag-option-syntax">Show syntax tree</label>
+                  </div>
+
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="tag-option-links-on-move">
+                    <label class="custom-control-label" for="tag-option-links-on-move">Show syntax links when moving
+                      words</label>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Download button -->
+        <button type="button" class="btn btn-primary" id="tag-download">Download as SVG</button>
+
+        <!-- Taxonomy button/modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tag-taxonomy">
+          Taxonomy/Colours
+        </button>
+
+        <div class="modal" id="tag-taxonomy" tabindex="-1" role="dialog"
+             aria-labelledby="taxonomy-title" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="taxonomy-title">Taxonomy/Colours</h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body">
+                <!-- Taxonomy viewer/colour picker -->
+                <div id="tag-taxonomy-view">
+
+                  <button type="button" class="btn btn-primary" id="tag-taxonomy-start-edit">
+                    Edit taxonomy
+                  </button>
+
+                  <!-- Will be dynamically generated using a Handlebars template -->
+                  <div class="card mt-2" id="tag-taxonomy-tree">
+
+                  </div>
+                </div>
+
+                <!-- On-the-fly editor -->
+                <div id="tag-taxonomy-edit">
+                  <div id="tag-taxonomy-editor"></div>
+                  <div id="tag-taxonomy-editor-errors" class="invalid-feedback"></div>
+                  <button type="button" class="btn btn-primary mt-2" id="tag-taxonomy-stop-edit">
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="uiContainer" style="border: solid 1px lightgray"></div>
+
+    </div>
+  </div>
+
 </div>
 
-<script src="dist/tag/js/tag.min.js"></script>
+<!-- Main demo bundle
+  -- The Bootstrap/Prism code used for the UI demo is included directly into the bundle.
+  -->
+<script src="demo.min.js"></script>
+<!-- Colour picker script
+  -- Included directly here because it doesn't play nice with Browserify
+  -->
+<script src="bootstrap-colorpicker.min.js"></script>
 </body>
 </html>

@@ -288,7 +288,7 @@ class Link {
    *   the positions of all handles will be recalculated.
    */
   draw(modAnchor) {
-    const drawStart = performance.now();
+    // const drawStart = performance.now();
 
     if (!this.initialised || !this.visible) {
       return;
@@ -317,6 +317,7 @@ class Link {
         if (handle.x !== newX || handle.y !== newY) {
           handle.x = newX;
           handle.y = newY;
+          handle.row = anchor.row;
           changedHandles.push(handle);
         }
       } else {
@@ -744,7 +745,8 @@ class Link {
     }
 
     this.line.plot(d);
-    console.log(`Drew ${this.eventId} in ${performance.now() - drawStart}ms.`);
+    // console.log(`Drew ${this.eventId} in ${performance.now() -
+    // drawStart}ms.`);
 
     this.links.forEach(l => l.draw(this));
   }
@@ -835,6 +837,9 @@ class Link {
       this.endpoints[1].idx + 1
     );
     for (const word of coveredWords) {
+      // Let this Word know we're watching it
+      word.passingLinks.push(this);
+
       for (const link of word.links) {
         // Only consider Links on the same side of the Row as this one
         if (link !== this &&
@@ -865,73 +870,6 @@ class Link {
     }
     this.calculatingSlot = false;
     return this.slot;
-  }
-
-  resetSlotRecalculation() {
-    this.isRecalculated = false;
-    this.slot = 0;
-
-    if (this.top) {
-      // top links
-      if (this.trigger) {
-        this.slot = this.trigger.slot;
-      }
-      this.arguments.forEach(arg => {
-        if (arg.anchor.slot > this.slot) {
-          this.slot = arg.anchor.slot;
-        }
-      });
-
-      this.slot += 1;
-    } else {
-      // bottom links
-      this.slot = -1;
-    }
-  }
-
-  recalculateSlots(words) {
-    // reorganize slots
-    let ep = this.endpoints;
-    if (this.isRecalculated) {
-      return [{slot: this.slot, endpoints: ep}];
-    }
-
-    this.isRecalculated = true;
-    let wordArray = words.slice(ep[0].idx, ep[1].idx + 1);
-    let self = this;
-
-    let slots = [];
-
-    // get all interfering slots
-    wordArray.forEach(word => {
-      word.links.forEach(l => {
-        if (l !== self &&
-          l.top === self.top &&
-          !(l.endpoints[0].idx >= ep[1].idx ||
-            l.endpoints[1].idx <= ep[0].idx)) {
-          [].push.apply(slots, l.recalculateSlots(words));
-        }
-      });
-    });
-
-    // find a slot to place this link
-    function incrementSlot(l) {
-      while (slots.find(s => s.slot === l.slot &&
-        !(s.endpoints[0].idx >= l.endpoints[1].idx ||
-          s.endpoints[1].idx <= l.endpoints[0].idx))) {
-        l.slot += l.top ? 1 : -1;
-      }
-      slots.push({slot: l.slot, endpoints: l.endpoints});
-      l.links.forEach(link => {
-        if (link.top === l.top) {
-          incrementSlot(link);
-        }
-      });
-    }
-
-    incrementSlot(this);
-
-    return slots;
   }
 
   listenForEdit(e) {

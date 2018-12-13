@@ -51,6 +51,10 @@ class Word {
     // Row
     this.row = null;
 
+    // Links that pass over this Word (even if this Word is not an endpoint
+    // for the Link) -- Used for Link/Row slot calculations
+    this.passingLinks = [];
+
     // SVG-related properties
     // ----------------------
     this.initialised = null;
@@ -66,10 +70,6 @@ class Word {
 
     // The x-position of the left bound of the Word's box
     this.x = 0;
-
-    this.boxWidth = 0;
-    this.boxHeight = 0;
-    this.descendHeight = 0;
   }
 
   /**
