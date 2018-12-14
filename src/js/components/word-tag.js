@@ -1,7 +1,11 @@
 /**
- * Tags for single entities/tokens
+ * Tags for single entities/tokens.
+ * Essentially a helper class for Words; should not be directly instantiated
+ * by Parsers.
  *
- *   [WordTag] / WordCluster -> Word -> Row
+ *   [WordTag] -> Word -> Row
+ *   WordCluster
+ *   Link
  */
 
 class WordTag {
@@ -31,7 +35,7 @@ class WordTag {
    * (Re-)draws this WordTag's SVG elements onto the visualisation
    */
   draw() {
-    if (this.svg){
+    if (this.svg) {
       // Delete remnants of any previous draw
       this.remove();
     }
@@ -63,8 +67,6 @@ class WordTag {
       newY = this.config.wordBottomTagPadding;
     }
     this.svgText.y(newY);
-
-    this.ww = this.svgText.length();
 
     // add click and right-click listeners
     let mainSvg = this.word.mainSvg;
@@ -132,9 +134,10 @@ class WordTag {
     if (val === undefined) {
       return this.svgText;
     }
+
     this.val = val;
     this.svgText.text(this.val);
-    this.ww = this.svgText.length();
+
     if (this.editingRect) {
       let bbox = this.svgText.bbox();
       if (bbox.width > 0) {

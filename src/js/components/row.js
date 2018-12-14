@@ -235,18 +235,24 @@ class Row {
   }
 
   /**
-   * Redraws all the unique Links associated with all the Words in the row
+   * Redraws all the unique Links and WordClusters associated with all the
+   * Words in the row
    */
-  redrawLinks() {
-    const links = [];
+  redrawLinksAndClusters() {
+    const elements = [];
     for (const word of this.words) {
       for (const link of word.links) {
-        if (links.indexOf(link) < 0) {
-          links.push(link);
+        if (elements.indexOf(link) < 0) {
+          elements.push(link);
+        }
+      }
+      for (const cluster of word.clusters) {
+        if (elements.indexOf(cluster) < 0) {
+          elements.push(cluster);
         }
       }
     }
-    links.forEach(link => link.draw());
+    elements.forEach(element => element.draw());
   }
 
   /**
@@ -308,6 +314,7 @@ class Row {
   /**
    * Returns the maximum height above the baseline of the Word
    * elements on the Row (accounting for their top WordTags, if present)
+   * TODO: Account for WordCluster height
    */
   get wordHeight() {
     let wordHeight = 0;

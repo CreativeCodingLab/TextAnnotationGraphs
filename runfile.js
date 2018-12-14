@@ -411,18 +411,20 @@ const demo = {
 
       console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-      return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && cleancss ${output} -o ${output}"`, {async: true});
+      return run(`chokidar ${input} -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && cleancss ${output} -o ${output}"`, {async: true});
     },
 
     async coreStyles() {
       const input = "src/css/tag.scss";
       const output = `${config.assetsDir}/${config.stylesDir}/tag.css`;
+      const input2 = "demo/src/demo.scss";
+      const output2 = `demo/demo.min.css`;
       const type = "Build";
       const desc = "Main TAG CSS bundle (Unminified)";
 
       console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-      return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace`, {async: true});
+      return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && sass ${input2} ${output2} && postcss ${output2} --use autoprefixer --replace && cleancss ${output2} -o ${output2}`, {async: true});
     },
 
     async all() {

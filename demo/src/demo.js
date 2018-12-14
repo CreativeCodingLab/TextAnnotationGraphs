@@ -62,7 +62,7 @@ $(async () => {
 
   // Debug
   window.basicTag = basicTag;
-  await basicTag.loadUrlAsync("data/simple-brat.ann", "brat");
+  await basicTag.loadUrlAsync("data/test-brat.ann", "brat");
 
   // -------------------
   // Advanced/UI example
@@ -75,6 +75,9 @@ $(async () => {
   // Data can be loaded after initialisation using the `.loadData()` function
   const sampleData = require("../data/data1.json");
   uiTag.loadData(sampleData, "json");
+
+  // Debug
+  await uiTag.loadUrlAsync("data/test-reach.json", "json");
 
   // --------------------------------------------------------------------------
 

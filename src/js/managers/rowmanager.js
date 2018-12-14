@@ -41,7 +41,7 @@ class RowManager {
       row.height(newHeight);
       // console.log("--------");
       const drawStart = performance.now();
-      row.redrawLinks();
+      row.redrawLinksAndClusters();
       // console.log(`Redrew links in ${performance.now() - drawStart}ms.`);
     }
 
@@ -51,7 +51,7 @@ class RowManager {
       const thisRow = this._rows[i];
       if (thisRow.ry !== prevRow.ry2) {
         thisRow.move(prevRow.ry2);
-        thisRow.redrawLinks();
+        thisRow.redrawLinksAndClusters();
       }
     }
 

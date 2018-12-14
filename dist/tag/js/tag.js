@@ -43503,7 +43503,7 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/creat
 
 var _word = _interopRequireDefault(require("../components/word.js"));
 
-var _wordcluster = _interopRequireDefault(require("../components/wordcluster.js"));
+var _wordcluster = _interopRequireDefault(require("../components/word-cluster.js"));
 
 var _link = _interopRequireDefault(require("../components/link.js"));
 

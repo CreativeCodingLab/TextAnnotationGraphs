@@ -59,8 +59,8 @@ class Word {
     // ----------------------
     this.initialised = null;
 
-    // Main SVG object (for firing events, etc.)
-    this.mainSvg = null;
+    // Main API instance
+    this.main = null;
 
     // Main Config object for the parent instance
     this.config = null;
@@ -129,12 +129,13 @@ class Word {
    * initial draw of it and its WordTags.
    * The Word will be drawn in the top left corner of the canvas, but will
    * be properly positioned when added to a Row.
-   * @param mainSvg - The main SVG document for the current TAG instance
-   * @param config - The Config object for the instance
+   * @param main - The main API instance
    */
-  init(mainSvg, config) {
-    this.mainSvg = mainSvg;
-    this.config = config;
+  init(main) {
+    this.main = main;
+    this.config = main.config;
+
+    const mainSvg = main.svg;
 
     this.svg = mainSvg.group()
       .addClass("tag-element")
@@ -168,7 +169,7 @@ class Word {
 
     // Draw cluster info
     this.clusters.forEach((cluster) => {
-      cluster.init(this);
+      cluster.init(this, main);
     });
 
 

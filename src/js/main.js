@@ -131,6 +131,10 @@ class Main {
    * Draws elements (rows, words, links, etc.) onto the visualisation
    */
   draw() {
+    let t0 = performance.now();
+    console.log("----------");
+    console.log("Starting draw");
+
     // Save a reference to the currently loaded tokens and links
     const data = this.parser.getParsedData();
     this.words = data.words;
@@ -152,14 +156,20 @@ class Main {
 
     // Draw the Words onto the visualisation
     this.words.forEach(word => {
-      word.init(this.svg, this.config);
+      word.init(this);
       this.rowManager.addWordToRow(word, this.rowManager.lastRow);
     });
+
+    console.log(`Words done (${performance.now() - t0}ms)`);
+    t0 = performance.now();
 
     // We have to initialise all the Links before we draw any of them, to
     // account for nested Links etc.
     this.links.forEach(link => link.init(this));
     this.links.forEach(link => link.draw());
+
+    console.log(`Links done (${performance.now() - t0}ms)`);
+    t0 = performance.now();
 
     // Change token colours based on the current taxonomy, if loaded
     this.taxonomyManager.colour(this.words);
@@ -168,16 +178,22 @@ class Main {
     this.options.showSyntax ? this.showSyntax() : this.hideSyntax();
 
     this.rowManager.resizeAll();
+    console.log(`Resize done (${performance.now() - t0}ms)`);
   }
 
   /**
    * Removes all elements from the visualisation
    */
   clear() {
+    // Removing Rows takes care of Words and WordTags
     while (this.rowManager.rows.length > 0) {
       this.rowManager.removeLastRow();
     }
+    // Links and Clusters are drawn directly on the main SVG document
     this.links.forEach(link => link.svg && link.svg.remove());
+    this.words.forEach(word => {
+      word.clusters.forEach(cluster => cluster.remove());
+    });
   }
 
   /**

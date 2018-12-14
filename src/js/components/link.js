@@ -1,5 +1,6 @@
-import WordTag from "./word-tag.js";
 import Word from "./word.js";
+import WordTag from "./word-tag.js";
+import WordCluster from "./word-cluster.js";
 
 const $ = require("jquery");
 
@@ -231,13 +232,18 @@ class Link {
           draggedHandle.offset = Math.min(draggedHandle.offset, anchor.width);
           draggedHandle.offset = Math.max(draggedHandle.offset, 0);
         } else {
-          // The handle is resting on a Word/WordTag; offset 0 is the centre
-          // of the Word/WordTag
-          let halfWidth = anchor.boxWidth / 2;
+          // The handle is resting on a WordTag/WordCluster; offset 0 is the
+          // centre of the tag
+          let halfWidth;
           if (this.top && anchor.tag instanceof WordTag) {
-            halfWidth = anchor.tag.ww / 2;
+            halfWidth = anchor.tag.textWidth / 2;
           } else if (!this.top && anchor.syntaxTag instanceof WordTag) {
-            halfWidth = anchor.syntaxTag.ww / 2;
+            halfWidth = anchor.syntaxTag.textWidth / 2;
+          } else if (this.top && anchor instanceof WordCluster) {
+            halfWidth = anchor.textWidth / 2;
+          } else {
+            // Shouldn't happen, but maybe this is pointed directly at a Word?
+            halfWidth = anchor.boxWidth / 2;
           }
 
           // Constrain the handle to be within 3px of the bounds of its base
@@ -314,11 +320,12 @@ class Link {
 
     for (let handle of calcHandles) {
       const anchor = handle.anchor;
-      // Two possibilities: The anchor is a Word (/WordCluster?), or it is a
+      // Two possibilities: The anchor is a Word/WordCluster, or it is a
       // Link.
       if (!(anchor instanceof Link)) {
         // No need to account for multiple rows (the handle will be resting
         // on the label for a Word/WordCluster)
+        // The 0-offset location is the centre of the anchor.
         const newX = anchor.cx + handle.offset;
         const newY = this.top
           ? anchor.absoluteY

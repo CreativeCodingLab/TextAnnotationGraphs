@@ -1,0 +1,45 @@
+{
+  "eventData": {
+    "comments": [
+      "This is a simple test of the Reach parser.",
+      "It focuses on testing WordClusters and associated Links.",
+      "For more general tests, see the BRAT parser test (`test-brat.ann`).",
+      "",
+      "N.B.: As currently written, the Reach parser relies on `.syntaxData`",
+      "for the tokenisation of the text string."
+    ],
+    "entities": [
+      ["T1", "Tag 1", [["0", "4"]]],
+      ["T2", "Cluster 1", [["10", "22"]]]
+    ],
+    "attributes": [],
+    "text": "This is a word cluster test. This is a word cluster test.",
+    "relations": [],
+    "triggers": [],
+    "events": []
+  },
+  "syntaxData": {
+    "comments": [],
+    "entities": [
+      ["T1", "DT", [["0", "4"]]],
+      ["T2", "VBZ", [["5", "7"]]],
+      ["T3", "DT", [["8", "9"]]],
+      ["T4", "NN", [["10", "14"]]],
+      ["T5", "NN", [["15", "22"]]],
+      ["T6", "NN", [["23", "27"]]],
+      ["T7", ".", [["27", "28"]]],
+      ["T8", "DT", [["29", "33"]]],
+      ["T9", "VBZ", [["34", "36"]]],
+      ["T10", "DT", [["37", "38"]]],
+      ["T11", "NN", [["39", "43"]]],
+      ["T12", "NN", [["44", "51"]]],
+      ["T13", "NN", [["52", "56"]]],
+      ["T14", ".", [["56", "57"]]]
+    ],
+    "attributes": [],
+    "text": "This is a word cluster test. This is a word cluster test.",
+    "relations": [],
+    "triggers": [],
+    "events": []
+  }
+}

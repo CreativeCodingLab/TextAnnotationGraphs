@@ -1,5 +1,5 @@
 import Word from '../components/word.js';
-import WordCluster from '../components/wordcluster.js';
+import WordCluster from '../components/word-cluster.js';
 import Link from '../components/link.js';
 
 class ReachParser {

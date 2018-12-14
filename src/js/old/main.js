@@ -7,7 +7,7 @@ import RowManager from "./managers/rowmanager.js";
 import Taxonomy from "./old/taxonomy.js";
 import Tooltip from "./managers/tooltip.js";
 import Word from "./components/word.js";
-import WordCluster from "./components/wordcluster.js";
+import WordCluster from "./components/word-cluster.js";
 import Link from "./components/link.js";
 import load from "./xhr.js";
 
