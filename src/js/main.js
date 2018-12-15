@@ -164,9 +164,13 @@ class Main {
     t0 = performance.now();
 
     // We have to initialise all the Links before we draw any of them, to
-    // account for nested Links etc.
+    // account for nested Links etc.  We should also only draw Links directly
+    // anchored to Words, and let them draw any higher-level Links, so that we
+    // don't accidentally draw a higher-level Link before its base is available
     this.links.forEach(link => link.init(this));
-    this.links.forEach(link => link.draw());
+    this.words.forEach(word => {
+      word.links.forEach(link => link.draw());
+    });
 
     console.log(`Links done (${performance.now() - t0}ms)`);
     t0 = performance.now();

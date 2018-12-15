@@ -1418,17 +1418,41 @@ class Handle {
     // If the handle's anchor has multiple Links associated with it,
     // stagger them horizontally by setting this handle's offset
     // based on its index in the anchor's list of links.
+    // We want to sort the Links by slot descending (the ones with higher slots
+    // should be on the left)
     let l = anchor.links
-      .sort((a, b) => Math.abs(a.slot) - Math.abs(b.slot))
-      .filter(link => link.top === parent.top);
+      .filter(link => link.top === parent.top)
+      .sort((a, b) => Math.abs(b.slot) - Math.abs(a.slot));
 
-    // Magic number for width between handles on the same anchor
+    // Magic number for width to distribute handles across on the same anchor
     // TODO: Base on anchor width?
     let w = 10;
 
-    if (!(anchor instanceof Link) && l.length > 1) {
-      l = l.filter(link => anchor.idx > link.endpoints[0].idx === anchor.idx > parent.endpoints[0].idx);
-      this.offset = (l.indexOf(parent) + 0.5) / l.length * (anchor.idx > parent.endpoints[0].idx ? w : -w);
+    // Distribute the handles based on their sort position
+    if (l.length > 1) {
+      if (anchor instanceof Link) {
+        this.offset = l.indexOf(parent) * w / (l.length - 1);
+      } else {
+        // Word/WordCluster offsets are a bit more complex -- We have to
+        // sort again based on whether the Link extends to the
+        // left or right of this anchor, then adjust the offset horizontally to
+        // account for the fact that offset 0 is the centre of the anchor
+        const leftLinks = [];
+        const rightLinks = [];
+        for (const link of l) {
+          if (anchor.idx > link.endpoints[0].idx) {
+            leftLinks.push(link);
+          } else {
+            rightLinks.push(link);
+          }
+        }
+
+        // To minimise crossings, we sort the left Links ascending this time,
+        // so that the ones with smaller slots are on the left.
+        leftLinks.sort((a, b) => Math.abs(a.slot) - Math.abs(b.slot));
+        l = leftLinks.concat(rightLinks);
+        this.offset = (l.indexOf(parent) * w / (l.length - 1)) - w / 2;
+      }
     }
 
     // Row
