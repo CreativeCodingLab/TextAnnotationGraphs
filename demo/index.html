@@ -62,20 +62,26 @@
             Load sample dataset
           </button>
           <div class="dropdown-menu">
-            <a class="dropdown-item tag-dataset" data-path="data/data1.json" data-format="json" href="#">
+            <a class="dropdown-item tag-dataset" data-path="data/test-reach.json" data-format="reach" href="#">
+              Reach format test (test-reach.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/data1.json" data-format="reach" href="#">
               Sentence 1 (data1.json)
             </a>
-            <a class="dropdown-item tag-dataset" data-path="data/data2.json" data-format="json" href="#">
+            <a class="dropdown-item tag-dataset" data-path="data/data2.json" data-format="reach" href="#">
               Sentence 2 (data2.json)
             </a>
-            <a class="dropdown-item tag-dataset" data-path="data/data3.json" data-format="json" href="#">
+            <a class="dropdown-item tag-dataset" data-path="data/data3.json" data-format="reach" href="#">
               Paragraph (data3.json)
             </a>
-            <a class="dropdown-item tag-dataset" data-path="data/data4.json" data-format="json" href="#">
+            <a class="dropdown-item tag-dataset" data-path="data/data4.json" data-format="reach" href="#">
               Passage 1 (data4.json)
             </a>
-            <a class="dropdown-item tag-dataset" data-path="data/data5.json" data-format="json" href="#">
+            <a class="dropdown-item tag-dataset" data-path="data/data5.json" data-format="reach" href="#">
               Passage 2 (data5.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/test-brat.ann" data-format="brat" href="#">
+              Brat format test (test-brat.ann)
             </a>
             <a class="dropdown-item tag-dataset" data-path="data/example1.ann" data-format="brat" href="#">
               Morphology 1 (example1.ann)
@@ -85,6 +91,10 @@
             </a>
             <a class="dropdown-item tag-dataset" data-path="data/example3.ann" data-format="brat" href="#">
               Brat event annotations (example3.ann)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/test-processors.json" data-format="processors"
+               href="#">
+              Processors format test (test-processors.json)
             </a>
           </div>
         </div>
@@ -119,7 +129,7 @@
                 <div class="d-flex align-items-center mt-3">
                   <div>Format:</div>
                   <select class="custom-select ml-3" id="tag-upload-format">
-                    <option value="json">JSON (Reach)</option>
+                    <option value="reach">Reach (JSON)</option>
                     <option value="brat">Brat</option>
                   </select>
                 </div>

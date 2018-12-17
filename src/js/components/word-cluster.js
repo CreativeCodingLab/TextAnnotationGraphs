@@ -114,7 +114,7 @@ class WordCluster {
           e.preventDefault();
           mainSvg.fire("tag-right-click", {object: this, event: e});
         };
-        this.svgText.click((e) => mainSvg.fire("tag-edit", {object: this}));
+        this.svgText.click(() => mainSvg.fire("tag-edit", {object: this}));
       }
     }
 

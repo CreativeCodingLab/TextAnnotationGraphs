@@ -57,12 +57,11 @@ $(async () => {
     // String.
     // See the full documentation for details.
     data: require("../data/data7.json"),
-    format: "json"
+    format: "reach"
   });
 
-  // Debug
-  window.basicTag = basicTag;
-  await basicTag.loadUrlAsync("data/test-brat.ann", "brat");
+  // // Debug
+  // await basicTag.loadUrlAsync("data/test-brat.ann", "brat");
 
   // -------------------
   // Advanced/UI example
@@ -74,10 +73,10 @@ $(async () => {
 
   // Data can be loaded after initialisation using the `.loadData()` function
   const sampleData = require("../data/data1.json");
-  uiTag.loadData(sampleData, "json");
+  uiTag.loadData(sampleData, "reach");
 
-  // Debug
-  await uiTag.loadUrlAsync("data/test-reach.json", "json");
+  // // Debug
+  // await uiTag.loadUrlAsync("data/test-processors.json", "processors");
 
   // --------------------------------------------------------------------------
 
@@ -352,8 +351,4 @@ $(async () => {
   window.uiTag = uiTag;
   window.editor = editor;
   window.yaml = require("js-yaml");
-
-  // await uiTag.loadUrlAsync("data/example2.ann", "brat");
-  // uiTag.setOption("showSyntax", true);
-  // uiTag.redraw();
 });

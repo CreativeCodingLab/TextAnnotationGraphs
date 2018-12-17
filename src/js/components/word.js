@@ -265,11 +265,45 @@ class Word {
   }
 
   /**
-   * Returns the width of the bounding box for this Word and its WordTags
+   * Returns the width of the bounding box for this Word and its WordTags.
    * @return {Number}
    */
   get boxWidth() {
     return this.svg.bbox().width;
+  }
+
+  /**
+   * Returns the minimum width needed to hold this Word and its WordTags.
+   * Differs from boxWidth in that it will also reserve space for the Word's
+   * WordClusters if necessary (even though the WordClusters are not
+   * technically part of the Word's box)
+   */
+  get minWidth() {
+    // The Word's Bbox covers the Word and its WordTags
+    let minWidth = this.boxWidth;
+
+    for (const cluster of this.clusters) {
+      const [clusterLeft, clusterRight] = cluster.endpoints;
+      if (clusterLeft.row !== clusterRight.row) {
+        // Let's presume that if the Rows are different, the Cluster has
+        // enough space (this probably isn't true, but can be revisited later)
+        continue;
+      }
+
+      const wordWidth =
+        cluster.endpoints[1].x + cluster.endpoints[1].boxWidth
+        - cluster.endpoints[0].x;
+
+      const labelWidth = cluster.svgText.bbox().width;
+
+      if (labelWidth > wordWidth) {
+        // The WordCluster's label is wider than the Words it comprises; add
+        // a bit of extra width to this Word
+        minWidth = Math.max(minWidth, labelWidth / cluster.words.length);
+      }
+
+    }
+    return minWidth;
   }
 
   /**

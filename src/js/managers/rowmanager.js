@@ -69,7 +69,7 @@ class RowManager {
 
       // Find any Words that no longer fit on the Row
       let i = row.words
-        .findIndex(w => w.x + w.boxWidth > rw - this.config.rowEdgePadding);
+        .findIndex(w => w.x + w.minWidth > rw - this.config.rowEdgePadding);
       if (i > 0) {
         while (i < row.words.length) {
           this.moveLastWordDown(row.idx);
@@ -197,7 +197,7 @@ class RowManager {
     } else {
       rightEdge = row.rw - this.config.rowEdgePadding;
     }
-    const space = rightEdge - (word.x + word.boxWidth);
+    const space = rightEdge - (word.x + word.minWidth);
 
     if (dx <= space) {
       word.dx(dx);
@@ -243,7 +243,7 @@ class RowManager {
     // First, check if we have space available directly next to this word.
     let space = word.x;
     if (prevWord) {
-      space -= prevWord.x + prevWord.boxWidth + leftPadding;
+      space -= prevWord.x + prevWord.minWidth + leftPadding;
     } else {
       space -= this.config.rowEdgePadding;
     }
@@ -263,14 +263,14 @@ class RowManager {
       }
 
       // Fits on the previous Row?
-      if (prevRow.availableSpace >= word.boxWidth + leftPadding) {
+      if (prevRow.availableSpace >= word.minWidth + leftPadding) {
         this.moveFirstWordUp(row.idx);
         return true;
       }
 
       // Can we shift the Words on the previous Row?
       const prevRowShift =
-        word.boxWidth + leftPadding - prevRow.availableSpace;
+        word.minWidth + leftPadding - prevRow.availableSpace;
       const canMove = this.moveWordLeft({
         row: prevRow,
         wordIndex: prevRow.words.length - 1,
@@ -315,7 +315,7 @@ class RowManager {
     }
 
     const word = row.words[0];
-    const newX = prevRow.rw - this.config.rowEdgePadding - word.boxWidth;
+    const newX = prevRow.rw - this.config.rowEdgePadding - word.minWidth;
 
     row.removeWord(word);
     this.addWordToRow(word, prevRow, undefined, newX);

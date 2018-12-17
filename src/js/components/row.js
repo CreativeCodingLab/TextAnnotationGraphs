@@ -135,7 +135,7 @@ class Row {
       newX = this.config.rowEdgePadding;
     } else {
       const prevWord = this.words[index - 1];
-      newX = prevWord.x + prevWord.boxWidth;
+      newX = prevWord.x + prevWord.minWidth;
       if (word.isPunct) {
         newX += this.config.wordPunctPadding;
       } else {
@@ -176,7 +176,7 @@ class Row {
         ? this.config.wordPunctPadding
         : this.config.wordPadding;
 
-      if (newX < prevWord.x + prevWord.boxWidth + wordPadding) {
+      if (newX < prevWord.x + prevWord.minWidth + wordPadding) {
         throw `Trying to position new Word over existing one!
         (Row: ${this.idx}, wordIndex: ${wordIndex})`;
       }
@@ -188,10 +188,10 @@ class Row {
         ? this.config.wordPunctPadding
         : this.config.wordPadding;
 
-      if (nextWord.x - nextWordPadding < newX + word.boxWidth) {
+      if (nextWord.x - nextWordPadding < newX + word.minWidth) {
         overflowIndex = this.positionWord(
           nextWord,
-          newX + word.boxWidth + nextWordPadding
+          newX + word.minWidth + nextWordPadding
         );
       }
     }
@@ -199,7 +199,7 @@ class Row {
     // We have moved the next Word on the Row, or marked it as part of the
     // overflow; at this point, we either have space to move this Word, or
     // this Word itself is about to overflow the Row.
-    if (newX + word.boxWidth > this.rw - this.config.rowEdgePadding) {
+    if (newX + word.minWidth > this.rw - this.config.rowEdgePadding) {
       // Alas.  The overflowIndex is ours.
       return wordIndex;
     } else {
@@ -376,7 +376,7 @@ class Row {
     }
 
     const lastWord = this.words[this.words.length - 1];
-    return this.rw - this.config.rowEdgePadding - lastWord.x - lastWord.boxWidth;
+    return this.rw - this.config.rowEdgePadding - lastWord.x - lastWord.minWidth;
   }
 
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

@@ -38791,9 +38791,11 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
+var _word = _interopRequireDefault(require("./word.js"));
+
 var _wordTag = _interopRequireDefault(require("./word-tag.js"));
 
-var _word = _interopRequireDefault(require("./word.js"));
+var _wordCluster = _interopRequireDefault(require("./word-cluster.js"));
 
 var $ = require("jquery");
 
@@ -38901,14 +38903,25 @@ function () {
 
 
         if (_this2.trigger) {
-          var text = _this2.svg.text(arg.type).y(-7).addClass("tag-element").addClass("link-text");
+          var text = _this2.svg.text(arg.type).leading(1).addClass("tag-element").addClass("link-text"); // Transform the text based on its font-size so that we can position it
+          // relative to its baseline
+
+
+          text.transform({
+            y: -parseInt($(text.node).css("font-size")) + 1
+          });
 
           _this2.svgTexts.push(text);
         }
       }); // draw svgText for a non-trigger relation
 
       if (this.reltype) {
-        var text = this.svg.text(this.reltype).y(-7).addClass("tag-element").addClass("link-text");
+        var text = this.svg.text(this.reltype).leading(1).addClass("tag-element").addClass("link-text"); // Transform the text based on its font-size so that we can position it
+        // relative to its baseline
+
+        text.transform({
+          y: -parseInt($(text.node).css("font-size")) + 1
+        });
         this.svgTexts.push(text);
       } // apply click events to text
 
@@ -39023,14 +39036,19 @@ function () {
           draggedHandle.offset = Math.min(draggedHandle.offset, anchor.width);
           draggedHandle.offset = Math.max(draggedHandle.offset, 0);
         } else {
-          // The handle is resting on a Word/WordTag; offset 0 is the centre
-          // of the Word/WordTag
-          var halfWidth = anchor.boxWidth / 2;
+          // The handle is resting on a WordTag/WordCluster; offset 0 is the
+          // centre of the tag
+          var halfWidth;
 
           if (_this2.top && anchor.tag instanceof _wordTag.default) {
-            halfWidth = anchor.tag.ww / 2;
+            halfWidth = anchor.tag.textWidth / 2;
           } else if (!_this2.top && anchor.syntaxTag instanceof _wordTag.default) {
-            halfWidth = anchor.syntaxTag.ww / 2;
+            halfWidth = anchor.syntaxTag.textWidth / 2;
+          } else if (_this2.top && anchor instanceof _wordCluster.default) {
+            halfWidth = anchor.textWidth / 2;
+          } else {
+            // Shouldn't happen, but maybe this is pointed directly at a Word?
+            halfWidth = anchor.boxWidth / 2;
           } // Constrain the handle to be within 3px of the bounds of its base
 
 
@@ -39124,32 +39142,33 @@ function () {
 
       try {
         for (var _iterator2 = calcHandles[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var _handle = _step2.value;
-          var anchor = _handle.anchor; // Two possibilities: The anchor is a Word (/WordCluster?), or it is a
+          var handle = _step2.value;
+          var anchor = handle.anchor; // Two possibilities: The anchor is a Word/WordCluster, or it is a
           // Link.
 
           if (!(anchor instanceof Link)) {
             // No need to account for multiple rows (the handle will be resting
             // on the label for a Word/WordCluster)
-            var newX = anchor.cx + _handle.offset;
+            // The 0-offset location is the centre of the anchor.
+            var newX = anchor.cx + handle.offset;
             var newY = this.top ? anchor.absoluteY : anchor.absoluteDescent;
 
-            if (_handle.x !== newX || _handle.y !== newY) {
-              _handle.x = newX;
-              _handle.y = newY;
-              _handle.row = anchor.row;
-              changedHandles.push(_handle);
+            if (handle.x !== newX || handle.y !== newY) {
+              handle.x = newX;
+              handle.y = newY;
+              handle.row = anchor.row;
+              changedHandles.push(handle);
             }
           } else {
             // The anchor is a Link; the handle rests on another Link's line,
             // and the offset might extend to the next row and beyond.
             var baseLeft = anchor.leftHandle; // First, make sure the offset doesn't overshoot the base row
 
-            _handle.offset = Math.min(_handle.offset, anchor.width);
-            _handle.offset = Math.max(_handle.offset, 0); // Handle intervening rows without modifying `handle.offset` or
+            handle.offset = Math.min(handle.offset, anchor.width);
+            handle.offset = Math.max(handle.offset, 0); // Handle intervening rows without modifying `handle.offset` or
             // the anchor Link directly
 
-            var calcOffset = _handle.offset;
+            var calcOffset = handle.offset;
             var calcRow = baseLeft.row;
             var calcX = baseLeft.x;
 
@@ -39164,11 +39183,11 @@ function () {
 
             var _newY = anchor.getLineYRow(calcRow);
 
-            if (_handle.x !== _newX || _handle.y !== _newY) {
-              _handle.x = _newX;
-              _handle.y = _newY;
-              _handle.row = calcRow;
-              changedHandles.push(_handle);
+            if (handle.x !== _newX || handle.y !== _newY) {
+              handle.x = _newX;
+              handle.y = _newY;
+              handle.row = calcRow;
+              changedHandles.push(handle);
             }
           }
         } // If our width has changed, we should update the offset of any of our
@@ -39195,18 +39214,8 @@ function () {
         this.lastDrawnWidth = this.width;
       } else {
         var growth = this.width - this.lastDrawnWidth;
-        this.lastDrawnWidth = this.width;
-
-        if (growth > 500) {
-          // Debug
-          var _ = require("lodash");
-
-          console.log(this.eventId, this.width, growth, this.lastDrawnWidth);
-          console.log(_.cloneDeep(this));
-          console.log(_.cloneDeep(this.handles));
-        } // To get the parent Link's handle position to remain as constant as
+        this.lastDrawnWidth = this.width; // To get the parent Link's handle position to remain as constant as
         // possible, we should adjust its offset only if our left handle changed
-
 
         if (changedHandles.length === 1 && changedHandles[0] === this.leftHandle) {
           var _iteratorNormalCompletion3 = true;
@@ -39237,329 +39246,21 @@ function () {
             }
           }
         }
-      } // Redraw Link line
-
-
-      var width = this.mainSVG.width();
-      var d = "";
-      var leftHandle = this.leftHandle;
-      var rightHandle = this.rightHandle; // draw a polyline between the trigger and each of its arguments
+      } // draw a polyline between the trigger and each of its arguments
       // https://www.w3.org/TR/SVG/paths.html#PathData
 
+
       if (this.trigger) {
-        // Start drawing from the trigger
-        var triggerHandle = this.triggerHandle;
-        var pTrigger = {
-          x: triggerHandle.x,
-          y: this.top ? triggerHandle.y - this.config.linkHandlePadding : triggerHandle.y + this.config.linkHandlePadding
-        }; // Draw the lines to each argument's handle
-
-        for (var i = 0; i < this.arguments.length; i++) {
-          // The trigger is always the handle with index 0
-          var handle = this.handles[i + 1];
-          var label = this.svgTexts[i];
-          var pHandle = {
-            x: handle.x,
-            y: this.top ? handle.y - this.config.linkHandlePadding : handle.y + this.config.linkHandlePadding
-          };
-          var sameRow = handle.row.idx === triggerHandle.row.idx; // Width/position of the Link's label
-
-          var textLength = label.length();
-          var textY = this.getLineYRow(handle.row) - 10;
-          var textLeft = void 0;
-
-          if (handle.precedes(triggerHandle)) {
-            textLeft = pHandle.x + this.config.linkCurveWidth;
-
-            if (textLeft + textLength > handle.row.rw) {
-              textLeft = handle.row.rw - textLength;
-            }
-          } else {
-            textLeft = pHandle.x - this.config.linkCurveWidth - textLength;
-            textLeft = Math.max(textLeft, 0);
-          }
-
-          var textCentre = textLeft + textLength / 2; // Draw line between this handle and the trigger
-
-          if (handle.precedes(triggerHandle)) {
-            // This handle is on the left of the trigger handle.
-            // Start drawing from this handle.
-            d += "M" + [pHandle.x, pHandle.y];
-            var handleY = this.getLineYRow(handle.row); // Argument handle
-
-            if (textLeft < pHandle.x) {
-              // Just draw a vertical line up to the label
-              d += "L" + [pHandle.x, handleY];
-            } else {
-              // Draw curve up to the main Link line, then, go up to the label
-              var curveLeftX = pHandle.x + this.config.linkCurveWidth;
-              curveLeftX = Math.min(curveLeftX, textLeft);
-              d += "C" + [pHandle.x, handleY, pHandle.x, handleY, curveLeftX, handleY] + "L" + [textLeft, handleY];
-            } // Trigger handle
-
-
-            if (sameRow) {
-              if (textLeft + textLength > pTrigger.x) {
-                // Just draw a vertical line down to the handle
-                d += "M" + [pTrigger.x, handleY] + "L" + [pTrigger.x, pTrigger.y];
-              } else {
-                // Draw curve down from the main Link line
-                var curveRightX = pTrigger.x - this.config.linkCurveWidth;
-                curveRightX = Math.max(curveRightX, textLeft + textLength);
-                d += "M" + [textLeft + textLength, handleY] + "L" + [curveRightX, handleY] + "C" + [pTrigger.x, handleY, pTrigger.x, handleY, pTrigger.x, pTrigger.y];
-              }
-            } else {
-              // Draw in Link line across the end of the first row, and all
-              // intervening rows
-              d += "M" + [textLeft + textLength, handleY] + "L" + [handle.row.rw, handleY];
-
-              for (var _i = handle.row.idx + 1; _i < triggerHandle.row.idx; _i++) {
-                var thisRow = this.main.rowManager.rows[_i];
-                var lineY = this.getLineYRow(thisRow);
-                d += "M" + [0, lineY] + "L" + [thisRow.rw, lineY];
-              } // Draw in the last row
-
-
-              var _curveRightX = pTrigger.x - this.config.linkCurveWidth;
-
-              _curveRightX = Math.max(_curveRightX, 0);
-              var finalY = this.getLineYRow(triggerHandle.row);
-              d += "M" + [0, finalY] + "L" + [_curveRightX, finalY] + "C" + [pTrigger.x, finalY, pTrigger.x, finalY, pTrigger.x, pTrigger.y];
-            }
-          } else {
-            // This handle is on the right of the trigger handle.
-            // Start drawing from the trigger handle.
-            d += "M" + [pTrigger.x, pTrigger.y];
-            var triggerY = this.getLineYRow(triggerHandle.row); // Trigger handle
-
-            if (textLeft < pTrigger.x) {
-              // Just draw a vertical line up to the label
-              d += "M" + [pTrigger.x, pTrigger.y] + "L" + [pTrigger.x, triggerY];
-            } else {
-              // Draw curve up to the main Link line, then, go up to the label
-              var _curveLeftX = pTrigger.x + this.config.linkCurveWidth;
-
-              _curveLeftX = Math.min(_curveLeftX, textLeft);
-              d += "C" + [pTrigger.x, triggerY, pTrigger.x, triggerY, _curveLeftX, triggerY] + "L" + [textLeft, triggerY];
-            } // Argument handle
-
-
-            if (sameRow) {
-              if (textLeft + textLength > pHandle.x) {
-                // Just draw a vertical line down to the handle
-                d += "M" + [pHandle.x, triggerY] + "L" + [pHandle.x, pHandle.y];
-              } else {
-                // Draw curve down from the main Link line
-                var _curveRightX2 = pHandle.x - this.config.linkCurveWidth;
-
-                _curveRightX2 = Math.max(_curveRightX2, textLeft + textLength);
-                d += "M" + [textLeft + textLength, triggerY] + "L" + [_curveRightX2, triggerY] + "C" + [pHandle.x, triggerY, pHandle.x, triggerY, pHandle.x, pHandle.y];
-              }
-            } else {
-              // Draw in Link line across the end of the first row, and all
-              // intervening rows
-              d += "M" + [textLeft + textLength, triggerY] + "L" + [triggerHandle.row.rw, triggerY];
-
-              for (var _i2 = triggerHandle.row.idx + 1; _i2 < handle.row.idx; _i2++) {
-                var _thisRow = this.main.rowManager.rows[_i2];
-
-                var _lineY = this.getLineYRow(_thisRow);
-
-                d += "M" + [0, _lineY] + "L" + [_thisRow.rw, _lineY];
-              } // Draw in the last row
-
-
-              var _curveRightX3 = pHandle.x - this.config.linkCurveWidth;
-
-              _curveRightX3 = Math.max(_curveRightX3, 0);
-
-              var _finalY = this.getLineYRow(handle.row);
-
-              d += "M" + [0, _finalY] + "L" + [_curveRightX3, _finalY] + "C" + [pHandle.x, _finalY, pHandle.x, _finalY, pHandle.x, pHandle.y];
-            }
-          } // Arrowheads
-          // Draw the flat trigger arrow
-
-
-          d += "M" + [pTrigger.x, pTrigger.y] + "m" + [this.config.linkArrowWidth, 0] + "l" + [-2 * this.config.linkArrowWidth, 0];
-          d += this.arrowhead(pHandle); // Move label
-
-          label.x(textCentre).y(textY);
-        }
-      } else if (this.trigger === "debug") {
-        var y = this.getLineY(this.handles[1]);
-        var rowCrossed = false;
-
-        for (var _i3 = 0, il = this.arguments.length; _i3 < il; ++_i3) {
-          var leftOfTrigger = this.arguments[_i3].anchor.idx < this.trigger.idx;
-          var dx = leftOfTrigger ? 5 : -5;
-          var textlen = leftOfTrigger ? this.svgTexts[_i3].length() : -this.svgTexts[_i3].length();
-          var handle1 = this.handles[_i3 + 1]; // draw a line from the prev arrow segment
-
-          if (_i3 > 0) {
-            // check if crossing over a row
-            if (rowCrossed) {
-              rowCrossed = false;
-              d += "L" + [width, y] + "M0,";
-              y = this.getLineYRow(handle1.row);
-              d += y;
-            }
-
-            if (leftOfTrigger) {
-              d += "L" + [handle1.x + dx, y];
-            } else {
-              d += "L" + [handle1.x + dx + textlen, y];
-            }
-          } else if (!leftOfTrigger) {
-            // start drawing from the trigger
-            y = this.getLineYRow(this.handles[0].row);
-            d += "M" + [this.handles[0].x, this.handles[0].y] + "C" + [this.handles[0].x, y, this.handles[0].x, y, this.handles[0].x - dx, y]; // check if crossing over a row
-
-            if (this.handles[0].anchor.row.idx < this.handles[1].anchor.row.idx) {
-              d += "L" + [width, y] + "M0,";
-              y = this.getLineYRow(this.handles[1].row);
-              d += y;
-            }
-
-            d += "L" + [this.handles[1].x + dx + textlen, y];
-          } // draw the text svg
-
-
-          this.svgTexts[_i3].x(handle1.x + dx + textlen / 2).y(y - 10); // draw an arrow at the handle
-
-
-          d += this.arrowhead(handle1);
-          var handlePrecedesTrigger = leftOfTrigger && (_i3 + 2 > il || this.arguments[_i3 + 1].anchor.idx >= this.trigger.idx); // check if crossing over a row
-
-          rowCrossed = handlePrecedesTrigger && this.handles[0].anchor.row.idx != handle1.anchor.row.idx || !handlePrecedesTrigger && _i3 + 1 < il && this.handles[_i3 + 2].anchor.row.idx != handle1.anchor.row.idx; // draw an arrow segment coming from each argument
-
-          if (handlePrecedesTrigger && rowCrossed) {
-            // if row is crossed
-            var tempY = this.getLineYRow(handle1.row);
-            y = this.getLineYRow(this.handles[0].row);
-            d += "M" + [handle1.x, handle1.y] + "C" + [handle1.x, tempY, handle1.x, tempY, handle1.x + dx, tempY] + "m" + [textlen, 0] + "L" + [width, tempY] + "M" + [0, y];
-            rowCrossed = false;
-
-            this.svgTexts[_i3].y(tempY - 10);
-          } else {
-            d += "M" + [handle1.x, handle1.y] + "C" + [handle1.x, y, handle1.x, y, handle1.x + dx, y];
-
-            if (leftOfTrigger) {
-              d += "m" + [textlen, 0];
-            }
-          }
-
-          if (handlePrecedesTrigger) {
-            // draw trigger to the right of the arrow segment
-            if (_i3 + 1 < il) {
-              d += "L" + [this.handles[0].x - dx, y] + "c" + [dx, 0, dx, 0, dx, this.handles[0].y - y] + "m" + [dx, 0] + "l" + [-2 * dx, 0] + "m" + [dx, 0] + "C" + [this.handles[0].x, y, this.handles[0].x, y, this.handles[0].x + dx, y];
-              rowCrossed = this.handles[_i3 + 2].anchor.row.idx != this.handles[0].anchor.row.idx;
-            } else {
-              d += "L" + [this.handles[0].x - dx, y] + "c" + [dx, 0, dx, 0, dx, this.handles[0].y - y];
-            }
-          }
-        }
+        this._drawAsEvent();
       } else if (this.reltype) {
         // This is a non-trigger (binary) relation
-        // Start/end points
-        var pStart = {
-          x: leftHandle.x,
-          y: this.top ? leftHandle.y - this.config.linkHandlePadding : leftHandle.y + this.config.linkHandlePadding
-        };
-        var pEnd = {
-          x: rightHandle.x,
-          y: this.top ? rightHandle.y - this.config.linkHandlePadding : rightHandle.y + this.config.linkHandlePadding
-        };
-
-        var _sameRow = leftHandle.row.idx === rightHandle.row.idx; // Width/position of the Link's label
-        // (Always on the first row for multi-line Links)
-
-
-        var _textLength = this.svgTexts[0].length();
-
-        var _textY = this.getLineYRow(leftHandle.row) - 10; // Centre on the segment of the Link line on the first row
-
-
-        var _textCentre = _sameRow ? (pStart.x + pEnd.x) / 2 : (pStart.x + leftHandle.row.rw) / 2;
-
-        var _textLeft = _textCentre - _textLength / 2; // Make sure it doesn't overshoot the right row boundary
-
-
-        if (_textLeft + _textLength > leftHandle.row.rw) {
-          _textLeft = leftHandle.row.rw - _textLength;
-          _textCentre = _textLeft + _textLength / 2;
-        } // Start preparing path string
-
-
-        d = "M" + [pStart.x, pStart.y]; // Left handle
-
-        var firstY = this.getLineYRow(leftHandle.row);
-
-        if (_textLeft < pStart.x) {
-          // Just draw a vertical line up to the label
-          d += "L" + [pStart.x, firstY];
-        } else {
-          // Draw curve up to the main Link line, then, go up to the label
-          var _curveLeftX2 = pStart.x + this.config.linkCurveWidth;
-
-          _curveLeftX2 = Math.min(_curveLeftX2, _textLeft);
-          d += "C" + [pStart.x, firstY, pStart.x, firstY, _curveLeftX2, firstY] + "L" + [_textLeft, firstY];
-        } // Right handle
-
-
-        if (_sameRow) {
-          if (_textLeft + _textLength > pEnd.x) {
-            // Just draw a vertical line down to the handle
-            d += "M" + [pEnd.x, firstY] + "L" + [pEnd.x, pEnd.y];
-          } else {
-            // Draw curve down from the main Link line
-            var _curveRightX4 = pEnd.x - this.config.linkCurveWidth;
-
-            _curveRightX4 = Math.max(_curveRightX4, _textLeft + _textLength);
-            d += "M" + [_textLeft + _textLength, firstY] + "L" + [_curveRightX4, firstY] + "C" + [pEnd.x, firstY, pEnd.x, firstY, pEnd.x, pEnd.y];
-          }
-        } else {
-          // Draw in Link line across the end of the first row, and all
-          // intervening rows
-          d += "M" + [_textLeft + _textLength, firstY] + "L" + [leftHandle.row.rw, firstY];
-
-          for (var _i4 = leftHandle.row.idx + 1; _i4 < rightHandle.row.idx; _i4++) {
-            var _thisRow2 = this.main.rowManager.rows[_i4];
-
-            var _lineY2 = this.getLineYRow(_thisRow2);
-
-            d += "M" + [0, _lineY2] + "L" + [_thisRow2.rw, _lineY2];
-          } // Draw in the last row
-
-
-          var _curveRightX5 = pEnd.x - this.config.linkCurveWidth;
-
-          _curveRightX5 = Math.max(_curveRightX5, 0);
-
-          var _finalY2 = this.getLineYRow(rightHandle.row);
-
-          d += "M" + [0, _finalY2] + "L" + [_curveRightX5, _finalY2] + "C" + [pEnd.x, _finalY2, pEnd.x, _finalY2, pEnd.x, pEnd.y];
-        } // Arrowheads
-
-
-        d += this.arrowhead(pStart) + this.arrowhead(pEnd); // Move label
-
-        this.svgTexts[0].x(_textCentre).y(_textY);
+        this._drawAsRelation();
       }
-
-      this.line.plot(d); // console.log(`Drew ${this.eventId} in ${performance.now() -
-      // drawStart}ms.`);
 
       this.links.forEach(function (l) {
         return l.draw(_this3);
       });
-    } // /**
-    //  * Returns the y-coordinate of the Link line as drawn above the given
-    // handle. * (As opposed to the y-coordinate of the handle itself, which is
-    // at the * bottom of the relevant arrowhead) * * @param handle * @return
-    // {number} */ getLineY(handle) { let r = handle.anchor.row; return this.top
-    // ? r.rh + r.ry - 45 - 15 * this.slot : r.rh + r.ry + 25 - 15 * this.slot; }
-
+    }
     /**
      * Returns the y-position that this Link's main line will have if it were
      * drawn in the given row (based on the Row's position, and this Link's slot)
@@ -39569,7 +39270,8 @@ function () {
   }, {
     key: "getLineYRow",
     value: function getLineYRow(row) {
-      return this.top ? row.ry + row.rh - row.wordHeight - 15 * this.slot : row.ry + row.rh + row.wordDescent + 15 * this.slot;
+      return this.top ? row.ry + row.rh - row.wordHeight - 15 * this.slot // Bottom Links have negative slot numbers
+      : row.ry + row.rh + row.wordDescent - 15 * this.slot;
     } // helper function to return a path string for an arrowhead pointing to
     // the given point
 
@@ -39637,9 +39339,15 @@ function () {
       }
 
       this.calculatingSlot = true; // Pick up all the intervening Links
+      // We don't include the first and last Word since Links ending on the
+      // same Word can share the same slot if they don't otherwise overlap
 
       var intervening = [];
-      var coveredWords = words.slice(this.endpoints[0].idx, this.endpoints[1].idx + 1);
+      var coveredWords = words.slice(this.endpoints[0].idx + 1, this.endpoints[1].idx); // The above comments notwithstanding, the first and last Word should
+      // know that we are watching them
+
+      words[this.endpoints[0].idx].passingLinks.push(this);
+      words[this.endpoints[1].idx].passingLinks.push(this);
       var _iteratorNormalCompletion4 = true;
       var _didIteratorError4 = false;
       var _iteratorError4 = undefined;
@@ -39648,7 +39356,8 @@ function () {
         for (var _iterator4 = coveredWords[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
           var word = _step4.value;
           // Let this Word know we're watching it
-          word.passingLinks.push(this);
+          word.passingLinks.push(this); // Word Links
+
           var _iteratorNormalCompletion5 = true;
           var _didIteratorError5 = false;
           var _iteratorError5 = undefined;
@@ -39661,7 +39370,8 @@ function () {
               if (link !== this && link.top === this.top && intervening.indexOf(link) < 0) {
                 intervening.push(link);
               }
-            }
+            } // WordCluster Links
+
           } catch (err) {
             _didIteratorError5 = true;
             _iteratorError5 = err;
@@ -39673,6 +39383,55 @@ function () {
             } finally {
               if (_didIteratorError5) {
                 throw _iteratorError5;
+              }
+            }
+          }
+
+          var _iteratorNormalCompletion6 = true;
+          var _didIteratorError6 = false;
+          var _iteratorError6 = undefined;
+
+          try {
+            for (var _iterator6 = word.clusters[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+              var cluster = _step6.value;
+              var _iteratorNormalCompletion7 = true;
+              var _didIteratorError7 = false;
+              var _iteratorError7 = undefined;
+
+              try {
+                for (var _iterator7 = cluster.links[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                  var _link = _step7.value;
+
+                  if (_link !== this && _link.top === this.top && intervening.indexOf(_link) < 0) {
+                    intervening.push(_link);
+                  }
+                }
+              } catch (err) {
+                _didIteratorError7 = true;
+                _iteratorError7 = err;
+              } finally {
+                try {
+                  if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
+                    _iterator7.return();
+                  }
+                } finally {
+                  if (_didIteratorError7) {
+                    throw _iteratorError7;
+                  }
+                }
+              }
+            }
+          } catch (err) {
+            _didIteratorError6 = true;
+            _iteratorError6 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
+                _iterator6.return();
+              }
+            } finally {
+              if (_didIteratorError6) {
+                throw _iteratorError6;
               }
             }
           }
@@ -39752,6 +39511,407 @@ function () {
      * @return {*[]}
      */
 
+  }, {
+    key: "_drawAsEvent",
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Private helper/setup functions
+
+    /**
+     * Draws this Link as an Event annotation (has a trigger)
+     * @private
+     */
+    value: function _drawAsEvent() {
+      var d = "";
+      var triggerHandle = this.triggerHandle;
+      var pTrigger = {
+        x: triggerHandle.x,
+        y: this.top ? triggerHandle.y - this.config.linkHandlePadding : triggerHandle.y + this.config.linkHandlePadding
+      }; // How we draw the lines to each argument's Handle depends on which side
+      // of the trigger they're on.
+      // Collect the left and right Handles, sorted by distance from the
+      // trigger Handle, ascending
+
+      var lHandles = [];
+      var rHandles = [];
+      var _iteratorNormalCompletion8 = true;
+      var _didIteratorError8 = false;
+      var _iteratorError8 = undefined;
+
+      try {
+        for (var _iterator8 = this.handles[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+          var handle = _step8.value;
+
+          if (handle === triggerHandle) {
+            continue;
+          }
+
+          if (handle.precedes(triggerHandle)) {
+            lHandles.push(handle);
+          } else {
+            rHandles.push(handle);
+          }
+        }
+      } catch (err) {
+        _didIteratorError8 = true;
+        _iteratorError8 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
+            _iterator8.return();
+          }
+        } finally {
+          if (_didIteratorError8) {
+            throw _iteratorError8;
+          }
+        }
+      }
+
+      lHandles.sort(function (a, b) {
+        return a.precedes(b) ? 1 : -1;
+      });
+      rHandles.sort(function (a, b) {
+        return a.precedes(b) ? -1 : 1;
+      }); // Start drawing lines between the Handles/text.  We can't simply draw
+      // full lines from the trigger to each argument, because we don't want
+      // to draw over any intervening argument labels.
+      // pReference will be the point next to the last drawn argument label
+      // from which the line to the next argument should begin.
+
+      var pReference; // Left handles
+      // ============
+
+      pReference = null;
+
+      for (var _i = 0; _i < lHandles.length; _i++) {
+        var _handle = lHandles[_i];
+        // Handle
+        // ------
+        var pHandle = {
+          x: _handle.x,
+          y: this.top ? _handle.y - this.config.linkHandlePadding : _handle.y + this.config.linkHandlePadding
+        }; // Label
+        // -----
+        // The trigger always takes up index 0, so the index for the label is
+        // one less than the index for this handle in `this.handles`
+
+        var label = this.svgTexts[this.handles.indexOf(_handle) - 1];
+        var textLength = label.length();
+        var textY = this.getLineYRow(_handle.row);
+        var textLeft = pHandle.x + this.config.linkCurveWidth;
+
+        if (textLeft + textLength > _handle.row.rw) {
+          textLeft = _handle.row.rw - textLength;
+        }
+
+        var textCentre = textLeft + textLength / 2; // Line
+        // ----
+
+        var handleY = this.getLineYRow(_handle.row); // Argument handle to label
+
+        d += "M" + [pHandle.x, pHandle.y];
+
+        if (textLeft < pHandle.x) {
+          // Just draw a vertical line up to the label
+          d += "L" + [pHandle.x, handleY];
+        } else {
+          // Draw curve up to the main Link line, then, go up to the label
+          var curveLeftX = pHandle.x + this.config.linkCurveWidth;
+          curveLeftX = Math.min(curveLeftX, textLeft);
+          d += "C" + [pHandle.x, handleY, pHandle.x, handleY, curveLeftX, handleY] + "L" + [textLeft, handleY];
+        } // Label to pReference (if set)
+
+
+        if (pReference) {
+          if (_handle.row.idx === pReference.row.idx) {
+            // Same row
+            d += "M" + [textLeft + textLength, handleY] + "L" + [pReference.x, pReference.y];
+          } else {
+            // Draw in Link line across the end of the first row, and all
+            // intervening rows
+            d += "M" + [textLeft + textLength, handleY] + "L" + [_handle.row.rw, handleY];
+
+            for (var i = _handle.row.idx + 1; i < pReference.row.idx; i++) {
+              var thisRow = this.main.rowManager.rows[i];
+              var lineY = this.getLineYRow(thisRow);
+              d += "M" + [0, lineY] + "L" + [thisRow.rw, lineY];
+            } // Draw in the last row
+
+
+            var finalY = this.getLineYRow(pReference.row);
+            d += "M" + [0, finalY] + "L" + [pReference.x, pReference.y];
+          }
+        }
+
+        if (pReference === null) {
+          // This is the first left handle; draw in the line to the trigger also.
+          // Label to Trigger handle
+          if (_handle.row.idx === triggerHandle.row.idx) {
+            // Same row
+            if (textLeft + textLength > pTrigger.x) {
+              // Just draw a vertical line down to the handle
+              d += "M" + [pTrigger.x, handleY] + "L" + [pTrigger.x, pTrigger.y];
+            } else {
+              // Draw curve down from the main Link line
+              var curveRightX = pTrigger.x - this.config.linkCurveWidth;
+              curveRightX = Math.max(curveRightX, textLeft + textLength);
+              d += "M" + [textLeft + textLength, handleY] + "L" + [curveRightX, handleY] + "C" + [pTrigger.x, handleY, pTrigger.x, handleY, pTrigger.x, pTrigger.y];
+            }
+          } else {
+            // Draw in Link line across the end of the first row, and all
+            // intervening rows
+            d += "M" + [textLeft + textLength, handleY] + "L" + [_handle.row.rw, handleY];
+
+            for (var _i3 = _handle.row.idx + 1; _i3 < triggerHandle.row.idx; _i3++) {
+              var _thisRow = this.main.rowManager.rows[_i3];
+
+              var _lineY = this.getLineYRow(_thisRow);
+
+              d += "M" + [0, _lineY] + "L" + [_thisRow.rw, _lineY];
+            } // Draw in the last row
+
+
+            var _curveRightX = pTrigger.x - this.config.linkCurveWidth;
+
+            _curveRightX = Math.max(_curveRightX, 0);
+
+            var _finalY = this.getLineYRow(triggerHandle.row);
+
+            d += "M" + [0, _finalY] + "L" + [_curveRightX, _finalY] + "C" + [pTrigger.x, _finalY, pTrigger.x, _finalY, pTrigger.x, pTrigger.y];
+          }
+        } // pReference for the next handle will be the lower-left corner of
+        // the label
+
+
+        pReference = {
+          x: textLeft,
+          y: handleY,
+          row: _handle.row
+        }; // Arrowhead
+
+        d += this.arrowhead(pHandle); // Move label
+
+        label.x(textCentre).y(textY);
+      } // Right handles
+      // ============
+
+
+      pReference = null;
+
+      for (var _i2 = 0; _i2 < rHandles.length; _i2++) {
+        var _handle2 = rHandles[_i2];
+        // Handle
+        // ------
+        var _pHandle = {
+          x: _handle2.x,
+          y: this.top ? _handle2.y - this.config.linkHandlePadding : _handle2.y + this.config.linkHandlePadding
+        }; // Label
+        // -----
+        // The trigger always takes up index 0, so the index for the label is
+        // one less than the index for this handle in `this.handles`
+
+        var _label = this.svgTexts[this.handles.indexOf(_handle2) - 1];
+
+        var _textLength = _label.length();
+
+        var _textY = this.getLineYRow(_handle2.row);
+
+        var _textLeft = _pHandle.x - this.config.linkCurveWidth - _textLength;
+
+        _textLeft = Math.max(_textLeft, 0);
+
+        var _textCentre = _textLeft + _textLength / 2; // Line
+        // ----
+
+
+        var _handleY = this.getLineYRow(_handle2.row); // Label to argument handle
+
+
+        if (_textLeft + _textLength > _pHandle.x) {
+          // Just draw a vertical line down to the label
+          d += "M" + [_pHandle.x, _textY];
+          d += "L" + [_pHandle.x, _pHandle.y];
+        } else {
+          // Draw curve down from the main Link line
+          var _curveRightX2 = _pHandle.x - this.config.linkCurveWidth;
+
+          _curveRightX2 = Math.max(_curveRightX2, _textLeft + _textLength);
+          d += "M" + [_textLeft + _textLength, _textY] + "L" + [_curveRightX2, _textY] + "C" + [_pHandle.x, _textY, _pHandle.x, _textY, _pHandle.x, _pHandle.y];
+        } // pReference (if set) to label
+
+
+        if (pReference) {
+          if (pReference.row.idx === _handle2.row.idx) {
+            // Same row
+            d += "M" + [pReference.x, pReference.y] + "L" + [_textLeft, _handleY];
+          } else {
+            // Draw in Link line across the end of the first row, and all
+            // intervening rows
+            d += "M" + [pReference.x, pReference.y] + "L" + [pReference.row.rw, pReference.y];
+
+            for (var _i4 = pReference.row.idx + 1; _i4 < _handle2.row.idx; _i4++) {
+              var _thisRow2 = this.main.rowManager.rows[_i4];
+
+              var _lineY2 = this.getLineYRow(_thisRow2);
+
+              d += "M" + [0, _lineY2] + "L" + [_thisRow2.rw, _lineY2];
+            } // Draw in the last row
+
+
+            var _finalY2 = this.getLineYRow(_handle2.row);
+
+            d += "M" + [0, _finalY2] + "L" + [_textLeft, _finalY2];
+          }
+        }
+
+        if (pReference === null) {
+          // This is the first right handle; draw in the line from the trigger
+          // also.
+          var triggerY = this.getLineYRow(triggerHandle.row); // Trigger handle to label
+
+          if (triggerHandle.row.idx === _handle2.row.idx) {
+            // Same row
+            if (_textLeft < pTrigger.x) {
+              // Just draw a vertical line up to the label
+              d += "M" + [pTrigger.x, pTrigger.y] + "L" + [pTrigger.x, triggerY];
+            } else {
+              // Draw curve up to the main Link line, then, go up to the label
+              var _curveLeftX = pTrigger.x + this.config.linkCurveWidth;
+
+              _curveLeftX = Math.min(_curveLeftX, _textLeft);
+              d += "M" + [pTrigger.x, pTrigger.y] + "C" + [pTrigger.x, triggerY, pTrigger.x, triggerY, _curveLeftX, triggerY] + "L" + [_textLeft, triggerY];
+            }
+          } else {
+            // Draw in Link line across the end of the trigger row, and all
+            // intervening rows
+            var _curveLeftX2 = pTrigger.x + this.config.linkCurveWidth;
+
+            _curveLeftX2 = Math.min(_curveLeftX2, triggerHandle.row.rw);
+            d += "M" + [pTrigger.x, pTrigger.y] + "C" + [pTrigger.x, triggerY, pTrigger.x, triggerY, _curveLeftX2, triggerY] + "L" + [_handle2.row.rw, triggerY];
+
+            for (var _i5 = triggerHandle.row.idx + 1; _i5 < _handle2.row.idx; _i5++) {
+              var _thisRow3 = this.main.rowManager.rows[_i5];
+
+              var _lineY3 = this.getLineYRow(_thisRow3);
+
+              d += "M" + [0, _lineY3] + "L" + [_thisRow3.rw, _lineY3];
+            } // Draw in the last row
+
+
+            var _finalY3 = this.getLineYRow(_handle2.row);
+
+            d += "M" + [0, _finalY3] + "L" + [_textLeft, _finalY3];
+          }
+        } // pReference for the next handle will be the lower-right corner of
+        // the label
+
+
+        pReference = {
+          x: _textLeft + _textLength,
+          y: _handleY,
+          row: _handle2.row
+        }; // Arrowhead
+
+        d += this.arrowhead(_pHandle); // Move label
+
+        _label.x(_textCentre).y(_textY);
+      } // Add flat arrowhead to trigger handle if there are both leftward and
+      // rightward handles
+
+
+      if (lHandles.length > 0 && rHandles.length > 0) {
+        d += "M" + [pTrigger.x, pTrigger.y] + "m" + [this.config.linkArrowWidth, 0] + "l" + [-2 * this.config.linkArrowWidth, 0];
+      } // Perform draw
+
+
+      this.line.plot(d);
+    }
+    /**
+     * Draws this Link as a Relation annotation (no trigger/directionality
+     * implied)
+     * @private
+     */
+
+  }, {
+    key: "_drawAsRelation",
+    value: function _drawAsRelation() {
+      var d = "";
+      var leftHandle = this.leftHandle;
+      var rightHandle = this.rightHandle; // Start/end points
+
+      var pStart = {
+        x: leftHandle.x,
+        y: this.top ? leftHandle.y - this.config.linkHandlePadding : leftHandle.y + this.config.linkHandlePadding
+      };
+      var pEnd = {
+        x: rightHandle.x,
+        y: this.top ? rightHandle.y - this.config.linkHandlePadding : rightHandle.y + this.config.linkHandlePadding
+      };
+      var sameRow = leftHandle.row.idx === rightHandle.row.idx; // Width/position of the Link's label
+      // (Always on the first row for multi-line Links)
+
+      var textLength = this.svgTexts[0].length();
+      var textY = this.getLineYRow(leftHandle.row); // Centre on the segment of the Link line on the first row
+
+      var textCentre = sameRow ? (pStart.x + pEnd.x) / 2 : (pStart.x + leftHandle.row.rw) / 2;
+      var textLeft = textCentre - textLength / 2; // Make sure it doesn't overshoot the right row boundary
+
+      if (textLeft + textLength > leftHandle.row.rw) {
+        textLeft = leftHandle.row.rw - textLength;
+        textCentre = textLeft + textLength / 2;
+      } // Start preparing path string
+
+
+      d += "M" + [pStart.x, pStart.y]; // Left handle
+
+      var firstY = this.getLineYRow(leftHandle.row);
+
+      if (textLeft < pStart.x) {
+        // Just draw a vertical line up to the label
+        d += "L" + [pStart.x, firstY];
+      } else {
+        // Draw curve up to the main Link line, then, go up to the label
+        var curveLeftX = pStart.x + this.config.linkCurveWidth;
+        curveLeftX = Math.min(curveLeftX, textLeft);
+        d += "C" + [pStart.x, firstY, pStart.x, firstY, curveLeftX, firstY] + "L" + [textLeft, firstY];
+      } // Right handle
+
+
+      if (sameRow) {
+        if (textLeft + textLength > pEnd.x) {
+          // Just draw a vertical line down to the handle
+          d += "M" + [pEnd.x, firstY] + "L" + [pEnd.x, pEnd.y];
+        } else {
+          // Draw curve down from the main Link line
+          var curveRightX = pEnd.x - this.config.linkCurveWidth;
+          curveRightX = Math.max(curveRightX, textLeft + textLength);
+          d += "M" + [textLeft + textLength, firstY] + "L" + [curveRightX, firstY] + "C" + [pEnd.x, firstY, pEnd.x, firstY, pEnd.x, pEnd.y];
+        }
+      } else {
+        // Draw in Link line across the end of the first row, and all
+        // intervening rows
+        d += "M" + [textLeft + textLength, firstY] + "L" + [leftHandle.row.rw, firstY];
+
+        for (var i = leftHandle.row.idx + 1; i < rightHandle.row.idx; i++) {
+          var thisRow = this.main.rowManager.rows[i];
+          var lineY = this.getLineYRow(thisRow);
+          d += "M" + [0, lineY] + "L" + [thisRow.rw, lineY];
+        } // Draw in the last row
+
+
+        var _curveRightX3 = pEnd.x - this.config.linkCurveWidth;
+
+        _curveRightX3 = Math.max(_curveRightX3, 0);
+        var finalY = this.getLineYRow(rightHandle.row);
+        d += "M" + [0, finalY] + "L" + [_curveRightX3, finalY] + "C" + [pEnd.x, finalY, pEnd.x, finalY, pEnd.x, pEnd.y];
+      } // Arrowheads
+
+
+      d += this.arrowhead(pStart) + this.arrowhead(pEnd); // Move label
+
+      this.svgTexts[0].x(textCentre).y(textY); // Perform draw
+
+      this.line.plot(d);
+    }
   }, {
     key: "endpoints",
     get: function get() {
@@ -39933,21 +40093,65 @@ function () {
     this.offset = 0; // If the handle's anchor has multiple Links associated with it,
     // stagger them horizontally by setting this handle's offset
     // based on its index in the anchor's list of links.
+    // We want to sort the Links by slot descending (the ones with higher slots
+    // should be on the left)
 
-    var l = anchor.links.sort(function (a, b) {
-      return a.slot - b.slot;
-    }).filter(function (link) {
+    var l = anchor.links.filter(function (link) {
       return link.top === parent.top;
-    }); // Magic number for width between handles on the same anchor
+    }).sort(function (a, b) {
+      return Math.abs(b.slot) - Math.abs(a.slot);
+    }); // Magic number for width to distribute handles across on the same anchor
     // TODO: Base on anchor width?
 
-    var w = 10;
+    var w = 10; // Distribute the handles based on their sort position
 
-    if (!(anchor instanceof Link) && l.length > 1) {
-      l = l.filter(function (link) {
-        return anchor.idx > link.endpoints[0].idx === anchor.idx > parent.endpoints[0].idx;
-      });
-      this.offset = (l.indexOf(parent) + 0.5) / l.length * (anchor.idx > parent.endpoints[0].idx ? w : -w);
+    if (l.length > 1) {
+      if (anchor instanceof Link) {
+        this.offset = l.indexOf(parent) * w / (l.length - 1);
+      } else {
+        // Word/WordCluster offsets are a bit more complex -- We have to
+        // sort again based on whether the Link extends to the
+        // left or right of this anchor, then adjust the offset horizontally to
+        // account for the fact that offset 0 is the centre of the anchor
+        var leftLinks = [];
+        var rightLinks = [];
+        var _iteratorNormalCompletion9 = true;
+        var _didIteratorError9 = false;
+        var _iteratorError9 = undefined;
+
+        try {
+          for (var _iterator9 = l[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+            var link = _step9.value;
+
+            if (anchor.idx > link.endpoints[0].idx) {
+              leftLinks.push(link);
+            } else {
+              rightLinks.push(link);
+            }
+          } // To minimise crossings, we sort the left Links ascending this time,
+          // so that the ones with smaller slots are on the left.
+
+        } catch (err) {
+          _didIteratorError9 = true;
+          _iteratorError9 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
+              _iterator9.return();
+            }
+          } finally {
+            if (_didIteratorError9) {
+              throw _iteratorError9;
+            }
+          }
+        }
+
+        leftLinks.sort(function (a, b) {
+          return Math.abs(a.slot) - Math.abs(b.slot);
+        });
+        l = leftLinks.concat(rightLinks);
+        this.offset = l.indexOf(parent) * w / (l.length - 1) - w / 2;
+      }
     } // Row
     // ---
     // There are two possibilities; the argument might be a Word, or it
@@ -39989,7 +40193,7 @@ function () {
 
 module.exports = Link;
 
-},{"../util.js":63,"./word-tag.js":52,"./word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12,"lodash":43}],51:[function(require,module,exports){
+},{"../util.js":64,"./word-cluster.js":52,"./word-tag.js":53,"./word.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],51:[function(require,module,exports){
 "use strict";
 
 var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
@@ -40162,7 +40366,7 @@ function () {
         newX = this.config.rowEdgePadding;
       } else {
         var prevWord = this.words[index - 1];
-        newX = prevWord.x + prevWord.boxWidth;
+        newX = prevWord.x + prevWord.minWidth;
 
         if (word.isPunct) {
           newX += this.config.wordPunctPadding;
@@ -40201,7 +40405,7 @@ function () {
       if (prevWord) {
         var wordPadding = word.isPunct ? this.config.wordPunctPadding : this.config.wordPadding;
 
-        if (newX < prevWord.x + prevWord.boxWidth + wordPadding) {
+        if (newX < prevWord.x + prevWord.minWidth + wordPadding) {
           throw "Trying to position new Word over existing one!\n        (Row: ".concat(this.idx, ", wordIndex: ").concat(wordIndex, ")");
         }
       } // Change the position of the next Word if we have to;
@@ -40210,15 +40414,15 @@ function () {
       if (nextWord) {
         var nextWordPadding = nextWord.isPunct ? this.config.wordPunctPadding : this.config.wordPadding;
 
-        if (nextWord.x - nextWordPadding < newX + word.boxWidth) {
-          overflowIndex = this.positionWord(nextWord, newX + word.boxWidth + nextWordPadding);
+        if (nextWord.x - nextWordPadding < newX + word.minWidth) {
+          overflowIndex = this.positionWord(nextWord, newX + word.minWidth + nextWordPadding);
         }
       } // We have moved the next Word on the Row, or marked it as part of the
       // overflow; at this point, we either have space to move this Word, or
       // this Word itself is about to overflow the Row.
 
 
-      if (newX + word.boxWidth > this.rw - this.config.rowEdgePadding) {
+      if (newX + word.minWidth > this.rw - this.config.rowEdgePadding) {
         // Alas.  The overflowIndex is ours.
         return wordIndex;
       } else {
@@ -40258,13 +40462,14 @@ function () {
       return this.removeWord(this.words[this.words.length - 1]);
     }
     /**
-     * Redraws all the unique Links associated with all the Words in the row
+     * Redraws all the unique Links and WordClusters associated with all the
+     * Words in the row
      */
 
   }, {
-    key: "redrawLinks",
-    value: function redrawLinks() {
-      var links = [];
+    key: "redrawLinksAndClusters",
+    value: function redrawLinksAndClusters() {
+      var elements = [];
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
@@ -40280,8 +40485,8 @@ function () {
             for (var _iterator2 = word.links[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
               var link = _step2.value;
 
-              if (links.indexOf(link) < 0) {
-                links.push(link);
+              if (elements.indexOf(link) < 0) {
+                elements.push(link);
               }
             }
           } catch (err) {
@@ -40295,6 +40500,33 @@ function () {
             } finally {
               if (_didIteratorError2) {
                 throw _iteratorError2;
+              }
+            }
+          }
+
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
+
+          try {
+            for (var _iterator3 = word.clusters[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              var cluster = _step3.value;
+
+              if (elements.indexOf(cluster) < 0) {
+                elements.push(cluster);
+              }
+            }
+          } catch (err) {
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+                _iterator3.return();
+              }
+            } finally {
+              if (_didIteratorError3) {
+                throw _iteratorError3;
               }
             }
           }
@@ -40314,8 +40546,8 @@ function () {
         }
       }
 
-      links.forEach(function (link) {
-        return link.draw();
+      elements.forEach(function (element) {
+        return element.draw();
       });
     }
     /**
@@ -40368,48 +40600,48 @@ function () {
       }
 
       var maxSlot = 0;
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
 
       try {
-        for (var _iterator3 = checkWords[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var word = _step3.value;
-          var _iteratorNormalCompletion4 = true;
-          var _didIteratorError4 = false;
-          var _iteratorError4 = undefined;
+        for (var _iterator4 = checkWords[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var word = _step4.value;
+          var _iteratorNormalCompletion5 = true;
+          var _didIteratorError5 = false;
+          var _iteratorError5 = undefined;
 
           try {
-            for (var _iterator4 = word.passingLinks[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-              var link = _step4.value;
+            for (var _iterator5 = word.passingLinks[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              var link = _step5.value;
               maxSlot = Math.max(maxSlot, link.slot);
             }
           } catch (err) {
-            _didIteratorError4 = true;
-            _iteratorError4 = err;
+            _didIteratorError5 = true;
+            _iteratorError5 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-                _iterator4.return();
+              if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
+                _iterator5.return();
               }
             } finally {
-              if (_didIteratorError4) {
-                throw _iteratorError4;
+              if (_didIteratorError5) {
+                throw _iteratorError5;
               }
             }
           }
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-            _iterator3.return();
+          if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
+            _iterator4.return();
           }
         } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
+          if (_didIteratorError4) {
+            throw _iteratorError4;
           }
         }
       }
@@ -40432,48 +40664,48 @@ function () {
       }
 
       var minSlot = 0;
-      var _iteratorNormalCompletion5 = true;
-      var _didIteratorError5 = false;
-      var _iteratorError5 = undefined;
+      var _iteratorNormalCompletion6 = true;
+      var _didIteratorError6 = false;
+      var _iteratorError6 = undefined;
 
       try {
-        for (var _iterator5 = checkWords[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-          var word = _step5.value;
-          var _iteratorNormalCompletion6 = true;
-          var _didIteratorError6 = false;
-          var _iteratorError6 = undefined;
+        for (var _iterator6 = checkWords[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+          var word = _step6.value;
+          var _iteratorNormalCompletion7 = true;
+          var _didIteratorError7 = false;
+          var _iteratorError7 = undefined;
 
           try {
-            for (var _iterator6 = word.passingLinks[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-              var link = _step6.value;
+            for (var _iterator7 = word.passingLinks[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+              var link = _step7.value;
               minSlot = Math.min(minSlot, link.slot);
             }
           } catch (err) {
-            _didIteratorError6 = true;
-            _iteratorError6 = err;
+            _didIteratorError7 = true;
+            _iteratorError7 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-                _iterator6.return();
+              if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
+                _iterator7.return();
               }
             } finally {
-              if (_didIteratorError6) {
-                throw _iteratorError6;
+              if (_didIteratorError7) {
+                throw _iteratorError7;
               }
             }
           }
         }
       } catch (err) {
-        _didIteratorError5 = true;
-        _iteratorError5 = err;
+        _didIteratorError6 = true;
+        _iteratorError6 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-            _iterator5.return();
+          if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
+            _iterator6.return();
           }
         } finally {
-          if (_didIteratorError5) {
-            throw _iteratorError5;
+          if (_didIteratorError6) {
+            throw _iteratorError6;
           }
         }
       }
@@ -40483,32 +40715,33 @@ function () {
     /**
      * Returns the maximum height above the baseline of the Word
      * elements on the Row (accounting for their top WordTags, if present)
+     * TODO: Account for WordCluster height
      */
 
   }, {
     key: "wordHeight",
     get: function get() {
       var wordHeight = 0;
-      var _iteratorNormalCompletion7 = true;
-      var _didIteratorError7 = false;
-      var _iteratorError7 = undefined;
+      var _iteratorNormalCompletion8 = true;
+      var _didIteratorError8 = false;
+      var _iteratorError8 = undefined;
 
       try {
-        for (var _iterator7 = this.words[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-          var word = _step7.value;
+        for (var _iterator8 = this.words[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+          var word = _step8.value;
           wordHeight = Math.max(wordHeight, word.boxHeight);
         }
       } catch (err) {
-        _didIteratorError7 = true;
-        _iteratorError7 = err;
+        _didIteratorError8 = true;
+        _iteratorError8 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
-            _iterator7.return();
+          if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
+            _iterator8.return();
           }
         } finally {
-          if (_didIteratorError7) {
-            throw _iteratorError7;
+          if (_didIteratorError8) {
+            throw _iteratorError8;
           }
         }
       }
@@ -40531,26 +40764,26 @@ function () {
     key: "wordDescent",
     get: function get() {
       var wordDescent = 0;
-      var _iteratorNormalCompletion8 = true;
-      var _didIteratorError8 = false;
-      var _iteratorError8 = undefined;
+      var _iteratorNormalCompletion9 = true;
+      var _didIteratorError9 = false;
+      var _iteratorError9 = undefined;
 
       try {
-        for (var _iterator8 = this.words[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-          var word = _step8.value;
+        for (var _iterator9 = this.words[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+          var word = _step9.value;
           wordDescent = Math.max(wordDescent, word.descendHeight);
         }
       } catch (err) {
-        _didIteratorError8 = true;
-        _iteratorError8 = err;
+        _didIteratorError9 = true;
+        _iteratorError9 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
-            _iterator8.return();
+          if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
+            _iterator9.return();
           }
         } finally {
-          if (_didIteratorError8) {
-            throw _iteratorError8;
+          if (_didIteratorError9) {
+            throw _iteratorError9;
           }
         }
       }
@@ -40594,7 +40827,7 @@ function () {
       }
 
       var lastWord = this.words[this.words.length - 1];
-      return this.rw - this.config.rowEdgePadding - lastWord.x - lastWord.boxWidth;
+      return this.rw - this.config.rowEdgePadding - lastWord.x - lastWord.minWidth;
     }
   }]);
   return Row;
@@ -40612,9 +40845,386 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
 /**
- * Tags for single entities/tokens
+ * Tags for cases where multiple words make up a single entity
+ * E.g.: The two words "DNA damage" as a single "BioProcess"
  *
- *   [WordTag] / WordCluster -> Word -> Row
+ * Act as the anchor for any incoming Links (in lieu of the Words it covers)
+ *
+ *   WordTag -> Word -> Row
+ *   [WordCluster]
+ *   Link
+ */
+var WordCluster =
+/*#__PURE__*/
+function () {
+  /**
+   * Creates a new WordCluster instance
+   * @param {Word[]} words - An array of the Words that this cluster will cover
+   * @param {String} val - The raw text for this cluster's label
+   */
+  function WordCluster() {
+    var _this = this;
+
+    var words = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var val = arguments.length > 1 ? arguments[1] : undefined;
+    (0, _classCallCheck2.default)(this, WordCluster);
+    this.eventIds = [];
+    this.val = val;
+    this.words = words;
+    this.links = []; // SVG elements:
+    //   2 groups for left & right brace, containing:
+    //   a path appended to each of the two groups
+    //   a text label appended to the left group
+    // The SVG groups are children of the main SVG document rather than the
+    // Word's SVG group, since WordClusters technically exceed the bounds of
+    // their individual Words.
+
+    this.svgs = [];
+    this.lines = [];
+    this.svgText = null; // The main API instance for the visualisation
+
+    this.main = null; // Main Config object for the parent instance; set by `.init()`
+
+    this.config = null;
+    words.forEach(function (word) {
+      return word.clusters.push(_this);
+    });
+  }
+  /**
+   * Any event IDs (essentially arbitrary labels) that this WordCluster is
+   * associated with
+   * @param id
+   */
+
+
+  (0, _createClass2.default)(WordCluster, [{
+    key: "addEventId",
+    value: function addEventId(id) {
+      if (this.eventIds.indexOf(id) < 0) {
+        this.eventIds.push(id);
+      }
+    }
+    /**
+     * Sets the text of this WordCluster, or returns this WordCluster's SVG text
+     * element
+     * @param val
+     * @return {*}
+     */
+
+  }, {
+    key: "text",
+    value: function text(val) {
+      if (val === undefined) {
+        return this.svgText;
+      }
+
+      this.val = val;
+      this.svgText.text(this.val);
+
+      if (this.editingRect) {
+        var bbox = this.svgText.bbox();
+
+        if (bbox.width > 0) {
+          this.editingRect.width(bbox.width + 8).height(bbox.height + 4).x(bbox.x - 4).y(bbox.y - 2);
+        } else {
+          this.editingRect.width(10).x(this.svgText.x() - 5);
+        }
+      }
+    }
+    /**
+     * Initialise this WordCluster against the main API instance.
+     * Will be called once each by every Word within this cluster's coverage,
+     * but we are really only interested in the first Word and the last Word
+     * @param {Word} word - A Word within this cluster's coverage.
+     * @param main
+     */
+
+  }, {
+    key: "init",
+    value: function init(word, main) {
+      var _this2 = this;
+
+      var idx = this.endpoints.indexOf(word);
+
+      if (idx < 0) {
+        // Not a critical word
+        return;
+      }
+
+      this.main = main;
+      this.config = main.config; // A critical Word.  Prepare the corresponding SVG group.
+
+      var mainSvg = main.svg;
+
+      if (!this.svgs[idx]) {
+        var svg = this.svgs[idx] = mainSvg.group().addClass("tag-element").addClass("word-cluster");
+        this.lines[idx] = svg.path().addClass("tag-element");
+
+        if (idx === 0) {
+          this.svgText = svg.text(this.val).leading(1);
+
+          this.svgText.node.oncontextmenu = function (e) {
+            e.preventDefault();
+            mainSvg.fire("tag-right-click", {
+              object: _this2,
+              event: e
+            });
+          };
+
+          this.svgText.click(function () {
+            return mainSvg.fire("tag-edit", {
+              object: _this2
+            });
+          });
+        }
+      } // Perform initial draw if both arms are ready
+
+
+      if (this.lines[1] && this.endpoints[1].row) {
+        this.draw();
+      }
+    }
+    /**
+     * Draws in the SVG elements for this WordCluster
+     * https://codepen.io/explosion/pen/YGApwd
+     */
+
+  }, {
+    key: "draw",
+    value: function draw() {
+      var _this3 = this;
+
+      if (!this.lines[1] || !this.endpoints[1].row) {
+        // The Word/WordClusters are not ready for drawing
+        return;
+      }
+      /** @type {Word} */
+
+
+      var leftAnchor = this.endpoints[0];
+      /** @type {Word} */
+
+      var rightAnchor = this.endpoints[1];
+      var leftX = leftAnchor.x;
+      var rightX = rightAnchor.x + rightAnchor.boxWidth;
+
+      if (leftAnchor.row === rightAnchor.row) {
+        // Draw in full curly brace between anchors
+        var baseY = this.getBaseY(leftAnchor.row);
+        var textY = baseY - this.config.wordTopTagPadding - this.svgText.bbox().height;
+        var centre = (leftX + rightX) / 2;
+        this.svgText.x(centre).y(textY); // Each arm consists of two curves with relatively tight control
+        // points (to preserve the "hook-iness" of the curve).
+        // The following x-/y- values are all relative.
+
+        var armWidth = (rightX - leftX) / 2;
+        var curveWidth = armWidth / 2;
+        var curveControl = Math.min(curveWidth, this.config.linkCurveWidth);
+        var curveY = -this.config.wordTopTagPadding / 2; // Left arm
+
+        this.lines[0].plot("M" + [leftX, baseY] + "c" + [0, curveY, curveControl, curveY, curveWidth, curveY] + "c" + [curveWidth - curveControl, 0, curveWidth, 0, curveWidth, curveY]); // Right arm
+
+        this.lines[1].plot("M" + [rightX, baseY] + "c" + [0, curveY, -curveControl, curveY, -curveWidth, curveY] + "c" + [-curveWidth + curveControl, 0, -curveWidth, 0, -curveWidth, curveY]);
+      } else {
+        // Extend curly brace to end of first Row, draw intervening rows,
+        // finish on last Row
+        var _textY = leftAnchor.row.baseline - leftAnchor.boxHeight - this.svgText.bbox().height - this.config.wordTopTagPadding;
+
+        var _centre = (leftX + leftAnchor.row.rw) / 2;
+
+        this.svgText.x(_centre).y(_textY); // Left arm
+
+        var leftY = this.getBaseY(leftAnchor.row);
+
+        var _armWidth = (leftAnchor.row.rw - leftX) / 2;
+
+        var _curveWidth = _armWidth / 2;
+
+        var _curveControl = Math.min(_curveWidth, this.config.linkCurveWidth);
+
+        var _curveY = -this.config.wordTopTagPadding / 2;
+
+        this.lines[0].plot("M" + [leftX, leftY] + "c" + [0, _curveY, _curveControl, _curveY, _curveWidth, _curveY] + "c" + [_curveWidth - _curveControl, 0, _curveWidth, 0, _curveWidth, _curveY]); // Right arm, first Row
+
+        var d = "";
+        d += "M" + [leftAnchor.row.rw, leftY + _curveY] + "c" + [-_armWidth + _curveControl, 0, -_armWidth, 0, -_armWidth, _curveY]; // Intervening rows
+
+        for (var i = leftAnchor.row.idx + 1; i < rightAnchor.row.idx; i++) {
+          var thisRow = this.main.rowManager.rows[i];
+          var lineY = this.getBaseY(thisRow);
+          d += "M" + [0, lineY + _curveY] + "L" + [thisRow.rw, lineY + _curveY];
+        } // Last Row
+
+
+        var rightY = this.getBaseY(rightAnchor.row);
+        d += "M" + [rightX, rightY] + "c" + [0, _curveY, -_curveControl, _curveY, -rightX, _curveY];
+        this.lines[1].plot(d); // // draw right side of brace extending to end of row and align text
+        // let center = (-left + this.endpoints[0].row.rw) / 2 + 10;
+        // this.x = center + lOffset;
+        // this.svgText.x(center + lOffset);
+        //
+        // this.lines[0].plot("M" + lOffset
+        //   + ",33c0,-10," + [center, 0, center, -8]
+        //   + "c0,10," + [center, 0, center, 8]
+        // );
+        // this.lines[1].plot("M" + rOffset
+        //   + ",33c0,-10," + [-right + 8, 0, -right + 8, -8]
+        //   + "c0,10," + [-right + 8, 0, -right + 8, 8]
+        // );
+      } // propagate draw command to parent links
+
+
+      this.links.forEach(function (l) {
+        return l.draw(_this3);
+      });
+    }
+    /**
+     * Calculates what the absolute y-value for the base of this cluster's curly
+     * brace should be if it were drawn on the given Row
+     * @param row
+     */
+
+  }, {
+    key: "getBaseY",
+    value: function getBaseY(row) {
+      // Use the taller of the endpoint's boxes as the base
+      var wordHeight = Math.max(this.endpoints[0].boxHeight, this.endpoints[1].boxHeight);
+      return row.baseline - wordHeight;
+    }
+  }, {
+    key: "remove",
+    value: function remove() {
+      var _this4 = this;
+
+      this.svgs.forEach(function (svg) {
+        return svg.remove();
+      });
+      this.words.forEach(function (word) {
+        var i = word.clusters.indexOf(_this4);
+
+        if (i > -1) {
+          word.clusters.splice(i, 1);
+        }
+      });
+    }
+  }, {
+    key: "listenForEdit",
+    value: function listenForEdit() {
+      this.isEditing = true;
+      var bbox = this.svgText.bbox();
+      this.svgs[0].addClass("tag-element").addClass("editing");
+      this.editingRect = this.svgs[0].rect(bbox.width + 8, bbox.height + 4).x(bbox.x - 4).y(bbox.y - 2).rx(2).ry(2).back();
+    }
+  }, {
+    key: "stopEditing",
+    value: function stopEditing() {
+      this.isEditing = false;
+      this.svgs[0].removeClass("editing");
+      this.editingRect.remove();
+      this.editingRect = null;
+      this.val = this.val.trim();
+
+      if (!this.val) {
+        this.remove();
+      }
+    }
+  }, {
+    key: "drawBbox",
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Debug functions
+
+    /**
+     * Draws the outline of this component's bounding box
+     */
+    value: function drawBbox() {
+      var bbox = this.svgs[0].bbox();
+      this.svgs[0].polyline([[bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2], [bbox.x, bbox.y]]).fill("none").stroke({
+        width: 1
+      });
+    }
+    /**
+     * Draws the outline of the text element's bounding box
+     */
+
+  }, {
+    key: "drawTextBbox",
+    value: function drawTextBbox() {
+      var bbox = this.svgText.bbox();
+      this.svgs[0].polyline([[bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2], [bbox.x, bbox.y]]).fill("none").stroke({
+        width: 1
+      });
+    }
+  }, {
+    key: "endpoints",
+    get: function get() {
+      return [this.words[0], this.words[this.words.length - 1]];
+    }
+  }, {
+    key: "row",
+    get: function get() {
+      return this.endpoints[0].row;
+    }
+    /**
+     * Returns the absolute y-position of the top of the WordCluster's label
+     * (for positioning Links that point at it)
+     * @return {Number}
+     */
+
+  }, {
+    key: "absoluteY",
+    get: function get() {
+      // The text label lives with the left arm of the curly brace
+      var thisHeight = this.svgs[0].bbox().height;
+      return this.endpoints[0].absoluteY - thisHeight;
+    }
+  }, {
+    key: "idx",
+    get: function get() {
+      return this.endpoints[0].idx;
+    }
+    /**
+     * Returns the x-position of the centre of this WordCluster's label
+     * @return {*}
+     */
+
+  }, {
+    key: "cx",
+    get: function get() {
+      return this.svgText.cx();
+    }
+    /**
+     * Returns the width of the bounding box of the WordTag's SVG text element
+     * @return {Number}
+     */
+
+  }, {
+    key: "textWidth",
+    get: function get() {
+      return this.svgText.bbox().width;
+    }
+  }]);
+  return WordCluster;
+}();
+
+module.exports = WordCluster;
+
+},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],53:[function(require,module,exports){
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+/**
+ * Tags for single entities/tokens.
+ * Essentially a helper class for Words; should not be directly instantiated
+ * by Parsers.
+ *
+ *   [WordTag] -> Word -> Row
+ *   WordCluster
+ *   Link
  */
 var WordTag =
 /*#__PURE__*/
@@ -40677,8 +41287,7 @@ function () {
         newY = this.config.wordBottomTagPadding;
       }
 
-      this.svgText.y(newY);
-      this.ww = this.svgText.length(); // add click and right-click listeners
+      this.svgText.y(newY); // add click and right-click listeners
 
       var mainSvg = this.word.mainSvg;
 
@@ -40756,7 +41365,6 @@ function () {
 
       this.val = val;
       this.svgText.text(this.val);
-      this.ww = this.svgText.length();
 
       if (this.editingRect) {
         var bbox = this.svgText.bbox();
@@ -40853,12 +41461,14 @@ function () {
 
 module.exports = WordTag;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],53:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],54:[function(require,module,exports){
 "use strict";
 
 var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
@@ -40920,9 +41530,9 @@ function () {
     this.passingLinks = []; // SVG-related properties
     // ----------------------
 
-    this.initialised = null; // Main SVG object (for firing events, etc.)
+    this.initialised = null; // Main API instance
 
-    this.mainSvg = null; // Main Config object for the parent instance
+    this.main = null; // Main Config object for the parent instance
 
     this.config = null; // SVG group containing this Word and its attendant WordTags
 
@@ -41000,17 +41610,17 @@ function () {
      * initial draw of it and its WordTags.
      * The Word will be drawn in the top left corner of the canvas, but will
      * be properly positioned when added to a Row.
-     * @param mainSvg - The main SVG document for the current TAG instance
-     * @param config - The Config object for the instance
+     * @param main - The main API instance
      */
 
   }, {
     key: "init",
-    value: function init(mainSvg, config) {
+    value: function init(main) {
       var _this = this;
 
-      this.mainSvg = mainSvg;
-      this.config = config;
+      this.main = main;
+      this.config = main.config;
+      var mainSvg = main.svg;
       this.svg = mainSvg.group().addClass("tag-element").addClass("word"); // Draw main word text.  We remove the default additional leading
       // (basically vertical line-height padding) so that we can position it
       // more precisely.
@@ -41035,7 +41645,7 @@ function () {
 
 
       this.clusters.forEach(function (cluster) {
-        cluster.init(_this);
+        cluster.init(_this, main);
       }); // Make sure that all the SVG elements for this Word and any WordTags are
       // well-positioned within the Word's bounding box
 
@@ -41169,7 +41779,7 @@ function () {
       }
     }
     /**
-     * Returns the width of the bounding box for this Word and its WordTags
+     * Returns the width of the bounding box for this Word and its WordTags.
      * @return {Number}
      */
 
@@ -41205,6 +41815,62 @@ function () {
       return this.svg.bbox().width;
     }
     /**
+     * Returns the minimum width needed to hold this Word and its WordTags.
+     * Differs from boxWidth in that it will also reserve space for the Word's
+     * WordClusters if necessary (even though the WordClusters are not
+     * technically part of the Word's box)
+     */
+
+  }, {
+    key: "minWidth",
+    get: function get() {
+      // The Word's Bbox covers the Word and its WordTags
+      var minWidth = this.boxWidth;
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = this.clusters[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var cluster = _step2.value;
+
+          var _cluster$endpoints = (0, _slicedToArray2.default)(cluster.endpoints, 2),
+              clusterLeft = _cluster$endpoints[0],
+              clusterRight = _cluster$endpoints[1];
+
+          if (clusterLeft.row !== clusterRight.row) {
+            // Let's presume that if the Rows are different, the Cluster has
+            // enough space (this probably isn't true, but can be revisited later)
+            continue;
+          }
+
+          var wordWidth = cluster.endpoints[1].x + cluster.endpoints[1].boxWidth - cluster.endpoints[0].x;
+          var labelWidth = cluster.svgText.bbox().width;
+
+          if (labelWidth > wordWidth) {
+            // The WordCluster's label is wider than the Words it comprises; add
+            // a bit of extra width to this Word
+            minWidth = Math.max(minWidth, labelWidth / cluster.words.length);
+          }
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+
+      return minWidth;
+    }
+    /**
      * Returns the extent of the bounding box for this Word above the Row's line
      * @return {Number}
      */
@@ -41236,7 +41902,7 @@ function () {
   }, {
     key: "absoluteY",
     get: function get() {
-      return this.row ? this.row.ry + this.row.rh - this.boxHeight : this.boxHeight;
+      return this.row ? this.row.baseline - this.boxHeight : this.boxHeight;
     }
     /**
      * Returns the absolute y-position of the bottom of this Word's bounding box
@@ -41287,249 +41953,7 @@ function () {
 
 module.exports = Word;
 
-},{"./word-tag.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"svg.draggable.js":47,"svg.js":48}],54:[function(require,module,exports){
-"use strict";
-
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-
-/**
- * Tags for cases where multiple words make up a single entity
- * E.g.: The two words "DNA damage" as a single "BioProcess"
- *
- *   Word -> WordTag / [WordCluster] -> Row
- */
-var WordCluster =
-/*#__PURE__*/
-function () {
-  function WordCluster() {
-    var _this = this;
-
-    var words = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-    var val = arguments.length > 1 ? arguments[1] : undefined;
-    (0, _classCallCheck2.default)(this, WordCluster);
-    this.eventIds = [];
-    this.val = val;
-    this.words = words;
-    this.slot = words.reduce(function (acc, w) {
-      return Math.max(acc, w.slot);
-    }, 0);
-    this.metaValue = words.map(function (w) {
-      w.clusters.push(_this);
-      return w.val;
-    }).join(' ');
-    this.setEndpoints();
-    this.links = []; // svgs:
-    //   2 groups for left & right brace, containing:
-    //   a path appended to each of the two groups
-    //   a text label appended to the left group
-
-    this.svgs = [];
-    this.lines = [];
-    this.svgText = null;
-    this.x = 0; // x position of text
-  }
-
-  (0, _createClass2.default)(WordCluster, [{
-    key: "addEventId",
-    value: function addEventId(id) {
-      if (this.eventIds.indexOf(id) < 0) {
-        this.eventIds.push(id);
-      }
-    }
-  }, {
-    key: "setTag",
-    value: function setTag(tag) {
-      this.val = tag;
-    }
-  }, {
-    key: "text",
-    value: function text(val) {
-      this.val = val;
-      this.svgText.text(this.val);
-
-      if (this.editingRect) {
-        var bbox = this.svgText.bbox();
-
-        if (bbox.width > 0) {
-          this.editingRect.width(bbox.width + 8).height(bbox.height + 4).x(bbox.x - 4).y(bbox.y - 2);
-        } else {
-          this.editingRect.width(10).x(this.svgText.x() - 5);
-        }
-      }
-    }
-  }, {
-    key: "setEndpoints",
-    value: function setEndpoints() {
-      this.endpoints = [this.words[0], this.words[this.words.length - 1]];
-    }
-    /**
-     * function init : draw path and attach it to svg of the parent word element
-     * @param word
-     */
-
-  }, {
-    key: "init",
-    value: function init(word) {
-      var _this2 = this;
-
-      var i = this.endpoints.indexOf(word);
-
-      if (i === 0 || i === 1) {
-        if (this.svgs[i]) {
-          console.log('already exists u dumb fuck'); // TODO: handle this
-        } else {
-          var svg = this.svgs[i] = word.svg.group().addClass("tag-element").addClass('word-cluster'); // TODO: recalculate offset when tag is added/removed
-
-          if (this.words.find(function (word) {
-            return word.tag;
-          })) {
-            svg.y(this.tagOffset * 1.9);
-          } else {
-            svg.y(this.tagOffset);
-          }
-
-          this.lines[i] = svg.path().addClass("tag-element");
-
-          if (i === 0) {
-            this.svgText = svg.text(this.val);
-
-            this.svgText.node.oncontextmenu = function (e) {
-              e.preventDefault();
-              word.mainSVG.fire('tag-right-click', {
-                object: _this2,
-                event: e
-              });
-            };
-
-            this.svgText.click(function (e) {
-              return word.mainSVG.fire('tag-edit', {
-                object: _this2
-              });
-            });
-          }
-        }
-
-        this.draw();
-      }
-    }
-    /**
-     * recalculate position of lines
-     */
-
-  }, {
-    key: "draw",
-    value: function draw() {
-      var _this3 = this;
-
-      if (!this.lines[1]) {
-        return;
-      }
-
-      var left = this.endpoints[0].x;
-      var right = this.endpoints[1].x + this.endpoints[1].boxWidth;
-      var lOffset = -this.endpoints[0].boxWidth / 2;
-      var rOffset = this.endpoints[1].boxWidth / 2;
-
-      if (this.endpoints[0].row === this.endpoints[1].row) {
-        // draw left side of the brace and align text
-        var center = (-left + right) / 2;
-        this.x = center + lOffset;
-        this.svgText.x(center + lOffset);
-        this.lines[0].plot('M' + lOffset + ',33c0,-10,' + [center, 0, center, -8]);
-        this.lines[1].plot('M' + rOffset + ',33c0,-10,' + [-center, 0, -center, -8]);
-      } else {
-        // draw right side of brace extending to end of row and align text
-        var _center = (-left + this.endpoints[0].row.rw) / 2 + 10;
-
-        this.x = _center + lOffset;
-        this.svgText.x(_center + lOffset);
-        this.lines[0].plot('M' + lOffset + ',33c0,-10,' + [_center, 0, _center, -8] + 'c0,10,' + [_center, 0, _center, 8]);
-        this.lines[1].plot('M' + rOffset + ',33c0,-10,' + [-right + 8, 0, -right + 8, -8] + 'c0,10,' + [-right + 8, 0, -right + 8, 8]);
-      } // propagate draw command to parent links
-
-
-      this.links.forEach(function (l) {
-        return l.draw(_this3);
-      });
-    }
-  }, {
-    key: "remove",
-    value: function remove() {
-      var _this4 = this;
-
-      this.svgs.forEach(function (svg) {
-        return svg.remove();
-      });
-      this.words.forEach(function (word) {
-        var i = word.clusters.indexOf(_this4);
-
-        if (i > -1) {
-          word.clusters.splice(i, 1);
-        }
-      });
-    }
-  }, {
-    key: "listenForEdit",
-    value: function listenForEdit() {
-      this.isEditing = true;
-      var bbox = this.svgText.bbox();
-      this.svgs[0].addClass("tag-element").addClass('editing');
-      this.editingRect = this.svgs[0].rect(bbox.width + 8, bbox.height + 4).x(bbox.x - 4).y(bbox.y - 2).rx(2).ry(2).back();
-    }
-  }, {
-    key: "stopEditing",
-    value: function stopEditing() {
-      this.isEditing = false;
-      this.svgs[0].removeClass('editing');
-      this.editingRect.remove();
-      this.editingRect = null;
-      this.val = this.val.trim();
-
-      if (!this.val) {
-        this.remove();
-      }
-    }
-  }, {
-    key: "row",
-    get: function get() {
-      return this.endpoints[0].row;
-    }
-  }, {
-    key: "absoluteY",
-    get: function get() {
-      return this.endpoints[0].absoluteY;
-    }
-  }, {
-    key: "idx",
-    get: function get() {
-      return this.endpoints[0].idx;
-    }
-  }, {
-    key: "cx",
-    get: function get() {
-      return this.endpoints[0].cx;
-    }
-  }, {
-    key: "ww",
-    get: function get() {
-      return this.svgText.length();
-    }
-  }, {
-    key: "tagOffset",
-    get: function get() {
-      return -28;
-    }
-  }]);
-  return WordCluster;
-}();
-
-module.exports = WordCluster;
-
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],55:[function(require,module,exports){
+},{"./word-tag.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/helpers/slicedToArray":9,"svg.draggable.js":47,"svg.js":48}],55:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -41782,7 +42206,10 @@ function () {
     value: function draw() {
       var _this = this;
 
+      var t0 = performance.now(); // console.log("----------");
+      // console.log("Starting draw");
       // Save a reference to the currently loaded tokens and links
+
       var data = this.parser.getParsedData();
       this.words = data.words;
       this.links = data.links; // Calculate the Link slots (vertical intervals to separate
@@ -41803,23 +42230,31 @@ function () {
 
 
       this.words.forEach(function (word) {
-        word.init(_this.svg, _this.config);
+        word.init(_this);
 
         _this.rowManager.addWordToRow(word, _this.rowManager.lastRow);
-      }); // We have to initialise all the Links before we draw any of them, to
-      // account for nested Links etc.
+      }); // console.log(`Words done (${performance.now() - t0}ms)`);
+
+      t0 = performance.now(); // We have to initialise all the Links before we draw any of them, to
+      // account for nested Links etc.  We should also only draw Links directly
+      // anchored to Words, and let them draw any higher-level Links, so that we
+      // don't accidentally draw a higher-level Link before its base is available
 
       this.links.forEach(function (link) {
         return link.init(_this);
       });
-      this.links.forEach(function (link) {
-        return link.draw();
-      }); // Change token colours based on the current taxonomy, if loaded
+      this.words.forEach(function (word) {
+        word.links.forEach(function (link) {
+          return link.draw();
+        });
+      }); // console.log(`Links done (${performance.now() - t0}ms)`);
+
+      t0 = performance.now(); // Change token colours based on the current taxonomy, if loaded
 
       this.taxonomyManager.colour(this.words); // Hide the syntax links if necessary
 
       this.options.showSyntax ? this.showSyntax() : this.hideSyntax();
-      this.rowManager.resizeAll();
+      this.rowManager.resizeAll(); // console.log(`Resize done (${performance.now() - t0}ms)`);
     }
     /**
      * Removes all elements from the visualisation
@@ -41828,12 +42263,19 @@ function () {
   }, {
     key: "clear",
     value: function clear() {
+      // Removing Rows takes care of Words and WordTags
       while (this.rowManager.rows.length > 0) {
         this.rowManager.removeLastRow();
-      }
+      } // Links and Clusters are drawn directly on the main SVG document
+
 
       this.links.forEach(function (link) {
         return link.svg && link.svg.remove();
+      });
+      this.words.forEach(function (word) {
+        word.clusters.forEach(function (cluster) {
+          return cluster.remove();
+        });
       });
     }
     /**
@@ -42126,7 +42568,7 @@ function () {
 
 module.exports = Main;
 
-},{"./config.js":55,"./managers/labelmanager.js":57,"./managers/rowmanager.js":58,"./managers/taxonomy.js":59,"./parse/parse.js":61,"./util.js":63,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":48}],57:[function(require,module,exports){
+},{"./config.js":55,"./managers/labelmanager.js":57,"./managers/rowmanager.js":58,"./managers/taxonomy.js":59,"./parse/parse.js":61,"./util.js":64,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":48}],57:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -42315,7 +42757,7 @@ function () {
         row.height(newHeight); // console.log("--------");
 
         var drawStart = performance.now();
-        row.redrawLinks(); // console.log(`Redrew links in ${performance.now() - drawStart}ms.`);
+        row.redrawLinksAndClusters(); // console.log(`Redrew links in ${performance.now() - drawStart}ms.`);
       } // Adjust the positions of all following Rows
 
 
@@ -42325,7 +42767,7 @@ function () {
 
         if (thisRow.ry !== prevRow.ry2) {
           thisRow.move(prevRow.ry2);
-          thisRow.redrawLinks();
+          thisRow.redrawLinksAndClusters();
         }
       }
 
@@ -42345,7 +42787,7 @@ function () {
         row.width(rw); // Find any Words that no longer fit on the Row
 
         var i = row.words.findIndex(function (w) {
-          return w.x + w.boxWidth > rw - _this.config.rowEdgePadding;
+          return w.x + w.minWidth > rw - _this.config.rowEdgePadding;
         });
 
         if (i > 0) {
@@ -42428,12 +42870,11 @@ function () {
       while (overflow < row.words.length) {
         this.moveLastWordDown(row.idx);
       } // Now that the Words are settled, make sure that the Row is high enough
-      // (in case it started too short)
+      // (in case it started too short) and has enough descent space, if there
+      // are Rows following.
 
 
-      if (row.rh < row.minHeight) {
-        this.resizeRow(row.idx);
-      }
+      this.resizeRow(row.idx);
     }
   }, {
     key: "moveWordOnRow",
@@ -42487,7 +42928,7 @@ function () {
         rightEdge = row.rw - this.config.rowEdgePadding;
       }
 
-      var space = rightEdge - (word.x + word.boxWidth);
+      var space = rightEdge - (word.x + word.minWidth);
 
       if (dx <= space) {
         word.dx(dx);
@@ -42531,7 +42972,7 @@ function () {
       var space = word.x;
 
       if (prevWord) {
-        space -= prevWord.x + prevWord.boxWidth + leftPadding;
+        space -= prevWord.x + prevWord.minWidth + leftPadding;
       } else {
         space -= this.config.rowEdgePadding;
       }
@@ -42552,13 +42993,13 @@ function () {
         } // Fits on the previous Row?
 
 
-        if (prevRow.availableSpace >= word.boxWidth + leftPadding) {
+        if (prevRow.availableSpace >= word.minWidth + leftPadding) {
           this.moveFirstWordUp(row.idx);
           return true;
         } // Can we shift the Words on the previous Row?
 
 
-        var prevRowShift = word.boxWidth + leftPadding - prevRow.availableSpace;
+        var prevRowShift = word.minWidth + leftPadding - prevRow.availableSpace;
 
         var _canMove = this.moveWordLeft({
           row: prevRow,
@@ -42608,7 +43049,7 @@ function () {
       }
 
       var word = row.words[0];
-      var newX = prevRow.rw - this.config.rowEdgePadding - word.boxWidth;
+      var newX = prevRow.rw - this.config.rowEdgePadding - word.minWidth;
       row.removeWord(word);
       this.addWordToRow(word, prevRow, undefined, newX);
       word.redrawClusters();
@@ -42867,7 +43308,7 @@ function () {
 
 module.exports = TaxonomyManager;
 
-},{"../colorpicker.js":49,"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"js-yaml":13,"randomcolor":44}],60:[function(require,module,exports){
+},{"../colorpicker.js":49,"../components/word.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"js-yaml":13,"randomcolor":44}],60:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -43207,7 +43648,7 @@ function () {
 
 module.exports = BratParser;
 
-},{"../components/link.js":50,"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],61:[function(require,module,exports){
+},{"../components/link.js":50,"../components/word.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],61:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -43222,7 +43663,7 @@ var _reach = _interopRequireDefault(require("./reach.js"));
 
 var _ann = _interopRequireDefault(require("./ann.js"));
 
-var _xhr = _interopRequireDefault(require("../xhr.js"));
+var _processors = _interopRequireDefault(require("./processors.js"));
 
 var re = /.*(?=\.(\S+))|.*/;
 
@@ -43242,6 +43683,7 @@ function () {
 
     this.reach = new _reach.default();
     this.ann = new _ann.default();
+    this.processors = new _processors.default();
   }
   /**
    * Loads annotation data directly into the parser
@@ -43254,10 +43696,12 @@ function () {
   (0, _createClass2.default)(Parser, [{
     key: "loadData",
     value: function loadData(data, format) {
-      if (format === "json") {
-        this.parseJson(data);
+      if (format === "reach") {
+        this.parseReach(data);
       } else if (format === "brat") {
-        this.parseText(data);
+        this.parseBrat(data);
+      } else if (format === "processors") {
+        this.parseProcessors(data);
       } else {
         throw "Unknown annotation format: ".concat(format);
       }
@@ -43282,10 +43726,12 @@ function () {
         // Single file
         var file = files[0];
 
-        if (format === "json") {
-          this.parseJson(JSON.parse(file.content));
+        if (format === "reach") {
+          this.parseReach(JSON.parse(file.content));
         } else if (format === "brat") {
-          this.parseText(file.content);
+          this.parseBrat(file.content);
+        } else if (format === "processors") {
+          this.parseProcessors(file.content);
         } else {
           throw "Unknown annotation format: ".concat(format);
         }
@@ -43332,7 +43778,7 @@ function () {
             var standoff = matchingFiles.find(function (file) {
               return !file.name.endsWith(".txt");
             });
-            this.parseText(text.content, standoff.content);
+            this.parseBrat(text.content, standoff.content);
           } else {
             var _text = matchingFiles.find(function (file) {
               return file.name.endsWith(".txt");
@@ -43346,7 +43792,7 @@ function () {
             });
 
             if (_text && evts && entities) {
-              this.parseText(_text.content, entities.content, evts.content);
+              this.parseBrat(_text.content, entities.content, evts.content);
             } else {
               throw "Wrong number/type of files for Brat format";
             }
@@ -43357,111 +43803,85 @@ function () {
       }
 
       return this.getParsedData();
-    }
-  }, {
-    key: "loadFile",
-    value: function loadFile(path, format) {
-      var _this = this;
+    } // loadFile(path, format) {
+    //   // get format from extension
+    //   if (!format) {
+    //     const extension = path.toLowerCase().match(re)[1];
+    //
+    //     if (extension === "json") {
+    //       format = "json";
+    //     } else {
+    //       format = "brat";
+    //     }
+    //   }
+    //
+    //   // load and parse file
+    //   return load(path).then(data => {
+    //     if (format === "json") {
+    //       this.parseReach(JSON.parse(data));
+    //     } else if (format === "brat") {
+    //       this.parseBrat(data);
+    //     }
+    //
+    //     return this.getParsedData();
+    //   });
+    // }
+    // parseFiles(files) {
+    //   // console.log(files);
+    //   if (files.length === 1) {
+    //     const file = files[0];
+    //     if (file.type === "application/json") {
+    //       this.parseReach(JSON.parse(file.content));
+    //     } else if (file.type === "") {
+    //       this.parseBrat(file.content);
+    //     }
+    //     return file.name;
+    //   } else if (files.length > 1) {
+    //     // find 2 or 3 files that match in name
+    //     files.sort((a, b) => a.name.localeCompare(b.name));
+    //
+    //     let matchingFiles = [];
+    //
+    //     let i = 0;
+    //     let iname = files[i].name.match(re);
+    //     for (let j = 1; j < files.length; ++j) {
+    //       let jname = files[j].name.match(re);
+    //       if (jname[1] && jname[0] === iname[0]) {
+    //         matchingFiles.push(files[i], files[j]);
+    //
+    //         let k = j + 1;
+    //         while (k < files.length) {
+    //           let kname = files[k].name.match(re);
+    //           if (kname[1] && kname[0] === iname[0]) {
+    //             matchingFiles.push(files[k]);
+    //           } else {
+    //             break;
+    //           }
+    //           ++k;
+    //         }
+    //         break;
+    //       }
+    //     }
+    //
+    //     // found matching files
+    //     if (matchingFiles.length === 2) {
+    //       // find text content
+    //       let text = matchingFiles.find(file => file.name.endsWith(".txt"));
+    //       let standoff = matchingFiles.find(file => !file.name.endsWith(".txt"));
+    //       this.parseBrat(text.content, standoff.content);
+    //       return [text.name, standoff.name].join("\n");
+    //     } else {
+    //       let text = matchingFiles.find(file => file.name.endsWith(".txt"));
+    //       let entities = matchingFiles.find(file => file.name.endsWith(".a1"));
+    //       let evts = matchingFiles.find(file => file.name.endsWith(".a2"));
+    //       if (text && evts && entities) {
+    //         this.parseBrat(text.content, entities.content, evts.content);
+    //       }
+    //       return [text.name, entities.name, evts.name].join("\n");
+    //     }
+    //   }
+    // }
 
-      // get format from extension
-      if (!format) {
-        var extension = path.toLowerCase().match(re)[1];
-
-        if (extension === "json") {
-          format = "json";
-        } else {
-          format = "brat";
-        }
-      } // load and parse file
-
-
-      return (0, _xhr.default)(path).then(function (data) {
-        if (format === "json") {
-          _this.parseJson(JSON.parse(data));
-        } else if (format === "brat") {
-          _this.parseText(data);
-        }
-
-        return _this.getParsedData();
-      });
-    }
-  }, {
-    key: "parseFiles",
-    value: function parseFiles(files) {
-      // console.log(files);
-      if (files.length === 1) {
-        var file = files[0];
-
-        if (file.type === "application/json") {
-          this.parseJson(JSON.parse(file.content));
-        } else if (file.type === "") {
-          this.parseText(file.content);
-        }
-
-        return file.name;
-      } else if (files.length > 1) {
-        // find 2 or 3 files that match in name
-        files.sort(function (a, b) {
-          return a.name.localeCompare(b.name);
-        });
-        var matchingFiles = [];
-        var i = 0;
-        var iname = files[i].name.match(re);
-
-        for (var j = 1; j < files.length; ++j) {
-          var jname = files[j].name.match(re);
-
-          if (jname[1] && jname[0] === iname[0]) {
-            matchingFiles.push(files[i], files[j]);
-            var k = j + 1;
-
-            while (k < files.length) {
-              var kname = files[k].name.match(re);
-
-              if (kname[1] && kname[0] === iname[0]) {
-                matchingFiles.push(files[k]);
-              } else {
-                break;
-              }
-
-              ++k;
-            }
-
-            break;
-          }
-        } // found matching files
-
-
-        if (matchingFiles.length === 2) {
-          // find text content
-          var text = matchingFiles.find(function (file) {
-            return file.name.endsWith(".txt");
-          });
-          var standoff = matchingFiles.find(function (file) {
-            return !file.name.endsWith(".txt");
-          });
-          this.parseText(text.content, standoff.content);
-          return [text.name, standoff.name].join("\n");
-        } else {
-          var _text2 = matchingFiles.find(function (file) {
-            return file.name.endsWith(".txt");
-          });
-
-          var entities = matchingFiles.find(function (file) {
-            return file.name.endsWith(".a1");
-          });
-          var evts = matchingFiles.find(function (file) {
-            return file.name.endsWith(".a2");
-          });
-
-          if (_text2 && evts && entities) {
-            this.parseText(_text2.content, entities.content, evts.content);
-          }
-
-          return [_text2.name, entities.name, evts.name].join("\n");
-        }
-      }
-    }
     /**
      * Returns a cloned copy of the most recently parsed data, with circular
      * references (e.g., between Words and Links) intact
@@ -43472,17 +43892,38 @@ function () {
     value: function getParsedData() {
       return _lodash.default.cloneDeep(this._parsedData);
     }
+    /**
+     * Parses the given Reach-format data
+     * @param data
+     */
+
   }, {
-    key: "parseJson",
-    value: function parseJson(data) {
+    key: "parseReach",
+    value: function parseReach(data) {
       this.reach.parse(data);
       this._parsedData = this.reach.data;
     }
+    /**
+     * Parses the given Brat-format data
+     * http://brat.nlplab.org/standoff.html
+     */
+
   }, {
-    key: "parseText",
-    value: function parseText() {
+    key: "parseBrat",
+    value: function parseBrat() {
       this.ann.parse.apply(this.ann, arguments);
       this._parsedData = this.ann.data;
+    }
+    /**
+     * Parses the given Processors-format data
+     * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
+     */
+
+  }, {
+    key: "parseProcessors",
+    value: function parseProcessors(data) {
+      this.processors.parse(data);
+      this._parsedData = this.processors.data;
     }
   }]);
   return Parser;
@@ -43490,7 +43931,7 @@ function () {
 
 module.exports = Parser;
 
-},{"../xhr.js":64,"./ann.js":60,"./reach.js":62,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],62:[function(require,module,exports){
+},{"./ann.js":60,"./processors.js":62,"./reach.js":63,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],62:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -43503,7 +43944,357 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/creat
 
 var _word = _interopRequireDefault(require("../components/word.js"));
 
-var _wordcluster = _interopRequireDefault(require("../components/word-cluster.js"));
+var _link = _interopRequireDefault(require("../components/link.js"));
+
+var _wordCluster = _interopRequireDefault(require("../components/word-cluster.js"));
+
+/**
+ * Parser for Processors `mentions.json` output
+ * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
+ */
+var ProcessorsParser =
+/*#__PURE__*/
+function () {
+  function ProcessorsParser() {
+    (0, _classCallCheck2.default)(this, ProcessorsParser);
+    // This will eventually hold the parsed data for returning to the caller
+    this.data = {
+      words: [],
+      links: [],
+      clusters: []
+    }; // Holds the data for individual documents
+
+    this.parsedDocuments = {}; // Previously-parsed mentions, by Id.
+    // Old TextBoundMentions return their host Word/WordCluster
+    // Old EventMentions return their Link
+
+    this.parsedMentions = {};
+  }
+  /**
+   * Parses the given data, filling out `this.data` accordingly.
+   * @param {Object} data
+   */
+
+
+  (0, _createClass2.default)(ProcessorsParser, [{
+    key: "parse",
+    value: function parse(data) {
+      // Clear out any old parse data
+      this.data = {
+        words: [],
+        links: [],
+        clusters: []
+      }; // At the top level, the data has two parts: `documents` and `mentions`.
+      // - `documents` includes the tokens and dependency parses for each
+      //   document the data contains.
+      // - `mentions` includes all the events/relations that *every* document
+      //   contains, but each mention has a `document` property that specifies
+      //   which document it applies to.
+      // We will display the tokens from every document consecutively, and fill in
+      // their mentions to match.
+
+      var docIds = Object.keys(data.documents).sort();
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = docIds[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var docId = _step.value;
+          this.parsedDocuments[docId] = this._parseDocument(data.documents[docId], docId);
+        } // There are a number of different types of mentions types:
+        // - TextBoundMention
+        // - EventMention
+
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return != null) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = data.mentions[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var mention = _step2.value;
+
+          this._parseMention(mention);
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+    }
+    /**
+     * Parses a given document (essentially an array of sentences), appending
+     * the tokens and first set of dependency links to the final dataset.
+     * TODO: Allow user to select between different dependency graphs
+     *
+     * @param document
+     * @property {Object[]} sentences
+     *
+     * @param {String} docId - Unique identifier for this document
+     * @private
+     */
+
+  }, {
+    key: "_parseDocument",
+    value: function _parseDocument(document, docId) {
+      var thisDocument = {};
+      /** @type Word[][] **/
+
+      thisDocument.sentences = [];
+      /**
+       * Each sentence is an object with a number of pre-defined properties;
+       * we are interested in the following.
+       * @property {String[]} words
+       * @property tags
+       * @property graphs
+       */
+
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = document.sentences.entries()[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var _step3$value = (0, _slicedToArray2.default)(_step3.value, 2),
+              sentenceId = _step3$value[0],
+              sentence = _step3$value[1];
+
+          // Hold on to the Words we generate even as we push them up to the
+          // main data store, so that we can create their syntax Links too
+          var thisSentence = []; // The lengths of the `words` and `tags` arrays should be the same
+
+          for (var idx = 0; idx < sentence.words.length; idx++) {
+            var thisWord = new _word.default(sentence.words[idx], idx);
+            thisWord.setSyntaxTag(sentence.tags[idx]);
+            thisSentence.push(thisWord);
+            this.data.words.push(thisWord);
+          } // Sentences may have multiple dependency graphs available
+
+
+          var graphTypes = Object.keys(sentence.graphs); // Just use the first one for now
+
+          var graphType = graphTypes[0];
+          /**
+           * @property {Object[]} edges
+           * @property roots
+           */
+
+          var graph = sentence.graphs[graphType];
+          /**
+           * @property {Number} source
+           * @property {Number} destination
+           * @property {String} relation
+           */
+
+          var _iteratorNormalCompletion4 = true;
+          var _didIteratorError4 = false;
+          var _iteratorError4 = undefined;
+
+          try {
+            for (var _iterator4 = graph.edges.entries()[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+              var _step4$value = (0, _slicedToArray2.default)(_step4.value, 2),
+                  edgeId = _step4$value[0],
+                  edge = _step4$value[1];
+
+              this.data.links.push(new _link.default( // eventId
+              "".concat(docId, "-").concat(sentenceId, "-").concat(graphType, "-").concat(edgeId), // Trigger
+              thisSentence[edge.source], // Arguments
+              [{
+                anchor: thisSentence[edge.destination],
+                type: edge.relation
+              }], // Relation type
+              null, // Draw Link above Words?
+              false));
+            }
+          } catch (err) {
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
+                _iterator4.return();
+              }
+            } finally {
+              if (_didIteratorError4) {
+                throw _iteratorError4;
+              }
+            }
+          }
+
+          thisDocument.sentences.push(thisSentence);
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+
+      return thisDocument;
+    }
+    /**
+     * Parses the given mention and enriches the data stores accordingly.
+     *
+     * - TextBoundMentions become WordTags
+     * - EventMentions become Links
+     *
+     * @param mention
+     * @private
+     */
+
+  }, {
+    key: "_parseMention",
+    value: function _parseMention(mention) {
+      /**
+       * @property {String} mention.type
+       * @property {String} mention.id
+       * @property {String} mention.document - The ID of the mention's host
+       *     document
+       * @property {Number} mention.sentence - The index of the sentence in the
+       *     document that this mention comes from
+       * @property {Object} mention.tokenInterval - The start and end indices
+       *     for this mention
+       * @property {String[]} mention.labels - An Array of the labels that
+       *     this mention should have
+       * @property {Object} mention.arguments
+       */
+      // TextBoundMention
+      // Will become either a tag for a Word, or a WordCluster.
+      if (mention.type === "TextBoundMention") {
+        var tokens = this.parsedDocuments[mention.document].sentences[mention.sentence].slice(mention.tokenInterval.start, mention.tokenInterval.end);
+        var label = mention.labels.join("-");
+
+        if (tokens.length === 1) {
+          tokens[0].setTag(label);
+          this.parsedMentions[mention.id] = tokens[0];
+        } else {
+          var cluster = new _wordCluster.default(tokens, label);
+          this.data.clusters.push(cluster);
+          this.parsedMentions[mention.id] = cluster;
+        }
+      } // EventMention
+      // Will become a Link
+
+
+      if (mention.type === "EventMention") {
+        // If there is a trigger, it will be a nested Mention.  Parse it if we
+        // haven't seen it before.
+        var trigger = null;
+
+        if (mention.trigger) {
+          if (!this.parsedMentions[mention.trigger.id]) {
+            this._parseMention(mention.trigger);
+          }
+
+          trigger = this.parsedMentions[mention.trigger.id];
+        }
+
+        var linkArgs = []; // `mentions.arguments` is an Object keyed by argument type.
+        // The value of each key is an array of nested Mentions as arguments
+
+        var _arr = Object.entries(mention["arguments"]);
+
+        for (var _i = 0; _i < _arr.length; _i++) {
+          var _arr$_i = (0, _slicedToArray2.default)(_arr[_i], 2),
+              type = _arr$_i[0],
+              args = _arr$_i[1];
+
+          var _iteratorNormalCompletion5 = true;
+          var _didIteratorError5 = false;
+          var _iteratorError5 = undefined;
+
+          try {
+            for (var _iterator5 = args[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              var arg = _step5.value;
+
+              // Ensure that the argument mention has been parsed before
+              if (!this.parsedMentions[arg.id]) {
+                this._parseMention(arg);
+              }
+
+              var anchor = this.parsedMentions[arg.id];
+              linkArgs.push({
+                anchor: anchor,
+                type: type
+              });
+            }
+          } catch (err) {
+            _didIteratorError5 = true;
+            _iteratorError5 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
+                _iterator5.return();
+              }
+            } finally {
+              if (_didIteratorError5) {
+                throw _iteratorError5;
+              }
+            }
+          }
+        } // Done; prepare the new Link
+
+
+        this.data.links.push(new _link.default( // eventId
+        mention.id, // Trigger
+        trigger, // Arguments
+        linkArgs, // Relation type
+        null, // Draw Link above Words?
+        true));
+      }
+    }
+  }]);
+  return ProcessorsParser;
+}();
+
+module.exports = ProcessorsParser;
+
+},{"../components/link.js":50,"../components/word-cluster.js":52,"../components/word.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],63:[function(require,module,exports){
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var _word = _interopRequireDefault(require("../components/word.js"));
+
+var _wordCluster = _interopRequireDefault(require("../components/word-cluster.js"));
 
 var _link = _interopRequireDefault(require("../components/link.js"));
 
@@ -43628,7 +44419,7 @@ function () {
             cluster.push(words[i]);
           }
 
-          var wordCluster = new _wordcluster.default(cluster, el.type);
+          var wordCluster = new _wordCluster.default(cluster, el.type);
           wordCluster.addEventId(el.id);
           clusters.push(wordCluster);
         }
@@ -43715,7 +44506,7 @@ function () {
 
 module.exports = ReachParser;
 
-},{"../components/link.js":50,"../components/word.js":53,"../components/wordcluster.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],63:[function(require,module,exports){
+},{"../components/link.js":50,"../components/word-cluster.js":52,"../components/word.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],64:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -43826,26 +44617,4 @@ module.exports = {
   sortForSlotting: sortForSlotting
 };
 
-},{"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],64:[function(require,module,exports){
-"use strict";
-
-function load(url) {
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", url);
-  xhr.send();
-  return new Promise(function (res, err) {
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          res(xhr.responseText);
-        } else {
-          err(xhr);
-        }
-      }
-    };
-  });
-}
-
-module.exports = load;
-
-},{}]},{},[56]);
+},{"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}]},{},[56]);
