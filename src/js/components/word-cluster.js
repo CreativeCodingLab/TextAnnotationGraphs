@@ -299,8 +299,15 @@ class WordCluster {
     return this.endpoints[0].row;
   }
 
+  /**
+   * Returns the absolute y-position of the top of the WordCluster's label
+   * (for positioning Links that point at it)
+   * @return {Number}
+   */
   get absoluteY() {
-    return this.endpoints[0].absoluteY;
+    // The text label lives with the left arm of the curly brace
+    const thisHeight = this.svgs[0].bbox().height;
+    return this.endpoints[0].absoluteY - thisHeight;
   }
 
   get idx() {
@@ -323,8 +330,30 @@ class WordCluster {
     return this.svgText.bbox().width;
   }
 
-  get tagOffset() {
-    return -28;
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Debug functions
+  /**
+   * Draws the outline of this component's bounding box
+   */
+  drawBbox() {
+    const bbox = this.svgs[0].bbox();
+    this.svgs[0].polyline([
+      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
+      [bbox.x, bbox.y]])
+      .fill("none")
+      .stroke({width: 1});
+  }
+
+  /**
+   * Draws the outline of the text element's bounding box
+   */
+  drawTextBbox() {
+    const bbox = this.svgText.bbox();
+    this.svgs[0].polyline([
+      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
+      [bbox.x, bbox.y]])
+      .fill("none")
+      .stroke({width: 1});
   }
 }
 

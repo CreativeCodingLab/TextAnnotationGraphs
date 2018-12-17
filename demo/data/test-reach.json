@@ -9,14 +9,22 @@
       "for the tokenisation of the text string."
     ],
     "entities": [
-      ["T1", "Tag 1", [["0", "4"]]],
-      ["T2", "Cluster 1", [["10", "22"]]]
+      ["T1", "Tag", [["0", "4"]]],
+      ["T2", "Cluster 1", [["10", "22"]]],
+      ["T3", "Tag", [["29", "33"]]],
+      ["T4", "Cluster 1", [["39", "51"]]]
     ],
     "attributes": [],
     "text": "This is a word cluster test. This is a word cluster test.",
-    "relations": [],
-    "triggers": [],
-    "events": []
+    "relations": [
+      ["R1", "Relation Test", [["Arg1", "T1"], ["Arg2", "T2"]]]
+    ],
+    "triggers": [
+      ["T3", "Tag", [["29", "33"]]]
+    ],
+    "events": [
+      ["E1", "T3", [["Word Anchor", "T1"], ["Cluster Anchor", "T4"]]]
+    ]
   },
   "syntaxData": {
     "comments": [],

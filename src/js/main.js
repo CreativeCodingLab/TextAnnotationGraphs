@@ -132,8 +132,8 @@ class Main {
    */
   draw() {
     let t0 = performance.now();
-    console.log("----------");
-    console.log("Starting draw");
+    // console.log("----------");
+    // console.log("Starting draw");
 
     // Save a reference to the currently loaded tokens and links
     const data = this.parser.getParsedData();
@@ -160,7 +160,7 @@ class Main {
       this.rowManager.addWordToRow(word, this.rowManager.lastRow);
     });
 
-    console.log(`Words done (${performance.now() - t0}ms)`);
+    // console.log(`Words done (${performance.now() - t0}ms)`);
     t0 = performance.now();
 
     // We have to initialise all the Links before we draw any of them, to
@@ -172,7 +172,7 @@ class Main {
       word.links.forEach(link => link.draw());
     });
 
-    console.log(`Links done (${performance.now() - t0}ms)`);
+    // console.log(`Links done (${performance.now() - t0}ms)`);
     t0 = performance.now();
 
     // Change token colours based on the current taxonomy, if loaded
@@ -182,7 +182,7 @@ class Main {
     this.options.showSyntax ? this.showSyntax() : this.hideSyntax();
 
     this.rowManager.resizeAll();
-    console.log(`Resize done (${performance.now() - t0}ms)`);
+    // console.log(`Resize done (${performance.now() - t0}ms)`);
   }
 
   /**

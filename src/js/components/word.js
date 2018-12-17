@@ -298,7 +298,7 @@ class Word {
    */
   get absoluteY() {
     return this.row
-      ? this.row.ry + this.row.rh - this.boxHeight
+      ? this.row.baseline - this.boxHeight
       : this.boxHeight;
   }
 

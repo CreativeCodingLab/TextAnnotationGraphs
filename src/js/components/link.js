@@ -776,11 +776,22 @@ class Link {
       // Let this Word know we're watching it
       word.passingLinks.push(this);
 
+      // Word Links
       for (const link of word.links) {
         // Only consider Links on the same side of the Row as this one
         if (link !== this &&
           link.top === this.top && intervening.indexOf(link) < 0) {
           intervening.push(link);
+        }
+      }
+
+      // WordCluster Links
+      for (const cluster of word.clusters) {
+        for (const link of cluster.links) {
+          if (link !== this &&
+            link.top === this.top && intervening.indexOf(link) < 0) {
+            intervening.push(link);
+          }
         }
       }
     }
