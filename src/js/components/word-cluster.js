@@ -310,6 +310,16 @@ class WordCluster {
     return this.endpoints[0].absoluteY - thisHeight;
   }
 
+  /**
+   * Returns the height of this WordCluster, from Row baseline to the top of
+   * its label
+   */
+  get fullHeight() {
+    // The text label lives with the left arm of the curly brace
+    const thisHeight = this.svgs[0].bbox().height;
+    return this.endpoints[0].boxHeight + thisHeight;
+  }
+
   get idx() {
     return this.endpoints[0].idx;
   }

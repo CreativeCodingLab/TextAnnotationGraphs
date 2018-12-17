@@ -40714,8 +40714,8 @@ function () {
     }
     /**
      * Returns the maximum height above the baseline of the Word
-     * elements on the Row (accounting for their top WordTags, if present)
-     * TODO: Account for WordCluster height
+     * elements on the Row (accounting for their top WordTags and attached
+     * WordClusters, if present)
      */
 
   }, {
@@ -40730,6 +40730,32 @@ function () {
         for (var _iterator8 = this.words[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
           var word = _step8.value;
           wordHeight = Math.max(wordHeight, word.boxHeight);
+
+          if (word.clusters.length > 0) {
+            var _iteratorNormalCompletion10 = true;
+            var _didIteratorError10 = false;
+            var _iteratorError10 = undefined;
+
+            try {
+              for (var _iterator10 = word.clusters[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+                var _cluster = _step10.value;
+                wordHeight = Math.max(wordHeight, _cluster.fullHeight);
+              }
+            } catch (err) {
+              _didIteratorError10 = true;
+              _iteratorError10 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
+                  _iterator10.return();
+                }
+              } finally {
+                if (_didIteratorError10) {
+                  throw _iteratorError10;
+                }
+              }
+            }
+          }
         }
       } catch (err) {
         _didIteratorError8 = true;
@@ -40751,6 +40777,32 @@ function () {
         // last Word that was on this Row, for positioning any Links that are
         // still passing through
         wordHeight = this.lastRemovedWord.boxHeight;
+
+        if (this.lastRemovedWord.clusters.length > 0) {
+          var _iteratorNormalCompletion9 = true;
+          var _didIteratorError9 = false;
+          var _iteratorError9 = undefined;
+
+          try {
+            for (var _iterator9 = this.lastRemovedWord.clusters[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+              var cluster = _step9.value;
+              wordHeight = Math.max(wordHeight, cluster.fullHeight);
+            }
+          } catch (err) {
+            _didIteratorError9 = true;
+            _iteratorError9 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
+                _iterator9.return();
+              }
+            } finally {
+              if (_didIteratorError9) {
+                throw _iteratorError9;
+              }
+            }
+          }
+        }
       }
 
       return wordHeight;
@@ -40764,26 +40816,26 @@ function () {
     key: "wordDescent",
     get: function get() {
       var wordDescent = 0;
-      var _iteratorNormalCompletion9 = true;
-      var _didIteratorError9 = false;
-      var _iteratorError9 = undefined;
+      var _iteratorNormalCompletion11 = true;
+      var _didIteratorError11 = false;
+      var _iteratorError11 = undefined;
 
       try {
-        for (var _iterator9 = this.words[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-          var word = _step9.value;
+        for (var _iterator11 = this.words[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+          var word = _step11.value;
           wordDescent = Math.max(wordDescent, word.descendHeight);
         }
       } catch (err) {
-        _didIteratorError9 = true;
-        _iteratorError9 = err;
+        _didIteratorError11 = true;
+        _iteratorError11 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-            _iterator9.return();
+          if (!_iteratorNormalCompletion11 && _iterator11.return != null) {
+            _iterator11.return();
           }
         } finally {
-          if (_didIteratorError9) {
-            throw _iteratorError9;
+          if (_didIteratorError11) {
+            throw _iteratorError11;
           }
         }
       }
@@ -41176,6 +41228,18 @@ function () {
       // The text label lives with the left arm of the curly brace
       var thisHeight = this.svgs[0].bbox().height;
       return this.endpoints[0].absoluteY - thisHeight;
+    }
+    /**
+     * Returns the height of this WordCluster, from Row baseline to the top of
+     * its label
+     */
+
+  }, {
+    key: "fullHeight",
+    get: function get() {
+      // The text label lives with the left arm of the curly brace
+      var thisHeight = this.svgs[0].bbox().height;
+      return this.endpoints[0].boxHeight + thisHeight;
     }
   }, {
     key: "idx",

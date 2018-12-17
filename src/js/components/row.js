@@ -313,19 +313,30 @@ class Row {
 
   /**
    * Returns the maximum height above the baseline of the Word
-   * elements on the Row (accounting for their top WordTags, if present)
-   * TODO: Account for WordCluster height
+   * elements on the Row (accounting for their top WordTags and attached
+   * WordClusters, if present)
    */
   get wordHeight() {
     let wordHeight = 0;
     for (const word of this.words) {
       wordHeight = Math.max(wordHeight, word.boxHeight);
+
+      if (word.clusters.length > 0) {
+        for (const cluster of word.clusters) {
+          wordHeight = Math.max(wordHeight, cluster.fullHeight);
+        }
+      }
     }
     if (wordHeight === 0) {
       // If we have no Words left on this Row, base our calculations on the
       // last Word that was on this Row, for positioning any Links that are
       // still passing through
       wordHeight = this.lastRemovedWord.boxHeight;
+      if (this.lastRemovedWord.clusters.length > 0) {
+        for (const cluster of this.lastRemovedWord.clusters) {
+          wordHeight = Math.max(wordHeight, cluster.fullHeight);
+        }
+      }
     }
     return wordHeight;
   }
