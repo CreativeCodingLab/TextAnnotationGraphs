@@ -1,5 +1,5 @@
 /**
- * Parser for Processors `mentions.json` output
+ * Parser for Odin `mentions.json` output
  * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
  */
 
@@ -7,7 +7,7 @@ import Word from "../components/word.js";
 import Link from "../components/link.js";
 import WordCluster from "../components/word-cluster.js";
 
-class ProcessorsParser {
+class OdinParser {
   constructor() {
     // This will eventually hold the parsed data for returning to the caller
     this.data = {
@@ -156,7 +156,9 @@ class ProcessorsParser {
      * @property {Object} mention.tokenInterval - The start and end indices
      *     for this mention
      * @property {String[]} mention.labels - An Array of the labels that
-     *     this mention should have
+     *     this mention should have.  By convention, the first element in the
+     *     Array is the actual label, and the other elements simply reflect the
+     *     higher-levels of the label's taxonomic hierarchy.
      * @property {Object} mention.arguments
      */
 
@@ -166,7 +168,7 @@ class ProcessorsParser {
       const tokens = this.parsedDocuments[mention.document]
         .sentences[mention.sentence]
         .slice(mention.tokenInterval.start, mention.tokenInterval.end);
-      const label = mention.labels.join("-");
+      const label = mention.labels[0];
 
       if (tokens.length === 1) {
         tokens[0].setTag(label);
@@ -226,4 +228,4 @@ class ProcessorsParser {
   }
 }
 
-module.exports = ProcessorsParser;
+module.exports = OdinParser;

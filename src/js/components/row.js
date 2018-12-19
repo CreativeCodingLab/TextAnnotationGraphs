@@ -1,6 +1,3 @@
-import * as SVG from "svg.js";
-import * as draggable from "svg.draggable.js";
-
 class Row {
   constructor(svg, config, idx = 0, ry = 0, rh = 100) {
     this.config = config;
@@ -327,7 +324,7 @@ class Row {
         }
       }
     }
-    if (wordHeight === 0) {
+    if (wordHeight === 0 && this.lastRemovedWord) {
       // If we have no Words left on this Row, base our calculations on the
       // last Word that was on this Row, for positioning any Links that are
       // still passing through

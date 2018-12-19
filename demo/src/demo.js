@@ -52,16 +52,13 @@ $(async () => {
 
     // The initial data to load.
     // Different formats might expect different types for `data`:
-    // E.g., the "json" format expects the annotations as an
+    // E.g., the "odin" format expects the annotations as an
     // (already-parsed) Object, while the "brat" format expects them as a raw
     // String.
     // See the full documentation for details.
-    data: require("../data/data7.json"),
-    format: "reach"
+    data: require("../data/test-odin.json"),
+    format: "odin"
   });
-
-  // // Debug
-  // await basicTag.loadUrlAsync("data/test-brat.ann", "brat");
 
   // -------------------
   // Advanced/UI example
@@ -71,12 +68,9 @@ $(async () => {
     container: $uiContainer
   });
 
-  // Data can be loaded after initialisation using the `.loadData()` function
-  const sampleData = require("../data/data1.json");
-  uiTag.loadData(sampleData, "reach");
-
-  // // Debug
-  // await uiTag.loadUrlAsync("data/test-processors.json", "processors");
+  // Data can be loaded after initialisation using the `.loadData()` function,
+  // or from a remote URL via the asynchronous `.loadUrlAsync()` function.
+  await uiTag.loadUrlAsync("data/test-brat.ann", "brat");
 
   // --------------------------------------------------------------------------
 

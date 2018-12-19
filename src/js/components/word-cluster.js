@@ -38,6 +38,9 @@ class WordCluster {
     // Main Config object for the parent instance; set by `.init()`
     this.config = null;
 
+    // Cached SVG BBox values
+    this._textBbox = null;
+
     words.forEach(word => word.clusters.push(this));
   }
 
@@ -65,6 +68,7 @@ class WordCluster {
 
     this.val = val;
     this.svgText.text(this.val);
+    this._textBbox = this.svgText.bbox();
 
     if (this.editingRect) {
       let bbox = this.svgText.bbox();
@@ -108,8 +112,12 @@ class WordCluster {
 
       this.lines[idx] = svg.path()
         .addClass("tag-element");
+
+      // Add the text label to the left arm
       if (idx === 0) {
         this.svgText = svg.text(this.val).leading(1);
+        this._textBbox = this.svgText.bbox();
+
         this.svgText.node.oncontextmenu = (e) => {
           e.preventDefault();
           mainSvg.fire("tag-right-click", {object: this, event: e});
@@ -147,10 +155,11 @@ class WordCluster {
       const baseY = this.getBaseY(leftAnchor.row);
       const textY = baseY
         - this.config.wordTopTagPadding
-        - this.svgText.bbox().height;
+        - this._textBbox.height;
 
       const centre = (leftX + rightX) / 2;
-      this.svgText.x(centre).y(textY);
+      this.svgText.move(centre, textY);
+      this._textBbox = this.svgText.bbox();
 
       // Each arm consists of two curves with relatively tight control
       // points (to preserve the "hook-iness" of the curve).
@@ -179,10 +188,11 @@ class WordCluster {
       // finish on last Row
       const textY = leftAnchor.row.baseline
         - leftAnchor.boxHeight
-        - this.svgText.bbox().height
+        - this._textBbox.height
         - this.config.wordTopTagPadding;
       let centre = (leftX + leftAnchor.row.rw) / 2;
-      this.svgText.x(centre).y(textY);
+      this.svgText.move(centre, textY);
+      this._textBbox = this.svgText.bbox();
 
       // Left arm
       const leftY = this.getBaseY(leftAnchor.row);
@@ -288,6 +298,10 @@ class WordCluster {
     }
   }
 
+  /**
+   * Returns an array of the first and last Words covered by this WordCluster
+   * @return {Word[]}
+   */
   get endpoints() {
     return [
       this.words[0],
@@ -329,7 +343,7 @@ class WordCluster {
    * @return {*}
    */
   get cx() {
-    return this.svgText.cx();
+    return this._textBbox.cx;
   }
 
   /**
@@ -337,7 +351,7 @@ class WordCluster {
    * @return {Number}
    */
   get textWidth() {
-    return this.svgText.bbox().width;
+    return this._textBbox.width;
   }
 
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

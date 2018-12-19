@@ -54,27 +54,26 @@ class WordTag {
       .leading(1);
 
     // Centre the WordTag horizontally
-    // (SVG text elements are positioned by their centres)
-    this.svgText.x(this.word.svgText.x());
-
-    // Position this WordTag above/below the main Word
+    // (SVG text elements are positioned on the x-axis by their centres)
+    // Also position the WordTag above/below the main Word
     // (It starts with its upper-left corner on the Row's main line)
-    let newY;
+    let newX, newY;
+    newX = this.word.textRcx;
     if (this.top) {
-      newY = -this.word.svgText.bbox().height - this.svgText.bbox().height
+      newY = -this.word.textHeight - this.svgText.bbox().height
         - this.config.wordTopTagPadding;
     } else {
       newY = this.config.wordBottomTagPadding;
     }
-    this.svgText.y(newY);
+    this.svgText.move(newX, newY);
 
     // add click and right-click listeners
-    let mainSvg = this.word.mainSvg;
+    let mainSvg = this.word.main.svg;
     this.svgText.node.oncontextmenu = (e) => {
       e.preventDefault();
       mainSvg.fire("tag-right-click", {object: this, event: e});
     };
-    this.svgText.click((e) => mainSvg.fire("tag-edit", {object: this}));
+    this.svgText.click(() => mainSvg.fire("tag-edit", {object: this}));
 
     // Draws a line / curly bracket between the Word and this WordTag, if
     // it's a top tag

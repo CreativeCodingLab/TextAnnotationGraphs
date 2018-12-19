@@ -2,7 +2,7 @@ import _ from "lodash";
 
 import ReachParser from "./reach.js";
 import BratParser from "./ann.js";
-import ProcessorsParser from "./processors.js";
+import OdinParser from "./odin.js";
 
 const re = /.*(?=\.(\S+))|.*/;
 
@@ -18,7 +18,7 @@ class Parser {
     /* supported formats */
     this.reach = new ReachParser();
     this.ann = new BratParser();
-    this.processors = new ProcessorsParser();
+    this.odin = new OdinParser();
   }
 
   /**
@@ -32,8 +32,8 @@ class Parser {
       this.parseReach(data);
     } else if (format === "brat") {
       this.parseBrat(data);
-    } else if (format === "processors") {
-      this.parseProcessors(data);
+    } else if (format === "odin") {
+      this.parseOdin(data);
     } else {
       throw `Unknown annotation format: ${format}`;
     }
@@ -116,86 +116,6 @@ class Parser {
     return this.getParsedData();
   }
 
-  // loadFile(path, format) {
-  //   // get format from extension
-  //   if (!format) {
-  //     const extension = path.toLowerCase().match(re)[1];
-  //
-  //     if (extension === "json") {
-  //       format = "json";
-  //     } else {
-  //       format = "brat";
-  //     }
-  //   }
-  //
-  //   // load and parse file
-  //   return load(path).then(data => {
-  //     if (format === "json") {
-  //       this.parseReach(JSON.parse(data));
-  //     } else if (format === "brat") {
-  //       this.parseBrat(data);
-  //     }
-  //
-  //     return this.getParsedData();
-  //   });
-  // }
-
-  // parseFiles(files) {
-  //   // console.log(files);
-  //   if (files.length === 1) {
-  //     const file = files[0];
-  //     if (file.type === "application/json") {
-  //       this.parseReach(JSON.parse(file.content));
-  //     } else if (file.type === "") {
-  //       this.parseBrat(file.content);
-  //     }
-  //     return file.name;
-  //   } else if (files.length > 1) {
-  //     // find 2 or 3 files that match in name
-  //     files.sort((a, b) => a.name.localeCompare(b.name));
-  //
-  //     let matchingFiles = [];
-  //
-  //     let i = 0;
-  //     let iname = files[i].name.match(re);
-  //     for (let j = 1; j < files.length; ++j) {
-  //       let jname = files[j].name.match(re);
-  //       if (jname[1] && jname[0] === iname[0]) {
-  //         matchingFiles.push(files[i], files[j]);
-  //
-  //         let k = j + 1;
-  //         while (k < files.length) {
-  //           let kname = files[k].name.match(re);
-  //           if (kname[1] && kname[0] === iname[0]) {
-  //             matchingFiles.push(files[k]);
-  //           } else {
-  //             break;
-  //           }
-  //           ++k;
-  //         }
-  //         break;
-  //       }
-  //     }
-  //
-  //     // found matching files
-  //     if (matchingFiles.length === 2) {
-  //       // find text content
-  //       let text = matchingFiles.find(file => file.name.endsWith(".txt"));
-  //       let standoff = matchingFiles.find(file => !file.name.endsWith(".txt"));
-  //       this.parseBrat(text.content, standoff.content);
-  //       return [text.name, standoff.name].join("\n");
-  //     } else {
-  //       let text = matchingFiles.find(file => file.name.endsWith(".txt"));
-  //       let entities = matchingFiles.find(file => file.name.endsWith(".a1"));
-  //       let evts = matchingFiles.find(file => file.name.endsWith(".a2"));
-  //       if (text && evts && entities) {
-  //         this.parseBrat(text.content, entities.content, evts.content);
-  //       }
-  //       return [text.name, entities.name, evts.name].join("\n");
-  //     }
-  //   }
-  // }
-
   /**
    * Returns a cloned copy of the most recently parsed data, with circular
    * references (e.g., between Words and Links) intact
@@ -224,12 +144,12 @@ class Parser {
   }
 
   /**
-   * Parses the given Processors-format data
+   * Parses the given Odin-format data
    * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
    */
-  parseProcessors(data) {
-    this.processors.parse(data);
-    this._parsedData = this.processors.data;
+  parseOdin(data) {
+    this.odin.parse(data);
+    this._parsedData = this.odin.data;
   }
 }
 

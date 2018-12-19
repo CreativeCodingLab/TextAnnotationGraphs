@@ -9,7 +9,7 @@ import Main from "./main";
  * @param {String|Element|jQuery} params.container - Either a string
  *     containing the ID of the container element, or the element itself (as a
  *     native/jQuery object)
- * @param {Object} [params.data] - The initial data to load, if any
+ * @param {Object} [params.data] - Initial data to load, if any
  * @param {String} [params.format] - One of the supported format identifiers for
  *     the data
  */

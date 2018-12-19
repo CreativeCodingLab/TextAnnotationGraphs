@@ -14,8 +14,6 @@
  */
 
 import WordTag from "./word-tag.js";
-import * as SVG from "svg.js";
-import * as draggable from "svg.draggable.js";
 
 class Word {
   /**
@@ -35,7 +33,7 @@ class Word {
     this.tagText = "";
     this.syntaxTagText = "";
 
-    // Backreferences that will be set when this Word is used in
+    // Back-references that will be set when this Word is used in
     // other structures
     // ---------------------------------------------------------
     // WordTag
@@ -57,7 +55,7 @@ class Word {
 
     // SVG-related properties
     // ----------------------
-    this.initialised = null;
+    this.initialised = false;
 
     // Main API instance
     this.main = null;
@@ -70,6 +68,10 @@ class Word {
 
     // The x-position of the left bound of the Word's box
     this.x = 0;
+
+    // Calculate the SVG BBox only once per transformation (it's expensive)
+    this._bbox = null;
+    this._textBbox = null;
   }
 
   /**
@@ -104,7 +106,6 @@ class Word {
         this.tag.remove();
       }
       this.tag = new WordTag(tag, this, this.config);
-      this.tag.draw();
     }
   }
 
@@ -120,7 +121,6 @@ class Word {
         this.syntaxTag.remove();
       }
       this.syntaxTag = new WordTag(tag, this, this.config, false);
-      this.syntaxTag.draw();
     }
   }
 
@@ -149,16 +149,20 @@ class Word {
       .addClass("word-text")
       .leading(1);
 
-    // The positioning anchor for the text element is its centre, so we need
-    // to translate the entire Word rightward by half its width
-    this.svgText.x(this.svgText.bbox().width / 2);
 
+    // The positioning anchor for the text element is its centre, so we need
+    // to translate the entire Word rightward by half its width.
     // In addition, the x/y-position points at the upper-left corner of the
     // Word's bounding box, but since we are working relative to the Row's
     // main line, we need to move the Word upwards so that the lower-left
     // corner meets the Row.
-    this.svgText.y(-this.svgText.bbox().height);
+    const currentBox = this.svgText.bbox();
+    this.svgText.move(currentBox.width / 2, -currentBox.height);
 
+    // Cache the text bounding box values
+    this._textBbox = this.svgText.bbox();
+
+    // ------------------------
     // Draw in this Word's tags
     if (this.tagText && !(this.tag instanceof WordTag)) {
       this.tag = new WordTag(this.tagText, this, this.config);
@@ -173,11 +177,16 @@ class Word {
     });
 
 
-    // Make sure that all the SVG elements for this Word and any WordTags are
-    // well-positioned within the Word's bounding box
+    // Cache the overall bounding box values, and ensure that all the SVG
+    // elements for this Word and any WordTags are well-positioned within
+    // the Word's bounding box
+    this._bbox = this.svg.bbox();
     this.alignBox();
 
-    // attach drag listeners
+    // And cache the overall bounding box values
+
+    // ---------------------
+    // Attach drag listeners
     let x = 0;
     let mousemove = false;
     this.svgText.draggable()
@@ -195,7 +204,7 @@ class Word {
           mousemove = true;
         }
       })
-      .on("dragend", (e) => {
+      .on("dragend", () => {
         mainSvg.fire("word-move-end", {
           object: this,
           clicked: mousemove === false
@@ -210,6 +219,8 @@ class Word {
       e.preventDefault();
       mainSvg.fire("word-right-click", {object: this, event: e});
     };
+
+    this.initialised = true;
   }
 
   redrawLinks() {
@@ -254,13 +265,17 @@ class Word {
     // Generally, we will only need to move things around if the WordTags
     // are wider than the Word, which gives the Word's bounding box a
     // negative x-value.
-    const diff = -this.svg.bbox().x;
+    const diff = -this._bbox.x;
 
-    // We can't apply the `.x()` translation directly to this Word's SVG
-    // group, or it will simply set a transformation on the group (leaving
-    // the bounding box unchanged).  We need to move all its children instead.
-    for (const child of this.svg.children()) {
-      child.dx(diff);
+    if (diff > 0) {
+      // We can't apply the `.x()` translation directly to this Word's SVG
+      // group, or it will simply set a transformation on the group (leaving
+      // the bounding box unchanged).  We need to move all its children instead.
+      for (const child of this.svg.children()) {
+        child.dx(diff);
+      }
+      // And updated the cached values
+      this._bbox = this.svg.bbox();
     }
   }
 
@@ -269,7 +284,7 @@ class Word {
    * @return {Number}
    */
   get boxWidth() {
-    return this.svg.bbox().width;
+    return this._bbox.width;
   }
 
   /**
@@ -313,7 +328,7 @@ class Word {
   get boxHeight() {
     // Since the Word's box is relative to the Row's line to begin with,
     // this is simply the negative of the y-value of the box
-    return -this.svg.bbox().y;
+    return -this._bbox.y;
   }
 
   /**
@@ -323,7 +338,7 @@ class Word {
   get descendHeight() {
     // Since the Word's box is relative to the Row's line to begin with,
     // this is simply the y2-value of the box
-    return this.svg.bbox().y2;
+    return this._bbox.y2;
   }
 
   /**
@@ -347,7 +362,7 @@ class Word {
   }
 
   /**
-   * Returns the x-position of the centre of this Word's box
+   * Returns the absolute x-position of the centre of this Word's box
    * @return {Number}
    */
   get cx() {
@@ -359,13 +374,29 @@ class Word {
    * @return {Number}
    */
   get textWidth() {
-    return this.svgText.bbox().width;
+    return this._textBbox.width;
+  }
+
+  /**
+   * Returns the height of the bounding box of the Word's SVG text element
+   * @return {Number}
+   */
+  get textHeight() {
+    return this._textBbox.height;
+  }
+
+  /**
+   * Returns the *relative* x-position of the centre of the bounding
+   * box of the Word's SVG text element
+   */
+  get textRcx() {
+    return this._textBbox.cx;
   }
 
   /**
    * Returns true if this Word contains a single punctuation character
    *
-   * FIXME: doesn't handle fancier unicode punct | should exclude
+   * FIXME: doesn't handle fancier unicode punctuation | should exclude
    * left-punctuation e.g. left-paren or left-quote
    * @return {Boolean}
    */

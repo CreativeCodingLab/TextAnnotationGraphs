@@ -388,7 +388,7 @@ const demo = {
 
       console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-      return run(`watchify ${input} -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v --poll=500`, {async: true});
+      return run(`watchify ${input} -d -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v --poll=500`, {async: true});
     },
 
     async BSColourPicker() {
@@ -415,6 +415,10 @@ const demo = {
     },
 
     async coreStyles() {
+      // This task rebuilds the demo stylesheet when the core TAG stylesheet
+      // changes
+      // (`demo.scss` imports `tag.css`, which needs to be rebuilt from
+      // `tag.scss`)
       const input = "src/css/tag.scss";
       const output = `${config.assetsDir}/${config.stylesDir}/tag.css`;
       const input2 = "demo/src/demo.scss";

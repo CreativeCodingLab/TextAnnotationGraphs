@@ -5,27 +5,31 @@
 .tag-element text {
   text-anchor: middle;
 }
+
 .row-drag {
-  stroke-width:2;
-  stroke-dasharray: 2,1;
-  stroke:rgba(100,100,100,0.3);
+  stroke-width: 2;
+  stroke-dasharray: 2, 1;
+  stroke: rgba(100, 100, 100, 0.3);
   transition: stroke 300ms ease;
   cursor: row-resize;
 }
+
 .row-drag:hover {
-  stroke-dasharray:none;
-  stroke:rgba(100,100,100,0.8);
+  stroke-dasharray: none;
+  stroke: rgba(100, 100, 100, 0.8);
 }
 
 .word text {
-  font-size:16px;
-  fill:black;
+  font-size: 16px;
+  fill: black;
 }
+
 .word-cluster path,
 .word path {
-  stroke:#333;
-  fill:none;
+  stroke: #333;
+  fill: none;
 }
+
 .word .word-text {
   cursor: pointer;
 }
@@ -38,13 +42,15 @@
 
 .word-cluster text,
 .word .word-tag {
-  fill:#333;
+  fill: #333;
 }
+
 .word .syntax-tag {
   fill: rgb(208, 150, 143);
 }
+
 .toggle-syntax .syntax-tag, .toggle-syntax .syntax-link {
-  display:none;
+  display: none;
 }
 
 .editing .word-tag,
@@ -55,26 +61,32 @@
 
 .editing-rect,
 .editing rect {
-  fill:#a94442;
+  fill: #a94442;
 }
 
-.link path.polyline {
-  stroke: #6590b4;
-  fill: none;
-}
+/**
+ * Links and link lines (which are SVG Paths)
+ */
 .link {
   font-size: 12px;
-  fill:#6590b4;
-  stroke-width:1.5px;
+  fill: #6590b4;
+  stroke-width: 1.5px;
 }
+
 .link.syntax-link {
   fill: #999;
 }
-.syntax-link path.polyline {
-  stroke: #999;
+
+.link:hover {
+  stroke-width: 2.5px;
+}
+
+.link path {
+  stroke: #6590b4;
   fill: none;
 }
 
-.link:hover {
-  stroke-width:2.5px;
+.syntax-link path {
+  stroke: #999;
+  fill: none;
 }

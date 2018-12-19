@@ -39,10 +39,7 @@ class RowManager {
     const newHeight = Math.max(row.rh + dy, row.minHeight);
     if (row.rh !== newHeight) {
       row.height(newHeight);
-      // console.log("--------");
-      const drawStart = performance.now();
       row.redrawLinksAndClusters();
-      // console.log(`Redrew links in ${performance.now() - drawStart}ms.`);
     }
 
     // Adjust the positions of all following Rows
@@ -209,12 +206,13 @@ class RowManager {
       // Last word on this row
       this.moveLastWordDown(row.idx);
     } else {
+      // Move next Word, then move this Word again
       this.moveWordRight({
         row,
         wordIndex: wordIndex + 1,
         dx
       });
-      word.dx(dx);
+      this.moveWordRight(params);
     }
   }
 
@@ -294,8 +292,13 @@ class RowManager {
       dx
     });
     if (canMove) {
-      word.dx(-dx);
-      return true;
+      // Retry the move (noting that our index may have changed if earlier
+      // Words were popped up to the previous Row
+      return this.moveWordLeft({
+        row,
+        wordIndex: row.words.indexOf(word),
+        dx
+      });
     } else {
       // Ah well
       return false;

@@ -4,6 +4,13 @@
 
 import _ from "lodash";
 
+// For some reason, the `draggable` import has to be in a different file
+// from `main.js`.  This has something to do with the way ES6 imports work,
+// and the fact that `svg.draggable.js` expects the `SVG` variable to be
+// globally available.
+import * as SVG from "svg.js";
+import * as draggable from "svg.draggable.js";
+
 /**
  * Get all the CSS rules that match the given elements
  * Adapted from:
@@ -68,9 +75,6 @@ function sortForSlotting(links) {
   sortingArray.sort((a, b) => a.leftAnchor - b.leftAnchor);
   return sortingArray.map(link => links[link.idx]);
 }
-
-// Debug
-window.getCssRules = getCssRules;
 
 module.exports = {
   getCssRules,

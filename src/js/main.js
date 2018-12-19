@@ -131,10 +131,6 @@ class Main {
    * Draws elements (rows, words, links, etc.) onto the visualisation
    */
   draw() {
-    let t0 = performance.now();
-    // console.log("----------");
-    // console.log("Starting draw");
-
     // Save a reference to the currently loaded tokens and links
     const data = this.parser.getParsedData();
     this.words = data.words;
@@ -160,9 +156,6 @@ class Main {
       this.rowManager.addWordToRow(word, this.rowManager.lastRow);
     });
 
-    // console.log(`Words done (${performance.now() - t0}ms)`);
-    t0 = performance.now();
-
     // We have to initialise all the Links before we draw any of them, to
     // account for nested Links etc.  We should also only draw Links directly
     // anchored to Words, and let them draw any higher-level Links, so that we
@@ -172,9 +165,6 @@ class Main {
       word.links.forEach(link => link.draw());
     });
 
-    // console.log(`Links done (${performance.now() - t0}ms)`);
-    t0 = performance.now();
-
     // Change token colours based on the current taxonomy, if loaded
     this.taxonomyManager.colour(this.words);
 
@@ -182,7 +172,6 @@ class Main {
     this.options.showSyntax ? this.showSyntax() : this.hideSyntax();
 
     this.rowManager.resizeAll();
-    // console.log(`Resize done (${performance.now() - t0}ms)`);
   }
 
   /**

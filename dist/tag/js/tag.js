@@ -38791,8 +38791,6 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _word = _interopRequireDefault(require("./word.js"));
-
 var _wordTag = _interopRequireDefault(require("./word-tag.js"));
 
 var _wordCluster = _interopRequireDefault(require("./word-cluster.js"));
@@ -38861,11 +38859,15 @@ function () {
 
     this.main = null;
     this.config = null; // SVG-related properties
+    // SVG parents
 
     this.mainSVG = null;
-    this.svg = null;
-    this.handles = [];
-    this.line = null;
+    this.svg = null; // Handle objects
+
+    this.handles = []; // SVG Path and last-drawn path string
+
+    this.path = null;
+    this.lastPathString = "";
     this.svgTexts = [];
     this.lastDrawnWidth = null;
   }
@@ -38880,7 +38882,6 @@ function () {
     value: function init(main) {
       var _this2 = this;
 
-      this.initialised = true;
       this.main = main;
       this.config = main.config;
       this.arguments.sort(function (a, b) {
@@ -38952,11 +38953,11 @@ function () {
           });
         });
       });
-      this.line = this.svg.path().addClass("tag-element").addClass("polyline"); // Closure for identifying dragged handles
+      this.path = this.svg.path().addClass("tag-element"); // Closure for identifying dragged handles
 
       var draggedHandle = null;
       var dragStartX = 0;
-      this.line.draggable().on("dragstart", function (e) {
+      this.path.draggable().on("dragstart", function (e) {
         // We use the x and y values (with a little tolerance) to make sure
         // that the user is dragging near one of the Link's handles, and not
         // just in the middle of the Link's line.
@@ -38975,12 +38976,12 @@ function () {
             // Is this handle in the correct vicinity on the y-axis?
             if (_this2.top) {
               // The Link line will be above the handle
-              if (dragY < _this2.getLineYRow(handle.row) - 5 || dragY > handle.y + 5) {
+              if (dragY < _this2.getLineY(handle.row) - 5 || dragY > handle.y + 5) {
                 continue;
               }
             } else {
               // The Link line will be below the handle
-              if (dragY < handle.y - 5 || dragY > _this2.getLineYRow(handle.row) + 5) {
+              if (dragY < handle.y - 5 || dragY > _this2.getLineY(handle.row) + 5) {
                 continue;
               }
             } // Is this handle close enough on the x-axis?
@@ -39024,8 +39025,7 @@ function () {
 
         var dx = e.detail.p.x - dragStartX;
         dragStartX = e.detail.p.x;
-        draggedHandle.offset += dx;
-        window.debugHandle = draggedHandle; // Constrain the handle's offset so that it doesn't end up
+        draggedHandle.offset += dx; // Constrain the handle's offset so that it doesn't end up
         // overshooting the sides of its anchor
 
         var anchor = draggedHandle.anchor;
@@ -39060,14 +39060,14 @@ function () {
       }).on("dragend", function () {
         draggedHandle = null;
       });
-      this.line.dblclick(function (e) {
+      this.path.dblclick(function (e) {
         return _this2.mainSVG.fire("build-tree", {
           object: _this2,
           event: e
         });
       });
 
-      this.line.node.oncontextmenu = function (e) {
+      this.path.node.oncontextmenu = function (e) {
         e.preventDefault();
 
         _this2.mainSVG.fire("link-right-click", {
@@ -39076,7 +39076,13 @@ function () {
           event: e
         });
       };
+
+      this.initialised = true;
     }
+    /**
+     * Toggles the visibility of this Link
+     */
+
   }, {
     key: "toggle",
     value: function toggle() {
@@ -39088,6 +39094,10 @@ function () {
         this.hide();
       }
     }
+    /**
+     * Shows this Link
+     */
+
   }, {
     key: "show",
     value: function show() {
@@ -39098,6 +39108,10 @@ function () {
         this.draw();
       }
     }
+    /**
+     * Hides this Link
+     */
+
   }, {
     key: "hide",
     value: function hide() {
@@ -39110,9 +39124,9 @@ function () {
     /**
      * (Re-)draw some Link onto the main visualisation
      *
-     * @param {Word|Link} [modAnchor] - Passed when we know that (only) a
-     *   specific anchor has changed position since the last redraw. If not,
-     *   the positions of all handles will be recalculated.
+     * @param {Word|WordCluster|Link} [modAnchor] - Passed when we know that
+     *     (only) a specific anchor has changed position since the last
+     *     redraw. If not, the positions of all handles will be recalculated.
      */
 
   }, {
@@ -39120,7 +39134,6 @@ function () {
     value: function draw(modAnchor) {
       var _this3 = this;
 
-      // const drawStart = performance.now();
       if (!this.initialised || !this.visible) {
         return;
       } // Recalculate handle positions
@@ -39181,7 +39194,7 @@ function () {
 
             var _newX = calcX + calcOffset;
 
-            var _newY = anchor.getLineYRow(calcRow);
+            var _newY = anchor.getLineY(calcRow);
 
             if (handle.x !== _newX || handle.y !== _newY) {
               handle.x = _newX;
@@ -39262,26 +39275,10 @@ function () {
       });
     }
     /**
-     * Returns the y-position that this Link's main line will have if it were
-     * drawn in the given row (based on the Row's position, and this Link's slot)
-     * @param {Row} row
+     * Removes this Link's SVG elements from the visualisation, and removes
+     * all references to it from the data stores
      */
 
-  }, {
-    key: "getLineYRow",
-    value: function getLineYRow(row) {
-      return this.top ? row.ry + row.rh - row.wordHeight - 15 * this.slot // Bottom Links have negative slot numbers
-      : row.ry + row.rh + row.wordDescent - 15 * this.slot;
-    } // helper function to return a path string for an arrowhead pointing to
-    // the given point
-
-  }, {
-    key: "arrowhead",
-    value: function arrowhead(point) {
-      var s = this.config.linkArrowWidth,
-          s2 = 5;
-      return this.top ? "M" + [point.x - s, point.y - s2] + "l" + [s, s2] + "l" + [s, -s2] : "M" + [point.x - s, point.y + s2] + "l" + [s, -s2] + "l" + [s, s2];
-    }
   }, {
     key: "remove",
     value: function remove() {
@@ -39304,6 +39301,19 @@ function () {
       this.arguments.forEach(function (arg) {
         return detachLink(arg.anchor);
       });
+    }
+    /**
+     * Returns the y-position that this Link's main line will have if it were
+     * drawn in the given row (based on the Row's position, and this Link's slot)
+     *
+     * @param {Row} row
+     */
+
+  }, {
+    key: "getLineY",
+    value: function getLineY(row) {
+      return this.top ? row.ry + row.rh - row.wordHeight - 15 * this.slot // Bottom Links have negative slot numbers
+      : row.ry + row.rh + row.wordDescent - 15 * this.slot;
     }
     /**
      * Given the full array of Words in the document, calculates this Link's
@@ -39596,7 +39606,7 @@ function () {
 
         var label = this.svgTexts[this.handles.indexOf(_handle) - 1];
         var textLength = label.length();
-        var textY = this.getLineYRow(_handle.row);
+        var textY = this.getLineY(_handle.row);
         var textLeft = pHandle.x + this.config.linkCurveWidth;
 
         if (textLeft + textLength > _handle.row.rw) {
@@ -39606,7 +39616,7 @@ function () {
         var textCentre = textLeft + textLength / 2; // Line
         // ----
 
-        var handleY = this.getLineYRow(_handle.row); // Argument handle to label
+        var handleY = this.getLineY(_handle.row); // Argument handle to label
 
         d += "M" + [pHandle.x, pHandle.y];
 
@@ -39632,12 +39642,12 @@ function () {
 
             for (var i = _handle.row.idx + 1; i < pReference.row.idx; i++) {
               var thisRow = this.main.rowManager.rows[i];
-              var lineY = this.getLineYRow(thisRow);
+              var lineY = this.getLineY(thisRow);
               d += "M" + [0, lineY] + "L" + [thisRow.rw, lineY];
             } // Draw in the last row
 
 
-            var finalY = this.getLineYRow(pReference.row);
+            var finalY = this.getLineY(pReference.row);
             d += "M" + [0, finalY] + "L" + [pReference.x, pReference.y];
           }
         }
@@ -39664,7 +39674,7 @@ function () {
             for (var _i3 = _handle.row.idx + 1; _i3 < triggerHandle.row.idx; _i3++) {
               var _thisRow = this.main.rowManager.rows[_i3];
 
-              var _lineY = this.getLineYRow(_thisRow);
+              var _lineY = this.getLineY(_thisRow);
 
               d += "M" + [0, _lineY] + "L" + [_thisRow.rw, _lineY];
             } // Draw in the last row
@@ -39674,7 +39684,7 @@ function () {
 
             _curveRightX = Math.max(_curveRightX, 0);
 
-            var _finalY = this.getLineYRow(triggerHandle.row);
+            var _finalY = this.getLineY(triggerHandle.row);
 
             d += "M" + [0, _finalY] + "L" + [_curveRightX, _finalY] + "C" + [pTrigger.x, _finalY, pTrigger.x, _finalY, pTrigger.x, pTrigger.y];
           }
@@ -39688,9 +39698,9 @@ function () {
           row: _handle.row
         }; // Arrowhead
 
-        d += this.arrowhead(pHandle); // Move label
+        d += this._arrowhead(pHandle); // Move label
 
-        label.x(textCentre).y(textY);
+        label.move(textCentre, textY);
       } // Right handles
       // ============
 
@@ -39713,7 +39723,7 @@ function () {
 
         var _textLength = _label.length();
 
-        var _textY = this.getLineYRow(_handle2.row);
+        var _textY = this.getLineY(_handle2.row);
 
         var _textLeft = _pHandle.x - this.config.linkCurveWidth - _textLength;
 
@@ -39723,7 +39733,7 @@ function () {
         // ----
 
 
-        var _handleY = this.getLineYRow(_handle2.row); // Label to argument handle
+        var _handleY = this.getLineY(_handle2.row); // Label to argument handle
 
 
         if (_textLeft + _textLength > _pHandle.x) {
@@ -39751,13 +39761,13 @@ function () {
             for (var _i4 = pReference.row.idx + 1; _i4 < _handle2.row.idx; _i4++) {
               var _thisRow2 = this.main.rowManager.rows[_i4];
 
-              var _lineY2 = this.getLineYRow(_thisRow2);
+              var _lineY2 = this.getLineY(_thisRow2);
 
               d += "M" + [0, _lineY2] + "L" + [_thisRow2.rw, _lineY2];
             } // Draw in the last row
 
 
-            var _finalY2 = this.getLineYRow(_handle2.row);
+            var _finalY2 = this.getLineY(_handle2.row);
 
             d += "M" + [0, _finalY2] + "L" + [_textLeft, _finalY2];
           }
@@ -39766,7 +39776,7 @@ function () {
         if (pReference === null) {
           // This is the first right handle; draw in the line from the trigger
           // also.
-          var triggerY = this.getLineYRow(triggerHandle.row); // Trigger handle to label
+          var triggerY = this.getLineY(triggerHandle.row); // Trigger handle to label
 
           if (triggerHandle.row.idx === _handle2.row.idx) {
             // Same row
@@ -39791,13 +39801,13 @@ function () {
             for (var _i5 = triggerHandle.row.idx + 1; _i5 < _handle2.row.idx; _i5++) {
               var _thisRow3 = this.main.rowManager.rows[_i5];
 
-              var _lineY3 = this.getLineYRow(_thisRow3);
+              var _lineY3 = this.getLineY(_thisRow3);
 
               d += "M" + [0, _lineY3] + "L" + [_thisRow3.rw, _lineY3];
             } // Draw in the last row
 
 
-            var _finalY3 = this.getLineYRow(_handle2.row);
+            var _finalY3 = this.getLineY(_handle2.row);
 
             d += "M" + [0, _finalY3] + "L" + [_textLeft, _finalY3];
           }
@@ -39811,9 +39821,9 @@ function () {
           row: _handle2.row
         }; // Arrowhead
 
-        d += this.arrowhead(_pHandle); // Move label
+        d += this._arrowhead(_pHandle); // Move label
 
-        _label.x(_textCentre).y(_textY);
+        _label.move(_textCentre, _textY);
       } // Add flat arrowhead to trigger handle if there are both leftward and
       // rightward handles
 
@@ -39823,7 +39833,10 @@ function () {
       } // Perform draw
 
 
-      this.line.plot(d);
+      if (this.lastPathString !== d) {
+        this.path.plot(d);
+        this.lastPathString = d;
+      }
     }
     /**
      * Draws this Link as a Relation annotation (no trigger/directionality
@@ -39850,7 +39863,7 @@ function () {
       // (Always on the first row for multi-line Links)
 
       var textLength = this.svgTexts[0].length();
-      var textY = this.getLineYRow(leftHandle.row); // Centre on the segment of the Link line on the first row
+      var textY = this.getLineY(leftHandle.row); // Centre on the segment of the Link line on the first row
 
       var textCentre = sameRow ? (pStart.x + pEnd.x) / 2 : (pStart.x + leftHandle.row.rw) / 2;
       var textLeft = textCentre - textLength / 2; // Make sure it doesn't overshoot the right row boundary
@@ -39863,7 +39876,7 @@ function () {
 
       d += "M" + [pStart.x, pStart.y]; // Left handle
 
-      var firstY = this.getLineYRow(leftHandle.row);
+      var firstY = this.getLineY(leftHandle.row);
 
       if (textLeft < pStart.x) {
         // Just draw a vertical line up to the label
@@ -39893,7 +39906,7 @@ function () {
 
         for (var i = leftHandle.row.idx + 1; i < rightHandle.row.idx; i++) {
           var thisRow = this.main.rowManager.rows[i];
-          var lineY = this.getLineYRow(thisRow);
+          var lineY = this.getLineY(thisRow);
           d += "M" + [0, lineY] + "L" + [thisRow.rw, lineY];
         } // Draw in the last row
 
@@ -39901,16 +39914,34 @@ function () {
         var _curveRightX3 = pEnd.x - this.config.linkCurveWidth;
 
         _curveRightX3 = Math.max(_curveRightX3, 0);
-        var finalY = this.getLineYRow(rightHandle.row);
+        var finalY = this.getLineY(rightHandle.row);
         d += "M" + [0, finalY] + "L" + [_curveRightX3, finalY] + "C" + [pEnd.x, finalY, pEnd.x, finalY, pEnd.x, pEnd.y];
       } // Arrowheads
 
 
-      d += this.arrowhead(pStart) + this.arrowhead(pEnd); // Move label
+      d += this._arrowhead(pStart) + this._arrowhead(pEnd); // Move label
 
-      this.svgTexts[0].x(textCentre).y(textY); // Perform draw
+      this.svgTexts[0].move(textCentre, textY); // Perform draw
 
-      this.line.plot(d);
+      if (this.lastPathString !== d) {
+        this.path.plot(d);
+        this.lastPathString = d;
+      }
+    }
+    /**
+     * Returns an SVG path string for an arrowhead pointing towards the given
+     * point. The arrow points down for top Links, and up for bottom Links.
+     * @param point
+     * @return {string}
+     * @private
+     */
+
+  }, {
+    key: "_arrowhead",
+    value: function _arrowhead(point) {
+      var s = this.config.linkArrowWidth,
+          s2 = 5;
+      return this.top ? "M" + [point.x - s, point.y - s2] + "l" + [s, s2] + "l" + [s, -s2] : "M" + [point.x - s, point.y + s2] + "l" + [s, -s2] + "l" + [s, s2];
     }
   }, {
     key: "endpoints",
@@ -40020,51 +40051,6 @@ function () {
         return handle.anchor === _this4.trigger;
       });
     }
-  }, {
-    key: "rootWord",
-    get: function get() {
-      if (this.trigger) {
-        return this.trigger;
-      }
-
-      if (this.arguments[0].anchor instanceof _word.default) {
-        return this.arguments[0].anchor;
-      }
-
-      return this.arguments[0].anchor.rootWord;
-    }
-  }, {
-    key: "idx",
-    get: function get() {
-      return this.rootWord.idx;
-    }
-  }, {
-    key: "row",
-    get: function get() {
-      return this.rootWord.row;
-    }
-  }, {
-    key: "cx",
-    get: function get() {
-      if (this.line) {
-        if (this.trigger) {
-          return this.trigger.cx + this.handles[0].offset;
-        } else {// FIXME: does not occur currently
-        }
-      }
-
-      return this.rootWord.cx;
-    }
-  }, {
-    key: "absoluteY",
-    get: function get() {
-      return this.rootWord.row.rh + this.rootWord.row.ry - 45 - 15 * this.slot;
-    }
-  }, {
-    key: "val",
-    get: function get() {
-      return this.reltype || this.trigger.reltype || this.trigger.tag && this.trigger.tag.val || this.trigger.val;
-    }
   }]);
   return Link;
 }();
@@ -40159,15 +40145,11 @@ function () {
     // Links, the Handle is in the same Row as the Link's left endpoint.
 
 
-    var rowBase;
-
     if (anchor instanceof Link) {
-      rowBase = anchor.endpoints[0];
+      this.row = anchor.endpoints[0].row;
     } else {
-      rowBase = anchor;
+      this.row = anchor.row;
     }
-
-    this.row = rowBase.row;
   }
   /**
    * Returns true if this handle precedes the given handle
@@ -40180,7 +40162,6 @@ function () {
   (0, _createClass2.default)(Handle, [{
     key: "precedes",
     value: function precedes(handle) {
-      // FIXME: Sometimes the Row boundaries aren't set properly
       if (!this.row || !handle.row) {
         return false;
       }
@@ -40193,20 +40174,14 @@ function () {
 
 module.exports = Link;
 
-},{"../util.js":64,"./word-cluster.js":52,"./word-tag.js":53,"./word.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],51:[function(require,module,exports){
+},{"../util.js":64,"./word-cluster.js":52,"./word-tag.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],51:[function(require,module,exports){
 "use strict";
-
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-
-var SVG = _interopRequireWildcard(require("svg.js"));
-
-var draggable = _interopRequireWildcard(require("svg.draggable.js"));
 
 var Row =
 /*#__PURE__*/
@@ -40772,7 +40747,7 @@ function () {
         }
       }
 
-      if (wordHeight === 0) {
+      if (wordHeight === 0 && this.lastRemovedWord) {
         // If we have no Words left on this Row, base our calculations on the
         // last Word that was on this Row, for positioning any Links that are
         // still passing through
@@ -40887,7 +40862,7 @@ function () {
 
 module.exports = Row;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"svg.draggable.js":47,"svg.js":48}],52:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],52:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -40937,7 +40912,9 @@ function () {
 
     this.main = null; // Main Config object for the parent instance; set by `.init()`
 
-    this.config = null;
+    this.config = null; // Cached SVG BBox values
+
+    this._textBbox = null;
     words.forEach(function (word) {
       return word.clusters.push(_this);
     });
@@ -40972,6 +40949,7 @@ function () {
 
       this.val = val;
       this.svgText.text(this.val);
+      this._textBbox = this.svgText.bbox();
 
       if (this.editingRect) {
         var bbox = this.svgText.bbox();
@@ -41010,10 +40988,11 @@ function () {
 
       if (!this.svgs[idx]) {
         var svg = this.svgs[idx] = mainSvg.group().addClass("tag-element").addClass("word-cluster");
-        this.lines[idx] = svg.path().addClass("tag-element");
+        this.lines[idx] = svg.path().addClass("tag-element"); // Add the text label to the left arm
 
         if (idx === 0) {
           this.svgText = svg.text(this.val).leading(1);
+          this._textBbox = this.svgText.bbox();
 
           this.svgText.node.oncontextmenu = function (e) {
             e.preventDefault();
@@ -41063,9 +41042,10 @@ function () {
       if (leftAnchor.row === rightAnchor.row) {
         // Draw in full curly brace between anchors
         var baseY = this.getBaseY(leftAnchor.row);
-        var textY = baseY - this.config.wordTopTagPadding - this.svgText.bbox().height;
+        var textY = baseY - this.config.wordTopTagPadding - this._textBbox.height;
         var centre = (leftX + rightX) / 2;
-        this.svgText.x(centre).y(textY); // Each arm consists of two curves with relatively tight control
+        this.svgText.move(centre, textY);
+        this._textBbox = this.svgText.bbox(); // Each arm consists of two curves with relatively tight control
         // points (to preserve the "hook-iness" of the curve).
         // The following x-/y- values are all relative.
 
@@ -41080,11 +41060,12 @@ function () {
       } else {
         // Extend curly brace to end of first Row, draw intervening rows,
         // finish on last Row
-        var _textY = leftAnchor.row.baseline - leftAnchor.boxHeight - this.svgText.bbox().height - this.config.wordTopTagPadding;
+        var _textY = leftAnchor.row.baseline - leftAnchor.boxHeight - this._textBbox.height - this.config.wordTopTagPadding;
 
         var _centre = (leftX + leftAnchor.row.rw) / 2;
 
-        this.svgText.x(_centre).y(_textY); // Left arm
+        this.svgText.move(_centre, _textY);
+        this._textBbox = this.svgText.bbox(); // Left arm
 
         var leftY = this.getBaseY(leftAnchor.row);
 
@@ -41180,6 +41161,11 @@ function () {
         this.remove();
       }
     }
+    /**
+     * Returns an array of the first and last Words covered by this WordCluster
+     * @return {Word[]}
+     */
+
   }, {
     key: "drawBbox",
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -41254,7 +41240,7 @@ function () {
   }, {
     key: "cx",
     get: function get() {
-      return this.svgText.cx();
+      return this._textBbox.cx;
     }
     /**
      * Returns the width of the bounding box of the WordTag's SVG text element
@@ -41264,7 +41250,7 @@ function () {
   }, {
     key: "textWidth",
     get: function get() {
-      return this.svgText.bbox().width;
+      return this._textBbox.width;
     }
   }]);
   return WordCluster;
@@ -41338,22 +41324,22 @@ function () {
       // N.B.: Typographical baselines ignore descenders
 
       this.svgText = this.svg.text(this.val).addClass("tag-element").addClass(this.top ? "word-tag" : "word-tag syntax-tag").leading(1); // Centre the WordTag horizontally
-      // (SVG text elements are positioned by their centres)
-
-      this.svgText.x(this.word.svgText.x()); // Position this WordTag above/below the main Word
+      // (SVG text elements are positioned on the x-axis by their centres)
+      // Also position the WordTag above/below the main Word
       // (It starts with its upper-left corner on the Row's main line)
 
-      var newY;
+      var newX, newY;
+      newX = this.word.textRcx;
 
       if (this.top) {
-        newY = -this.word.svgText.bbox().height - this.svgText.bbox().height - this.config.wordTopTagPadding;
+        newY = -this.word.textHeight - this.svgText.bbox().height - this.config.wordTopTagPadding;
       } else {
         newY = this.config.wordBottomTagPadding;
       }
 
-      this.svgText.y(newY); // add click and right-click listeners
+      this.svgText.move(newX, newY); // add click and right-click listeners
 
-      var mainSvg = this.word.mainSvg;
+      var mainSvg = this.word.main.svg;
 
       this.svgText.node.oncontextmenu = function (e) {
         e.preventDefault();
@@ -41363,7 +41349,7 @@ function () {
         });
       };
 
-      this.svgText.click(function (e) {
+      this.svgText.click(function () {
         return mainSvg.fire("tag-edit", {
           object: _this
         });
@@ -41528,8 +41514,6 @@ module.exports = WordTag;
 },{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],54:[function(require,module,exports){
 "use strict";
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
-
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
@@ -41539,10 +41523,6 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
 var _wordTag = _interopRequireDefault(require("./word-tag.js"));
-
-var SVG = _interopRequireWildcard(require("svg.js"));
-
-var draggable = _interopRequireWildcard(require("svg.draggable.js"));
 
 /**
  * Objects representing raw entity/token strings.
@@ -41576,7 +41556,7 @@ function () {
     this.eventIds = [];
     this.syntaxId = "";
     this.tagText = "";
-    this.syntaxTagText = ""; // Backreferences that will be set when this Word is used in
+    this.syntaxTagText = ""; // Back-references that will be set when this Word is used in
     // other structures
     // ---------------------------------------------------------
     // WordTag
@@ -41594,7 +41574,7 @@ function () {
     this.passingLinks = []; // SVG-related properties
     // ----------------------
 
-    this.initialised = null; // Main API instance
+    this.initialised = false; // Main API instance
 
     this.main = null; // Main Config object for the parent instance
 
@@ -41602,7 +41582,10 @@ function () {
 
     this.svg = null; // The x-position of the left bound of the Word's box
 
-    this.x = 0;
+    this.x = 0; // Calculate the SVG BBox only once per transformation (it's expensive)
+
+    this._bbox = null;
+    this._textBbox = null;
   }
   /**
    * Any event IDs (essentially arbitrary labels) that this Word is
@@ -41646,7 +41629,6 @@ function () {
         }
 
         this.tag = new _wordTag.default(tag, this, this.config);
-        this.tag.draw();
       }
     }
     /**
@@ -41666,7 +41648,6 @@ function () {
         }
 
         this.syntaxTag = new _wordTag.default(tag, this, this.config, false);
-        this.syntaxTag.draw();
       }
     }
     /**
@@ -41690,14 +41671,17 @@ function () {
       // more precisely.
 
       this.svgText = this.svg.text(this.text).addClass("tag-element").addClass("word-text").leading(1); // The positioning anchor for the text element is its centre, so we need
-      // to translate the entire Word rightward by half its width
-
-      this.svgText.x(this.svgText.bbox().width / 2); // In addition, the x/y-position points at the upper-left corner of the
+      // to translate the entire Word rightward by half its width.
+      // In addition, the x/y-position points at the upper-left corner of the
       // Word's bounding box, but since we are working relative to the Row's
       // main line, we need to move the Word upwards so that the lower-left
       // corner meets the Row.
 
-      this.svgText.y(-this.svgText.bbox().height); // Draw in this Word's tags
+      var currentBox = this.svgText.bbox();
+      this.svgText.move(currentBox.width / 2, -currentBox.height); // Cache the text bounding box values
+
+      this._textBbox = this.svgText.bbox(); // ------------------------
+      // Draw in this Word's tags
 
       if (this.tagText && !(this.tag instanceof _wordTag.default)) {
         this.tag = new _wordTag.default(this.tagText, this, this.config);
@@ -41710,10 +41694,14 @@ function () {
 
       this.clusters.forEach(function (cluster) {
         cluster.init(_this, main);
-      }); // Make sure that all the SVG elements for this Word and any WordTags are
-      // well-positioned within the Word's bounding box
+      }); // Cache the overall bounding box values, and ensure that all the SVG
+      // elements for this Word and any WordTags are well-positioned within
+      // the Word's bounding box
 
-      this.alignBox(); // attach drag listeners
+      this._bbox = this.svg.bbox();
+      this.alignBox(); // And cache the overall bounding box values
+      // ---------------------
+      // Attach drag listeners
 
       var x = 0;
       var mousemove = false;
@@ -41733,7 +41721,7 @@ function () {
         if (dx !== 0) {
           mousemove = true;
         }
-      }).on("dragend", function (e) {
+      }).on("dragend", function () {
         mainSvg.fire("word-move-end", {
           object: _this,
           clicked: mousemove === false
@@ -41754,6 +41742,8 @@ function () {
           event: e
         });
       };
+
+      this.initialised = true;
     }
   }, {
     key: "redrawLinks",
@@ -41814,32 +41804,38 @@ function () {
       // Generally, we will only need to move things around if the WordTags
       // are wider than the Word, which gives the Word's bounding box a
       // negative x-value.
-      var diff = -this.svg.bbox().x; // We can't apply the `.x()` translation directly to this Word's SVG
-      // group, or it will simply set a transformation on the group (leaving
-      // the bounding box unchanged).  We need to move all its children instead.
+      var diff = -this._bbox.x;
 
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
+      if (diff > 0) {
+        // We can't apply the `.x()` translation directly to this Word's SVG
+        // group, or it will simply set a transformation on the group (leaving
+        // the bounding box unchanged).  We need to move all its children instead.
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
 
-      try {
-        for (var _iterator = this.svg.children()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var child = _step.value;
-          child.dx(diff);
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
         try {
-          if (!_iteratorNormalCompletion && _iterator.return != null) {
-            _iterator.return();
-          }
+          for (var _iterator = this.svg.children()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var child = _step.value;
+            child.dx(diff);
+          } // And updated the cached values
+
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
         } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
           }
         }
+
+        this._bbox = this.svg.bbox();
       }
     }
     /**
@@ -41876,7 +41872,7 @@ function () {
   }, {
     key: "boxWidth",
     get: function get() {
-      return this.svg.bbox().width;
+      return this._bbox.width;
     }
     /**
      * Returns the minimum width needed to hold this Word and its WordTags.
@@ -41944,7 +41940,7 @@ function () {
     get: function get() {
       // Since the Word's box is relative to the Row's line to begin with,
       // this is simply the negative of the y-value of the box
-      return -this.svg.bbox().y;
+      return -this._bbox.y;
     }
     /**
      * Returns the extent of the bounding box for this Word below the Row's line
@@ -41956,7 +41952,7 @@ function () {
     get: function get() {
       // Since the Word's box is relative to the Row's line to begin with,
       // this is simply the y2-value of the box
-      return this.svg.bbox().y2;
+      return this._bbox.y2;
     }
     /**
      * Returns the absolute y-position of the top of this Word's bounding box
@@ -41979,7 +41975,7 @@ function () {
       return this.row ? this.row.ry + this.row.rh + this.descendHeight : this.descendHeight;
     }
     /**
-     * Returns the x-position of the centre of this Word's box
+     * Returns the absolute x-position of the centre of this Word's box
      * @return {Number}
      */
 
@@ -41996,12 +41992,32 @@ function () {
   }, {
     key: "textWidth",
     get: function get() {
-      return this.svgText.bbox().width;
+      return this._textBbox.width;
+    }
+    /**
+     * Returns the height of the bounding box of the Word's SVG text element
+     * @return {Number}
+     */
+
+  }, {
+    key: "textHeight",
+    get: function get() {
+      return this._textBbox.height;
+    }
+    /**
+     * Returns the *relative* x-position of the centre of the bounding
+     * box of the Word's SVG text element
+     */
+
+  }, {
+    key: "textRcx",
+    get: function get() {
+      return this._textBbox.cx;
     }
     /**
      * Returns true if this Word contains a single punctuation character
      *
-     * FIXME: doesn't handle fancier unicode punct | should exclude
+     * FIXME: doesn't handle fancier unicode punctuation | should exclude
      * left-punctuation e.g. left-paren or left-quote
      * @return {Boolean}
      */
@@ -42017,7 +42033,7 @@ function () {
 
 module.exports = Word;
 
-},{"./word-tag.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/helpers/slicedToArray":9,"svg.draggable.js":47,"svg.js":48}],55:[function(require,module,exports){
+},{"./word-tag.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],55:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -42270,10 +42286,7 @@ function () {
     value: function draw() {
       var _this = this;
 
-      var t0 = performance.now(); // console.log("----------");
-      // console.log("Starting draw");
       // Save a reference to the currently loaded tokens and links
-
       var data = this.parser.getParsedData();
       this.words = data.words;
       this.links = data.links; // Calculate the Link slots (vertical intervals to separate
@@ -42297,9 +42310,7 @@ function () {
         word.init(_this);
 
         _this.rowManager.addWordToRow(word, _this.rowManager.lastRow);
-      }); // console.log(`Words done (${performance.now() - t0}ms)`);
-
-      t0 = performance.now(); // We have to initialise all the Links before we draw any of them, to
+      }); // We have to initialise all the Links before we draw any of them, to
       // account for nested Links etc.  We should also only draw Links directly
       // anchored to Words, and let them draw any higher-level Links, so that we
       // don't accidentally draw a higher-level Link before its base is available
@@ -42311,14 +42322,12 @@ function () {
         word.links.forEach(function (link) {
           return link.draw();
         });
-      }); // console.log(`Links done (${performance.now() - t0}ms)`);
-
-      t0 = performance.now(); // Change token colours based on the current taxonomy, if loaded
+      }); // Change token colours based on the current taxonomy, if loaded
 
       this.taxonomyManager.colour(this.words); // Hide the syntax links if necessary
 
       this.options.showSyntax ? this.showSyntax() : this.hideSyntax();
-      this.rowManager.resizeAll(); // console.log(`Resize done (${performance.now() - t0}ms)`);
+      this.rowManager.resizeAll();
     }
     /**
      * Removes all elements from the visualisation
@@ -42632,7 +42641,7 @@ function () {
 
 module.exports = Main;
 
-},{"./config.js":55,"./managers/labelmanager.js":57,"./managers/rowmanager.js":58,"./managers/taxonomy.js":59,"./parse/parse.js":61,"./util.js":64,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":48}],57:[function(require,module,exports){
+},{"./config.js":55,"./managers/labelmanager.js":57,"./managers/rowmanager.js":58,"./managers/taxonomy.js":59,"./parse/parse.js":62,"./util.js":64,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":48}],57:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -42818,10 +42827,8 @@ function () {
       var newHeight = Math.max(row.rh + dy, row.minHeight);
 
       if (row.rh !== newHeight) {
-        row.height(newHeight); // console.log("--------");
-
-        var drawStart = performance.now();
-        row.redrawLinksAndClusters(); // console.log(`Redrew links in ${performance.now() - drawStart}ms.`);
+        row.height(newHeight);
+        row.redrawLinksAndClusters();
       } // Adjust the positions of all following Rows
 
 
@@ -43004,12 +43011,13 @@ function () {
         // Last word on this row
         this.moveLastWordDown(row.idx);
       } else {
+        // Move next Word, then move this Word again
         this.moveWordRight({
           row: row,
           wordIndex: wordIndex + 1,
           dx: dx
         });
-        word.dx(dx);
+        this.moveWordRight(params);
       }
     }
     /**
@@ -43089,8 +43097,13 @@ function () {
       });
 
       if (canMove) {
-        word.dx(-dx);
-        return true;
+        // Retry the move (noting that our index may have changed if earlier
+        // Words were popped up to the previous Row
+        return this.moveWordLeft({
+          row: row,
+          wordIndex: row.words.indexOf(word),
+          dx: dx
+        });
       } else {
         // Ah well
         return false;
@@ -43717,289 +43730,6 @@ module.exports = BratParser;
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-
-var _lodash = _interopRequireDefault(require("lodash"));
-
-var _reach = _interopRequireDefault(require("./reach.js"));
-
-var _ann = _interopRequireDefault(require("./ann.js"));
-
-var _processors = _interopRequireDefault(require("./processors.js"));
-
-var re = /.*(?=\.(\S+))|.*/;
-
-var Parser =
-/*#__PURE__*/
-function () {
-  function Parser() {
-    (0, _classCallCheck2.default)(this, Parser);
-
-    /* output */
-    this._parsedData = {
-      words: [],
-      links: [],
-      clusters: []
-    };
-    /* supported formats */
-
-    this.reach = new _reach.default();
-    this.ann = new _ann.default();
-    this.processors = new _processors.default();
-  }
-  /**
-   * Loads annotation data directly into the parser
-   * @param {Object} data - The raw data expected by the parser for the
-   *     given format
-   * @param {String} format
-   */
-
-
-  (0, _createClass2.default)(Parser, [{
-    key: "loadData",
-    value: function loadData(data, format) {
-      if (format === "reach") {
-        this.parseReach(data);
-      } else if (format === "brat") {
-        this.parseBrat(data);
-      } else if (format === "processors") {
-        this.parseProcessors(data);
-      } else {
-        throw "Unknown annotation format: ".concat(format);
-      }
-
-      return this.getParsedData();
-    }
-    /**
-     * Loads annotation data from file objects (as read by Main.loadFilesAsync())
-     * @param {Array} files - An array of objects with the following structure:
-     *     {
-     *       name: <file name>
-     *       type: <file type>
-     *       content: <file contents as a string>
-     *     }
-     * @param {String} format
-     */
-
-  }, {
-    key: "loadFiles",
-    value: function loadFiles(files, format) {
-      if (files.length === 1) {
-        // Single file
-        var file = files[0];
-
-        if (format === "reach") {
-          this.parseReach(JSON.parse(file.content));
-        } else if (format === "brat") {
-          this.parseBrat(file.content);
-        } else if (format === "processors") {
-          this.parseProcessors(file.content);
-        } else {
-          throw "Unknown annotation format: ".concat(format);
-        }
-      } else {
-        // Multi-file format
-        // find 2 or 3 files that match in name
-        files.sort(function (a, b) {
-          return a.name.localeCompare(b.name);
-        });
-        var matchingFiles = [];
-        var i = 0;
-        var iname = files[i].name.match(re);
-
-        for (var j = 1; j < files.length; ++j) {
-          var jname = files[j].name.match(re);
-
-          if (jname[1] && jname[0] === iname[0]) {
-            matchingFiles.push(files[i], files[j]);
-            var k = j + 1;
-
-            while (k < files.length) {
-              var kname = files[k].name.match(re);
-
-              if (kname[1] && kname[0] === iname[0]) {
-                matchingFiles.push(files[k]);
-              } else {
-                break;
-              }
-
-              ++k;
-            }
-
-            break;
-          }
-        } // found matching files
-
-
-        if (format === "brat") {
-          if (matchingFiles.length === 2) {
-            // find text content
-            var text = matchingFiles.find(function (file) {
-              return file.name.endsWith(".txt");
-            });
-            var standoff = matchingFiles.find(function (file) {
-              return !file.name.endsWith(".txt");
-            });
-            this.parseBrat(text.content, standoff.content);
-          } else {
-            var _text = matchingFiles.find(function (file) {
-              return file.name.endsWith(".txt");
-            });
-
-            var entities = matchingFiles.find(function (file) {
-              return file.name.endsWith(".a1");
-            });
-            var evts = matchingFiles.find(function (file) {
-              return file.name.endsWith(".a2");
-            });
-
-            if (_text && evts && entities) {
-              this.parseBrat(_text.content, entities.content, evts.content);
-            } else {
-              throw "Wrong number/type of files for Brat format";
-            }
-          }
-        } else {
-          throw "Unknown format, or wrong number/type of files for format";
-        }
-      }
-
-      return this.getParsedData();
-    } // loadFile(path, format) {
-    //   // get format from extension
-    //   if (!format) {
-    //     const extension = path.toLowerCase().match(re)[1];
-    //
-    //     if (extension === "json") {
-    //       format = "json";
-    //     } else {
-    //       format = "brat";
-    //     }
-    //   }
-    //
-    //   // load and parse file
-    //   return load(path).then(data => {
-    //     if (format === "json") {
-    //       this.parseReach(JSON.parse(data));
-    //     } else if (format === "brat") {
-    //       this.parseBrat(data);
-    //     }
-    //
-    //     return this.getParsedData();
-    //   });
-    // }
-    // parseFiles(files) {
-    //   // console.log(files);
-    //   if (files.length === 1) {
-    //     const file = files[0];
-    //     if (file.type === "application/json") {
-    //       this.parseReach(JSON.parse(file.content));
-    //     } else if (file.type === "") {
-    //       this.parseBrat(file.content);
-    //     }
-    //     return file.name;
-    //   } else if (files.length > 1) {
-    //     // find 2 or 3 files that match in name
-    //     files.sort((a, b) => a.name.localeCompare(b.name));
-    //
-    //     let matchingFiles = [];
-    //
-    //     let i = 0;
-    //     let iname = files[i].name.match(re);
-    //     for (let j = 1; j < files.length; ++j) {
-    //       let jname = files[j].name.match(re);
-    //       if (jname[1] && jname[0] === iname[0]) {
-    //         matchingFiles.push(files[i], files[j]);
-    //
-    //         let k = j + 1;
-    //         while (k < files.length) {
-    //           let kname = files[k].name.match(re);
-    //           if (kname[1] && kname[0] === iname[0]) {
-    //             matchingFiles.push(files[k]);
-    //           } else {
-    //             break;
-    //           }
-    //           ++k;
-    //         }
-    //         break;
-    //       }
-    //     }
-    //
-    //     // found matching files
-    //     if (matchingFiles.length === 2) {
-    //       // find text content
-    //       let text = matchingFiles.find(file => file.name.endsWith(".txt"));
-    //       let standoff = matchingFiles.find(file => !file.name.endsWith(".txt"));
-    //       this.parseBrat(text.content, standoff.content);
-    //       return [text.name, standoff.name].join("\n");
-    //     } else {
-    //       let text = matchingFiles.find(file => file.name.endsWith(".txt"));
-    //       let entities = matchingFiles.find(file => file.name.endsWith(".a1"));
-    //       let evts = matchingFiles.find(file => file.name.endsWith(".a2"));
-    //       if (text && evts && entities) {
-    //         this.parseBrat(text.content, entities.content, evts.content);
-    //       }
-    //       return [text.name, entities.name, evts.name].join("\n");
-    //     }
-    //   }
-    // }
-
-    /**
-     * Returns a cloned copy of the most recently parsed data, with circular
-     * references (e.g., between Words and Links) intact
-     */
-
-  }, {
-    key: "getParsedData",
-    value: function getParsedData() {
-      return _lodash.default.cloneDeep(this._parsedData);
-    }
-    /**
-     * Parses the given Reach-format data
-     * @param data
-     */
-
-  }, {
-    key: "parseReach",
-    value: function parseReach(data) {
-      this.reach.parse(data);
-      this._parsedData = this.reach.data;
-    }
-    /**
-     * Parses the given Brat-format data
-     * http://brat.nlplab.org/standoff.html
-     */
-
-  }, {
-    key: "parseBrat",
-    value: function parseBrat() {
-      this.ann.parse.apply(this.ann, arguments);
-      this._parsedData = this.ann.data;
-    }
-    /**
-     * Parses the given Processors-format data
-     * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
-     */
-
-  }, {
-    key: "parseProcessors",
-    value: function parseProcessors(data) {
-      this.processors.parse(data);
-      this._parsedData = this.processors.data;
-    }
-  }]);
-  return Parser;
-}();
-
-module.exports = Parser;
-
-},{"./ann.js":60,"./processors.js":62,"./reach.js":63,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],62:[function(require,module,exports){
-"use strict";
-
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
@@ -44013,14 +43743,14 @@ var _link = _interopRequireDefault(require("../components/link.js"));
 var _wordCluster = _interopRequireDefault(require("../components/word-cluster.js"));
 
 /**
- * Parser for Processors `mentions.json` output
+ * Parser for Odin `mentions.json` output
  * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
  */
-var ProcessorsParser =
+var OdinParser =
 /*#__PURE__*/
 function () {
-  function ProcessorsParser() {
-    (0, _classCallCheck2.default)(this, ProcessorsParser);
+  function OdinParser() {
+    (0, _classCallCheck2.default)(this, OdinParser);
     // This will eventually hold the parsed data for returning to the caller
     this.data = {
       words: [],
@@ -44040,7 +43770,7 @@ function () {
    */
 
 
-  (0, _createClass2.default)(ProcessorsParser, [{
+  (0, _createClass2.default)(OdinParser, [{
     key: "parse",
     value: function parse(data) {
       // Clear out any old parse data
@@ -44251,14 +43981,16 @@ function () {
        * @property {Object} mention.tokenInterval - The start and end indices
        *     for this mention
        * @property {String[]} mention.labels - An Array of the labels that
-       *     this mention should have
+       *     this mention should have.  By convention, the first element in the
+       *     Array is the actual label, and the other elements simply reflect the
+       *     higher-levels of the label's taxonomic hierarchy.
        * @property {Object} mention.arguments
        */
       // TextBoundMention
       // Will become either a tag for a Word, or a WordCluster.
       if (mention.type === "TextBoundMention") {
         var tokens = this.parsedDocuments[mention.document].sentences[mention.sentence].slice(mention.tokenInterval.start, mention.tokenInterval.end);
-        var label = mention.labels.join("-");
+        var label = mention.labels[0];
 
         if (tokens.length === 1) {
           tokens[0].setTag(label);
@@ -44340,12 +44072,217 @@ function () {
       }
     }
   }]);
-  return ProcessorsParser;
+  return OdinParser;
 }();
 
-module.exports = ProcessorsParser;
+module.exports = OdinParser;
 
-},{"../components/link.js":50,"../components/word-cluster.js":52,"../components/word.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],63:[function(require,module,exports){
+},{"../components/link.js":50,"../components/word-cluster.js":52,"../components/word.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],62:[function(require,module,exports){
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var _lodash = _interopRequireDefault(require("lodash"));
+
+var _reach = _interopRequireDefault(require("./reach.js"));
+
+var _ann = _interopRequireDefault(require("./ann.js"));
+
+var _odin = _interopRequireDefault(require("./odin.js"));
+
+var re = /.*(?=\.(\S+))|.*/;
+
+var Parser =
+/*#__PURE__*/
+function () {
+  function Parser() {
+    (0, _classCallCheck2.default)(this, Parser);
+
+    /* output */
+    this._parsedData = {
+      words: [],
+      links: [],
+      clusters: []
+    };
+    /* supported formats */
+
+    this.reach = new _reach.default();
+    this.ann = new _ann.default();
+    this.odin = new _odin.default();
+  }
+  /**
+   * Loads annotation data directly into the parser
+   * @param {Object} data - The raw data expected by the parser for the
+   *     given format
+   * @param {String} format
+   */
+
+
+  (0, _createClass2.default)(Parser, [{
+    key: "loadData",
+    value: function loadData(data, format) {
+      if (format === "reach") {
+        this.parseReach(data);
+      } else if (format === "brat") {
+        this.parseBrat(data);
+      } else if (format === "odin") {
+        this.parseOdin(data);
+      } else {
+        throw "Unknown annotation format: ".concat(format);
+      }
+
+      return this.getParsedData();
+    }
+    /**
+     * Loads annotation data from file objects (as read by Main.loadFilesAsync())
+     * @param {Array} files - An array of objects with the following structure:
+     *     {
+     *       name: <file name>
+     *       type: <file type>
+     *       content: <file contents as a string>
+     *     }
+     * @param {String} format
+     */
+
+  }, {
+    key: "loadFiles",
+    value: function loadFiles(files, format) {
+      if (files.length === 1) {
+        // Single file
+        var file = files[0];
+
+        if (format === "reach") {
+          this.parseReach(JSON.parse(file.content));
+        } else if (format === "brat") {
+          this.parseBrat(file.content);
+        } else if (format === "processors") {
+          this.parseProcessors(file.content);
+        } else {
+          throw "Unknown annotation format: ".concat(format);
+        }
+      } else {
+        // Multi-file format
+        // find 2 or 3 files that match in name
+        files.sort(function (a, b) {
+          return a.name.localeCompare(b.name);
+        });
+        var matchingFiles = [];
+        var i = 0;
+        var iname = files[i].name.match(re);
+
+        for (var j = 1; j < files.length; ++j) {
+          var jname = files[j].name.match(re);
+
+          if (jname[1] && jname[0] === iname[0]) {
+            matchingFiles.push(files[i], files[j]);
+            var k = j + 1;
+
+            while (k < files.length) {
+              var kname = files[k].name.match(re);
+
+              if (kname[1] && kname[0] === iname[0]) {
+                matchingFiles.push(files[k]);
+              } else {
+                break;
+              }
+
+              ++k;
+            }
+
+            break;
+          }
+        } // found matching files
+
+
+        if (format === "brat") {
+          if (matchingFiles.length === 2) {
+            // find text content
+            var text = matchingFiles.find(function (file) {
+              return file.name.endsWith(".txt");
+            });
+            var standoff = matchingFiles.find(function (file) {
+              return !file.name.endsWith(".txt");
+            });
+            this.parseBrat(text.content, standoff.content);
+          } else {
+            var _text = matchingFiles.find(function (file) {
+              return file.name.endsWith(".txt");
+            });
+
+            var entities = matchingFiles.find(function (file) {
+              return file.name.endsWith(".a1");
+            });
+            var evts = matchingFiles.find(function (file) {
+              return file.name.endsWith(".a2");
+            });
+
+            if (_text && evts && entities) {
+              this.parseBrat(_text.content, entities.content, evts.content);
+            } else {
+              throw "Wrong number/type of files for Brat format";
+            }
+          }
+        } else {
+          throw "Unknown format, or wrong number/type of files for format";
+        }
+      }
+
+      return this.getParsedData();
+    }
+    /**
+     * Returns a cloned copy of the most recently parsed data, with circular
+     * references (e.g., between Words and Links) intact
+     */
+
+  }, {
+    key: "getParsedData",
+    value: function getParsedData() {
+      return _lodash.default.cloneDeep(this._parsedData);
+    }
+    /**
+     * Parses the given Reach-format data
+     * @param data
+     */
+
+  }, {
+    key: "parseReach",
+    value: function parseReach(data) {
+      this.reach.parse(data);
+      this._parsedData = this.reach.data;
+    }
+    /**
+     * Parses the given Brat-format data
+     * http://brat.nlplab.org/standoff.html
+     */
+
+  }, {
+    key: "parseBrat",
+    value: function parseBrat() {
+      this.ann.parse.apply(this.ann, arguments);
+      this._parsedData = this.ann.data;
+    }
+    /**
+     * Parses the given Odin-format data
+     * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
+     */
+
+  }, {
+    key: "parseOdin",
+    value: function parseOdin(data) {
+      this.odin.parse(data);
+      this._parsedData = this.odin.data;
+    }
+  }]);
+  return Parser;
+}();
+
+module.exports = Parser;
+
+},{"./ann.js":60,"./odin.js":61,"./reach.js":63,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],63:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -44573,13 +44510,23 @@ module.exports = ReachParser;
 },{"../components/link.js":50,"../components/word-cluster.js":52,"../components/word.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],64:[function(require,module,exports){
 "use strict";
 
+var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 var _lodash = _interopRequireDefault(require("lodash"));
 
+var SVG = _interopRequireWildcard(require("svg.js"));
+
+var draggable = _interopRequireWildcard(require("svg.draggable.js"));
+
 /**
  * Utility functions
  */
+// For some reason, the `draggable` import has to be in a different file
+// from `main.js`.  This has something to do with the way ES6 imports work,
+// and the fact that `svg.draggable.js` expects the `SVG` variable to be
+// globally available.
 
 /**
  * Get all the CSS rules that match the given elements
@@ -44672,13 +44619,11 @@ function sortForSlotting(links) {
   return sortingArray.map(function (link) {
     return links[link.idx];
   });
-} // Debug
+}
 
-
-window.getCssRules = getCssRules;
 module.exports = {
   getCssRules: getCssRules,
   sortForSlotting: sortForSlotting
 };
 
-},{"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}]},{},[56]);
+},{"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"lodash":43,"svg.draggable.js":47,"svg.js":48}]},{},[56]);
