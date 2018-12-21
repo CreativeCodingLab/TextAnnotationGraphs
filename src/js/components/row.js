@@ -357,9 +357,23 @@ class Row {
    * @return {number}
    */
   get minHeight() {
-    return this.wordHeight +
+    let height = this.wordHeight +
       this.maxSlot * this.config.linkSlotInterval +
       this.config.rowVerticalPadding;
+
+    // Because top Link labels are above the Link lines, we need to add
+    // their height if any of the Words on this Row is an endpoint for a Link
+    for (const word of this.words) {
+      for (const link of word.links) {
+        if (link.top) {
+          // This Word anchors some top Link
+          return height + this.config.rowExtraTopPadding;
+        }
+      }
+    }
+
+    // Still here?
+    return height;
   }
 
   /**

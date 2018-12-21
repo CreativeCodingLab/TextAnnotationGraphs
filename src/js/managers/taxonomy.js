@@ -5,12 +5,15 @@
 
 const randomColor = require("randomcolor");
 const yaml = require("js-yaml");
+const _ = require("lodash");
 
-import ColorPicker from "../colorpicker.js";
 import Word from "../components/word.js";
 
 class TaxonomyManager {
-  constructor() {
+  constructor(config) {
+    // The global Config object
+    this.config = config;
+
     // The currently loaded taxonomy (as a JS Array representing the tree)
     this.taxonomy = [];
 
@@ -22,21 +25,7 @@ class TaxonomyManager {
 
     // An array containing the first n default colours to use (as a queue).
     // When this array is exhausted, we will switch to using randomColor.
-    this.defaultColours = [
-      "#3fa1d1",
-      "#ed852a",
-      "#2ca02c",
-      "#c34a1d",
-      "#a048b3",
-      "#e377c2",
-      "#bcbd22",
-      "#17becf",
-      "#e7298a",
-      "#e6ab02",
-      "#7570b3",
-      "#a6761d",
-      "#7f7f7f"
-    ];
+    this.defaultColours = _.cloneDeep(config.tagDefaultColours);
   }
 
   /**
@@ -173,6 +162,13 @@ class TaxonomyManager {
   }
 
 
+  /**
+   * Resets `.defaultColours` to the Array specified in the Config object
+   * (Used when clearing the visualisation, for example)
+   */
+  resetDefaultColours() {
+    this.defaultColours = _.cloneDeep(this.config.tagDefaultColours);
+  }
 }
 
 module.exports = TaxonomyManager;

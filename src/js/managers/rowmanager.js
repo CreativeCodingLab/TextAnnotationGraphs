@@ -123,18 +123,6 @@ class RowManager {
       i = row.words.length;
     }
 
-    // // See if this Word has Links which occupy higher/lower slots than the
-    // // existing Words on the Row.
-    // let minSlot = 0;
-    // let maxSlot = 0;
-    // for (const link of word.links) {
-    //   minSlot = Math.min(minSlot, link.slot);
-    //   maxSlot = Math.max(maxSlot, link.slot);
-    // }
-    // if (minSlot < row.minSlot || maxSlot > row.maxSlot) {
-    //   this.resizeRow(row.idx);
-    // }
-
     let overflow = row.addWord(word, i, forceX);
     while (overflow < row.words.length) {
       this.moveLastWordDown(row.idx);

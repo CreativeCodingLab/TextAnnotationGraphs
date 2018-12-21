@@ -96,6 +96,10 @@
                href="#">
               Odin format test (test-odin.json)
             </a>
+            <a class="dropdown-item tag-dataset" data-path="data/sentence-1-odin.json" data-format="odin"
+               href="#">
+              Sentence 1 (sentence-1-odin.json)
+            </a>
           </div>
         </div>
 
@@ -163,15 +167,30 @@
 
               <div class="modal-body">
                 <div class="p-3">
+                  Show the following category of top links:
+                  <select id="tag-option-top-links" class="custom-select mb-3">
+                    <!-- Options will be added at run time in `demo.js` based on the categories available in the
+                    data loaded -->
+                  </select>
+
+                  Show the following category of bottom links:
+                  <select id="tag-option-bottom-links" class="custom-select mb-3">
+                    <!-- Options will be added at run time in `demo.js` based on the categories available in the
+                    data loaded -->
+                  </select>
+
                   <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="tag-option-syntax">
-                    <label class="custom-control-label" for="tag-option-syntax">Show syntax tree</label>
+                    <input type="checkbox" class="custom-control-input" id="tag-option-top-links-on-move">
+                    <label class="custom-control-label" for="tag-option-top-links-on-move">
+                      Show top links when moving words
+                    </label>
                   </div>
 
                   <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="tag-option-links-on-move">
-                    <label class="custom-control-label" for="tag-option-links-on-move">Show syntax links when moving
-                      words</label>
+                    <input type="checkbox" class="custom-control-input" id="tag-option-bottom-links-on-move">
+                    <label class="custom-control-label" for="tag-option-bottom-links-on-move">
+                      Show bottom links when moving words
+                    </label>
                   </div>
                 </div>
 

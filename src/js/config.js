@@ -16,6 +16,12 @@ class Config {
     // Padding on the top/bottom of each Row
     this.rowVerticalPadding = 10;
 
+    // Extra padding on Row top for Link labels
+    // (Labels for top Links are drawn above their line, and it is not
+    // trivial to get a good value for how high they are, so we use a
+    // pre-configured value here)
+    this.rowExtraTopPadding = 10;
+
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Drawing options for Words
 
@@ -54,6 +60,28 @@ class Config {
 
     // Width of arrowheads for handles
     this.linkArrowWidth = 5;
+
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Drawing options for Tags
+
+    // An array containing the first n default colours to use for tags (as a
+    // queue). When this array is exhausted, we will switch to using
+    // randomColor.
+    this.tagDefaultColours = [
+      "#3fa1d1",
+      "#ed852a",
+      "#2ca02c",
+      "#c34a1d",
+      "#a048b3",
+      "#e377c2",
+      "#bcbd22",
+      "#17becf",
+      "#e7298a",
+      "#e6ab02",
+      "#7570b3",
+      "#a6761d",
+      "#7f7f7f"
+    ];
   }
 }
 

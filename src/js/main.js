@@ -49,7 +49,7 @@ class Main {
     this.parser = new Parser();
     this.rowManager = new RowManager(this.svg, this.config);
     this.labelManager = new LabelManager(this.svg);
-    this.taxonomyManager = new Taxonomy();
+    this.taxonomyManager = new Taxonomy(this.config);
 
     // Tokens and links that are currently drawn on the visualisation
     this.words = [];
@@ -57,9 +57,14 @@ class Main {
 
     // Options
     this.options = {
-      showSyntax: false,
-      showLinksOnMove: false,
-      showTreeInModal: false
+      // Category of top Links to show
+      topLinksCategory: "default",
+      // Category of bottom Links to show
+      bottomLinksCategory: "none",
+
+      // Continue to display top/bottom Links when moving Words?
+      showTopLinksOnMove: true,
+      showBottomLinksOnMove: false,
     };
 
     // Initialisation
@@ -157,21 +162,21 @@ class Main {
     });
 
     // We have to initialise all the Links before we draw any of them, to
-    // account for nested Links etc.  We should also only draw Links directly
-    // anchored to Words, and let them draw any higher-level Links, so that we
-    // don't accidentally draw a higher-level Link before its base is available
-    this.links.forEach(link => link.init(this));
-    this.words.forEach(word => {
-      word.links.forEach(link => link.draw());
+    // account for nested Links etc.
+    this.links.forEach(link => {
+      link.init(this);
+    });
+
+    // Draw in the currently toggled Links
+    this.links.forEach(link => {
+      if ((link.top && link.category === this.options.topLinksCategory) ||
+        (!link.top && link.category === this.options.bottomLinksCategory)) {
+        link.show();
+      }
     });
 
     // Change token colours based on the current taxonomy, if loaded
     this.taxonomyManager.colour(this.words);
-
-    // Hide the syntax links if necessary
-    this.options.showSyntax ? this.showSyntax() : this.hideSyntax();
-
-    this.rowManager.resizeAll();
   }
 
   /**
@@ -187,6 +192,8 @@ class Main {
     this.words.forEach(word => {
       word.clusters.forEach(cluster => cluster.remove());
     });
+    // Reset colours
+    this.taxonomyManager.resetDefaultColours();
   }
 
   /**
@@ -282,7 +289,7 @@ class Main {
   /**
    * Exports the current visualisation as an SVG file
    */
-  exportFile() {
+  exportSvg() {
     // Get the raw SVG definition
     let exportedSVG = this.svg.svg();
 
@@ -325,33 +332,61 @@ class Main {
   }
 
   /**
-   * Shows links from the syntactic parse in the visualisation
-   * (To be exact, changes the visibility of any links that are drawn below,
-   * rather than above, the row)
-   * Note: Does not change the persistent "Show syntax tree" setting
+   * Returns an Array of all the categories available for the top Links
+   * (Generally, event/relation annotations)
    */
-  showSyntax() {
-    this.links.forEach(link => {
-      if (!link.top) {
-        link.show();
-      }
-    });
-    this.rowManager.resizeAll();
+  getTopLinkCategories() {
+    const categories = this.links
+      .filter(link => link.top)
+      .map(link => link.category);
+
+    return _.uniq(categories);
   }
 
   /**
-   * Hides links from the syntactic parse in the visualisation
-   * (To be exact, changes the visibility of any links that are drawn below,
-   * rather than above, the row)
-   * Note: Does not change the persistent "Show syntax tree" setting
+   * Shows the specified category of top Links, hiding the others
+   * @param category
    */
-  hideSyntax() {
-    this.links.forEach(link => {
-      if (!link.top) {
-        link.hide();
-      }
-    });
-    this.rowManager.resizeAll();
+  setTopLinkCategory(category) {
+    this.setOption("topLinksCategory", category);
+    this.links
+      .filter(link => link.top)
+      .forEach(link => {
+        if (link.category === category) {
+          link.show();
+        } else {
+          link.hide();
+        }
+      });
+  }
+
+  /**
+   * Returns an Array of all the categories available for the bottom Links
+   * (Generally, syntactic/dependency parses)
+   */
+  getBottomLinkCategories() {
+    const categories = this.links
+      .filter(link => !link.top)
+      .map(link => link.category);
+
+    return _.uniq(categories);
+  }
+
+  /**
+   * Shows the specified category of bottom Links, hiding the others
+   * @param category
+   */
+  setBottomLinkCategory(category) {
+    this.setOption("bottomLinksCategory", category);
+    this.links
+      .filter(link => !link.top)
+      .forEach(link => {
+        if (link.category === category) {
+          link.show();
+        } else {
+          link.hide();
+        }
+      });
   }
 
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -378,9 +413,12 @@ class Main {
     // });
 
     this.svg.on("word-move-start", () => {
-      if (!this.options.showLinksOnMove && this.options.showSyntax) {
-        this.hideSyntax();
-      }
+      this.links.forEach(link => {
+        if ((link.top && !this.options.showTopLinksOnMove) ||
+          (!link.top && !this.options.showBottomLinksOnMove)) {
+          link.hide();
+        }
+      });
     });
 
     this.svg.on("word-move", (event) => {
@@ -390,9 +428,12 @@ class Main {
     });
 
     this.svg.on("word-move-end", () => {
-      if (!this.options.showLinksOnMove && this.options.showSyntax) {
-        this.showSyntax();
-      }
+      this.links.forEach(link => {
+        if ((link.top && link.category === this.options.topLinksCategory) ||
+          (!link.top && link.category === this.options.bottomLinksCategory)) {
+          link.show();
+        }
+      });
     });
 
     // this.svg.on("tag-remove", (event) => {

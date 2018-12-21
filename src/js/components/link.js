@@ -19,8 +19,9 @@ class Link {
    *     identifying the relationship type
    * @param {Boolean} top - Whether or not this Link should be drawn above
    *     the text row (if false, it will be drawn below)
+   * @param {String} category - Links can be shown/hidden by category
    */
-  constructor(eventId, trigger, args, reltype, top = true) {
+  constructor(eventId, trigger, args, reltype, top = true, category = "default") {
     // ---------------
     // Core properties
     this.eventId = eventId;
@@ -32,15 +33,17 @@ class Link {
     // Both types of Links have arguments, which may themselves be nested links.
     this.trigger = trigger;
     this.reltype = reltype;
-
-    this.arguments = args.sort((a, b) => a.anchor.idx - b.anchor.idx);
+    this.arguments = args;
 
     // Contains references to higher-level Links that have this Link as an
     // argument
     this.links = [];
 
     this.top = top;
-    this.visible = true;
+    this.category = category;
+
+    // Is this Link currently visible in the visualisation?
+    this.visible = false;
 
     // Slots are the y-intervals at which links may be drawn.
     // The main instance will need to provide the `.calculateSlot()` method
@@ -90,15 +93,14 @@ class Link {
     this.main = main;
     this.config = main.config;
 
-    this.arguments.sort((a, b) => a.anchor.idx - b.anchor.idx);
-
     this.mainSVG = main.svg;
     this.svg = main.svg.group()
       .addClass("tag-element")
       .addClass(this.top ? "link" : "link syntax-link");
-    if (!this.visible) {
-      this.svg.hide();
-    }
+
+    // Links are hidden by default; the main function should call `.show()`
+    // for any Links to be shown
+    this.svg.hide();
 
     // Init handles
     if (this.trigger) {
@@ -280,33 +282,34 @@ class Link {
    * Toggles the visibility of this Link
    */
   toggle() {
-    this.visible = !this.visible;
     if (this.visible) {
-      this.show();
-    } else {
       this.hide();
+    } else {
+      this.show();
     }
+
+    this.visible = !this.visible;
   }
 
   /**
    * Shows this Link
    */
   show() {
-    this.visible = true;
     if (this.svg) {
       this.svg.show();
       this.draw();
     }
+    this.visible = true;
   }
 
   /**
    * Hides this Link
    */
   hide() {
-    this.visible = false;
     if (this.svg) {
       this.svg.hide();
     }
+    this.visible = false;
   }
 
   /**
@@ -317,7 +320,7 @@ class Link {
    *     redraw. If not, the positions of all handles will be recalculated.
    */
   draw(modAnchor) {
-    if (!this.initialised || !this.visible) {
+    if (!this.initialised) {
       return;
     }
 
@@ -351,6 +354,10 @@ class Link {
       } else {
         // The anchor is a Link; the handle rests on another Link's line,
         // and the offset might extend to the next row and beyond.
+        if (!anchor.visible) {
+          // We need to draw in our anchor before proceeding with our own draw
+          anchor.draw();
+        }
         const baseLeft = anchor.leftHandle;
 
         // First, make sure the offset doesn't overshoot the base row
@@ -412,6 +419,8 @@ class Link {
       // This is a non-trigger (binary) relation
       this._drawAsRelation();
     }
+
+    this.visible = true;
 
     this.links.forEach(l => l.draw(this));
   }
@@ -522,6 +531,14 @@ class Link {
         }
       }
     }
+
+    // All of our own nested Links are also intervening Links
+    for (const arg of this.arguments) {
+      if (arg.anchor instanceof Link && intervening.indexOf(arg.anchor) < 0) {
+        intervening.push(arg.anchor);
+      }
+    }
+
     intervening = Util.sortForSlotting(intervening);
 
     // Map to slots, reduce to the highest number seen so far (or 0 if there
@@ -1112,6 +1129,32 @@ class Link {
     return this.top
       ? "M" + [point.x - s, point.y - s2] + "l" + [s, s2] + "l" + [s, -s2]
       : "M" + [point.x - s, point.y + s2] + "l" + [s, -s2] + "l" + [s, s2];
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Debug functions
+  /**
+   * Draws the outline of this component's bounding box
+   */
+  drawBbox() {
+    const bbox = this.svg.bbox();
+    this.svg.polyline([
+      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
+      [bbox.x, bbox.y]])
+      .fill("none")
+      .stroke({width: 1});
+  }
+
+  /**
+   * Draws the outline of the text element's bounding box
+   */
+  drawTextBbox() {
+    const bbox = this.svgTexts[0].bbox();
+    this.svg.polyline([
+      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
+      [bbox.x, bbox.y]])
+      .fill("none")
+      .stroke({width: 1});
   }
 }
 

@@ -21,7 +21,7 @@ class OdinParser {
 
     // Previously-parsed mentions, by Id.
     // Old TextBoundMentions return their host Word/WordCluster
-    // Old EventMentions return their Link
+    // Old EventMentions/RelationMentions return their Link
     this.parsedMentions = {};
   }
 
@@ -31,11 +31,7 @@ class OdinParser {
    */
   parse(data) {
     // Clear out any old parse data
-    this.data = {
-      words: [],
-      links: [],
-      clusters: []
-    };
+    this.reset();
 
     // At the top level, the data has two parts: `documents` and `mentions`.
     // - `documents` includes the tokens and dependency parses for each
@@ -58,6 +54,20 @@ class OdinParser {
     for (const mention of data.mentions) {
       this._parseMention(mention);
     }
+  }
+
+  /**
+   * Clears out all previously cached parse data (in preparation for a new
+   * parse)
+   */
+  reset() {
+    this.data = {
+      words: [],
+      links: [],
+      clusters: []
+    };
+    this.parsedDocuments = {};
+    this.parsedMentions = {};
   }
 
   /**
@@ -99,35 +109,38 @@ class OdinParser {
 
       // Sentences may have multiple dependency graphs available
       const graphTypes = Object.keys(sentence.graphs);
-      // Just use the first one for now
-      const graphType = graphTypes[0];
-      /**
-       * @property {Object[]} edges
-       * @property roots
-       */
-      const graph = sentence.graphs[graphType];
 
-      /**
-       * @property {Number} source
-       * @property {Number} destination
-       * @property {String} relation
-       */
-      for (const [edgeId, edge] of graph.edges.entries()) {
-        this.data.links.push(new Link(
-          // eventId
-          `${docId}-${sentenceId}-${graphType}-${edgeId}`,
-          // Trigger
-          thisSentence[edge.source],
-          // Arguments
-          [{
-            anchor: thisSentence[edge.destination],
-            type: edge.relation
-          }],
-          // Relation type
-          null,
-          // Draw Link above Words?
-          false
-        ));
+      for (const graphType of graphTypes) {
+        /**
+         * @property {Object[]} edges
+         * @property roots
+         */
+        const graph = sentence.graphs[graphType];
+
+        /**
+         * @property {Number} source
+         * @property {Number} destination
+         * @property {String} relation
+         */
+        for (const [edgeId, edge] of graph.edges.entries()) {
+          this.data.links.push(new Link(
+            // eventId
+            `${docId}-${sentenceId}-${graphType}-${edgeId}`,
+            // Trigger
+            thisSentence[edge.source],
+            // Arguments
+            [{
+              anchor: thisSentence[edge.destination],
+              type: edge.relation
+            }],
+            // Relation type
+            null,
+            // Draw Link above Words?
+            false,
+            // Category
+            graphType
+          ));
+        }
       }
 
       thisDocument.sentences.push(thisSentence);
@@ -141,6 +154,7 @@ class OdinParser {
    *
    * - TextBoundMentions become WordTags
    * - EventMentions become Links
+   * - RelationMentions become Links
    *
    * @param mention
    * @private
@@ -162,6 +176,11 @@ class OdinParser {
      * @property {Object} mention.arguments
      */
 
+    // Have we seen this one before?
+    if (this.parsedMentions[mention.id]) {
+      return this.parsedMentions[mention.id];
+    }
+
     // TextBoundMention
     // Will become either a tag for a Word, or a WordCluster.
     if (mention.type === "TextBoundMention") {
@@ -173,24 +192,23 @@ class OdinParser {
       if (tokens.length === 1) {
         tokens[0].setTag(label);
         this.parsedMentions[mention.id] = tokens[0];
+        return tokens[0];
       } else {
         const cluster = new WordCluster(tokens, label);
         this.data.clusters.push(cluster);
         this.parsedMentions[mention.id] = cluster;
+        return cluster;
       }
     }
 
     // EventMention
     // Will become a Link
     if (mention.type === "EventMention") {
-      // If there is a trigger, it will be a nested Mention.  Parse it if we
-      // haven't seen it before.
+      // If there is a trigger, it will be a nested Mention.  Ensure it is
+      // parsed.
       let trigger = null;
       if (mention.trigger) {
-        if (!this.parsedMentions[mention.trigger.id]) {
-          this._parseMention(mention.trigger);
-        }
-        trigger = this.parsedMentions[mention.trigger.id];
+        trigger = this._parseMention(mention.trigger);
       }
 
       const linkArgs = [];
@@ -200,10 +218,7 @@ class OdinParser {
       for (const [type, args] of Object.entries(mention["arguments"])) {
         for (const arg of args) {
           // Ensure that the argument mention has been parsed before
-          if (!this.parsedMentions[arg.id]) {
-            this._parseMention(arg);
-          }
-          const anchor = this.parsedMentions[arg.id];
+          const anchor = this._parseMention(arg);
           linkArgs.push({
             anchor,
             type
@@ -212,7 +227,7 @@ class OdinParser {
       }
 
       // Done; prepare the new Link
-      this.data.links.push(new Link(
+      const link = new Link(
         // eventId
         mention.id,
         // Trigger
@@ -223,7 +238,49 @@ class OdinParser {
         null,
         // Draw Link above Words?
         true
-      ));
+      );
+      this.data.links.push(link);
+      this.parsedMentions[mention.id] = link;
+      return link;
+    }
+
+    // RelationMention
+    // Will become a Link
+    if (mention.type === "RelationMention") {
+      // There is no trigger for RelationMentions, but there is a reltype
+      const reltype = Object.keys(mention["arguments"]).join("-");
+
+      const linkArgs = [];
+
+      // `mentions.arguments` is an Object keyed by argument type.
+      // The value of each key is an array of nested Mentions as arguments
+      for (const [type, args] of Object.entries(mention["arguments"])) {
+        for (const arg of args) {
+          // Ensure that the argument mention has been parsed before
+          const anchor = this._parseMention(arg);
+          linkArgs.push({
+            anchor,
+            type
+          });
+        }
+      }
+
+      // Done; prepare the new Link
+      const link = new Link(
+        // eventId
+        mention.id,
+        // Trigger
+        null,
+        // Arguments
+        linkArgs,
+        // Relation type
+        reltype,
+        // Draw Link above Words?
+        true
+      );
+      this.data.links.push(link);
+      this.parsedMentions[mention.id] = link;
+      return link;
     }
   }
 }

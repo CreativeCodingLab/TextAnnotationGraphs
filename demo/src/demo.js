@@ -70,17 +70,18 @@ $(async () => {
 
   // Data can be loaded after initialisation using the `.loadData()` function,
   // or from a remote URL via the asynchronous `.loadUrlAsync()` function.
-  await uiTag.loadUrlAsync("data/test-brat.ann", "brat");
+  await uiTag.loadUrlAsync("data/sentence-1-odin.json", "odin");
 
   // --------------------------------------------------------------------------
 
   // Data from an external URL can also be loaded into the visualisation
   // using the `.loadUrlAsync()` function.  The data will be read and displayed
   // asynchronously.
-  $("#tag-change-dataset").on("click", ".tag-dataset", (event) => {
+  $("#tag-change-dataset").on("click", ".tag-dataset", async (event) => {
     event.preventDefault();
     const $link = $(event.target);
-    return uiTag.loadUrlAsync($link.data("path"), $link.data("format"));
+    await uiTag.loadUrlAsync($link.data("path"), $link.data("format"));
+    refreshLinkCategories();
   });
 
   // --------------------------------------------------------------------------
@@ -105,6 +106,7 @@ $(async () => {
       // (In that order: We need to load the files before resetting the
       // form, or the reference to the FileList gets lost)
       await uiTag.loadFilesAsync(files, format);
+      refreshLinkCategories();
 
       const $modal = $("#tag-upload");
 
@@ -118,30 +120,90 @@ $(async () => {
 
   // --------------------------------------------------------------------------
 
-  // The `.setOption()` function can be used to change various advanced
-  // options.  The visualisation will need to be redrawn to show any
-  // changes, if applicable.
-  const $optionSyntax = $("#tag-option-syntax");
-  $optionSyntax
-    .prop("checked", uiTag.getOption("showSyntax"))
-    .on("change", () => {
-      uiTag.setOption("showSyntax", $optionSyntax[0].checked);
-      uiTag.redraw();
+  // The `.getOption()` and `.setOption()` function can be used to change
+  // various advanced options.
+  // There are also some direct functions available that directly modify the
+  // visualisation, like `.setTopLinkCategory()` and `.setBottomLinkCategory()`
+
+
+  /**
+   * The categories available for the top and bottom Links depends on the
+   * currently loaded data, so we call for a refresh any time the data changes
+   */
+  function refreshLinkCategories() {
+    // [Categories for top Links]
+    // We will populate the select menu and add a change handler
+    const $optionTopLinks = $("#tag-option-top-links")
+      .empty()
+      .append($("<option value='none'>None</option>"));
+
+    const currentTop = uiTag.getOption("topLinksCategory");
+    for (const category of uiTag.getTopLinkCategories()) {
+      const $option = $("<option></option>")
+        .attr("value", category)
+        .text(_.upperFirst(category));
+
+      if (category === currentTop) {
+        $option.prop("selected", true);
+      }
+
+      $optionTopLinks.append($option);
+    }
+    $optionTopLinks.on("change", () => {
+      uiTag.setTopLinkCategory($optionTopLinks.val());
     });
 
-  const $optionLinksOnMove = $("#tag-option-links-on-move");
-  $optionLinksOnMove
-    .prop("checked", uiTag.getOption("showLinksOnMove"))
+    // [Categories for bottom Links]
+    // We will populate the select menu and add a change handler
+    const $optionBottomLinks = $("#tag-option-bottom-links")
+      .empty()
+      .append($("<option value='none'>None</option>"));
+
+    const currentBottom = uiTag.getOption("bottomLinksCategory");
+    for (const category of uiTag.getBottomLinkCategories()) {
+      const $option = $("<option></option>")
+        .attr("value", category)
+        .text(_.upperFirst(category));
+
+      if (category === currentBottom) {
+        $option.prop("selected", true);
+      }
+
+      $optionBottomLinks.append($option);
+    }
+    $optionBottomLinks.on("change", () => {
+      uiTag.setBottomLinkCategory($optionBottomLinks.val());
+    });
+  }
+
+  refreshLinkCategories();
+
+  const $optionTopLinksOnMove = $("#tag-option-top-links-on-move");
+  $optionTopLinksOnMove
+    .prop("checked", uiTag.getOption("showTopLinksOnMove"))
     .on("change", () => {
-      uiTag.setOption("showLinksOnMove", $optionLinksOnMove[0].checked);
+      uiTag.setOption(
+        "showTopLinksOnMove",
+        $optionTopLinksOnMove[0].checked
+      );
+    });
+
+  const $optionBottomLinksOnMove = $("#tag-option-bottom-links-on-move");
+  $optionBottomLinksOnMove
+    .prop("checked", uiTag.getOption("showBottomLinksOnMove"))
+    .on("change", () => {
+      uiTag.setOption(
+        "showBottomLinksOnMove",
+        $optionBottomLinksOnMove[0].checked
+      );
     });
 
   // --------------------------------------------------------------------------
 
-  // The `.exportFile()` function can be used to save the current
+  // The `.exportSvg()` function can be used to save the current
   // visualisation as an SVG file
   $("#tag-download").on("click", () => {
-    uiTag.exportFile();
+    uiTag.exportSvg();
   });
 
   // --------------------------------------------------------------------------

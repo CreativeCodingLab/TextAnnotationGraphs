@@ -38697,100 +38697,6 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var ColorPicker =
-/*#__PURE__*/
-function () {
-  function ColorPicker(className) {
-    var _this = this;
-
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    (0, _classCallCheck2.default)(this, ColorPicker);
-    this.initialColor = options.initialColor || '#000000';
-    this.llColor = options.lightLabelColor || '#dddddd';
-    this.dlColor = options.darkLabelColor || '#333333';
-    this.changeCallback = options.changeCallback || null;
-    this.currentInput;
-    this.picker = document.createElement('input');
-    this.picker.type = 'color';
-    this.picker.style = 'position:absolute; display: block; opacity: 0; z-index:-100;';
-
-    this.picker.onchange = function () {
-      if (_this.currentInput) {
-        _this.setColor(_this.currentInput, _this.picker.value);
-
-        if (_this.changeCallback) {
-          _this.changeCallback(_this.currentInput);
-        }
-      }
-    };
-
-    document.body.appendChild(this.picker);
-    var nodes = document.querySelectorAll("input.".concat(className));
-    this.registerInputs(nodes);
-  }
-
-  (0, _createClass2.default)(ColorPicker, [{
-    key: "registerInputs",
-    value: function registerInputs(nodes) {
-      var _this2 = this;
-
-      nodes.forEach(function (input) {
-        _this2.setColor(input, _this2.initialColor);
-
-        input.setAttribute('readonly', true);
-
-        input.onclick = function () {
-          _this2.currentInput = input;
-
-          _this2.picker.focus();
-
-          _this2.picker.click();
-
-          input.focus();
-          _this2.picker.value = input.colorValue;
-        };
-      });
-    } // make label color light on a dark background and dark on a light one
-
-  }, {
-    key: "getLabelColor",
-    value: function getLabelColor(bgColor) {
-      return this.RGBLum(bgColor) > 128 ? this.dlColor : this.llColor;
-    } // set the color of an input
-
-  }, {
-    key: "setColor",
-    value: function setColor(input, hex) {
-      input.colorValue = hex;
-      input.value = hex;
-      input.style.backgroundColor = hex;
-      input.style.color = this.getLabelColor(hex);
-    } // return the perceptive luminescence from a hex value for color contrast
-
-  }, {
-    key: "RGBLum",
-    value: function RGBLum(hex) {
-      var c = parseInt(hex.slice(1), 16);
-      var r = c >> 16 & 0xff;
-      var g = c >> 8 & 0xff;
-      var b = c >> 0 & 0xff;
-      return 0.299 * r + 0.587 * g + 0.114 * b;
-    }
-  }]);
-  return ColorPicker;
-}();
-
-module.exports = ColorPicker;
-
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],50:[function(require,module,exports){
-"use strict";
-
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-
 var _wordTag = _interopRequireDefault(require("./word-tag.js"));
 
 var _wordCluster = _interopRequireDefault(require("./word-cluster.js"));
@@ -38815,11 +38721,13 @@ function () {
    *     identifying the relationship type
    * @param {Boolean} top - Whether or not this Link should be drawn above
    *     the text row (if false, it will be drawn below)
+   * @param {String} category - Links can be shown/hidden by category
    */
   function Link(eventId, trigger, args, reltype) {
     var _this = this;
 
     var top = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
+    var category = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : "default";
     (0, _classCallCheck2.default)(this, Link);
     // ---------------
     // Core properties
@@ -38831,14 +38739,14 @@ function () {
 
     this.trigger = trigger;
     this.reltype = reltype;
-    this.arguments = args.sort(function (a, b) {
-      return a.anchor.idx - b.anchor.idx;
-    }); // Contains references to higher-level Links that have this Link as an
+    this.arguments = args; // Contains references to higher-level Links that have this Link as an
     // argument
 
     this.links = [];
     this.top = top;
-    this.visible = true; // Slots are the y-intervals at which links may be drawn.
+    this.category = category; // Is this Link currently visible in the visualisation?
+
+    this.visible = false; // Slots are the y-intervals at which links may be drawn.
     // The main instance will need to provide the `.calculateSlot()` method
     // with the full set of Words in the data so that we can check for
     // crossing/intervening Links.
@@ -38884,16 +38792,11 @@ function () {
 
       this.main = main;
       this.config = main.config;
-      this.arguments.sort(function (a, b) {
-        return a.anchor.idx - b.anchor.idx;
-      });
       this.mainSVG = main.svg;
-      this.svg = main.svg.group().addClass("tag-element").addClass(this.top ? "link" : "link syntax-link");
+      this.svg = main.svg.group().addClass("tag-element").addClass(this.top ? "link" : "link syntax-link"); // Links are hidden by default; the main function should call `.show()`
+      // for any Links to be shown
 
-      if (!this.visible) {
-        this.svg.hide();
-      } // Init handles
-
+      this.svg.hide(); // Init handles
 
       if (this.trigger) {
         this.handles.push(new Handle(this.trigger, this));
@@ -39086,13 +38989,13 @@ function () {
   }, {
     key: "toggle",
     value: function toggle() {
-      this.visible = !this.visible;
-
       if (this.visible) {
-        this.show();
-      } else {
         this.hide();
+      } else {
+        this.show();
       }
+
+      this.visible = !this.visible;
     }
     /**
      * Shows this Link
@@ -39101,12 +39004,12 @@ function () {
   }, {
     key: "show",
     value: function show() {
-      this.visible = true;
-
       if (this.svg) {
         this.svg.show();
         this.draw();
       }
+
+      this.visible = true;
     }
     /**
      * Hides this Link
@@ -39115,11 +39018,11 @@ function () {
   }, {
     key: "hide",
     value: function hide() {
-      this.visible = false;
-
       if (this.svg) {
         this.svg.hide();
       }
+
+      this.visible = false;
     }
     /**
      * (Re-)draw some Link onto the main visualisation
@@ -39134,7 +39037,7 @@ function () {
     value: function draw(modAnchor) {
       var _this3 = this;
 
-      if (!this.initialised || !this.visible) {
+      if (!this.initialised) {
         return;
       } // Recalculate handle positions
 
@@ -39175,6 +39078,11 @@ function () {
           } else {
             // The anchor is a Link; the handle rests on another Link's line,
             // and the offset might extend to the next row and beyond.
+            if (!anchor.visible) {
+              // We need to draw in our anchor before proceeding with our own draw
+              anchor.draw();
+            }
+
             var baseLeft = anchor.leftHandle; // First, make sure the offset doesn't overshoot the base row
 
             handle.offset = Math.min(handle.offset, anchor.width);
@@ -39270,6 +39178,7 @@ function () {
         this._drawAsRelation();
       }
 
+      this.visible = true;
       this.links.forEach(function (l) {
         return l.draw(_this3);
       });
@@ -39368,13 +39277,13 @@ function () {
           // Let this Word know we're watching it
           word.passingLinks.push(this); // Word Links
 
-          var _iteratorNormalCompletion5 = true;
-          var _didIteratorError5 = false;
-          var _iteratorError5 = undefined;
+          var _iteratorNormalCompletion6 = true;
+          var _didIteratorError6 = false;
+          var _iteratorError6 = undefined;
 
           try {
-            for (var _iterator5 = word.links[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-              var link = _step5.value;
+            for (var _iterator6 = word.links[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+              var link = _step6.value;
 
               // Only consider Links on the same side of the Row as this one
               if (link !== this && link.top === this.top && intervening.indexOf(link) < 0) {
@@ -39382,55 +39291,6 @@ function () {
               }
             } // WordCluster Links
 
-          } catch (err) {
-            _didIteratorError5 = true;
-            _iteratorError5 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-                _iterator5.return();
-              }
-            } finally {
-              if (_didIteratorError5) {
-                throw _iteratorError5;
-              }
-            }
-          }
-
-          var _iteratorNormalCompletion6 = true;
-          var _didIteratorError6 = false;
-          var _iteratorError6 = undefined;
-
-          try {
-            for (var _iterator6 = word.clusters[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-              var cluster = _step6.value;
-              var _iteratorNormalCompletion7 = true;
-              var _didIteratorError7 = false;
-              var _iteratorError7 = undefined;
-
-              try {
-                for (var _iterator7 = cluster.links[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-                  var _link = _step7.value;
-
-                  if (_link !== this && _link.top === this.top && intervening.indexOf(_link) < 0) {
-                    intervening.push(_link);
-                  }
-                }
-              } catch (err) {
-                _didIteratorError7 = true;
-                _iteratorError7 = err;
-              } finally {
-                try {
-                  if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
-                    _iterator7.return();
-                  }
-                } finally {
-                  if (_didIteratorError7) {
-                    throw _iteratorError7;
-                  }
-                }
-              }
-            }
           } catch (err) {
             _didIteratorError6 = true;
             _iteratorError6 = err;
@@ -39445,7 +39305,57 @@ function () {
               }
             }
           }
-        }
+
+          var _iteratorNormalCompletion7 = true;
+          var _didIteratorError7 = false;
+          var _iteratorError7 = undefined;
+
+          try {
+            for (var _iterator7 = word.clusters[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+              var cluster = _step7.value;
+              var _iteratorNormalCompletion8 = true;
+              var _didIteratorError8 = false;
+              var _iteratorError8 = undefined;
+
+              try {
+                for (var _iterator8 = cluster.links[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                  var _link = _step8.value;
+
+                  if (_link !== this && _link.top === this.top && intervening.indexOf(_link) < 0) {
+                    intervening.push(_link);
+                  }
+                }
+              } catch (err) {
+                _didIteratorError8 = true;
+                _iteratorError8 = err;
+              } finally {
+                try {
+                  if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
+                    _iterator8.return();
+                  }
+                } finally {
+                  if (_didIteratorError8) {
+                    throw _iteratorError8;
+                  }
+                }
+              }
+            }
+          } catch (err) {
+            _didIteratorError7 = true;
+            _iteratorError7 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
+                _iterator7.return();
+              }
+            } finally {
+              if (_didIteratorError7) {
+                throw _iteratorError7;
+              }
+            }
+          }
+        } // All of our own nested Links are also intervening Links
+
       } catch (err) {
         _didIteratorError4 = true;
         _iteratorError4 = err;
@@ -39457,6 +39367,33 @@ function () {
         } finally {
           if (_didIteratorError4) {
             throw _iteratorError4;
+          }
+        }
+      }
+
+      var _iteratorNormalCompletion5 = true;
+      var _didIteratorError5 = false;
+      var _iteratorError5 = undefined;
+
+      try {
+        for (var _iterator5 = this.arguments[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+          var arg = _step5.value;
+
+          if (arg.anchor instanceof Link && intervening.indexOf(arg.anchor) < 0) {
+            intervening.push(arg.anchor);
+          }
+        }
+      } catch (err) {
+        _didIteratorError5 = true;
+        _iteratorError5 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
+            _iterator5.return();
+          }
+        } finally {
+          if (_didIteratorError5) {
+            throw _iteratorError5;
           }
         }
       }
@@ -39543,13 +39480,13 @@ function () {
 
       var lHandles = [];
       var rHandles = [];
-      var _iteratorNormalCompletion8 = true;
-      var _didIteratorError8 = false;
-      var _iteratorError8 = undefined;
+      var _iteratorNormalCompletion9 = true;
+      var _didIteratorError9 = false;
+      var _iteratorError9 = undefined;
 
       try {
-        for (var _iterator8 = this.handles[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-          var handle = _step8.value;
+        for (var _iterator9 = this.handles[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+          var handle = _step9.value;
 
           if (handle === triggerHandle) {
             continue;
@@ -39562,16 +39499,16 @@ function () {
           }
         }
       } catch (err) {
-        _didIteratorError8 = true;
-        _iteratorError8 = err;
+        _didIteratorError9 = true;
+        _iteratorError9 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
-            _iterator8.return();
+          if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
+            _iterator9.return();
           }
         } finally {
-          if (_didIteratorError8) {
-            throw _iteratorError8;
+          if (_didIteratorError9) {
+            throw _iteratorError9;
           }
         }
       }
@@ -39942,6 +39879,32 @@ function () {
       var s = this.config.linkArrowWidth,
           s2 = 5;
       return this.top ? "M" + [point.x - s, point.y - s2] + "l" + [s, s2] + "l" + [s, -s2] : "M" + [point.x - s, point.y + s2] + "l" + [s, -s2] + "l" + [s, s2];
+    } // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Debug functions
+
+    /**
+     * Draws the outline of this component's bounding box
+     */
+
+  }, {
+    key: "drawBbox",
+    value: function drawBbox() {
+      var bbox = this.svg.bbox();
+      this.svg.polyline([[bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2], [bbox.x, bbox.y]]).fill("none").stroke({
+        width: 1
+      });
+    }
+    /**
+     * Draws the outline of the text element's bounding box
+     */
+
+  }, {
+    key: "drawTextBbox",
+    value: function drawTextBbox() {
+      var bbox = this.svgTexts[0].bbox();
+      this.svg.polyline([[bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2], [bbox.x, bbox.y]]).fill("none").stroke({
+        width: 1
+      });
     }
   }, {
     key: "endpoints",
@@ -40101,13 +40064,13 @@ function () {
         // account for the fact that offset 0 is the centre of the anchor
         var leftLinks = [];
         var rightLinks = [];
-        var _iteratorNormalCompletion9 = true;
-        var _didIteratorError9 = false;
-        var _iteratorError9 = undefined;
+        var _iteratorNormalCompletion10 = true;
+        var _didIteratorError10 = false;
+        var _iteratorError10 = undefined;
 
         try {
-          for (var _iterator9 = l[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-            var link = _step9.value;
+          for (var _iterator10 = l[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+            var link = _step10.value;
 
             if (anchor.idx > link.endpoints[0].idx) {
               leftLinks.push(link);
@@ -40118,16 +40081,16 @@ function () {
           // so that the ones with smaller slots are on the left.
 
         } catch (err) {
-          _didIteratorError9 = true;
-          _iteratorError9 = err;
+          _didIteratorError10 = true;
+          _iteratorError10 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-              _iterator9.return();
+            if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
+              _iterator10.return();
             }
           } finally {
-            if (_didIteratorError9) {
-              throw _iteratorError9;
+            if (_didIteratorError10) {
+              throw _iteratorError10;
             }
           }
         }
@@ -40174,7 +40137,7 @@ function () {
 
 module.exports = Link;
 
-},{"../util.js":64,"./word-cluster.js":52,"./word-tag.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],51:[function(require,module,exports){
+},{"../util.js":63,"./word-cluster.js":51,"./word-tag.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],50:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -40827,7 +40790,61 @@ function () {
   }, {
     key: "minHeight",
     get: function get() {
-      return this.wordHeight + this.maxSlot * this.config.linkSlotInterval + this.config.rowVerticalPadding;
+      var height = this.wordHeight + this.maxSlot * this.config.linkSlotInterval + this.config.rowVerticalPadding; // Because top Link labels are above the Link lines, we need to add
+      // their height if any of the Words on this Row is an endpoint for a Link
+
+      var _iteratorNormalCompletion12 = true;
+      var _didIteratorError12 = false;
+      var _iteratorError12 = undefined;
+
+      try {
+        for (var _iterator12 = this.words[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+          var word = _step12.value;
+          var _iteratorNormalCompletion13 = true;
+          var _didIteratorError13 = false;
+          var _iteratorError13 = undefined;
+
+          try {
+            for (var _iterator13 = word.links[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+              var link = _step13.value;
+
+              if (link.top) {
+                // This Word anchors some top Link
+                return height + this.config.rowExtraTopPadding;
+              }
+            }
+          } catch (err) {
+            _didIteratorError13 = true;
+            _iteratorError13 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion13 && _iterator13.return != null) {
+                _iterator13.return();
+              }
+            } finally {
+              if (_didIteratorError13) {
+                throw _iteratorError13;
+              }
+            }
+          }
+        } // Still here?
+
+      } catch (err) {
+        _didIteratorError12 = true;
+        _iteratorError12 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion12 && _iterator12.return != null) {
+            _iterator12.return();
+          }
+        } finally {
+          if (_didIteratorError12) {
+            throw _iteratorError12;
+          }
+        }
+      }
+
+      return height;
     }
     /**
      * Returns the amount of descent below the baseline needed to fit
@@ -40862,7 +40879,7 @@ function () {
 
 module.exports = Row;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],52:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],51:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -41258,7 +41275,7 @@ function () {
 
 module.exports = WordCluster;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],53:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],52:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -41511,7 +41528,7 @@ function () {
 
 module.exports = WordTag;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],54:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],53:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -42033,7 +42050,7 @@ function () {
 
 module.exports = Word;
 
-},{"./word-tag.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],55:[function(require,module,exports){
+},{"./word-tag.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],54:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -42053,7 +42070,12 @@ var Config = function Config() {
   // Padding on the left/right edges of each Row
   this.rowEdgePadding = 10; // Padding on the top/bottom of each Row
 
-  this.rowVerticalPadding = 10; // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  this.rowVerticalPadding = 10; // Extra padding on Row top for Link labels
+  // (Labels for top Links are drawn above their line, and it is not
+  // trivial to get a good value for how high they are, so we use a
+  // pre-configured value here)
+
+  this.rowExtraTopPadding = 10; // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // Drawing options for Words
   // Left-padding for Words
 
@@ -42080,12 +42102,18 @@ var Config = function Config() {
 
   this.linkCurveWidth = 5; // Width of arrowheads for handles
 
-  this.linkArrowWidth = 5;
+  this.linkArrowWidth = 5; // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Drawing options for Tags
+  // An array containing the first n default colours to use for tags (as a
+  // queue). When this array is exhausted, we will switch to using
+  // randomColor.
+
+  this.tagDefaultColours = ["#3fa1d1", "#ed852a", "#2ca02c", "#c34a1d", "#a048b3", "#e377c2", "#bcbd22", "#17becf", "#e7298a", "#e6ab02", "#7570b3", "#a6761d", "#7f7f7f"];
 };
 
 module.exports = Config;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],56:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],55:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -42149,15 +42177,19 @@ function () {
     this.parser = new _parse.default();
     this.rowManager = new _rowmanager.default(this.svg, this.config);
     this.labelManager = new _labelmanager.default(this.svg);
-    this.taxonomyManager = new _taxonomy.default(); // Tokens and links that are currently drawn on the visualisation
+    this.taxonomyManager = new _taxonomy.default(this.config); // Tokens and links that are currently drawn on the visualisation
 
     this.words = [];
     this.links = []; // Options
 
     this.options = {
-      showSyntax: false,
-      showLinksOnMove: false,
-      showTreeInModal: false
+      // Category of top Links to show
+      topLinksCategory: "default",
+      // Category of bottom Links to show
+      bottomLinksCategory: "none",
+      // Continue to display top/bottom Links when moving Words?
+      showTopLinksOnMove: true,
+      showBottomLinksOnMove: false
     }; // Initialisation
 
     this.resize();
@@ -42311,23 +42343,19 @@ function () {
 
         _this.rowManager.addWordToRow(word, _this.rowManager.lastRow);
       }); // We have to initialise all the Links before we draw any of them, to
-      // account for nested Links etc.  We should also only draw Links directly
-      // anchored to Words, and let them draw any higher-level Links, so that we
-      // don't accidentally draw a higher-level Link before its base is available
+      // account for nested Links etc.
 
       this.links.forEach(function (link) {
-        return link.init(_this);
-      });
-      this.words.forEach(function (word) {
-        word.links.forEach(function (link) {
-          return link.draw();
-        });
+        link.init(_this);
+      }); // Draw in the currently toggled Links
+
+      this.links.forEach(function (link) {
+        if (link.top && link.category === _this.options.topLinksCategory || !link.top && link.category === _this.options.bottomLinksCategory) {
+          link.show();
+        }
       }); // Change token colours based on the current taxonomy, if loaded
 
-      this.taxonomyManager.colour(this.words); // Hide the syntax links if necessary
-
-      this.options.showSyntax ? this.showSyntax() : this.hideSyntax();
-      this.rowManager.resizeAll();
+      this.taxonomyManager.colour(this.words);
     }
     /**
      * Removes all elements from the visualisation
@@ -42349,7 +42377,9 @@ function () {
         word.clusters.forEach(function (cluster) {
           return cluster.remove();
         });
-      });
+      }); // Reset colours
+
+      this.taxonomyManager.resetDefaultColours();
     }
     /**
      * Redraws the visualisation using the data currently stored by the Parser
@@ -42458,8 +42488,8 @@ function () {
      */
 
   }, {
-    key: "exportFile",
-    value: function exportFile() {
+    key: "exportSvg",
+    value: function exportSvg() {
       // Get the raw SVG definition
       var exportedSVG = this.svg.svg(); // We also need to inline a copy of the relevant SVG styles, which might
       // have been modified/overwritten by the user
@@ -42494,38 +42524,72 @@ function () {
       return this.options[option];
     }
     /**
-     * Shows links from the syntactic parse in the visualisation
-     * (To be exact, changes the visibility of any links that are drawn below,
-     * rather than above, the row)
-     * Note: Does not change the persistent "Show syntax tree" setting
+     * Returns an Array of all the categories available for the top Links
+     * (Generally, event/relation annotations)
      */
 
   }, {
-    key: "showSyntax",
-    value: function showSyntax() {
-      this.links.forEach(function (link) {
-        if (!link.top) {
-          link.show();
-        }
+    key: "getTopLinkCategories",
+    value: function getTopLinkCategories() {
+      var categories = this.links.filter(function (link) {
+        return link.top;
+      }).map(function (link) {
+        return link.category;
       });
-      this.rowManager.resizeAll();
+      return _lodash.default.uniq(categories);
     }
     /**
-     * Hides links from the syntactic parse in the visualisation
-     * (To be exact, changes the visibility of any links that are drawn below,
-     * rather than above, the row)
-     * Note: Does not change the persistent "Show syntax tree" setting
+     * Shows the specified category of top Links, hiding the others
+     * @param category
      */
 
   }, {
-    key: "hideSyntax",
-    value: function hideSyntax() {
-      this.links.forEach(function (link) {
-        if (!link.top) {
+    key: "setTopLinkCategory",
+    value: function setTopLinkCategory(category) {
+      this.setOption("topLinksCategory", category);
+      this.links.filter(function (link) {
+        return link.top;
+      }).forEach(function (link) {
+        if (link.category === category) {
+          link.show();
+        } else {
           link.hide();
         }
       });
-      this.rowManager.resizeAll();
+    }
+    /**
+     * Returns an Array of all the categories available for the bottom Links
+     * (Generally, syntactic/dependency parses)
+     */
+
+  }, {
+    key: "getBottomLinkCategories",
+    value: function getBottomLinkCategories() {
+      var categories = this.links.filter(function (link) {
+        return !link.top;
+      }).map(function (link) {
+        return link.category;
+      });
+      return _lodash.default.uniq(categories);
+    }
+    /**
+     * Shows the specified category of bottom Links, hiding the others
+     * @param category
+     */
+
+  }, {
+    key: "setBottomLinkCategory",
+    value: function setBottomLinkCategory(category) {
+      this.setOption("bottomLinksCategory", category);
+      this.links.filter(function (link) {
+        return !link.top;
+      }).forEach(function (link) {
+        if (link.category === category) {
+          link.show();
+        } else {
+          link.hide();
+        }
+      });
     } // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Private helper/setup functions
 
@@ -42554,9 +42618,11 @@ function () {
       // });
 
       this.svg.on("word-move-start", function () {
-        if (!_this2.options.showLinksOnMove && _this2.options.showSyntax) {
-          _this2.hideSyntax();
-        }
+        _this2.links.forEach(function (link) {
+          if (link.top && !_this2.options.showTopLinksOnMove || !link.top && !_this2.options.showBottomLinksOnMove) {
+            link.hide();
+          }
+        });
       });
       this.svg.on("word-move", function (event) {
         // tooltip.clear();
@@ -42565,9 +42631,11 @@ function () {
         _this2.rowManager.moveWordOnRow(event.detail.object, event.detail.x);
       });
       this.svg.on("word-move-end", function () {
-        if (!_this2.options.showLinksOnMove && _this2.options.showSyntax) {
-          _this2.showSyntax();
-        }
+        _this2.links.forEach(function (link) {
+          if (link.top && link.category === _this2.options.topLinksCategory || !link.top && link.category === _this2.options.bottomLinksCategory) {
+            link.show();
+          }
+        });
       }); // this.svg.on("tag-remove", (event) => {
       //   event.detail.object.remove();
       //   this.taxonomyManager.remove(event.detail.object);
@@ -42641,7 +42709,7 @@ function () {
 
 module.exports = Main;
 
-},{"./config.js":55,"./managers/labelmanager.js":57,"./managers/rowmanager.js":58,"./managers/taxonomy.js":59,"./parse/parse.js":62,"./util.js":64,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":48}],57:[function(require,module,exports){
+},{"./config.js":54,"./managers/labelmanager.js":56,"./managers/rowmanager.js":57,"./managers/taxonomy.js":58,"./parse/parse.js":61,"./util.js":63,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":48}],56:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -42769,7 +42837,7 @@ module.exports = function () {
   return LabelManager;
 }();
 
-},{"../components/link.js":50,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],58:[function(require,module,exports){
+},{"../components/link.js":49,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],57:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -42923,18 +42991,7 @@ function () {
     value: function addWordToRow(word, row, i, forceX) {
       if (isNaN(i)) {
         i = row.words.length;
-      } // // See if this Word has Links which occupy higher/lower slots than the
-      // // existing Words on the Row.
-      // let minSlot = 0;
-      // let maxSlot = 0;
-      // for (const link of word.links) {
-      //   minSlot = Math.min(minSlot, link.slot);
-      //   maxSlot = Math.max(maxSlot, link.slot);
-      // }
-      // if (minSlot < row.minSlot || maxSlot > row.maxSlot) {
-      //   this.resizeRow(row.idx);
-      // }
-
+      }
 
       var overflow = row.addWord(word, i, forceX);
 
@@ -43187,7 +43244,7 @@ function () {
 
 module.exports = RowManager;
 
-},{"../components/row.js":51,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],59:[function(require,module,exports){
+},{"../components/row.js":50,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],58:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -43195,8 +43252,6 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-
-var _colorpicker = _interopRequireDefault(require("../colorpicker.js"));
 
 var _word = _interopRequireDefault(require("../components/word.js"));
 
@@ -43208,12 +43263,16 @@ var randomColor = require("randomcolor");
 
 var yaml = require("js-yaml");
 
+var _ = require("lodash");
+
 var TaxonomyManager =
 /*#__PURE__*/
 function () {
-  function TaxonomyManager() {
+  function TaxonomyManager(config) {
     (0, _classCallCheck2.default)(this, TaxonomyManager);
-    // The currently loaded taxonomy (as a JS Array representing the tree)
+    // The global Config object
+    this.config = config; // The currently loaded taxonomy (as a JS Array representing the tree)
+
     this.taxonomy = []; // The originally-loaded taxonomy string (as a YAML document)
 
     this.taxonomyYaml = ""; // Tag->Colour assignments for the currently loaded taxonomy
@@ -43221,7 +43280,7 @@ function () {
     this.tagColours = {}; // An array containing the first n default colours to use (as a queue).
     // When this array is exhausted, we will switch to using randomColor.
 
-    this.defaultColours = ["#3fa1d1", "#ed852a", "#2ca02c", "#c34a1d", "#a048b3", "#e377c2", "#bcbd22", "#17becf", "#e7298a", "#e6ab02", "#7570b3", "#a6761d", "#7f7f7f"];
+    this.defaultColours = _.cloneDeep(config.tagDefaultColours);
   }
   /**
    * Loads a new taxonomy specification (in YAML form) into the module
@@ -43368,6 +43427,16 @@ function () {
         return randomColor();
       }
     }
+    /**
+     * Resets `.defaultColours` to the Array specified in the Config object
+     * (Used when clearing the visualisation, for example)
+     */
+
+  }, {
+    key: "resetDefaultColours",
+    value: function resetDefaultColours() {
+      this.defaultColours = _.cloneDeep(this.config.tagDefaultColours);
+    }
   }], [{
     key: "setColour",
     value: function setColour(element, colour) {
@@ -43385,7 +43454,7 @@ function () {
 
 module.exports = TaxonomyManager;
 
-},{"../colorpicker.js":49,"../components/word.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"js-yaml":13,"randomcolor":44}],60:[function(require,module,exports){
+},{"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"js-yaml":13,"lodash":43,"randomcolor":44}],59:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -43725,7 +43794,7 @@ function () {
 
 module.exports = BratParser;
 
-},{"../components/link.js":50,"../components/word.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],61:[function(require,module,exports){
+},{"../components/link.js":49,"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],60:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -43738,7 +43807,7 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/creat
 
 var _word = _interopRequireDefault(require("../components/word.js"));
 
-var _link = _interopRequireDefault(require("../components/link.js"));
+var _link2 = _interopRequireDefault(require("../components/link.js"));
 
 var _wordCluster = _interopRequireDefault(require("../components/word-cluster.js"));
 
@@ -43760,7 +43829,7 @@ function () {
 
     this.parsedDocuments = {}; // Previously-parsed mentions, by Id.
     // Old TextBoundMentions return their host Word/WordCluster
-    // Old EventMentions return their Link
+    // Old EventMentions/RelationMentions return their Link
 
     this.parsedMentions = {};
   }
@@ -43774,11 +43843,7 @@ function () {
     key: "parse",
     value: function parse(data) {
       // Clear out any old parse data
-      this.data = {
-        words: [],
-        links: [],
-        clusters: []
-      }; // At the top level, the data has two parts: `documents` and `mentions`.
+      this.reset(); // At the top level, the data has two parts: `documents` and `mentions`.
       // - `documents` includes the tokens and dependency parses for each
       //   document the data contains.
       // - `mentions` includes all the events/relations that *every* document
@@ -43841,6 +43906,22 @@ function () {
       }
     }
     /**
+     * Clears out all previously cached parse data (in preparation for a new
+     * parse)
+     */
+
+  }, {
+    key: "reset",
+    value: function reset() {
+      this.data = {
+        words: [],
+        links: [],
+        clusters: []
+      };
+      this.parsedDocuments = {};
+      this.parsedMentions = {};
+    }
+    /**
      * Parses a given document (essentially an array of sentences), appending
      * the tokens and first set of dependency links to the final dataset.
      * TODO: Allow user to select between different dependency graphs
@@ -43889,52 +43970,55 @@ function () {
           } // Sentences may have multiple dependency graphs available
 
 
-          var graphTypes = Object.keys(sentence.graphs); // Just use the first one for now
+          var graphTypes = Object.keys(sentence.graphs);
 
-          var graphType = graphTypes[0];
-          /**
-           * @property {Object[]} edges
-           * @property roots
-           */
+          for (var _i = 0; _i < graphTypes.length; _i++) {
+            var graphType = graphTypes[_i];
 
-          var graph = sentence.graphs[graphType];
-          /**
-           * @property {Number} source
-           * @property {Number} destination
-           * @property {String} relation
-           */
+            /**
+             * @property {Object[]} edges
+             * @property roots
+             */
+            var graph = sentence.graphs[graphType];
+            /**
+             * @property {Number} source
+             * @property {Number} destination
+             * @property {String} relation
+             */
 
-          var _iteratorNormalCompletion4 = true;
-          var _didIteratorError4 = false;
-          var _iteratorError4 = undefined;
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
 
-          try {
-            for (var _iterator4 = graph.edges.entries()[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-              var _step4$value = (0, _slicedToArray2.default)(_step4.value, 2),
-                  edgeId = _step4$value[0],
-                  edge = _step4$value[1];
-
-              this.data.links.push(new _link.default( // eventId
-              "".concat(docId, "-").concat(sentenceId, "-").concat(graphType, "-").concat(edgeId), // Trigger
-              thisSentence[edge.source], // Arguments
-              [{
-                anchor: thisSentence[edge.destination],
-                type: edge.relation
-              }], // Relation type
-              null, // Draw Link above Words?
-              false));
-            }
-          } catch (err) {
-            _didIteratorError4 = true;
-            _iteratorError4 = err;
-          } finally {
             try {
-              if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-                _iterator4.return();
+              for (var _iterator4 = graph.edges.entries()[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                var _step4$value = (0, _slicedToArray2.default)(_step4.value, 2),
+                    edgeId = _step4$value[0],
+                    edge = _step4$value[1];
+
+                this.data.links.push(new _link2.default( // eventId
+                "".concat(docId, "-").concat(sentenceId, "-").concat(graphType, "-").concat(edgeId), // Trigger
+                thisSentence[edge.source], // Arguments
+                [{
+                  anchor: thisSentence[edge.destination],
+                  type: edge.relation
+                }], // Relation type
+                null, // Draw Link above Words?
+                false, // Category
+                graphType));
               }
+            } catch (err) {
+              _didIteratorError4 = true;
+              _iteratorError4 = err;
             } finally {
-              if (_didIteratorError4) {
-                throw _iteratorError4;
+              try {
+                if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
+                  _iterator4.return();
+                }
+              } finally {
+                if (_didIteratorError4) {
+                  throw _iteratorError4;
+                }
               }
             }
           }
@@ -43963,6 +44047,7 @@ function () {
      *
      * - TextBoundMentions become WordTags
      * - EventMentions become Links
+     * - RelationMentions become Links
      *
      * @param mention
      * @private
@@ -43986,8 +44071,13 @@ function () {
        *     higher-levels of the label's taxonomic hierarchy.
        * @property {Object} mention.arguments
        */
-      // TextBoundMention
+      // Have we seen this one before?
+      if (this.parsedMentions[mention.id]) {
+        return this.parsedMentions[mention.id];
+      } // TextBoundMention
       // Will become either a tag for a Word, or a WordCluster.
+
+
       if (mention.type === "TextBoundMention") {
         var tokens = this.parsedDocuments[mention.document].sentences[mention.sentence].slice(mention.tokenInterval.start, mention.tokenInterval.end);
         var label = mention.labels[0];
@@ -43995,26 +44085,24 @@ function () {
         if (tokens.length === 1) {
           tokens[0].setTag(label);
           this.parsedMentions[mention.id] = tokens[0];
+          return tokens[0];
         } else {
           var cluster = new _wordCluster.default(tokens, label);
           this.data.clusters.push(cluster);
           this.parsedMentions[mention.id] = cluster;
+          return cluster;
         }
       } // EventMention
       // Will become a Link
 
 
       if (mention.type === "EventMention") {
-        // If there is a trigger, it will be a nested Mention.  Parse it if we
-        // haven't seen it before.
+        // If there is a trigger, it will be a nested Mention.  Ensure it is
+        // parsed.
         var trigger = null;
 
         if (mention.trigger) {
-          if (!this.parsedMentions[mention.trigger.id]) {
-            this._parseMention(mention.trigger);
-          }
-
-          trigger = this.parsedMentions[mention.trigger.id];
+          trigger = this._parseMention(mention.trigger);
         }
 
         var linkArgs = []; // `mentions.arguments` is an Object keyed by argument type.
@@ -44022,8 +44110,8 @@ function () {
 
         var _arr = Object.entries(mention["arguments"]);
 
-        for (var _i = 0; _i < _arr.length; _i++) {
-          var _arr$_i = (0, _slicedToArray2.default)(_arr[_i], 2),
+        for (var _i2 = 0; _i2 < _arr.length; _i2++) {
+          var _arr$_i = (0, _slicedToArray2.default)(_arr[_i2], 2),
               type = _arr$_i[0],
               args = _arr$_i[1];
 
@@ -44036,11 +44124,8 @@ function () {
               var arg = _step5.value;
 
               // Ensure that the argument mention has been parsed before
-              if (!this.parsedMentions[arg.id]) {
-                this._parseMention(arg);
-              }
+              var anchor = this._parseMention(arg);
 
-              var anchor = this.parsedMentions[arg.id];
               linkArgs.push({
                 anchor: anchor,
                 type: type
@@ -44063,12 +44148,75 @@ function () {
         } // Done; prepare the new Link
 
 
-        this.data.links.push(new _link.default( // eventId
+        var link = new _link2.default( // eventId
         mention.id, // Trigger
         trigger, // Arguments
         linkArgs, // Relation type
         null, // Draw Link above Words?
-        true));
+        true);
+        this.data.links.push(link);
+        this.parsedMentions[mention.id] = link;
+        return link;
+      } // RelationMention
+      // Will become a Link
+
+
+      if (mention.type === "RelationMention") {
+        // There is no trigger for RelationMentions, but there is a reltype
+        var reltype = Object.keys(mention["arguments"]).join("-");
+        var _linkArgs = []; // `mentions.arguments` is an Object keyed by argument type.
+        // The value of each key is an array of nested Mentions as arguments
+
+        var _arr2 = Object.entries(mention["arguments"]);
+
+        for (var _i3 = 0; _i3 < _arr2.length; _i3++) {
+          var _arr2$_i = (0, _slicedToArray2.default)(_arr2[_i3], 2),
+              type = _arr2$_i[0],
+              args = _arr2$_i[1];
+
+          var _iteratorNormalCompletion6 = true;
+          var _didIteratorError6 = false;
+          var _iteratorError6 = undefined;
+
+          try {
+            for (var _iterator6 = args[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+              var _arg = _step6.value;
+
+              // Ensure that the argument mention has been parsed before
+              var _anchor = this._parseMention(_arg);
+
+              _linkArgs.push({
+                anchor: _anchor,
+                type: type
+              });
+            }
+          } catch (err) {
+            _didIteratorError6 = true;
+            _iteratorError6 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
+                _iterator6.return();
+              }
+            } finally {
+              if (_didIteratorError6) {
+                throw _iteratorError6;
+              }
+            }
+          }
+        } // Done; prepare the new Link
+
+
+        var _link = new _link2.default( // eventId
+        mention.id, // Trigger
+        null, // Arguments
+        _linkArgs, // Relation type
+        reltype, // Draw Link above Words?
+        true);
+
+        this.data.links.push(_link);
+        this.parsedMentions[mention.id] = _link;
+        return _link;
       }
     }
   }]);
@@ -44077,7 +44225,7 @@ function () {
 
 module.exports = OdinParser;
 
-},{"../components/link.js":50,"../components/word-cluster.js":52,"../components/word.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],62:[function(require,module,exports){
+},{"../components/link.js":49,"../components/word-cluster.js":51,"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],61:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -44282,7 +44430,7 @@ function () {
 
 module.exports = Parser;
 
-},{"./ann.js":60,"./odin.js":61,"./reach.js":63,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],63:[function(require,module,exports){
+},{"./ann.js":59,"./odin.js":60,"./reach.js":62,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],62:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -44507,7 +44655,7 @@ function () {
 
 module.exports = ReachParser;
 
-},{"../components/link.js":50,"../components/word-cluster.js":52,"../components/word.js":54,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],64:[function(require,module,exports){
+},{"../components/link.js":49,"../components/word-cluster.js":51,"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],63:[function(require,module,exports){
 "use strict";
 
 var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
@@ -44626,4 +44774,4 @@ module.exports = {
   sortForSlotting: sortForSlotting
 };
 
-},{"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"lodash":43,"svg.draggable.js":47,"svg.js":48}]},{},[56]);
+},{"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"lodash":43,"svg.draggable.js":47,"svg.js":48}]},{},[55]);
