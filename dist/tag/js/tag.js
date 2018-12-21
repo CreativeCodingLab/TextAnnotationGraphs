@@ -44162,18 +44162,45 @@ function () {
 
 
       if (mention.type === "RelationMention") {
-        // There is no trigger for RelationMentions, but there is a reltype
-        var reltype = Object.keys(mention["arguments"]).join("-");
-        var _linkArgs = []; // `mentions.arguments` is an Object keyed by argument type.
+        // `mentions.arguments` is an Object keyed by argument type.
         // The value of each key is an array of nested Mentions as arguments
+        // Sort the keys properly so that we can generate an accurate label;
+        // the arguments with lower starting tokens should be on the left.
+        var argTypes = Object.keys(mention["arguments"]);
+        argTypes.sort(function (a, b) {
+          // Go through the array of mentions and pick out the lowest starting
+          // token
+          var mentionsA = mention["arguments"][a];
+          var mentionsB = mention["arguments"][b];
+          var firstTokenA = mentionsA.reduce(function (prev, next) {
+            if (next.tokenInterval.start < prev) {
+              return next.tokenInterval.start;
+            } else {
+              return prev;
+            }
+          }, mentionsA[0].tokenInterval.start);
+          var firstTokenB = mentionsB.reduce(function (prev, next) {
+            if (next.tokenInterval.start < prev) {
+              return next.tokenInterval.start;
+            } else {
+              return prev;
+            }
+          }, mentionsB[0].tokenInterval.start);
 
-        var _arr2 = Object.entries(mention["arguments"]);
+          if (firstTokenA <= firstTokenB) {
+            return -1;
+          } else {
+            return 1;
+          }
+        }); // Generate the relation label
 
-        for (var _i3 = 0; _i3 < _arr2.length; _i3++) {
-          var _arr2$_i = (0, _slicedToArray2.default)(_arr2[_i3], 2),
-              type = _arr2$_i[0],
-              args = _arr2$_i[1];
+        var reltype = argTypes.join("-"); // Generate the arguments array
 
+        var _linkArgs = [];
+
+        for (var _i3 = 0; _i3 < argTypes.length; _i3++) {
+          var type = argTypes[_i3];
+          var args = mention["arguments"][type];
           var _iteratorNormalCompletion6 = true;
           var _didIteratorError6 = false;
           var _iteratorError6 = undefined;

@@ -247,14 +247,48 @@ class OdinParser {
     // RelationMention
     // Will become a Link
     if (mention.type === "RelationMention") {
-      // There is no trigger for RelationMentions, but there is a reltype
-      const reltype = Object.keys(mention["arguments"]).join("-");
-
-      const linkArgs = [];
-
       // `mentions.arguments` is an Object keyed by argument type.
       // The value of each key is an array of nested Mentions as arguments
-      for (const [type, args] of Object.entries(mention["arguments"])) {
+
+      // Sort the keys properly so that we can generate an accurate label;
+      // the arguments with lower starting tokens should be on the left.
+      let argTypes = Object.keys(mention["arguments"]);
+      argTypes.sort((a, b) => {
+        // Go through the array of mentions and pick out the lowest starting
+        // token
+        const mentionsA = mention["arguments"][a];
+        const mentionsB = mention["arguments"][b];
+
+        const firstTokenA = mentionsA
+          .reduce((prev, next) => {
+            if (next.tokenInterval.start < prev) {
+              return next.tokenInterval.start;
+            } else {
+              return prev;
+            }
+          }, mentionsA[0].tokenInterval.start);
+        const firstTokenB = mentionsB
+          .reduce((prev, next) => {
+            if (next.tokenInterval.start < prev) {
+              return next.tokenInterval.start;
+            } else {
+              return prev;
+            }
+          }, mentionsB[0].tokenInterval.start);
+
+        if (firstTokenA <= firstTokenB) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      // Generate the relation label
+      const reltype = argTypes.join("-");
+
+      // Generate the arguments array
+      const linkArgs = [];
+      for (const type of argTypes) {
+        const args = mention["arguments"][type];
         for (const arg of args) {
           // Ensure that the argument mention has been parsed before
           const anchor = this._parseMention(arg);
