@@ -23,6 +23,11 @@ class OdinParser {
     // Old TextBoundMentions return their host Word/WordCluster
     // Old EventMentions/RelationMentions return their Link
     this.parsedMentions = {};
+
+    // We record the index of the last Word from the previous sentence so
+    // that we can generate each Word's global index (if not Word indices
+    // will incorrectly restart from 0 for each new document/sentence)
+    this.lastWordIdx = -1;
   }
 
   /**
@@ -68,6 +73,7 @@ class OdinParser {
     };
     this.parsedDocuments = {};
     this.parsedMentions = {};
+    this.lastWordIdx = -1;
   }
 
   /**
@@ -96,16 +102,25 @@ class OdinParser {
     for (const [sentenceId, sentence] of document.sentences.entries()) {
       // Hold on to the Words we generate even as we push them up to the
       // main data store, so that we can create their syntax Links too
+      // (which rely on sentence-level indices, not global indices)
       const thisSentence = [];
 
       // The lengths of the `words` and `tags` arrays should be the same
-      for (let idx = 0; idx < sentence.words.length; idx++) {
-        const thisWord = new Word(sentence.words[idx], idx);
-        thisWord.setSyntaxTag(sentence.tags[idx]);
+      for (let thisIdx = 0; thisIdx < sentence.words.length; thisIdx++) {
+        const thisWord = new Word(
+          // Text
+          sentence.words[thisIdx],
+          // (Global) Word index
+          thisIdx + this.lastWordIdx + 1
+        );
+        thisWord.setSyntaxTag(sentence.tags[thisIdx]);
 
         thisSentence.push(thisWord);
         this.data.words.push(thisWord);
       }
+
+      // Update the global Word index offset for the next sentence
+      this.lastWordIdx += sentence.words.length;
 
       // Sentences may have multiple dependency graphs available
       const graphTypes = Object.keys(sentence.graphs);

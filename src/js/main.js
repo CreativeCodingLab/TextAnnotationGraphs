@@ -441,14 +441,14 @@ class Main {
     //   this.taxonomyManager.remove(event.detail.object);
     // });
 
-    this.svg.on("row-recalculate-slots", () => {
-      this.links.forEach(link => {
-        link.slot = null;
-      });
-      this.links = Util.sortForSlotting(this.links);
-      this.links.forEach(link => link.calculateSlot(this.words));
-      this.links.forEach(link => link.draw());
-    });
+    // this.svg.on("row-recalculate-slots", () => {
+    //   this.links.forEach(link => {
+    //     link.slot = null;
+    //   });
+    //   this.links = Util.sortForSlotting(this.links);
+    //   this.links.forEach(link => link.calculateSlot(this.words));
+    //   this.links.forEach(link => link.draw());
+    // });
 
     // ZW: Hardcoded dependencies on full UI
     // this.svg.on("build-tree", (event) => {

@@ -40855,6 +40855,7 @@ function () {
      * Returns the amount of descent below the baseline needed to fit
      * all this Row's bottom WordTags and Links.
      * Includes vertical Row padding.
+     * TODO: Have this account for whether or not bottom Links are visible.
      * @return {number}
      */
 
@@ -42645,22 +42646,15 @@ function () {
       //   event.detail.object.remove();
       //   this.taxonomyManager.remove(event.detail.object);
       // });
-
-      this.svg.on("row-recalculate-slots", function () {
-        _this2.links.forEach(function (link) {
-          link.slot = null;
-        });
-
-        _this2.links = Util.sortForSlotting(_this2.links);
-
-        _this2.links.forEach(function (link) {
-          return link.calculateSlot(_this2.words);
-        });
-
-        _this2.links.forEach(function (link) {
-          return link.draw();
-        });
-      }); // ZW: Hardcoded dependencies on full UI
+      // this.svg.on("row-recalculate-slots", () => {
+      //   this.links.forEach(link => {
+      //     link.slot = null;
+      //   });
+      //   this.links = Util.sortForSlotting(this.links);
+      //   this.links.forEach(link => link.calculateSlot(this.words));
+      //   this.links.forEach(link => link.draw());
+      // });
+      // ZW: Hardcoded dependencies on full UI
       // this.svg.on("build-tree", (event) => {
       //   document.body.classList.remove("tree-closed");
       //   if (tree.isInModal) {
@@ -43836,7 +43830,11 @@ function () {
     // Old TextBoundMentions return their host Word/WordCluster
     // Old EventMentions/RelationMentions return their Link
 
-    this.parsedMentions = {};
+    this.parsedMentions = {}; // We record the index of the last Word from the previous sentence so
+    // that we can generate each Word's global index (if not Word indices
+    // will incorrectly restart from 0 for each new document/sentence)
+
+    this.lastWordIdx = -1;
   }
   /**
    * Parses the given data, filling out `this.data` accordingly.
@@ -43925,6 +43923,7 @@ function () {
       };
       this.parsedDocuments = {};
       this.parsedMentions = {};
+      this.lastWordIdx = -1;
     }
     /**
      * Parses a given document (essentially an array of sentences), appending
@@ -43965,15 +43964,20 @@ function () {
 
           // Hold on to the Words we generate even as we push them up to the
           // main data store, so that we can create their syntax Links too
+          // (which rely on sentence-level indices, not global indices)
           var thisSentence = []; // The lengths of the `words` and `tags` arrays should be the same
 
-          for (var idx = 0; idx < sentence.words.length; idx++) {
-            var thisWord = new _word.default(sentence.words[idx], idx);
-            thisWord.setSyntaxTag(sentence.tags[idx]);
+          for (var thisIdx = 0; thisIdx < sentence.words.length; thisIdx++) {
+            var thisWord = new _word.default( // Text
+            sentence.words[thisIdx], // (Global) Word index
+            thisIdx + this.lastWordIdx + 1);
+            thisWord.setSyntaxTag(sentence.tags[thisIdx]);
             thisSentence.push(thisWord);
             this.data.words.push(thisWord);
-          } // Sentences may have multiple dependency graphs available
+          } // Update the global Word index offset for the next sentence
 
+
+          this.lastWordIdx += sentence.words.length; // Sentences may have multiple dependency graphs available
 
           var graphTypes = Object.keys(sentence.graphs);
 

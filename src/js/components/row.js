@@ -380,6 +380,7 @@ class Row {
    * Returns the amount of descent below the baseline needed to fit
    * all this Row's bottom WordTags and Links.
    * Includes vertical Row padding.
+   * TODO: Have this account for whether or not bottom Links are visible.
    * @return {number}
    */
   get descent() {
