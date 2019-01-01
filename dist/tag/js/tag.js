@@ -38775,9 +38775,13 @@ function () {
     this.handles = []; // SVG Path and last-drawn path string
 
     this.path = null;
-    this.lastPathString = "";
-    this.svgTexts = [];
-    this.lastDrawnWidth = null;
+    this.lastPathString = ""; // (Horizontal-only) width of the last drawn line for this Link; used
+    // for calculating Handle positions for parent Links
+
+    this.lastDrawnWidth = null; // SVG Texts for main Link label / argument labels
+
+    this.argTexts = [];
+    this.linkText = null;
   }
   /**
    * Initialises this Link against the main API instance
@@ -38796,41 +38800,38 @@ function () {
       this.svg = main.svg.group().addClass("tag-element").addClass(this.top ? "link" : "link syntax-link"); // Links are hidden by default; the main function should call `.show()`
       // for any Links to be shown
 
-      this.svg.hide(); // Init handles
+      this.svg.hide(); // Init handles and SVG texts.
+      // If there is a trigger, it will be the first handle
 
       if (this.trigger) {
         this.handles.push(new Handle(this.trigger, this));
-      }
+      } // Arguments
+
 
       this.arguments.forEach(function (arg) {
-        _this2.handles.push(new Handle(arg.anchor, _this2)); // Also prepare svgTexts for each trigger-argument relation
+        _this2.handles.push(new Handle(arg.anchor, _this2));
 
-
-        if (_this2.trigger) {
-          var text = _this2.svg.text(arg.type).leading(1).addClass("tag-element").addClass("link-text"); // Transform the text based on its font-size so that we can position it
-          // relative to its baseline
-
-
-          text.transform({
-            y: -parseInt($(text.node).css("font-size")) + 1
-          });
-
-          _this2.svgTexts.push(text);
-        }
-      }); // draw svgText for a non-trigger relation
-
-      if (this.reltype) {
-        var text = this.svg.text(this.reltype).leading(1).addClass("tag-element").addClass("link-text"); // Transform the text based on its font-size so that we can position it
+        var text = _this2.svg.text(arg.type).leading(1).addClass("tag-element").addClass("link-text"); // Transform the text based on its font-size so that we can position it
         // relative to its baseline
+
 
         text.transform({
           y: -parseInt($(text.node).css("font-size")) + 1
         });
-        this.svgTexts.push(text);
-      } // apply click events to text
+        text.hide();
 
+        _this2.argTexts.push(text);
+      }); // Main Link label
 
-      this.svgTexts.forEach(function (text) {
+      this.linkText = this.svg.text(this.reltype).leading(1).addClass("tag-element").addClass("link-text"); // Transform the text based on its font-size so that we can position it
+      // relative to its baseline
+
+      this.linkText.transform({
+        y: -parseInt($(this.linkText.node).css("font-size")) + 1
+      });
+      this.linkText.hide(); // apply click events to argument labels
+
+      this.argTexts.forEach(function (text) {
         text.node.oncontextmenu = function (e) {
           _this2.selectedLabel = text;
           e.preventDefault();
@@ -39221,8 +39222,8 @@ function () {
   }, {
     key: "getLineY",
     value: function getLineY(row) {
-      return this.top ? row.ry + row.rh - row.wordHeight - 15 * this.slot // Bottom Links have negative slot numbers
-      : row.ry + row.rh + row.wordDescent - 15 * this.slot;
+      return this.top ? row.ry + row.rh - row.wordHeight - this.config.linkSlotInterval * this.slot // Bottom Links have negative slot numbers
+      : row.ry + row.rh + row.wordDescent - this.config.linkSlotInterval * this.slot;
     }
     /**
      * Given the full array of Words in the document, calculates this Link's
@@ -39541,7 +39542,8 @@ function () {
         // The trigger always takes up index 0, so the index for the label is
         // one less than the index for this handle in `this.handles`
 
-        var label = this.svgTexts[this.handles.indexOf(_handle) - 1];
+        var label = this.argTexts[this.handles.indexOf(_handle) - 1];
+        label.show();
         var textLength = label.length();
         var textY = this.getLineY(_handle.row);
         var textLeft = pHandle.x + this.config.linkCurveWidth;
@@ -39656,7 +39658,9 @@ function () {
         // The trigger always takes up index 0, so the index for the label is
         // one less than the index for this handle in `this.handles`
 
-        var _label = this.svgTexts[this.handles.indexOf(_handle2) - 1];
+        var _label = this.argTexts[this.handles.indexOf(_handle2) - 1];
+
+        _label.show();
 
         var _textLength = _label.length();
 
@@ -39799,7 +39803,8 @@ function () {
       var sameRow = leftHandle.row.idx === rightHandle.row.idx; // Width/position of the Link's label
       // (Always on the first row for multi-line Links)
 
-      var textLength = this.svgTexts[0].length();
+      this.linkText.show();
+      var textLength = this.linkText.length();
       var textY = this.getLineY(leftHandle.row); // Centre on the segment of the Link line on the first row
 
       var textCentre = sameRow ? (pStart.x + pEnd.x) / 2 : (pStart.x + leftHandle.row.rw) / 2;
@@ -39858,7 +39863,7 @@ function () {
 
       d += this._arrowhead(pStart) + this._arrowhead(pEnd); // Move label
 
-      this.svgTexts[0].move(textCentre, textY); // Perform draw
+      this.linkText.move(textCentre, textY); // Perform draw
 
       if (this.lastPathString !== d) {
         this.path.plot(d);
@@ -42096,7 +42101,7 @@ var Config = function Config() {
   // Drawing options for Links in the visualisation
   // Vertical distance between each Link slot (for crossing/overlapping Links)
 
-  this.linkSlotInterval = 15; // Vertical padding between Link arrowheads and their anchors
+  this.linkSlotInterval = 30; // Vertical padding between Link arrowheads and their anchors
 
   this.linkHandlePadding = 2; // Corner curve width for Links
 
@@ -43807,7 +43812,7 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/creat
 
 var _word = _interopRequireDefault(require("../components/word.js"));
 
-var _link2 = _interopRequireDefault(require("../components/link.js"));
+var _link = _interopRequireDefault(require("../components/link.js"));
 
 var _wordCluster = _interopRequireDefault(require("../components/word-cluster.js"));
 
@@ -43996,14 +44001,14 @@ function () {
                     edgeId = _step4$value[0],
                     edge = _step4$value[1];
 
-                this.data.links.push(new _link2.default( // eventId
+                this.data.links.push(new _link.default( // eventId
                 "".concat(docId, "-").concat(sentenceId, "-").concat(graphType, "-").concat(edgeId), // Trigger
                 thisSentence[edge.source], // Arguments
                 [{
                   anchor: thisSentence[edge.destination],
                   type: edge.relation
                 }], // Relation type
-                null, // Draw Link above Words?
+                edge.relation, // Draw Link above Words?
                 false, // Category
                 graphType));
               }
@@ -44092,21 +44097,25 @@ function () {
           this.parsedMentions[mention.id] = cluster;
           return cluster;
         }
-      } // EventMention
+      } // EventMention/RelationMention
       // Will become a Link
 
 
-      if (mention.type === "EventMention") {
+      if (mention.type === "EventMention" || mention.type === "RelationMention") {
         // If there is a trigger, it will be a nested Mention.  Ensure it is
         // parsed.
         var trigger = null;
 
         if (mention.trigger) {
           trigger = this._parseMention(mention.trigger);
-        }
+        } // Read the relation label
 
-        var linkArgs = []; // `mentions.arguments` is an Object keyed by argument type.
+
+        var relType = mention.labels[0]; // Generate the arguments array
+        // `mentions.arguments` is an Object keyed by argument type.
         // The value of each key is an array of nested Mentions as arguments
+
+        var linkArgs = [];
 
         var _arr = Object.entries(mention["arguments"]);
 
@@ -44148,102 +44157,15 @@ function () {
         } // Done; prepare the new Link
 
 
-        var link = new _link2.default( // eventId
+        var link = new _link.default( // eventId
         mention.id, // Trigger
         trigger, // Arguments
         linkArgs, // Relation type
-        null, // Draw Link above Words?
+        relType, // Draw Link above Words?
         true);
         this.data.links.push(link);
         this.parsedMentions[mention.id] = link;
         return link;
-      } // RelationMention
-      // Will become a Link
-
-
-      if (mention.type === "RelationMention") {
-        // `mentions.arguments` is an Object keyed by argument type.
-        // The value of each key is an array of nested Mentions as arguments
-        // Sort the keys properly so that we can generate an accurate label;
-        // the arguments with lower starting tokens should be on the left.
-        var argTypes = Object.keys(mention["arguments"]);
-        argTypes.sort(function (a, b) {
-          // Go through the array of mentions and pick out the lowest starting
-          // token
-          var mentionsA = mention["arguments"][a];
-          var mentionsB = mention["arguments"][b];
-          var firstTokenA = mentionsA.reduce(function (prev, next) {
-            if (next.tokenInterval.start < prev) {
-              return next.tokenInterval.start;
-            } else {
-              return prev;
-            }
-          }, mentionsA[0].tokenInterval.start);
-          var firstTokenB = mentionsB.reduce(function (prev, next) {
-            if (next.tokenInterval.start < prev) {
-              return next.tokenInterval.start;
-            } else {
-              return prev;
-            }
-          }, mentionsB[0].tokenInterval.start);
-
-          if (firstTokenA <= firstTokenB) {
-            return -1;
-          } else {
-            return 1;
-          }
-        }); // Generate the relation label
-
-        var reltype = argTypes.join("-"); // Generate the arguments array
-
-        var _linkArgs = [];
-
-        for (var _i3 = 0; _i3 < argTypes.length; _i3++) {
-          var type = argTypes[_i3];
-          var args = mention["arguments"][type];
-          var _iteratorNormalCompletion6 = true;
-          var _didIteratorError6 = false;
-          var _iteratorError6 = undefined;
-
-          try {
-            for (var _iterator6 = args[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-              var _arg = _step6.value;
-
-              // Ensure that the argument mention has been parsed before
-              var _anchor = this._parseMention(_arg);
-
-              _linkArgs.push({
-                anchor: _anchor,
-                type: type
-              });
-            }
-          } catch (err) {
-            _didIteratorError6 = true;
-            _iteratorError6 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-                _iterator6.return();
-              }
-            } finally {
-              if (_didIteratorError6) {
-                throw _iteratorError6;
-              }
-            }
-          }
-        } // Done; prepare the new Link
-
-
-        var _link = new _link2.default( // eventId
-        mention.id, // Trigger
-        null, // Arguments
-        _linkArgs, // Relation type
-        reltype, // Draw Link above Words?
-        true);
-
-        this.data.links.push(_link);
-        this.parsedMentions[mention.id] = _link;
-        return _link;
       }
     }
   }]);

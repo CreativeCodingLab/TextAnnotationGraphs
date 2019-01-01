@@ -81,8 +81,13 @@ class Link {
     this.path = null;
     this.lastPathString = "";
 
-    this.svgTexts = [];
+    // (Horizontal-only) width of the last drawn line for this Link; used
+    // for calculating Handle positions for parent Links
     this.lastDrawnWidth = null;
+
+    // SVG Texts for main Link label / argument labels
+    this.argTexts = [];
+    this.linkText = null;
   }
 
   /**
@@ -102,7 +107,8 @@ class Link {
     // for any Links to be shown
     this.svg.hide();
 
-    // Init handles
+    // Init handles and SVG texts.
+    // If there is a trigger, it will be the first handle
     if (this.trigger) {
       this.handles.push(new Handle(
         this.trigger,
@@ -110,30 +116,14 @@ class Link {
       ));
     }
 
+    // Arguments
     this.arguments.forEach(arg => {
       this.handles.push(new Handle(
         arg.anchor,
         this
       ));
 
-      // Also prepare svgTexts for each trigger-argument relation
-      if (this.trigger) {
-        let text = this.svg.text(arg.type)
-          .leading(1)
-          .addClass("tag-element")
-          .addClass("link-text");
-        // Transform the text based on its font-size so that we can position it
-        // relative to its baseline
-        text.transform({
-          y: -parseInt($(text.node).css("font-size")) + 1
-        });
-        this.svgTexts.push(text);
-      }
-    });
-
-    // draw svgText for a non-trigger relation
-    if (this.reltype) {
-      let text = this.svg.text(this.reltype)
+      const text = this.svg.text(arg.type)
         .leading(1)
         .addClass("tag-element")
         .addClass("link-text");
@@ -142,11 +132,24 @@ class Link {
       text.transform({
         y: -parseInt($(text.node).css("font-size")) + 1
       });
-      this.svgTexts.push(text);
-    }
+      text.hide();
+      this.argTexts.push(text);
+    });
 
-    // apply click events to text
-    this.svgTexts.forEach(text => {
+    // Main Link label
+    this.linkText = this.svg.text(this.reltype)
+      .leading(1)
+      .addClass("tag-element")
+      .addClass("link-text");
+    // Transform the text based on its font-size so that we can position it
+    // relative to its baseline
+    this.linkText.transform({
+      y: -parseInt($(this.linkText.node).css("font-size")) + 1
+    });
+    this.linkText.hide();
+
+    // apply click events to argument labels
+    this.argTexts.forEach(text => {
       text.node.oncontextmenu = (e) => {
         this.selectedLabel = text;
         e.preventDefault();
@@ -457,9 +460,9 @@ class Link {
    */
   getLineY(row) {
     return this.top
-      ? row.ry + row.rh - row.wordHeight - 15 * this.slot
+      ? row.ry + row.rh - row.wordHeight - this.config.linkSlotInterval * this.slot
       // Bottom Links have negative slot numbers
-      : row.ry + row.rh + row.wordDescent - 15 * this.slot;
+      : row.ry + row.rh + row.wordDescent - this.config.linkSlotInterval * this.slot;
   }
 
 
@@ -756,7 +759,8 @@ class Link {
       // -----
       // The trigger always takes up index 0, so the index for the label is
       // one less than the index for this handle in `this.handles`
-      const label = this.svgTexts[this.handles.indexOf(handle) - 1];
+      const label = this.argTexts[this.handles.indexOf(handle) - 1];
+      label.show();
 
       const textLength = label.length();
       const textY = this.getLineY(handle.row);
@@ -882,7 +886,8 @@ class Link {
       // -----
       // The trigger always takes up index 0, so the index for the label is
       // one less than the index for this handle in `this.handles`
-      const label = this.svgTexts[this.handles.indexOf(handle) - 1];
+      const label = this.argTexts[this.handles.indexOf(handle) - 1];
+      label.show();
 
       const textLength = label.length();
       const textY = this.getLineY(handle.row);
@@ -1036,7 +1041,8 @@ class Link {
 
     // Width/position of the Link's label
     // (Always on the first row for multi-line Links)
-    const textLength = this.svgTexts[0].length();
+    this.linkText.show();
+    const textLength = this.linkText.length();
     const textY = this.getLineY(leftHandle.row);
 
     // Centre on the segment of the Link line on the first row
@@ -1108,7 +1114,7 @@ class Link {
       + this._arrowhead(pEnd);
 
     // Move label
-    this.svgTexts[0].move(textCentre, textY);
+    this.linkText.move(textCentre, textY);
 
     // Perform draw
     if (this.lastPathString !== d) {

@@ -15,12 +15,13 @@
       ["T4", "Cluster 1", [["39", "51"]]]
     ],
     "attributes": [],
-    "text": "This is a word cluster test. This is a word cluster test.",
+    "text": "This is a word cluster test. This is a word cluster test. This is a word cluster test.",
     "relations": [
       ["R1", "Relation Test", [["Arg1", "T1"], ["Arg2", "T2"]]]
     ],
     "triggers": [
-      ["T3", "Tag", [["29", "33"]]]
+      ["T3", "Tag", [["29", "33"]]],
+      ["T15", "Tag", [["58", "62"]]]
     ],
     "events": [
       ["E1", "T3", [["Word Anchor", "T1"], ["Cluster Anchor", "T4"]]]
@@ -42,10 +43,17 @@
       ["T11", "NN", [["39", "43"]]],
       ["T12", "NN", [["44", "51"]]],
       ["T13", "NN", [["52", "56"]]],
-      ["T14", ".", [["56", "57"]]]
+      ["T14", ".", [["56", "57"]]],
+      ["T15", "DT", [["58", "62"]]],
+      ["T16", "VBZ", [["63", "65"]]],
+      ["T17", "DT", [["66", "67"]]],
+      ["T18", "NN", [["68", "72"]]],
+      ["T19", "NN", [["73", "80"]]],
+      ["T20", "NN", [["81", "85"]]],
+      ["T21", ".", [["85", "86"]]]
     ],
     "attributes": [],
-    "text": "This is a word cluster test. This is a word cluster test.",
+    "text": "This is a word cluster test. This is a word cluster test. This is a word cluster test.",
     "relations": [],
     "triggers": [],
     "events": []

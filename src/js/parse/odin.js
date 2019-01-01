@@ -134,7 +134,7 @@ class OdinParser {
               type: edge.relation
             }],
             // Relation type
-            null,
+            edge.relation,
             // Draw Link above Words?
             false,
             // Category
@@ -201,9 +201,9 @@ class OdinParser {
       }
     }
 
-    // EventMention
+    // EventMention/RelationMention
     // Will become a Link
-    if (mention.type === "EventMention") {
+    if (mention.type === "EventMention" || mention.type === "RelationMention") {
       // If there is a trigger, it will be a nested Mention.  Ensure it is
       // parsed.
       let trigger = null;
@@ -211,10 +211,13 @@ class OdinParser {
         trigger = this._parseMention(mention.trigger);
       }
 
-      const linkArgs = [];
+      // Read the relation label
+      const relType = mention.labels[0];
 
+      // Generate the arguments array
       // `mentions.arguments` is an Object keyed by argument type.
       // The value of each key is an array of nested Mentions as arguments
+      const linkArgs = [];
       for (const [type, args] of Object.entries(mention["arguments"])) {
         for (const arg of args) {
           // Ensure that the argument mention has been parsed before
@@ -235,80 +238,7 @@ class OdinParser {
         // Arguments
         linkArgs,
         // Relation type
-        null,
-        // Draw Link above Words?
-        true
-      );
-      this.data.links.push(link);
-      this.parsedMentions[mention.id] = link;
-      return link;
-    }
-
-    // RelationMention
-    // Will become a Link
-    if (mention.type === "RelationMention") {
-      // `mentions.arguments` is an Object keyed by argument type.
-      // The value of each key is an array of nested Mentions as arguments
-
-      // Sort the keys properly so that we can generate an accurate label;
-      // the arguments with lower starting tokens should be on the left.
-      let argTypes = Object.keys(mention["arguments"]);
-      argTypes.sort((a, b) => {
-        // Go through the array of mentions and pick out the lowest starting
-        // token
-        const mentionsA = mention["arguments"][a];
-        const mentionsB = mention["arguments"][b];
-
-        const firstTokenA = mentionsA
-          .reduce((prev, next) => {
-            if (next.tokenInterval.start < prev) {
-              return next.tokenInterval.start;
-            } else {
-              return prev;
-            }
-          }, mentionsA[0].tokenInterval.start);
-        const firstTokenB = mentionsB
-          .reduce((prev, next) => {
-            if (next.tokenInterval.start < prev) {
-              return next.tokenInterval.start;
-            } else {
-              return prev;
-            }
-          }, mentionsB[0].tokenInterval.start);
-
-        if (firstTokenA <= firstTokenB) {
-          return -1;
-        } else {
-          return 1;
-        }
-      });
-      // Generate the relation label
-      const reltype = argTypes.join("-");
-
-      // Generate the arguments array
-      const linkArgs = [];
-      for (const type of argTypes) {
-        const args = mention["arguments"][type];
-        for (const arg of args) {
-          // Ensure that the argument mention has been parsed before
-          const anchor = this._parseMention(arg);
-          linkArgs.push({
-            anchor,
-            type
-          });
-        }
-      }
-
-      // Done; prepare the new Link
-      const link = new Link(
-        // eventId
-        mention.id,
-        // Trigger
-        null,
-        // Arguments
-        linkArgs,
-        // Relation type
-        reltype,
+        relType,
         // Draw Link above Words?
         true
       );
