@@ -71,7 +71,7 @@ class Link {
     // SVG-related properties
 
     // SVG parents
-    this.mainSVG = null;
+    this.mainSvg = null;
     this.svg = null;
 
     // Handle objects
@@ -85,9 +85,9 @@ class Link {
     // for calculating Handle positions for parent Links
     this.lastDrawnWidth = null;
 
-    // SVG Texts for main Link label / argument labels
-    this.argTexts = [];
-    this.linkText = null;
+    // Objects for main Link label / argument labels
+    this.argLabels = [];
+    this.linkLabel = null;
   }
 
   /**
@@ -98,7 +98,7 @@ class Link {
     this.main = main;
     this.config = main.config;
 
-    this.mainSVG = main.svg;
+    this.mainSvg = main.svg;
     this.svg = main.svg.group()
       .addClass("tag-element")
       .addClass(this.top ? "link" : "link syntax-link");
@@ -106,6 +106,10 @@ class Link {
     // Links are hidden by default; the main function should call `.show()`
     // for any Links to be shown
     this.svg.hide();
+
+    // The main Link line
+    this.path = this.svg.path()
+      .addClass("tag-element");
 
     // Init handles and SVG texts.
     // If there is a trigger, it will be the first handle
@@ -123,60 +127,18 @@ class Link {
         this
       ));
 
-      const text = this.svg.text(arg.type)
-        .leading(1)
-        .addClass("tag-element")
-        .addClass("link-text");
-      // Transform the text based on its font-size so that we can position it
-      // relative to its baseline
-      text.transform({
-        y: -parseInt($(text.node).css("font-size")) + 1
-      });
-      text.hide();
-      this.argTexts.push(text);
+      const text = new Label(this.mainSvg, this.svg, arg.type, "link-arg-label");
+      this.argLabels.push(text);
     });
 
     // Main Link label
-    this.linkText = this.svg.text(this.reltype)
-      .leading(1)
-      .addClass("tag-element")
-      .addClass("link-text");
-    // Transform the text based on its font-size so that we can position it
-    // relative to its baseline
-    this.linkText.transform({
-      y: -parseInt($(this.linkText.node).css("font-size")) + 1
-    });
-    this.linkText.hide();
-
-    // apply click events to argument labels
-    this.argTexts.forEach(text => {
-      text.node.oncontextmenu = (e) => {
-        this.selectedLabel = text;
-        e.preventDefault();
-        this.mainSVG.fire("link-label-right-click", {
-          object: this,
-          type: "text",
-          event: e
-        });
-      };
-      text.click((e) => this.mainSVG.fire("link-label-edit", {
-        object: this,
-        text,
-        event: e
-      }));
-      text.dblclick((e) => this.mainSVG.fire("build-tree", {
-        object: this,
-        event: e
-      }));
-    });
-
-    this.path = this.svg.path()
-      .addClass("tag-element");
+    this.linkLabel = new Label(this.mainSvg, this.svg, this.reltype, "link-main-label");
 
     // Closure for identifying dragged handles
     let draggedHandle = null;
     let dragStartX = 0;
 
+    // Drag/Click events
     this.path.draggable()
       .on("dragstart", (e) => {
         // We use the x and y values (with a little tolerance) to make sure
@@ -264,14 +226,13 @@ class Link {
         draggedHandle = null;
       });
 
-
-    this.path.dblclick((e) => this.mainSVG.fire("build-tree", {
+    this.path.dblclick((e) => this.mainSvg.fire("build-tree", {
       object: this,
       event: e
     }));
     this.path.node.oncontextmenu = (e) => {
       e.preventDefault();
-      this.mainSVG.fire("link-right-click", {
+      this.mainSvg.fire("link-right-click", {
         object: this,
         type: "link",
         event: e
@@ -313,6 +274,21 @@ class Link {
       this.svg.hide();
     }
     this.visible = false;
+  }
+
+  /**
+   * Shows the argument labels for this Link
+   */
+  showArgLabels() {
+    this.argLabels.forEach(label => label.show());
+    this.draw();
+  }
+
+  /**
+   * Hides the argument labels for this Link
+   */
+  hideArgLabels() {
+    this.argLabels.forEach(label => label.hide());
   }
 
   /**
@@ -417,9 +393,10 @@ class Link {
     // draw a polyline between the trigger and each of its arguments
     // https://www.w3.org/TR/SVG/paths.html#PathData
     if (this.trigger) {
+      // This Link has a trigger (Event)
       this._drawAsEvent();
-    } else if (this.reltype) {
-      // This is a non-trigger (binary) relation
+    } else {
+      // This Link has no trigger (Relation)
       this._drawAsRelation();
     }
 
@@ -759,7 +736,7 @@ class Link {
       // -----
       // The trigger always takes up index 0, so the index for the label is
       // one less than the index for this handle in `this.handles`
-      const label = this.argTexts[this.handles.indexOf(handle) - 1];
+      const label = this.argLabels[this.handles.indexOf(handle) - 1];
       label.show();
 
       const textLength = label.length();
@@ -886,7 +863,7 @@ class Link {
       // -----
       // The trigger always takes up index 0, so the index for the label is
       // one less than the index for this handle in `this.handles`
-      const label = this.argTexts[this.handles.indexOf(handle) - 1];
+      const label = this.argLabels[this.handles.indexOf(handle) - 1];
       label.show();
 
       const textLength = label.length();
@@ -1041,8 +1018,8 @@ class Link {
 
     // Width/position of the Link's label
     // (Always on the first row for multi-line Links)
-    this.linkText.show();
-    const textLength = this.linkText.length();
+    this.linkLabel.show();
+    const textLength = this.linkLabel.length();
     const textY = this.getLineY(leftHandle.row);
 
     // Centre on the segment of the Link line on the first row
@@ -1072,8 +1049,12 @@ class Link {
       d += "C" + [pStart.x, firstY, pStart.x, firstY, curveLeftX, firstY]
         + "L" + [textLeft, firstY];
     }
+    // Left handle label
+    const leftLabel = this.argLabels[this.handles.indexOf(leftHandle)];
+    leftLabel.move(pStart.x, (pStart.y + firstY) / 2);
 
-    // Right handle
+    // Right handle/label
+    const rightLabel = this.argLabels[this.handles.indexOf(rightHandle)];
     if (sameRow) {
       if (textLeft + textLength > pEnd.x) {
         // Just draw a vertical line down to the handle
@@ -1087,6 +1068,8 @@ class Link {
           + "L" + [curveRightX, firstY]
           + "C" + [pEnd.x, firstY, pEnd.x, firstY, pEnd.x, pEnd.y];
       }
+
+      rightLabel.move(pEnd.x, (pEnd.y + firstY) / 2);
     } else {
       // Draw in Link line across the end of the first row, and all
       // intervening rows
@@ -1107,14 +1090,16 @@ class Link {
       d += "M" + [0, finalY]
         + "L" + [curveRightX, finalY]
         + "C" + [pEnd.x, finalY, pEnd.x, finalY, pEnd.x, pEnd.y];
+
+      rightLabel.move(pEnd.x, (pEnd.y + finalY) / 2);
     }
 
     // Arrowheads
     d += this._arrowhead(pStart)
       + this._arrowhead(pEnd);
 
-    // Move label
-    this.linkText.move(textCentre, textY);
+    // Main label
+    this.linkLabel.move(textCentre, textY);
 
     // Perform draw
     if (this.lastPathString !== d) {
@@ -1250,6 +1235,117 @@ class Handle {
 
     return this.row.idx < handle.row.idx ||
       (this.row.idx === handle.row.idx && this.x < handle.x);
+  }
+}
+
+/**
+ * Helper class for various types of labels to be drawn on/around the Link.
+ * Consists of two main SVG elements:
+ * - An SVG Text element with the label text, drawn in some given colour
+ * - Another SVG Text element with the same text, but with a larger stroke
+ *   width and drawn in white, to serve as the background for the main element
+ *
+ * @param mainSvg - The main SVG document (for firing events, etc.)
+ * @param {svgjs.Doc} svg - The SVG document/group to draw the Text elements in
+ * @param {String} text - The text of the Label
+ * @param {String} addClass - Any additional CSS classes to add to the SVG
+ *     elements
+ */
+class Label {
+  constructor(mainSvg, svg, text, addClass) {
+    this.mainSvg = mainSvg;
+    this.svg = svg.group();
+
+    // Main label
+    /** @type svgjs.Text */
+    this.svgText = this.svg.text(text)
+      .leading(1)
+      .addClass("tag-element")
+      .addClass("link-text")
+      .addClass(addClass);
+    // Transform the text based on its font-size so that we can position it
+    // relative to its baseline
+    this.fontSize = parseInt($(this.svgText.node).css("font-size"));
+    this.svgText.transform({
+      y: -this.fontSize + 1
+    });
+
+    this.svgTextBbox = this.svgText.bbox();
+
+    // Background rectangle
+    this.svgBackground = this.svg.rect(
+      this.svgTextBbox.width,
+      this.svgTextBbox.height
+    )
+      .addClass("tag-element")
+      .addClass("link-text-bg")
+      .addClass(addClass)
+      .back();
+    // Transform the rectangle to sit nicely behind the label
+    this.svgBackground.transform({
+      x: -this.svgTextBbox.width / 2,
+      y: -this.fontSize + 1
+    });
+
+
+    // Click events
+    this.svgText.node.oncontextmenu = (e) => {
+      this.selectedLabel = text;
+      e.preventDefault();
+      this.mainSvg.fire("link-label-right-click", {
+        object: this.svgText,
+        type: "text",
+        event: e
+      });
+    };
+    this.svgText.click((e) => this.mainSvg.fire("link-label-edit", {
+      object: this.svgText,
+      text,
+      event: e
+    }));
+    this.svgText.dblclick((e) => this.mainSvg.fire("build-tree", {
+      object: this.svgText,
+      event: e
+    }));
+
+    // Start hidden
+    this.hide();
+  }
+
+  /**
+   * Shows the Label text elements
+   */
+  show() {
+    this.svgBackground.show();
+    this.svgText.show();
+  }
+
+  /**
+   * Hides the Label text elements
+   */
+  hide() {
+    this.svgBackground.hide();
+    this.svgText.hide();
+  }
+
+  /**
+   * Moves the Label text elements to the given coordinates
+   * (N.B.: SVG Text elements are positioned horizontally by their centres,
+   * by default)
+   * @param x
+   * @param y
+   */
+  move(x, y) {
+    this.svgBackground.move(x, y);
+    this.svgText.move(x, y);
+  }
+
+  /**
+   * Returns the length (i.e., width) of the main label
+   * https://svgjs.com/docs/2.7/elements/#text-length
+   */
+  length() {
+    return this.svgText.length();
   }
 }
 

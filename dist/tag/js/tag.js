@@ -38769,7 +38769,7 @@ function () {
     this.config = null; // SVG-related properties
     // SVG parents
 
-    this.mainSVG = null;
+    this.mainSvg = null;
     this.svg = null; // Handle objects
 
     this.handles = []; // SVG Path and last-drawn path string
@@ -38778,10 +38778,10 @@ function () {
     this.lastPathString = ""; // (Horizontal-only) width of the last drawn line for this Link; used
     // for calculating Handle positions for parent Links
 
-    this.lastDrawnWidth = null; // SVG Texts for main Link label / argument labels
+    this.lastDrawnWidth = null; // Objects for main Link label / argument labels
 
-    this.argTexts = [];
-    this.linkText = null;
+    this.argLabels = [];
+    this.linkLabel = null;
   }
   /**
    * Initialises this Link against the main API instance
@@ -38796,11 +38796,13 @@ function () {
 
       this.main = main;
       this.config = main.config;
-      this.mainSVG = main.svg;
+      this.mainSvg = main.svg;
       this.svg = main.svg.group().addClass("tag-element").addClass(this.top ? "link" : "link syntax-link"); // Links are hidden by default; the main function should call `.show()`
       // for any Links to be shown
 
-      this.svg.hide(); // Init handles and SVG texts.
+      this.svg.hide(); // The main Link line
+
+      this.path = this.svg.path().addClass("tag-element"); // Init handles and SVG texts.
       // If there is a trigger, it will be the first handle
 
       if (this.trigger) {
@@ -38811,56 +38813,16 @@ function () {
       this.arguments.forEach(function (arg) {
         _this2.handles.push(new Handle(arg.anchor, _this2));
 
-        var text = _this2.svg.text(arg.type).leading(1).addClass("tag-element").addClass("link-text"); // Transform the text based on its font-size so that we can position it
-        // relative to its baseline
+        var text = new Label(_this2.mainSvg, _this2.svg, arg.type, "link-arg-label");
 
-
-        text.transform({
-          y: -parseInt($(text.node).css("font-size")) + 1
-        });
-        text.hide();
-
-        _this2.argTexts.push(text);
+        _this2.argLabels.push(text);
       }); // Main Link label
 
-      this.linkText = this.svg.text(this.reltype).leading(1).addClass("tag-element").addClass("link-text"); // Transform the text based on its font-size so that we can position it
-      // relative to its baseline
-
-      this.linkText.transform({
-        y: -parseInt($(this.linkText.node).css("font-size")) + 1
-      });
-      this.linkText.hide(); // apply click events to argument labels
-
-      this.argTexts.forEach(function (text) {
-        text.node.oncontextmenu = function (e) {
-          _this2.selectedLabel = text;
-          e.preventDefault();
-
-          _this2.mainSVG.fire("link-label-right-click", {
-            object: _this2,
-            type: "text",
-            event: e
-          });
-        };
-
-        text.click(function (e) {
-          return _this2.mainSVG.fire("link-label-edit", {
-            object: _this2,
-            text: text,
-            event: e
-          });
-        });
-        text.dblclick(function (e) {
-          return _this2.mainSVG.fire("build-tree", {
-            object: _this2,
-            event: e
-          });
-        });
-      });
-      this.path = this.svg.path().addClass("tag-element"); // Closure for identifying dragged handles
+      this.linkLabel = new Label(this.mainSvg, this.svg, this.reltype, "link-main-label"); // Closure for identifying dragged handles
 
       var draggedHandle = null;
-      var dragStartX = 0;
+      var dragStartX = 0; // Drag/Click events
+
       this.path.draggable().on("dragstart", function (e) {
         // We use the x and y values (with a little tolerance) to make sure
         // that the user is dragging near one of the Link's handles, and not
@@ -38965,7 +38927,7 @@ function () {
         draggedHandle = null;
       });
       this.path.dblclick(function (e) {
-        return _this2.mainSVG.fire("build-tree", {
+        return _this2.mainSvg.fire("build-tree", {
           object: _this2,
           event: e
         });
@@ -38974,7 +38936,7 @@ function () {
       this.path.node.oncontextmenu = function (e) {
         e.preventDefault();
 
-        _this2.mainSVG.fire("link-right-click", {
+        _this2.mainSvg.fire("link-right-click", {
           object: _this2,
           type: "link",
           event: e
@@ -39024,6 +38986,29 @@ function () {
       }
 
       this.visible = false;
+    }
+    /**
+     * Shows the argument labels for this Link
+     */
+
+  }, {
+    key: "showArgLabels",
+    value: function showArgLabels() {
+      this.argLabels.forEach(function (label) {
+        return label.show();
+      });
+      this.draw();
+    }
+    /**
+     * Hides the argument labels for this Link
+     */
+
+  }, {
+    key: "hideArgLabels",
+    value: function hideArgLabels() {
+      this.argLabels.forEach(function (label) {
+        return label.hide();
+      });
     }
     /**
      * (Re-)draw some Link onto the main visualisation
@@ -39173,9 +39158,10 @@ function () {
 
 
       if (this.trigger) {
+        // This Link has a trigger (Event)
         this._drawAsEvent();
-      } else if (this.reltype) {
-        // This is a non-trigger (binary) relation
+      } else {
+        // This Link has no trigger (Relation)
         this._drawAsRelation();
       }
 
@@ -39542,7 +39528,7 @@ function () {
         // The trigger always takes up index 0, so the index for the label is
         // one less than the index for this handle in `this.handles`
 
-        var label = this.argTexts[this.handles.indexOf(_handle) - 1];
+        var label = this.argLabels[this.handles.indexOf(_handle) - 1];
         label.show();
         var textLength = label.length();
         var textY = this.getLineY(_handle.row);
@@ -39658,7 +39644,7 @@ function () {
         // The trigger always takes up index 0, so the index for the label is
         // one less than the index for this handle in `this.handles`
 
-        var _label = this.argTexts[this.handles.indexOf(_handle2) - 1];
+        var _label = this.argLabels[this.handles.indexOf(_handle2) - 1];
 
         _label.show();
 
@@ -39803,8 +39789,8 @@ function () {
       var sameRow = leftHandle.row.idx === rightHandle.row.idx; // Width/position of the Link's label
       // (Always on the first row for multi-line Links)
 
-      this.linkText.show();
-      var textLength = this.linkText.length();
+      this.linkLabel.show();
+      var textLength = this.linkLabel.length();
       var textY = this.getLineY(leftHandle.row); // Centre on the segment of the Link line on the first row
 
       var textCentre = sameRow ? (pStart.x + pEnd.x) / 2 : (pStart.x + leftHandle.row.rw) / 2;
@@ -39828,8 +39814,13 @@ function () {
         var curveLeftX = pStart.x + this.config.linkCurveWidth;
         curveLeftX = Math.min(curveLeftX, textLeft);
         d += "C" + [pStart.x, firstY, pStart.x, firstY, curveLeftX, firstY] + "L" + [textLeft, firstY];
-      } // Right handle
+      } // Left handle label
 
+
+      var leftLabel = this.argLabels[this.handles.indexOf(leftHandle)];
+      leftLabel.move(pStart.x, (pStart.y + firstY) / 2); // Right handle/label
+
+      var rightLabel = this.argLabels[this.handles.indexOf(rightHandle)];
 
       if (sameRow) {
         if (textLeft + textLength > pEnd.x) {
@@ -39841,6 +39832,8 @@ function () {
           curveRightX = Math.max(curveRightX, textLeft + textLength);
           d += "M" + [textLeft + textLength, firstY] + "L" + [curveRightX, firstY] + "C" + [pEnd.x, firstY, pEnd.x, firstY, pEnd.x, pEnd.y];
         }
+
+        rightLabel.move(pEnd.x, (pEnd.y + firstY) / 2);
       } else {
         // Draw in Link line across the end of the first row, and all
         // intervening rows
@@ -39858,12 +39851,13 @@ function () {
         _curveRightX3 = Math.max(_curveRightX3, 0);
         var finalY = this.getLineY(rightHandle.row);
         d += "M" + [0, finalY] + "L" + [_curveRightX3, finalY] + "C" + [pEnd.x, finalY, pEnd.x, finalY, pEnd.x, pEnd.y];
+        rightLabel.move(pEnd.x, (pEnd.y + finalY) / 2);
       } // Arrowheads
 
 
-      d += this._arrowhead(pStart) + this._arrowhead(pEnd); // Move label
+      d += this._arrowhead(pStart) + this._arrowhead(pEnd); // Main label
 
-      this.linkText.move(textCentre, textY); // Perform draw
+      this.linkLabel.move(textCentre, textY); // Perform draw
 
       if (this.lastPathString !== d) {
         this.path.plot(d);
@@ -40138,6 +40132,124 @@ function () {
     }
   }]);
   return Handle;
+}();
+/**
+ * Helper class for various types of labels to be drawn on/around the Link.
+ * Consists of two main SVG elements:
+ * - An SVG Text element with the label text, drawn in some given colour
+ * - Another SVG Text element with the same text, but with a larger stroke
+ *   width and drawn in white, to serve as the background for the main element
+ *
+ * @param mainSvg - The main SVG document (for firing events, etc.)
+ * @param {svgjs.Doc} svg - The SVG document/group to draw the Text elements in
+ * @param {String} text - The text of the Label
+ * @param {String} addClass - Any additional CSS classes to add to the SVG
+ *     elements
+ */
+
+
+var Label =
+/*#__PURE__*/
+function () {
+  function Label(mainSvg, svg, text, addClass) {
+    var _this5 = this;
+
+    (0, _classCallCheck2.default)(this, Label);
+    this.mainSvg = mainSvg;
+    this.svg = svg.group(); // Main label
+
+    /** @type svgjs.Text */
+
+    this.svgText = this.svg.text(text).leading(1).addClass("tag-element").addClass("link-text").addClass(addClass); // Transform the text based on its font-size so that we can position it
+    // relative to its baseline
+
+    this.fontSize = parseInt($(this.svgText.node).css("font-size"));
+    this.svgText.transform({
+      y: -this.fontSize + 1
+    });
+    this.svgTextBbox = this.svgText.bbox(); // Background rectangle
+
+    this.svgBackground = this.svg.rect(this.svgTextBbox.width, this.svgTextBbox.height).addClass("tag-element").addClass("link-text-bg").addClass(addClass).back(); // Transform the rectangle to sit nicely behind the label
+
+    this.svgBackground.transform({
+      x: -this.svgTextBbox.width / 2,
+      y: -this.fontSize + 1
+    }); // Click events
+
+    this.svgText.node.oncontextmenu = function (e) {
+      _this5.selectedLabel = text;
+      e.preventDefault();
+
+      _this5.mainSvg.fire("link-label-right-click", {
+        object: _this5.svgText,
+        type: "text",
+        event: e
+      });
+    };
+
+    this.svgText.click(function (e) {
+      return _this5.mainSvg.fire("link-label-edit", {
+        object: _this5.svgText,
+        text: text,
+        event: e
+      });
+    });
+    this.svgText.dblclick(function (e) {
+      return _this5.mainSvg.fire("build-tree", {
+        object: _this5.svgText,
+        event: e
+      });
+    }); // Start hidden
+
+    this.hide();
+  }
+  /**
+   * Shows the Label text elements
+   */
+
+
+  (0, _createClass2.default)(Label, [{
+    key: "show",
+    value: function show() {
+      this.svgBackground.show();
+      this.svgText.show();
+    }
+    /**
+     * Hides the Label text elements
+     */
+
+  }, {
+    key: "hide",
+    value: function hide() {
+      this.svgBackground.hide();
+      this.svgText.hide();
+    }
+    /**
+     * Moves the Label text elements to the given coordinates
+     * (N.B.: SVG Text elements are positioned horizontally by their centres,
+     * by default)
+     * @param x
+     * @param y
+     */
+
+  }, {
+    key: "move",
+    value: function move(x, y) {
+      this.svgBackground.move(x, y);
+      this.svgText.move(x, y);
+    }
+    /**
+     * Returns the length (i.e., width) of the main label
+     * https://svgjs.com/docs/2.7/elements/#text-length
+     */
+
+  }, {
+    key: "length",
+    value: function length() {
+      return this.svgText.length();
+    }
+  }]);
+  return Label;
 }();
 
 module.exports = Link;
@@ -42102,7 +42214,7 @@ var Config = function Config() {
   // Drawing options for Links in the visualisation
   // Vertical distance between each Link slot (for crossing/overlapping Links)
 
-  this.linkSlotInterval = 30; // Vertical padding between Link arrowheads and their anchors
+  this.linkSlotInterval = 35; // Vertical padding between Link arrowheads and their anchors
 
   this.linkHandlePadding = 2; // Corner curve width for Links
 
@@ -42195,7 +42307,9 @@ function () {
       bottomLinksCategory: "none",
       // Continue to display top/bottom Links when moving Words?
       showTopLinksOnMove: true,
-      showBottomLinksOnMove: false
+      showBottomLinksOnMove: false,
+      // Show argument labels on Links?
+      showArgLabels: true
     }; // Initialisation
 
     this.resize();
@@ -42358,6 +42472,12 @@ function () {
       this.links.forEach(function (link) {
         if (link.top && link.category === _this.options.topLinksCategory || !link.top && link.category === _this.options.bottomLinksCategory) {
           link.show();
+        }
+
+        if (_this.options.showArgLabels) {
+          link.showArgLabels();
+        } else {
+          link.hideArgLabels();
         }
       }); // Change token colours based on the current taxonomy, if loaded
 
@@ -42596,6 +42716,26 @@ function () {
           link.hide();
         }
       });
+    }
+    /**
+     * Shows/hides the argument labels on Links
+     * @param {Boolean} visible - Show if true, hide if false
+     */
+
+  }, {
+    key: "setArgLabelVisibility",
+    value: function setArgLabelVisibility(visible) {
+      this.setOption("showArgLabels", visible);
+
+      if (visible) {
+        this.links.forEach(function (link) {
+          return link.showArgLabels();
+        });
+      } else {
+        this.links.forEach(function (link) {
+          return link.hideArgLabels();
+        });
+      }
     } // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Private helper/setup functions
 

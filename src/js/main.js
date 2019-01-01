@@ -65,6 +65,9 @@ class Main {
       // Continue to display top/bottom Links when moving Words?
       showTopLinksOnMove: true,
       showBottomLinksOnMove: false,
+
+      // Show argument labels on Links?
+      showArgLabels: true
     };
 
     // Initialisation
@@ -172,6 +175,12 @@ class Main {
       if ((link.top && link.category === this.options.topLinksCategory) ||
         (!link.top && link.category === this.options.bottomLinksCategory)) {
         link.show();
+      }
+
+      if (this.options.showArgLabels) {
+        link.showArgLabels();
+      } else {
+        link.hideArgLabels();
       }
     });
 
@@ -387,6 +396,19 @@ class Main {
           link.hide();
         }
       });
+  }
+
+  /**
+   * Shows/hides the argument labels on Links
+   * @param {Boolean} visible - Show if true, hide if false
+   */
+  setArgLabelVisibility(visible) {
+    this.setOption("showArgLabels", visible);
+    if (visible) {
+      this.links.forEach(link => link.showArgLabels());
+    } else {
+      this.links.forEach(link => link.hideArgLabels());
+    }
   }
 
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

@@ -198,6 +198,13 @@ $(async () => {
       );
     });
 
+  const $optionArgLabels = $("#tag-option-arg-labels");
+  $optionArgLabels
+    .prop("checked", uiTag.getOption("showArgLabels"))
+    .on("change", () => {
+      uiTag.setArgLabelVisibility($optionArgLabels[0].checked);
+    });
+
   // --------------------------------------------------------------------------
 
   // The `.exportSvg()` function can be used to save the current

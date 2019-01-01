@@ -68,9 +68,24 @@
  * Links and link lines (which are SVG Paths)
  */
 .link {
-  font-size: 12px;
   fill: #6590b4;
   stroke-width: 1.5px;
+}
+
+.link-main-label {
+  fill: #6590b4;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.link-arg-label {
+  fill: #6590b4;
+  font-size: 11px;
+}
+
+.link-text-bg {
+  // Background rectangle for Link Label texts
+  fill: #ffffff;
 }
 
 .link.syntax-link {

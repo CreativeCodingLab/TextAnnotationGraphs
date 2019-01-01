@@ -50,7 +50,7 @@ class Config {
     // Drawing options for Links in the visualisation
 
     // Vertical distance between each Link slot (for crossing/overlapping Links)
-    this.linkSlotInterval = 30;
+    this.linkSlotInterval = 35;
 
     // Vertical padding between Link arrowheads and their anchors
     this.linkHandlePadding = 2;
