@@ -40142,7 +40142,7 @@ function () {
 
 module.exports = Link;
 
-},{"../util.js":63,"./word-cluster.js":51,"./word-tag.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],50:[function(require,module,exports){
+},{"../util.js":62,"./word-cluster.js":51,"./word-tag.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],50:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -42714,7 +42714,7 @@ function () {
 
 module.exports = Main;
 
-},{"./config.js":54,"./managers/labelmanager.js":56,"./managers/rowmanager.js":57,"./managers/taxonomy.js":58,"./parse/parse.js":61,"./util.js":63,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":48}],56:[function(require,module,exports){
+},{"./config.js":54,"./managers/labelmanager.js":56,"./managers/rowmanager.js":57,"./managers/taxonomy.js":58,"./parse/parse.js":61,"./util.js":62,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":48}],56:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -44185,8 +44185,6 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/creat
 
 var _lodash = _interopRequireDefault(require("lodash"));
 
-var _reach = _interopRequireDefault(require("./reach.js"));
-
 var _ann = _interopRequireDefault(require("./ann.js"));
 
 var _odin = _interopRequireDefault(require("./odin.js"));
@@ -44207,7 +44205,6 @@ function () {
     };
     /* supported formats */
 
-    this.reach = new _reach.default();
     this.ann = new _ann.default();
     this.odin = new _odin.default();
   }
@@ -44222,9 +44219,7 @@ function () {
   (0, _createClass2.default)(Parser, [{
     key: "loadData",
     value: function loadData(data, format) {
-      if (format === "reach") {
-        this.parseReach(data);
-      } else if (format === "brat") {
+      if (format === "brat") {
         this.parseBrat(data);
       } else if (format === "odin") {
         this.parseOdin(data);
@@ -44252,12 +44247,10 @@ function () {
         // Single file
         var file = files[0];
 
-        if (format === "reach") {
-          this.parseReach(JSON.parse(file.content));
-        } else if (format === "brat") {
+        if (format === "brat") {
           this.parseBrat(file.content);
-        } else if (format === "processors") {
-          this.parseProcessors(file.content);
+        } else if (format === "odin") {
+          this.parseOdin(file.content);
         } else {
           throw "Unknown annotation format: ".concat(format);
         }
@@ -44341,17 +44334,6 @@ function () {
       return _lodash.default.cloneDeep(this._parsedData);
     }
     /**
-     * Parses the given Reach-format data
-     * @param data
-     */
-
-  }, {
-    key: "parseReach",
-    value: function parseReach(data) {
-      this.reach.parse(data);
-      this._parsedData = this.reach.data;
-    }
-    /**
      * Parses the given Brat-format data
      * http://brat.nlplab.org/standoff.html
      */
@@ -44379,232 +44361,7 @@ function () {
 
 module.exports = Parser;
 
-},{"./ann.js":59,"./odin.js":60,"./reach.js":62,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],62:[function(require,module,exports){
-"use strict";
-
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
-
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-
-var _word = _interopRequireDefault(require("../components/word.js"));
-
-var _wordCluster = _interopRequireDefault(require("../components/word-cluster.js"));
-
-var _link = _interopRequireDefault(require("../components/link.js"));
-
-var ReachParser =
-/*#__PURE__*/
-function () {
-  function ReachParser() {
-    (0, _classCallCheck2.default)(this, ReachParser);
-    this.data = {};
-  }
-  /*
-    @param data : JSON input
-   */
-
-
-  (0, _createClass2.default)(ReachParser, [{
-    key: "parse",
-    value: function parse(data) {
-      /* first get string tokens from the syntaxData */
-      var text = data.syntaxData.text;
-      var tokens = data.syntaxData.entities.sort(function (a, b) {
-        return a[2][0][0] - b[2][0][0];
-      }).map(function (x) {
-        return {
-          text: text.substring(x[2][0][0], x[2][0][1]),
-          id: x[0],
-          type: x[1],
-          startIndex: x[2][0][0],
-          endIndex: x[2][0][1]
-        };
-      });
-
-      function findTokenByIndex(_ref) {
-        var _ref2 = (0, _slicedToArray2.default)(_ref, 2),
-            i1 = _ref2[0],
-            i2 = _ref2[1];
-
-        var startToken = tokens.findIndex(function (token) {
-          return token.startIndex === i1;
-        });
-        var endToken = tokens.findIndex(function (token) {
-          return token.endIndex === i2;
-        });
-        return [startToken, endToken];
-      }
-
-      var syntax = data.syntaxData.relations.map(function (arr) {
-        return {
-          id: arr[0],
-          trigger: arr[2][0][1],
-          arguments: [{
-            id: arr[2][1][1],
-            type: arr[1]
-          }]
-        };
-      });
-      /* parse the event data: entities, triggers, events, and relations */
-
-      var e = data.eventData;
-      var entities = e.entities.map(function (arr) {
-        return {
-          id: arr[0],
-          type: arr[1],
-          tokenIndex: findTokenByIndex(arr[2][0]),
-          string: e.text.substring(arr[2][0][0], arr[2][0][1])
-        };
-      });
-      var triggers = e.triggers.map(function (arr) {
-        return {
-          id: arr[0],
-          type: arr[1],
-          tokenIndex: findTokenByIndex(arr[2][0]),
-          string: e.text.substring(arr[2][0][0], arr[2][0][1])
-        };
-      });
-      var events = e.events.map(function (arr) {
-        return {
-          id: arr[0],
-          trigger: arr[1],
-          arguments: arr[2].map(function (argument) {
-            return {
-              id: argument[1],
-              type: argument[0]
-            };
-          })
-        };
-      });
-      var relations = e.relations.map(function (arr) {
-        return {
-          id: arr[0],
-          type: arr[1],
-          arguments: arr[2].map(function (argument) {
-            return {
-              id: argument[1],
-              type: argument[0]
-            };
-          })
-        };
-      });
-      this.buildWordsAndLinks(tokens, entities, triggers, events, relations, syntax);
-    }
-  }, {
-    key: "buildWordsAndLinks",
-    value: function buildWordsAndLinks(tokens, entities, triggers, events, relations, syntax) {
-      // construct word objects and tags from tokens, entities, and triggers
-      var words = tokens.map(function (token, i) {
-        var w = new _word.default(token.text, i);
-        w.setSyntaxTag(token.type);
-        w.setSyntaxId(token.id);
-        return w;
-      });
-      var clusters = [];
-      [].concat(entities, triggers).forEach(function (el) {
-        if (el.tokenIndex[0] === el.tokenIndex[1]) {
-          words[el.tokenIndex[0]].setTag(el.type); // TODO: enable setting multiple tags
-
-          words[el.tokenIndex[0]].addEventId(el.id);
-        } else {
-          var cluster = [];
-
-          for (var i = el.tokenIndex[0]; i <= el.tokenIndex[1]; ++i) {
-            cluster.push(words[i]);
-          }
-
-          var wordCluster = new _wordCluster.default(cluster, el.type);
-          wordCluster.addEventId(el.id);
-          clusters.push(wordCluster);
-        }
-      });
-      entities = words.concat(clusters);
-
-      function searchForEntity(argument) {
-        var anchor;
-
-        switch (argument.id.charAt(0)) {
-          case 'E':
-          case 'R':
-            anchor = links.find(function (link) {
-              return link.eventId === argument.id;
-            });
-            break;
-
-          case 'T':
-            anchor = entities.find(function (word) {
-              return word.eventIds.indexOf(argument.id) > -1;
-            });
-            break;
-
-          default:
-            console.log('unhandled argument type', argument);
-            break;
-        }
-
-        return {
-          anchor: anchor,
-          type: argument.type
-        };
-      } // construct links from events and relations
-
-
-      var links = [];
-      events.forEach(function (evt) {
-        // create a link between the trigger and each of its arguments
-        var trigger = entities.find(function (word) {
-          return word.eventIds.indexOf(evt.trigger) > -1;
-        });
-        var args = evt.arguments.map(searchForEntity); // create link
-
-        var link = new _link.default(evt.id, trigger, args); // push link to link array
-
-        links.push(link);
-      });
-      relations.forEach(function (rel) {
-        var args = rel.arguments.map(searchForEntity); // create link
-
-        var link = new _link.default(rel.id, null, args, rel.type); // push link to link array
-
-        links.push(link);
-      }); // syntax data
-
-      syntax.forEach(function (syn) {
-        // create a link between the trigger and each of its arguments
-        var trigger = entities.find(function (word) {
-          return word.syntaxId === syn.trigger;
-        });
-        var args = syn.arguments.map(function (arg) {
-          var anchor = words.find(function (w) {
-            return w.syntaxId === arg.id;
-          });
-          return {
-            anchor: anchor,
-            type: arg.type
-          };
-        }); // create link
-
-        var link = new _link.default(syn.id, trigger, args, null, false); // push link to link array
-
-        links.push(link);
-      });
-      this.data = {
-        words: words,
-        links: links,
-        clusters: clusters
-      };
-    }
-  }]);
-  return ReachParser;
-}();
-
-module.exports = ReachParser;
-
-},{"../components/link.js":49,"../components/word-cluster.js":51,"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],63:[function(require,module,exports){
+},{"./ann.js":59,"./odin.js":60,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],62:[function(require,module,exports){
 "use strict";
 
 var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");

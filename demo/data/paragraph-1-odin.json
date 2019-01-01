@@ -1,0 +1,1889 @@
+{
+  "documents" : {
+    "-781013046" : {
+      "id" : "paragraph-1-odin",
+      "text" : "Even more than Ras, ASPP2 is common, as is its ubiquitination.\nTo address the effect of Ras ubiquitination on its binding to PI3K and Raf family members, either total G12V-K-Ras or the ubiquitinated subfraction of G12V-K-Ras was immunoprecipitated.\nMuch work has been done on ASPP2. It is known that Ras binds it.\nRas and Mek are in proximity, and they phosphorylate ASPP2.\nRas and Mek are in proximity, and ASPP2 phosphorylates them.",
+      "sentences" : [ {
+        "words" : [ "Even", "more", "than", "Ras", ",", "ASPP2", "is", "common", ",", "as", "is", "its", "ubiquitination", "." ],
+        "startOffsets" : [ 0, 5, 10, 15, 18, 20, 26, 29, 35, 37, 40, 43, 47, 61 ],
+        "endOffsets" : [ 4, 9, 14, 18, 19, 25, 28, 35, 36, 39, 42, 46, 61, 62 ],
+        "raw" : [ "Even", "more", "than", "Ras", ",", "ASPP2", "is", "common", ",", "as", "is", "its", "ubiquitination", "." ],
+        "tags" : [ "RB", "JJR", "IN", "NN", ",", "NN", "VBZ", "JJ", ",", "IN", "VBZ", "PRP$", "NN", "." ],
+        "lemmas" : [ "even", "more", "than", "ras", ",", "aspp2", "be", "common", ",", "as", "be", "its", "ubiquitination", "." ],
+        "entities" : [ "O", "O", "O", "B-Family", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "O", "O", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "B-PP", "B-NP", "O", "B-NP", "B-VP", "B-ADJP", "O", "B-SBAR", "B-VP", "B-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "advmod"
+            }, {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "nmod_than"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "case"
+            }, {
+              "source" : 3,
+              "destination" : 5,
+              "relation" : "appos"
+            }, {
+              "source" : 7,
+              "destination" : 1,
+              "relation" : "nsubj"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "cop"
+            }, {
+              "source" : 7,
+              "destination" : 12,
+              "relation" : "advcl_as"
+            }, {
+              "source" : 12,
+              "destination" : 9,
+              "relation" : "mark"
+            }, {
+              "source" : 12,
+              "destination" : 10,
+              "relation" : "cop"
+            }, {
+              "source" : 12,
+              "destination" : 11,
+              "relation" : "nmod:poss"
+            } ],
+            "roots" : [ 7 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "advmod"
+            }, {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "nmod"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "case"
+            }, {
+              "source" : 3,
+              "destination" : 5,
+              "relation" : "appos"
+            }, {
+              "source" : 7,
+              "destination" : 1,
+              "relation" : "nsubj"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "cop"
+            }, {
+              "source" : 7,
+              "destination" : 12,
+              "relation" : "advcl"
+            }, {
+              "source" : 12,
+              "destination" : 9,
+              "relation" : "mark"
+            }, {
+              "source" : 12,
+              "destination" : 10,
+              "relation" : "cop"
+            }, {
+              "source" : 12,
+              "destination" : 11,
+              "relation" : "nmod:poss"
+            } ],
+            "roots" : [ 7 ]
+          }
+        }
+      }, {
+        "words" : [ "To", "address", "the", "effect", "of", "Ras", "ubiquitination", "on", "its", "binding", "to", "PI3K", "and", "Raf", "family", "members", ",", "either", "total", "G12V-K-Ras", "or", "the", "ubiquitinated", "subfraction", "of", "G12V-K-Ras", "was", "immunoprecipitated", "." ],
+        "startOffsets" : [ 63, 66, 74, 78, 85, 88, 92, 107, 110, 114, 122, 125, 130, 134, 138, 145, 152, 154, 161, 167, 178, 181, 185, 199, 211, 214, 225, 229, 247 ],
+        "endOffsets" : [ 65, 73, 77, 84, 87, 91, 106, 109, 113, 121, 124, 129, 133, 137, 144, 152, 153, 160, 166, 177, 180, 184, 198, 210, 213, 224, 228, 247, 248 ],
+        "raw" : [ "To", "address", "the", "effect", "of", "Ras", "ubiquitination", "on", "its", "binding", "to", "PI3K", "and", "Raf", "family", "members", ",", "either", "total", "G12V-K-Ras", "or", "the", "ubiquitinated", "subfraction", "of", "G12V-K-Ras", "was", "immunoprecipitated", "." ],
+        "tags" : [ "TO", "VB", "DT", "NN", "IN", "NN", "NN", "IN", "PRP$", "NN", "TO", "NN", "CC", "NN", "NN", "NNS", ",", "CC", "JJ", "NNS", "CC", "DT", "JJ", "NN", "IN", "NN", "VBD", "VBN", "." ],
+        "lemmas" : [ "to", "address", "the", "effect", "of", "ras", "ubiquitination", "on", "its", "binding", "to", "pi3k", "and", "raf", "family", "member", ",", "either", "total", "g12v-k-ra", "or", "the", "ubiquitinated", "subfraction", "of", "g12v-k-ras", "be", "immunoprecipitate", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "B-Family", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Family", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O" ],
+        "chunks" : [ "B-VP", "I-VP", "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "O", "O", "B-NP", "I-NP", "O", "B-NP", "I-NP", "I-NP", "B-PP", "B-NP", "B-VP", "I-VP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "dobj"
+            }, {
+              "source" : 1,
+              "destination" : 9,
+              "relation" : "nmod_on"
+            }, {
+              "source" : 1,
+              "destination" : 15,
+              "relation" : "nmod_to"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "mark"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "det"
+            }, {
+              "source" : 3,
+              "destination" : 6,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 6,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "compound"
+            }, {
+              "source" : 9,
+              "destination" : 7,
+              "relation" : "case"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "nmod:poss"
+            }, {
+              "source" : 11,
+              "destination" : 12,
+              "relation" : "cc"
+            }, {
+              "source" : 11,
+              "destination" : 13,
+              "relation" : "conj_and"
+            }, {
+              "source" : 15,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 15,
+              "destination" : 11,
+              "relation" : "compound"
+            }, {
+              "source" : 15,
+              "destination" : 13,
+              "relation" : "compound"
+            }, {
+              "source" : 15,
+              "destination" : 14,
+              "relation" : "compound"
+            }, {
+              "source" : 19,
+              "destination" : 18,
+              "relation" : "amod"
+            }, {
+              "source" : 19,
+              "destination" : 20,
+              "relation" : "cc"
+            }, {
+              "source" : 19,
+              "destination" : 23,
+              "relation" : "conj_or"
+            }, {
+              "source" : 19,
+              "destination" : 17,
+              "relation" : "cc:preconj"
+            }, {
+              "source" : 23,
+              "destination" : 21,
+              "relation" : "det"
+            }, {
+              "source" : 23,
+              "destination" : 22,
+              "relation" : "amod"
+            }, {
+              "source" : 23,
+              "destination" : 25,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 25,
+              "destination" : 24,
+              "relation" : "case"
+            }, {
+              "source" : 27,
+              "destination" : 19,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 27,
+              "destination" : 23,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 27,
+              "destination" : 26,
+              "relation" : "auxpass"
+            }, {
+              "source" : 27,
+              "destination" : 1,
+              "relation" : "advcl_to"
+            } ],
+            "roots" : [ 27 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "dobj"
+            }, {
+              "source" : 1,
+              "destination" : 9,
+              "relation" : "nmod"
+            }, {
+              "source" : 1,
+              "destination" : 15,
+              "relation" : "nmod"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "mark"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "det"
+            }, {
+              "source" : 3,
+              "destination" : 6,
+              "relation" : "nmod"
+            }, {
+              "source" : 6,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "compound"
+            }, {
+              "source" : 9,
+              "destination" : 7,
+              "relation" : "case"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "nmod:poss"
+            }, {
+              "source" : 11,
+              "destination" : 12,
+              "relation" : "cc"
+            }, {
+              "source" : 11,
+              "destination" : 13,
+              "relation" : "conj"
+            }, {
+              "source" : 15,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 15,
+              "destination" : 11,
+              "relation" : "compound"
+            }, {
+              "source" : 15,
+              "destination" : 14,
+              "relation" : "compound"
+            }, {
+              "source" : 19,
+              "destination" : 18,
+              "relation" : "amod"
+            }, {
+              "source" : 19,
+              "destination" : 20,
+              "relation" : "cc"
+            }, {
+              "source" : 19,
+              "destination" : 23,
+              "relation" : "conj"
+            }, {
+              "source" : 19,
+              "destination" : 17,
+              "relation" : "cc:preconj"
+            }, {
+              "source" : 23,
+              "destination" : 21,
+              "relation" : "det"
+            }, {
+              "source" : 23,
+              "destination" : 22,
+              "relation" : "amod"
+            }, {
+              "source" : 23,
+              "destination" : 25,
+              "relation" : "nmod"
+            }, {
+              "source" : 25,
+              "destination" : 24,
+              "relation" : "case"
+            }, {
+              "source" : 27,
+              "destination" : 19,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 27,
+              "destination" : 26,
+              "relation" : "auxpass"
+            }, {
+              "source" : 27,
+              "destination" : 1,
+              "relation" : "advcl"
+            } ],
+            "roots" : [ 27 ]
+          }
+        }
+      }, {
+        "words" : [ "Much", "work", "has", "been", "done", "on", "ASPP2", "." ],
+        "startOffsets" : [ 249, 254, 259, 263, 268, 273, 276, 281 ],
+        "endOffsets" : [ 253, 258, 262, 267, 272, 275, 281, 282 ],
+        "raw" : [ "Much", "work", "has", "been", "done", "on", "ASPP2", "." ],
+        "tags" : [ "JJ", "NN", "VBZ", "VBN", "VBN", "IN", "NN", "." ],
+        "lemmas" : [ "much", "work", "have", "be", "do", "on", "aspp2", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "B-VP", "I-VP", "I-VP", "B-PP", "B-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "case"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "amod"
+            }, {
+              "source" : 4,
+              "destination" : 6,
+              "relation" : "nmod_on"
+            }, {
+              "source" : 4,
+              "destination" : 1,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 4,
+              "destination" : 2,
+              "relation" : "aux"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "auxpass"
+            } ],
+            "roots" : [ 4 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "case"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "amod"
+            }, {
+              "source" : 4,
+              "destination" : 6,
+              "relation" : "nmod"
+            }, {
+              "source" : 4,
+              "destination" : 1,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 4,
+              "destination" : 2,
+              "relation" : "aux"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "auxpass"
+            } ],
+            "roots" : [ 4 ]
+          }
+        }
+      }, {
+        "words" : [ "It", "is", "known", "that", "Ras", "binds", "it", "." ],
+        "startOffsets" : [ 283, 286, 289, 295, 300, 304, 310, 312 ],
+        "endOffsets" : [ 285, 288, 294, 299, 303, 309, 312, 313 ],
+        "raw" : [ "It", "is", "known", "that", "Ras", "binds", "it", "." ],
+        "tags" : [ "PRP", "VBZ", "VBN", "IN", "NN", "VBZ", "PRP", "." ],
+        "lemmas" : [ "it", "be", "know", "that", "ras", "bind", "it", "." ],
+        "entities" : [ "O", "O", "O", "O", "B-Family", "O", "O", "O" ],
+        "chunks" : [ "B-NP", "B-VP", "I-VP", "B-SBAR", "B-NP", "B-VP", "B-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 2,
+              "destination" : 0,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "auxpass"
+            }, {
+              "source" : 2,
+              "destination" : 5,
+              "relation" : "ccomp"
+            }, {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "mark"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 6,
+              "relation" : "dobj"
+            } ],
+            "roots" : [ 2 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 2,
+              "destination" : 0,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "auxpass"
+            }, {
+              "source" : 2,
+              "destination" : 5,
+              "relation" : "ccomp"
+            }, {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "mark"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 6,
+              "relation" : "dobj"
+            } ],
+            "roots" : [ 2 ]
+          }
+        }
+      }, {
+        "words" : [ "Ras", "and", "Mek", "are", "in", "proximity", ",", "and", "they", "phosphorylate", "ASPP2", "." ],
+        "startOffsets" : [ 314, 318, 322, 326, 330, 333, 342, 344, 348, 353, 367, 372 ],
+        "endOffsets" : [ 317, 321, 325, 329, 332, 342, 343, 347, 352, 366, 372, 373 ],
+        "raw" : [ "Ras", "and", "Mek", "are", "in", "proximity", ",", "and", "they", "phosphorylate", "ASPP2", "." ],
+        "tags" : [ "NN", "CC", "NN", "VBP", "IN", "NN", ",", "CC", "PRP", "VB", "NN", "." ],
+        "lemmas" : [ "ras", "and", "mek", "be", "in", "proximity", ",", "and", "they", "phosphorylate", "aspp2", "." ],
+        "entities" : [ "B-Family", "O", "B-Family", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "I-NP", "B-VP", "B-PP", "B-NP", "O", "O", "B-NP", "B-VP", "B-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 0,
+              "destination" : 1,
+              "relation" : "cc"
+            }, {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "conj_and"
+            }, {
+              "source" : 5,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 2,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "cop"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 7,
+              "relation" : "cc"
+            }, {
+              "source" : 5,
+              "destination" : 9,
+              "relation" : "conj_and"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "nsubj"
+            }, {
+              "source" : 9,
+              "destination" : 10,
+              "relation" : "dobj"
+            } ],
+            "roots" : [ 5 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 0,
+              "destination" : 1,
+              "relation" : "cc"
+            }, {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "conj"
+            }, {
+              "source" : 5,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "cop"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 7,
+              "relation" : "cc"
+            }, {
+              "source" : 5,
+              "destination" : 9,
+              "relation" : "conj"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "nsubj"
+            }, {
+              "source" : 9,
+              "destination" : 10,
+              "relation" : "dobj"
+            } ],
+            "roots" : [ 5 ]
+          }
+        }
+      }, {
+        "words" : [ "Ras", "and", "Mek", "are", "in", "proximity", ",", "and", "ASPP2", "phosphorylates", "them", "." ],
+        "startOffsets" : [ 374, 378, 382, 386, 390, 393, 402, 404, 408, 414, 429, 433 ],
+        "endOffsets" : [ 377, 381, 385, 389, 392, 402, 403, 407, 413, 428, 433, 434 ],
+        "raw" : [ "Ras", "and", "Mek", "are", "in", "proximity", ",", "and", "ASPP2", "phosphorylates", "them", "." ],
+        "tags" : [ "NN", "CC", "NN", "VBP", "IN", "NN", ",", "CC", "NN", "VBZ", "PRP", "." ],
+        "lemmas" : [ "ras", "and", "mek", "be", "in", "proximity", ",", "and", "aspp2", "phosphorylate", "they", "." ],
+        "entities" : [ "B-Family", "O", "B-Family", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "I-NP", "B-VP", "B-PP", "B-NP", "O", "O", "B-NP", "B-VP", "B-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 0,
+              "destination" : 1,
+              "relation" : "cc"
+            }, {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "conj_and"
+            }, {
+              "source" : 5,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 2,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "cop"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 7,
+              "relation" : "cc"
+            }, {
+              "source" : 5,
+              "destination" : 9,
+              "relation" : "conj_and"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "nsubj"
+            }, {
+              "source" : 9,
+              "destination" : 10,
+              "relation" : "dobj"
+            } ],
+            "roots" : [ 5 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 0,
+              "destination" : 1,
+              "relation" : "cc"
+            }, {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "conj"
+            }, {
+              "source" : 5,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "cop"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 7,
+              "relation" : "cc"
+            }, {
+              "source" : 5,
+              "destination" : 9,
+              "relation" : "conj"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "nsubj"
+            }, {
+              "source" : 9,
+              "destination" : 10,
+              "relation" : "dobj"
+            } ],
+            "roots" : [ 5 ]
+          }
+        }
+      } ]
+    }
+  },
+  "mentions" : [ {
+    "type" : "RelationMention",
+    "id" : "R:-1698365500",
+    "text" : "they phosphorylate ASPP2",
+    "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "EventMention",
+        "id" : "E:-1468407621",
+        "text" : "phosphorylate ASPP2",
+        "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+        "trigger" : {
+          "type" : "TextBoundMention",
+          "id" : "T:1673215413",
+          "text" : "phosphorylate",
+          "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+          "tokenInterval" : {
+            "start" : 9,
+            "end" : 10
+          },
+          "characterStartOffset" : 353,
+          "characterEndOffset" : 366,
+          "sentence" : 4,
+          "document" : "-781013046",
+          "keep" : true,
+          "foundBy" : "Phosphorylation_syntax_1a_verb"
+        },
+        "arguments" : {
+          "theme" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:-340323655",
+            "text" : "ASPP2",
+            "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+            "tokenInterval" : {
+              "start" : 10,
+              "end" : 11
+            },
+            "characterStartOffset" : 367,
+            "characterEndOffset" : 372,
+            "sentence" : 4,
+            "document" : "-781013046",
+            "keep" : true,
+            "foundBy" : "ner-gene_or_gene_product-entities"
+          } ]
+        },
+        "paths" : {
+          "theme" : {
+            "T:-340323655" : [ {
+              "source" : 9,
+              "destination" : 10,
+              "relation" : "dobj"
+            } ]
+          },
+          "cause" : {
+            "T:130910852" : [ {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "nsubj"
+            } ]
+          }
+        },
+        "tokenInterval" : {
+          "start" : 9,
+          "end" : 11
+        },
+        "characterStartOffset" : 353,
+        "characterEndOffset" : 372,
+        "sentence" : 4,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "Phosphorylation_syntax_1a_verb"
+      } ],
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:130910852",
+        "text" : "they",
+        "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 8,
+          "end" : 9
+        },
+        "characterStartOffset" : 348,
+        "characterEndOffset" : 352,
+        "sentence" : 4,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "PRP"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:-340323655" : [ {
+          "source" : 9,
+          "destination" : 10,
+          "relation" : "dobj"
+        } ]
+      },
+      "cause" : {
+        "T:130910852" : [ {
+          "source" : 9,
+          "destination" : 8,
+          "relation" : "nsubj"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 11
+    },
+    "characterStartOffset" : 348,
+    "characterEndOffset" : 372,
+    "sentence" : 4,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_1a_verb + toRelationMention, pronominalMatch"
+  }, {
+    "type" : "RelationMention",
+    "id" : "R:-1698365500",
+    "text" : "they phosphorylate ASPP2",
+    "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "EventMention",
+        "id" : "E:-1468407621",
+        "text" : "phosphorylate ASPP2",
+        "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+        "trigger" : {
+          "type" : "TextBoundMention",
+          "id" : "T:1673215413",
+          "text" : "phosphorylate",
+          "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+          "tokenInterval" : {
+            "start" : 9,
+            "end" : 10
+          },
+          "characterStartOffset" : 353,
+          "characterEndOffset" : 366,
+          "sentence" : 4,
+          "document" : "-781013046",
+          "keep" : true,
+          "foundBy" : "Phosphorylation_syntax_1a_verb"
+        },
+        "arguments" : {
+          "theme" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:-340323655",
+            "text" : "ASPP2",
+            "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+            "tokenInterval" : {
+              "start" : 10,
+              "end" : 11
+            },
+            "characterStartOffset" : 367,
+            "characterEndOffset" : 372,
+            "sentence" : 4,
+            "document" : "-781013046",
+            "keep" : true,
+            "foundBy" : "ner-gene_or_gene_product-entities"
+          } ]
+        },
+        "paths" : {
+          "theme" : {
+            "T:-340323655" : [ {
+              "source" : 9,
+              "destination" : 10,
+              "relation" : "dobj"
+            } ]
+          },
+          "cause" : {
+            "T:130910852" : [ {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "nsubj"
+            } ]
+          }
+        },
+        "tokenInterval" : {
+          "start" : 9,
+          "end" : 11
+        },
+        "characterStartOffset" : 353,
+        "characterEndOffset" : 372,
+        "sentence" : 4,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "Phosphorylation_syntax_1a_verb"
+      } ],
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:130910852",
+        "text" : "they",
+        "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 8,
+          "end" : 9
+        },
+        "characterStartOffset" : 348,
+        "characterEndOffset" : 352,
+        "sentence" : 4,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "PRP"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:-340323655" : [ {
+          "source" : 9,
+          "destination" : 10,
+          "relation" : "dobj"
+        } ]
+      },
+      "cause" : {
+        "T:130910852" : [ {
+          "source" : 9,
+          "destination" : 8,
+          "relation" : "nsubj"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 11
+    },
+    "characterStartOffset" : 348,
+    "characterEndOffset" : 372,
+    "sentence" : 4,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_1a_verb + toRelationMention, pronominalMatch"
+  }, {
+    "type" : "RelationMention",
+    "id" : "R:-221070355",
+    "text" : "ASPP2 phosphorylates them",
+    "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "EventMention",
+        "id" : "E:-1359397557",
+        "text" : "phosphorylates them",
+        "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+        "trigger" : {
+          "type" : "TextBoundMention",
+          "id" : "T:-2046035757",
+          "text" : "phosphorylates",
+          "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+          "tokenInterval" : {
+            "start" : 9,
+            "end" : 10
+          },
+          "characterStartOffset" : 414,
+          "characterEndOffset" : 428,
+          "sentence" : 5,
+          "document" : "-781013046",
+          "keep" : true,
+          "foundBy" : "Phosphorylation_syntax_1a_verb"
+        },
+        "arguments" : {
+          "theme" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:275032566",
+            "text" : "them",
+            "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+            "tokenInterval" : {
+              "start" : 10,
+              "end" : 11
+            },
+            "characterStartOffset" : 429,
+            "characterEndOffset" : 433,
+            "sentence" : 5,
+            "document" : "-781013046",
+            "keep" : true,
+            "foundBy" : "PRP"
+          } ]
+        },
+        "paths" : {
+          "theme" : {
+            "T:275032566" : [ {
+              "source" : 9,
+              "destination" : 10,
+              "relation" : "dobj"
+            } ]
+          },
+          "cause" : {
+            "T:-1409780683" : [ {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "nsubj"
+            } ]
+          }
+        },
+        "tokenInterval" : {
+          "start" : 9,
+          "end" : 11
+        },
+        "characterStartOffset" : 414,
+        "characterEndOffset" : 433,
+        "sentence" : 5,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "Phosphorylation_syntax_1a_verb, pronominalMatch"
+      } ],
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-1409780683",
+        "text" : "ASPP2",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 8,
+          "end" : 9
+        },
+        "characterStartOffset" : 408,
+        "characterEndOffset" : 413,
+        "sentence" : 5,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:275032566" : [ {
+          "source" : 9,
+          "destination" : 10,
+          "relation" : "dobj"
+        } ]
+      },
+      "cause" : {
+        "T:-1409780683" : [ {
+          "source" : 9,
+          "destination" : 8,
+          "relation" : "nsubj"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 11
+    },
+    "characterStartOffset" : 408,
+    "characterEndOffset" : 433,
+    "sentence" : 5,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_1a_verb + toRelationMention"
+  }, {
+    "type" : "RelationMention",
+    "id" : "R:-221070355",
+    "text" : "ASPP2 phosphorylates them",
+    "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "EventMention",
+        "id" : "E:-1359397557",
+        "text" : "phosphorylates them",
+        "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+        "trigger" : {
+          "type" : "TextBoundMention",
+          "id" : "T:-2046035757",
+          "text" : "phosphorylates",
+          "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+          "tokenInterval" : {
+            "start" : 9,
+            "end" : 10
+          },
+          "characterStartOffset" : 414,
+          "characterEndOffset" : 428,
+          "sentence" : 5,
+          "document" : "-781013046",
+          "keep" : true,
+          "foundBy" : "Phosphorylation_syntax_1a_verb"
+        },
+        "arguments" : {
+          "theme" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:275032566",
+            "text" : "them",
+            "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+            "tokenInterval" : {
+              "start" : 10,
+              "end" : 11
+            },
+            "characterStartOffset" : 429,
+            "characterEndOffset" : 433,
+            "sentence" : 5,
+            "document" : "-781013046",
+            "keep" : true,
+            "foundBy" : "PRP"
+          } ]
+        },
+        "paths" : {
+          "theme" : {
+            "T:275032566" : [ {
+              "source" : 9,
+              "destination" : 10,
+              "relation" : "dobj"
+            } ]
+          },
+          "cause" : {
+            "T:-1409780683" : [ {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "nsubj"
+            } ]
+          }
+        },
+        "tokenInterval" : {
+          "start" : 9,
+          "end" : 11
+        },
+        "characterStartOffset" : 414,
+        "characterEndOffset" : 433,
+        "sentence" : 5,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "Phosphorylation_syntax_1a_verb, pronominalMatch"
+      } ],
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-1409780683",
+        "text" : "ASPP2",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 8,
+          "end" : 9
+        },
+        "characterStartOffset" : 408,
+        "characterEndOffset" : 413,
+        "sentence" : 5,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:275032566" : [ {
+          "source" : 9,
+          "destination" : 10,
+          "relation" : "dobj"
+        } ]
+      },
+      "cause" : {
+        "T:-1409780683" : [ {
+          "source" : 9,
+          "destination" : 8,
+          "relation" : "nsubj"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 11
+    },
+    "characterStartOffset" : 408,
+    "characterEndOffset" : 433,
+    "sentence" : 5,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_1a_verb + toRelationMention"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1720839462",
+    "text" : "Ras",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 3,
+      "end" : 4
+    },
+    "characterStartOffset" : 15,
+    "characterEndOffset" : 18,
+    "sentence" : 0,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1363246015",
+    "text" : "ASPP2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 5,
+      "end" : 6
+    },
+    "characterStartOffset" : 20,
+    "characterEndOffset" : 25,
+    "sentence" : 0,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:461525015",
+    "text" : "its",
+    "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 11,
+      "end" : 12
+    },
+    "characterStartOffset" : 43,
+    "characterEndOffset" : 46,
+    "sentence" : 0,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "PRP"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1944113424",
+    "text" : "Ras",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 5,
+      "end" : 6
+    },
+    "characterStartOffset" : 88,
+    "characterEndOffset" : 91,
+    "sentence" : 1,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:833956869",
+    "text" : "its",
+    "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 9
+    },
+    "characterStartOffset" : 110,
+    "characterEndOffset" : 113,
+    "sentence" : 1,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "PRP"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-923789966",
+    "text" : "PI3K",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 11,
+      "end" : 12
+    },
+    "characterStartOffset" : 125,
+    "characterEndOffset" : 129,
+    "sentence" : 1,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-716360932",
+    "text" : "Raf",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 13,
+      "end" : 14
+    },
+    "characterStartOffset" : 134,
+    "characterEndOffset" : 137,
+    "sentence" : 1,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1499221597",
+    "text" : "G12V-K-Ras",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 25,
+      "end" : 26
+    },
+    "characterStartOffset" : 214,
+    "characterEndOffset" : 224,
+    "sentence" : 1,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-33751550",
+    "text" : "ASPP2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 6,
+      "end" : 7
+    },
+    "characterStartOffset" : 276,
+    "characterEndOffset" : 281,
+    "sentence" : 2,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:2038289698",
+    "text" : "Ras",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 4,
+      "end" : 5
+    },
+    "characterStartOffset" : 300,
+    "characterEndOffset" : 303,
+    "sentence" : 3,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:866073705",
+    "text" : "it",
+    "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 6,
+      "end" : 7
+    },
+    "characterStartOffset" : 310,
+    "characterEndOffset" : 312,
+    "sentence" : 3,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "PRP"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:2092194663",
+    "text" : "Ras",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 0,
+      "end" : 1
+    },
+    "characterStartOffset" : 314,
+    "characterEndOffset" : 317,
+    "sentence" : 4,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-2062691529",
+    "text" : "Mek",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 3
+    },
+    "characterStartOffset" : 322,
+    "characterEndOffset" : 325,
+    "sentence" : 4,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:130910852",
+    "text" : "they",
+    "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 9
+    },
+    "characterStartOffset" : 348,
+    "characterEndOffset" : 352,
+    "sentence" : 4,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "PRP"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:130910852",
+    "text" : "they",
+    "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 9
+    },
+    "characterStartOffset" : 348,
+    "characterEndOffset" : 352,
+    "sentence" : 4,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "PRP"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-340323655",
+    "text" : "ASPP2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 10,
+      "end" : 11
+    },
+    "characterStartOffset" : 367,
+    "characterEndOffset" : 372,
+    "sentence" : 4,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1444533467",
+    "text" : "Ras",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 0,
+      "end" : 1
+    },
+    "characterStartOffset" : 374,
+    "characterEndOffset" : 377,
+    "sentence" : 5,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1643102793",
+    "text" : "Mek",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 3
+    },
+    "characterStartOffset" : 382,
+    "characterEndOffset" : 385,
+    "sentence" : 5,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1409780683",
+    "text" : "ASPP2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 9
+    },
+    "characterStartOffset" : 408,
+    "characterEndOffset" : 413,
+    "sentence" : 5,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:275032566",
+    "text" : "them",
+    "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 10,
+      "end" : 11
+    },
+    "characterStartOffset" : 429,
+    "characterEndOffset" : 433,
+    "sentence" : 5,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "PRP"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:275032566",
+    "text" : "them",
+    "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 10,
+      "end" : 11
+    },
+    "characterStartOffset" : 429,
+    "characterEndOffset" : 433,
+    "sentence" : 5,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "PRP"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:-1547313914",
+    "text" : "Ras ubiquitination",
+    "labels" : [ "Ubiquitination", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:954550434",
+      "text" : "ubiquitination",
+      "labels" : [ "Ubiquitination", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 6,
+        "end" : 7
+      },
+      "characterStartOffset" : 92,
+      "characterEndOffset" : 106,
+      "sentence" : 1,
+      "document" : "-781013046",
+      "keep" : true,
+      "foundBy" : "Ubiquitination_syntax_4_noun"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-1944113424",
+        "text" : "Ras",
+        "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 5,
+          "end" : 6
+        },
+        "characterStartOffset" : 88,
+        "characterEndOffset" : 91,
+        "sentence" : 1,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "ner-family-entities"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:-1944113424" : [ {
+          "source" : 6,
+          "destination" : 5,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 5,
+      "end" : 7
+    },
+    "characterStartOffset" : 88,
+    "characterEndOffset" : 106,
+    "sentence" : 1,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "Ubiquitination_syntax_4_noun"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:1959341182",
+    "text" : "its ubiquitination",
+    "labels" : [ "Ubiquitination", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:1687472790",
+      "text" : "ubiquitination",
+      "labels" : [ "Ubiquitination", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 12,
+        "end" : 13
+      },
+      "characterStartOffset" : 47,
+      "characterEndOffset" : 61,
+      "sentence" : 0,
+      "document" : "-781013046",
+      "keep" : true,
+      "foundBy" : "Ubiquitination_token_3_noun"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:461525015",
+        "text" : "its",
+        "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 11,
+          "end" : 12
+        },
+        "characterStartOffset" : 43,
+        "characterEndOffset" : 46,
+        "sentence" : 0,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "PRP"
+      } ]
+    },
+    "tokenInterval" : {
+      "start" : 11,
+      "end" : 13
+    },
+    "characterStartOffset" : 43,
+    "characterEndOffset" : 61,
+    "sentence" : 0,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "Ubiquitination_token_3_noun, pronominalMatch"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:-230214328",
+    "text" : "Ras binds it",
+    "labels" : [ "Binding", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:-1171195990",
+      "text" : "binds",
+      "labels" : [ "Binding", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 5,
+        "end" : 6
+      },
+      "characterStartOffset" : 304,
+      "characterEndOffset" : 309,
+      "sentence" : 3,
+      "document" : "-781013046",
+      "keep" : true,
+      "foundBy" : "binding1b"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:2038289698",
+        "text" : "Ras",
+        "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 4,
+          "end" : 5
+        },
+        "characterStartOffset" : 300,
+        "characterEndOffset" : 303,
+        "sentence" : 3,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "ner-family-entities"
+      }, {
+        "type" : "TextBoundMention",
+        "id" : "T:866073705",
+        "text" : "it",
+        "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 6,
+          "end" : 7
+        },
+        "characterStartOffset" : 310,
+        "characterEndOffset" : 312,
+        "sentence" : 3,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "PRP"
+      } ]
+    },
+    "paths" : {
+      "theme1" : {
+        "T:2038289698" : [ {
+          "source" : 5,
+          "destination" : 4,
+          "relation" : "nsubj"
+        } ]
+      },
+      "theme2" : {
+        "T:866073705" : [ {
+          "source" : 5,
+          "destination" : 6,
+          "relation" : "dobj"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 4,
+      "end" : 7
+    },
+    "characterStartOffset" : 300,
+    "characterEndOffset" : 312,
+    "sentence" : 3,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "binding1b, pronominalMatch"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:-1468407621",
+    "text" : "phosphorylate ASPP2",
+    "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:1673215413",
+      "text" : "phosphorylate",
+      "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 9,
+        "end" : 10
+      },
+      "characterStartOffset" : 353,
+      "characterEndOffset" : 366,
+      "sentence" : 4,
+      "document" : "-781013046",
+      "keep" : true,
+      "foundBy" : "Phosphorylation_syntax_1a_verb"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-340323655",
+        "text" : "ASPP2",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 10,
+          "end" : 11
+        },
+        "characterStartOffset" : 367,
+        "characterEndOffset" : 372,
+        "sentence" : 4,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:-340323655" : [ {
+          "source" : 9,
+          "destination" : 10,
+          "relation" : "dobj"
+        } ]
+      },
+      "cause" : {
+        "T:130910852" : [ {
+          "source" : 9,
+          "destination" : 8,
+          "relation" : "nsubj"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 9,
+      "end" : 11
+    },
+    "characterStartOffset" : 353,
+    "characterEndOffset" : 372,
+    "sentence" : 4,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_1a_verb"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:-1359397557",
+    "text" : "phosphorylates them",
+    "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:-2046035757",
+      "text" : "phosphorylates",
+      "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 9,
+        "end" : 10
+      },
+      "characterStartOffset" : 414,
+      "characterEndOffset" : 428,
+      "sentence" : 5,
+      "document" : "-781013046",
+      "keep" : true,
+      "foundBy" : "Phosphorylation_syntax_1a_verb"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:275032566",
+        "text" : "them",
+        "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 10,
+          "end" : 11
+        },
+        "characterStartOffset" : 429,
+        "characterEndOffset" : 433,
+        "sentence" : 5,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "PRP"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:275032566" : [ {
+          "source" : 9,
+          "destination" : 10,
+          "relation" : "dobj"
+        } ]
+      },
+      "cause" : {
+        "T:-1409780683" : [ {
+          "source" : 9,
+          "destination" : 8,
+          "relation" : "nsubj"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 9,
+      "end" : 11
+    },
+    "characterStartOffset" : 414,
+    "characterEndOffset" : 433,
+    "sentence" : 5,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_1a_verb, pronominalMatch"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:-1359397557",
+    "text" : "phosphorylates them",
+    "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:-2046035757",
+      "text" : "phosphorylates",
+      "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 9,
+        "end" : 10
+      },
+      "characterStartOffset" : 414,
+      "characterEndOffset" : 428,
+      "sentence" : 5,
+      "document" : "-781013046",
+      "keep" : true,
+      "foundBy" : "Phosphorylation_syntax_1a_verb"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:275032566",
+        "text" : "them",
+        "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 10,
+          "end" : 11
+        },
+        "characterStartOffset" : 429,
+        "characterEndOffset" : 433,
+        "sentence" : 5,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "PRP"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:275032566" : [ {
+          "source" : 9,
+          "destination" : 10,
+          "relation" : "dobj"
+        } ]
+      },
+      "cause" : {
+        "T:-1409780683" : [ {
+          "source" : 9,
+          "destination" : 8,
+          "relation" : "nsubj"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 9,
+      "end" : 11
+    },
+    "characterStartOffset" : 414,
+    "characterEndOffset" : 433,
+    "sentence" : 5,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_1a_verb, pronominalMatch"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:-588104376",
+    "text" : "its binding to PI3K",
+    "labels" : [ "Binding", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:457015595",
+      "text" : "binding",
+      "labels" : [ "Binding", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 9,
+        "end" : 10
+      },
+      "characterStartOffset" : 114,
+      "characterEndOffset" : 121,
+      "sentence" : 1,
+      "document" : "-781013046",
+      "keep" : true,
+      "foundBy" : "binding_token_1"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:833956869",
+        "text" : "its",
+        "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 8,
+          "end" : 9
+        },
+        "characterStartOffset" : 110,
+        "characterEndOffset" : 113,
+        "sentence" : 1,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "PRP"
+      }, {
+        "type" : "TextBoundMention",
+        "id" : "T:-923789966",
+        "text" : "PI3K",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 11,
+          "end" : 12
+        },
+        "characterStartOffset" : 125,
+        "characterEndOffset" : 129,
+        "sentence" : 1,
+        "document" : "-781013046",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 12
+    },
+    "characterStartOffset" : 110,
+    "characterEndOffset" : 129,
+    "sentence" : 1,
+    "document" : "-781013046",
+    "keep" : true,
+    "foundBy" : "binding_token_1, pronominalMatch"
+  } ]
+}

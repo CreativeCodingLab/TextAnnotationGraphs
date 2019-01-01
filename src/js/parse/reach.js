@@ -1,3 +1,7 @@
+/**
+ * DEPRECATED: Jan 2019, in favour of general Odin parser
+ */
+
 import Word from '../components/word.js';
 import WordCluster from '../components/word-cluster.js';
 import Link from '../components/link.js';

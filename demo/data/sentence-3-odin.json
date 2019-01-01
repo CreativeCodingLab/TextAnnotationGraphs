@@ -1,0 +1,277 @@
+{
+  "documents" : {
+    "-2044104037" : {
+      "id" : "sentence-3-odin",
+      "text" : "Induction of p21 by p53 following DNA damage inhibits both Cdk4 and Cdk2 activities.",
+      "sentences" : [ {
+        "words" : [ "Induction", "of", "p21", "by", "p53", "following", "DNA", "damage", "inhibits", "both", "Cdk4", "and", "Cdk2", "activities", "." ],
+        "startOffsets" : [ 0, 10, 13, 17, 20, 24, 34, 38, 45, 54, 59, 64, 68, 73, 83 ],
+        "endOffsets" : [ 9, 12, 16, 19, 23, 33, 37, 44, 53, 58, 63, 67, 72, 83, 84 ],
+        "raw" : [ "Induction", "of", "p21", "by", "p53", "following", "DNA", "damage", "inhibits", "both", "Cdk4", "and", "Cdk2", "activities", "." ],
+        "tags" : [ "NN", "IN", "NN", "IN", "NN", "VBG", "NN", "NN", "VBZ", "CC", "NN", "CC", "NN", "NNS", "." ],
+        "lemmas" : [ "induction", "of", "p21", "by", "p53", "follow", "dna", "damage", "inhibit", "both", "cdk4", "and", "cdk2", "activity", "." ],
+        "entities" : [ "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "B-BioProcess", "I-BioProcess", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "O" ],
+        "chunks" : [ "B-NP", "B-PP", "B-NP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "O", "B-NP", "I-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "case"
+            }, {
+              "source" : 2,
+              "destination" : 4,
+              "relation" : "nmod_by"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "case"
+            }, {
+              "source" : 4,
+              "destination" : 7,
+              "relation" : "nmod_following"
+            }, {
+              "source" : 7,
+              "destination" : 5,
+              "relation" : "case"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "compound"
+            }, {
+              "source" : 8,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 8,
+              "destination" : 13,
+              "relation" : "nmod_both"
+            }, {
+              "source" : 10,
+              "destination" : 11,
+              "relation" : "cc"
+            }, {
+              "source" : 10,
+              "destination" : 12,
+              "relation" : "conj_and"
+            }, {
+              "source" : 13,
+              "destination" : 9,
+              "relation" : "case"
+            }, {
+              "source" : 13,
+              "destination" : 10,
+              "relation" : "compound"
+            }, {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 8 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "nmod"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "case"
+            }, {
+              "source" : 2,
+              "destination" : 4,
+              "relation" : "nmod"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "case"
+            }, {
+              "source" : 4,
+              "destination" : 7,
+              "relation" : "nmod"
+            }, {
+              "source" : 7,
+              "destination" : 5,
+              "relation" : "case"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "compound"
+            }, {
+              "source" : 8,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 8,
+              "destination" : 13,
+              "relation" : "nmod"
+            }, {
+              "source" : 10,
+              "destination" : 11,
+              "relation" : "cc"
+            }, {
+              "source" : 10,
+              "destination" : 12,
+              "relation" : "conj"
+            }, {
+              "source" : 13,
+              "destination" : 9,
+              "relation" : "case"
+            }, {
+              "source" : 13,
+              "destination" : 10,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 8 ]
+          }
+        }
+      } ]
+    }
+  },
+  "mentions" : [ {
+    "type" : "TextBoundMention",
+    "id" : "T:525274626",
+    "text" : "p21",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 3
+    },
+    "characterStartOffset" : 13,
+    "characterEndOffset" : 16,
+    "sentence" : 0,
+    "document" : "-2044104037",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-628425571",
+    "text" : "p53",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 4,
+      "end" : 5
+    },
+    "characterStartOffset" : 20,
+    "characterEndOffset" : 23,
+    "sentence" : 0,
+    "document" : "-2044104037",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-987770616",
+    "text" : "DNA damage",
+    "labels" : [ "BioProcess", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 6,
+      "end" : 8
+    },
+    "characterStartOffset" : 34,
+    "characterEndOffset" : 44,
+    "sentence" : 0,
+    "document" : "-2044104037",
+    "keep" : true,
+    "foundBy" : "ner-bioprocess-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1526514725",
+    "text" : "Cdk4",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 10,
+      "end" : 11
+    },
+    "characterStartOffset" : 59,
+    "characterEndOffset" : 63,
+    "sentence" : 0,
+    "document" : "-2044104037",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:694682334",
+    "text" : "Cdk2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 12,
+      "end" : 13
+    },
+    "characterStartOffset" : 68,
+    "characterEndOffset" : 72,
+    "sentence" : 0,
+    "document" : "-2044104037",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:1721590917",
+    "text" : "Induction of p21 by p53",
+    "labels" : [ "Positive_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:7897271",
+      "text" : "Induction",
+      "labels" : [ "Positive_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 0,
+        "end" : 1
+      },
+      "characterStartOffset" : 0,
+      "characterEndOffset" : 9,
+      "sentence" : 0,
+      "document" : "-2044104037",
+      "keep" : true,
+      "foundBy" : "Positive_activation_token_2_noun"
+    },
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:525274626",
+        "text" : "p21",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 2,
+          "end" : 3
+        },
+        "characterStartOffset" : 13,
+        "characterEndOffset" : 16,
+        "sentence" : 0,
+        "document" : "-2044104037",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ],
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-628425571",
+        "text" : "p53",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 4,
+          "end" : 5
+        },
+        "characterStartOffset" : 20,
+        "characterEndOffset" : 23,
+        "sentence" : 0,
+        "document" : "-2044104037",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "tokenInterval" : {
+      "start" : 0,
+      "end" : 5
+    },
+    "characterStartOffset" : 0,
+    "characterEndOffset" : 23,
+    "sentence" : 0,
+    "document" : "-2044104037",
+    "keep" : true,
+    "foundBy" : "Positive_activation_token_2_noun"
+  } ]
+}

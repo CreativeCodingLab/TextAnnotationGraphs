@@ -1,6 +1,5 @@
 import _ from "lodash";
 
-import ReachParser from "./reach.js";
 import BratParser from "./ann.js";
 import OdinParser from "./odin.js";
 
@@ -16,7 +15,6 @@ class Parser {
     };
 
     /* supported formats */
-    this.reach = new ReachParser();
     this.ann = new BratParser();
     this.odin = new OdinParser();
   }
@@ -28,9 +26,7 @@ class Parser {
    * @param {String} format
    */
   loadData(data, format) {
-    if (format === "reach") {
-      this.parseReach(data);
-    } else if (format === "brat") {
+    if (format === "brat") {
       this.parseBrat(data);
     } else if (format === "odin") {
       this.parseOdin(data);
@@ -54,13 +50,11 @@ class Parser {
     if (files.length === 1) {
       // Single file
       const file = files[0];
-      if (format === "reach") {
-        this.parseReach(JSON.parse(file.content));
-      } else if (format === "brat") {
+      if (format === "brat") {
         this.parseBrat(file.content);
-      } else if (format === "processors") {
-        this.parseProcessors(file.content);
-      }else {
+      } else if (format === "odin") {
+        this.parseOdin(file.content);
+      } else {
         throw `Unknown annotation format: ${format}`;
       }
     } else {
@@ -122,16 +116,6 @@ class Parser {
    */
   getParsedData() {
     return _.cloneDeep(this._parsedData);
-  }
-
-
-  /**
-   * Parses the given Reach-format data
-   * @param data
-   */
-  parseReach(data) {
-    this.reach.parse(data);
-    this._parsedData = this.reach.data;
   }
 
   /**
