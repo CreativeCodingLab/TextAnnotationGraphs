@@ -198,6 +198,13 @@ $(async () => {
       );
     });
 
+  const $optionMainLabel = $("#tag-option-main-label");
+  $optionMainLabel
+    .prop("checked", uiTag.getOption("showMainLabel"))
+    .on("change", () => {
+      uiTag.setMainLabelVisibility($optionMainLabel[0].checked);
+    });
+
   const $optionArgLabels = $("#tag-option-arg-labels");
   $optionArgLabels
     .prop("checked", uiTag.getOption("showArgLabels"))

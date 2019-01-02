@@ -66,7 +66,8 @@ class Main {
       showTopLinksOnMove: true,
       showBottomLinksOnMove: false,
 
-      // Show argument labels on Links?
+      // Show main/argument labels on Links?
+      showMainLabel: true,
       showArgLabels: true
     };
 
@@ -175,6 +176,12 @@ class Main {
       if ((link.top && link.category === this.options.topLinksCategory) ||
         (!link.top && link.category === this.options.bottomLinksCategory)) {
         link.show();
+      }
+
+      if (this.options.showMainLabel) {
+        link.showMainLabel();
+      } else {
+        link.hideMainLabel();
       }
 
       if (this.options.showArgLabels) {
@@ -396,6 +403,19 @@ class Main {
           link.hide();
         }
       });
+  }
+
+  /**
+   * Shows/hides the main label on Links
+   * @param {Boolean} visible - Show if true, hide if false
+   */
+  setMainLabelVisibility(visible) {
+    this.setOption("showMainLabel", visible);
+    if (visible) {
+      this.links.forEach(link => link.showMainLabel());
+    } else {
+      this.links.forEach(link => link.hideMainLabel());
+    }
   }
 
   /**

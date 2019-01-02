@@ -84,8 +84,9 @@
 }
 
 .link-text-bg {
-  // Background rectangle for Link Label texts
   fill: #ffffff;
+  stroke-width: 2px;
+  stroke: #ffffff;
 }
 
 .link.syntax-link {

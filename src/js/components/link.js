@@ -277,6 +277,21 @@ class Link {
   }
 
   /**
+   * Shows the main label for this Link
+   */
+  showMainLabel() {
+    this.linkLabel.show();
+    this.draw();
+  }
+
+  /**
+   * Hides the main label for this Link
+   */
+  hideMainLabel() {
+    this.linkLabel.hide();
+  }
+
+  /**
    * Shows the argument labels for this Link
    */
   showArgLabels() {
@@ -737,7 +752,6 @@ class Link {
       // The trigger always takes up index 0, so the index for the label is
       // one less than the index for this handle in `this.handles`
       const label = this.argLabels[this.handles.indexOf(handle) - 1];
-      label.show();
 
       const textLength = label.length();
       const textY = this.getLineY(handle.row);
@@ -864,7 +878,6 @@ class Link {
       // The trigger always takes up index 0, so the index for the label is
       // one less than the index for this handle in `this.handles`
       const label = this.argLabels[this.handles.indexOf(handle) - 1];
-      label.show();
 
       const textLength = label.length();
       const textY = this.getLineY(handle.row);
@@ -1018,63 +1031,49 @@ class Link {
 
     // Width/position of the Link's label
     // (Always on the first row for multi-line Links)
-    this.linkLabel.show();
     const textLength = this.linkLabel.length();
     const textY = this.getLineY(leftHandle.row);
 
-    // Centre on the segment of the Link line on the first row
+    // Centre on the segment of the Link line on the first row, making sure
+    // it doesn't overshoot the right row boundary
     let textCentre = sameRow
       ? (pStart.x + pEnd.x) / 2
       : (pStart.x + leftHandle.row.rw) / 2;
-    let textLeft = textCentre - textLength / 2;
-
-    // Make sure it doesn't overshoot the right row boundary
-    if (textLeft + textLength > leftHandle.row.rw) {
-      textLeft = leftHandle.row.rw - textLength;
-      textCentre = textLeft + textLength / 2;
+    if (textCentre + textLength / 2 > leftHandle.row.rw) {
+      textCentre = leftHandle.row.rw - textLength / 2;
     }
 
     // Start preparing path string
     d += "M" + [pStart.x, pStart.y];
 
-    // Left handle
+    // Left handle/label
+    // Draw up to the level of the Link line, then position the left arg label
     const firstY = this.getLineY(leftHandle.row);
-    if (textLeft < pStart.x) {
-      // Just draw a vertical line up to the label
-      d += "L" + [pStart.x, firstY];
-    } else {
-      // Draw curve up to the main Link line, then, go up to the label
-      let curveLeftX = pStart.x + this.config.linkCurveWidth;
-      curveLeftX = Math.min(curveLeftX, textLeft);
-      d += "C" + [pStart.x, firstY, pStart.x, firstY, curveLeftX, firstY]
-        + "L" + [textLeft, firstY];
-    }
-    // Left handle label
+    let curveLeftX = pStart.x + this.config.linkCurveWidth;
+    curveLeftX = Math.min(curveLeftX, leftHandle.row.rw);
+    let curveLeftY = firstY + this.config.linkCurveWidth;
+
+    d += "L" + [pStart.x, curveLeftY]
+      + "Q" + [pStart.x, firstY, curveLeftX, firstY];
+
     const leftLabel = this.argLabels[this.handles.indexOf(leftHandle)];
-    leftLabel.move(pStart.x, (pStart.y + firstY) / 2);
+    let leftLabelCentre = pStart.x;
+    if (leftLabelCentre + leftLabel.length() / 2 > leftHandle.row.rw) {
+      leftLabelCentre = leftHandle.row.rw - leftLabel.length() / 2;
+    }
+    if (leftLabelCentre - leftLabel.length() / 2 < 0) {
+      leftLabelCentre = leftLabel.length() / 2;
+    }
+    leftLabel.move(leftLabelCentre, (pStart.y + firstY) / 2);
 
     // Right handle/label
-    const rightLabel = this.argLabels[this.handles.indexOf(rightHandle)];
-    if (sameRow) {
-      if (textLeft + textLength > pEnd.x) {
-        // Just draw a vertical line down to the handle
-        d += "M" + [pEnd.x, firstY]
-          + "L" + [pEnd.x, pEnd.y];
-      } else {
-        // Draw curve down from the main Link line
-        let curveRightX = pEnd.x - this.config.linkCurveWidth;
-        curveRightX = Math.max(curveRightX, textLeft + textLength);
-        d += "M" + [textLeft + textLength, firstY]
-          + "L" + [curveRightX, firstY]
-          + "C" + [pEnd.x, firstY, pEnd.x, firstY, pEnd.x, pEnd.y];
-      }
-
-      rightLabel.move(pEnd.x, (pEnd.y + firstY) / 2);
-    } else {
+    // Handling depends on whether or not the right handle is on the same
+    // row as the left handle
+    let finalY = firstY;
+    if (!sameRow) {
       // Draw in Link line across the end of the first row, and all
       // intervening rows
-      d += "M" + [textLeft + textLength, firstY]
-        + "L" + [leftHandle.row.rw, firstY];
+      d += "L" + [leftHandle.row.rw, firstY];
 
       for (let i = leftHandle.row.idx + 1; i < rightHandle.row.idx; i++) {
         const thisRow = this.main.rowManager.rows[i];
@@ -1083,16 +1082,27 @@ class Link {
           + "L" + [thisRow.rw, lineY];
       }
 
-      // Draw in the last row
-      let curveRightX = pEnd.x - this.config.linkCurveWidth;
-      curveRightX = Math.max(curveRightX, 0);
-      let finalY = this.getLineY(rightHandle.row);
-      d += "M" + [0, finalY]
-        + "L" + [curveRightX, finalY]
-        + "C" + [pEnd.x, finalY, pEnd.x, finalY, pEnd.x, pEnd.y];
-
-      rightLabel.move(pEnd.x, (pEnd.y + finalY) / 2);
+      finalY = this.getLineY(rightHandle.row);
+      d += "M" + [0, finalY];
     }
+
+    // Draw down from the main Link line on last row
+    const curveRightX = pEnd.x - this.config.linkCurveWidth;
+    const curveRightY = finalY + this.config.linkCurveWidth;
+
+    d += "L" + [curveRightX, finalY]
+      + "Q" + [pEnd.x, finalY, pEnd.x, curveRightY]
+      + "L" + [pEnd.x, pEnd.y];
+
+    const rightLabel = this.argLabels[this.handles.indexOf(rightHandle)];
+    let rightLabelCentre = pEnd.x;
+    if (rightLabelCentre + rightLabel.length() / 2 > rightHandle.row.rw) {
+      rightLabelCentre = rightHandle.row.rw - rightLabel.length() / 2;
+    }
+    if (rightLabelCentre - rightLabel.length() / 2 < 0) {
+      rightLabelCentre = rightLabel.length() / 2;
+    }
+    rightLabel.move(rightLabelCentre, (pEnd.y + finalY) / 2);
 
     // Arrowheads
     d += this._arrowhead(pStart)
@@ -1267,25 +1277,37 @@ class Label {
     // relative to its baseline
     this.fontSize = parseInt($(this.svgText.node).css("font-size"));
     this.svgText.transform({
-      y: -this.fontSize + 1
+      y: -this.fontSize
     });
 
     this.svgTextBbox = this.svgText.bbox();
 
-    // Background rectangle
+    // Background (rectangle)
     this.svgBackground = this.svg.rect(
       this.svgTextBbox.width,
-      this.svgTextBbox.height
+      this.svgTextBbox.height - 4
     )
       .addClass("tag-element")
       .addClass("link-text-bg")
       .addClass(addClass)
+      .radius(2)
       .back();
     // Transform the rectangle to sit nicely behind the label
     this.svgBackground.transform({
       x: -this.svgTextBbox.width / 2,
-      y: -this.fontSize + 1
+      y: -this.fontSize + 2
     });
+
+    // // Background (text)
+    // this.svgBackground = this.svg.text(text)
+    //   .addClass("tag-element")
+    //   .addClass("link-text-bg")
+    //   .addClass(addClass)
+    //   .back();
+    // // Transform the background to sit nicely behind the label
+    // this.svgBackground.transform({
+    //   y: -this.fontSize
+    // });
 
 
     // Click events

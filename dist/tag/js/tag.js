@@ -38988,6 +38988,25 @@ function () {
       this.visible = false;
     }
     /**
+     * Shows the main label for this Link
+     */
+
+  }, {
+    key: "showMainLabel",
+    value: function showMainLabel() {
+      this.linkLabel.show();
+      this.draw();
+    }
+    /**
+     * Hides the main label for this Link
+     */
+
+  }, {
+    key: "hideMainLabel",
+    value: function hideMainLabel() {
+      this.linkLabel.hide();
+    }
+    /**
      * Shows the argument labels for this Link
      */
 
@@ -39529,7 +39548,6 @@ function () {
         // one less than the index for this handle in `this.handles`
 
         var label = this.argLabels[this.handles.indexOf(_handle) - 1];
-        label.show();
         var textLength = label.length();
         var textY = this.getLineY(_handle.row);
         var textLeft = pHandle.x + this.config.linkCurveWidth;
@@ -39645,8 +39663,6 @@ function () {
         // one less than the index for this handle in `this.handles`
 
         var _label = this.argLabels[this.handles.indexOf(_handle2) - 1];
-
-        _label.show();
 
         var _textLength = _label.length();
 
@@ -39789,71 +39805,73 @@ function () {
       var sameRow = leftHandle.row.idx === rightHandle.row.idx; // Width/position of the Link's label
       // (Always on the first row for multi-line Links)
 
-      this.linkLabel.show();
       var textLength = this.linkLabel.length();
-      var textY = this.getLineY(leftHandle.row); // Centre on the segment of the Link line on the first row
+      var textY = this.getLineY(leftHandle.row); // Centre on the segment of the Link line on the first row, making sure
+      // it doesn't overshoot the right row boundary
 
       var textCentre = sameRow ? (pStart.x + pEnd.x) / 2 : (pStart.x + leftHandle.row.rw) / 2;
-      var textLeft = textCentre - textLength / 2; // Make sure it doesn't overshoot the right row boundary
 
-      if (textLeft + textLength > leftHandle.row.rw) {
-        textLeft = leftHandle.row.rw - textLength;
-        textCentre = textLeft + textLength / 2;
+      if (textCentre + textLength / 2 > leftHandle.row.rw) {
+        textCentre = leftHandle.row.rw - textLength / 2;
       } // Start preparing path string
 
 
-      d += "M" + [pStart.x, pStart.y]; // Left handle
+      d += "M" + [pStart.x, pStart.y]; // Left handle/label
+      // Draw up to the level of the Link line, then position the left arg label
 
       var firstY = this.getLineY(leftHandle.row);
-
-      if (textLeft < pStart.x) {
-        // Just draw a vertical line up to the label
-        d += "L" + [pStart.x, firstY];
-      } else {
-        // Draw curve up to the main Link line, then, go up to the label
-        var curveLeftX = pStart.x + this.config.linkCurveWidth;
-        curveLeftX = Math.min(curveLeftX, textLeft);
-        d += "C" + [pStart.x, firstY, pStart.x, firstY, curveLeftX, firstY] + "L" + [textLeft, firstY];
-      } // Left handle label
-
-
+      var curveLeftX = pStart.x + this.config.linkCurveWidth;
+      curveLeftX = Math.min(curveLeftX, leftHandle.row.rw);
+      var curveLeftY = firstY + this.config.linkCurveWidth;
+      d += "L" + [pStart.x, curveLeftY] + "Q" + [pStart.x, firstY, curveLeftX, firstY];
       var leftLabel = this.argLabels[this.handles.indexOf(leftHandle)];
-      leftLabel.move(pStart.x, (pStart.y + firstY) / 2); // Right handle/label
+      var leftLabelCentre = pStart.x;
 
-      var rightLabel = this.argLabels[this.handles.indexOf(rightHandle)];
+      if (leftLabelCentre + leftLabel.length() / 2 > leftHandle.row.rw) {
+        leftLabelCentre = leftHandle.row.rw - leftLabel.length() / 2;
+      }
 
-      if (sameRow) {
-        if (textLeft + textLength > pEnd.x) {
-          // Just draw a vertical line down to the handle
-          d += "M" + [pEnd.x, firstY] + "L" + [pEnd.x, pEnd.y];
-        } else {
-          // Draw curve down from the main Link line
-          var curveRightX = pEnd.x - this.config.linkCurveWidth;
-          curveRightX = Math.max(curveRightX, textLeft + textLength);
-          d += "M" + [textLeft + textLength, firstY] + "L" + [curveRightX, firstY] + "C" + [pEnd.x, firstY, pEnd.x, firstY, pEnd.x, pEnd.y];
-        }
+      if (leftLabelCentre - leftLabel.length() / 2 < 0) {
+        leftLabelCentre = leftLabel.length() / 2;
+      }
 
-        rightLabel.move(pEnd.x, (pEnd.y + firstY) / 2);
-      } else {
+      leftLabel.move(leftLabelCentre, (pStart.y + firstY) / 2); // Right handle/label
+      // Handling depends on whether or not the right handle is on the same
+      // row as the left handle
+
+      var finalY = firstY;
+
+      if (!sameRow) {
         // Draw in Link line across the end of the first row, and all
         // intervening rows
-        d += "M" + [textLeft + textLength, firstY] + "L" + [leftHandle.row.rw, firstY];
+        d += "L" + [leftHandle.row.rw, firstY];
 
         for (var i = leftHandle.row.idx + 1; i < rightHandle.row.idx; i++) {
           var thisRow = this.main.rowManager.rows[i];
           var lineY = this.getLineY(thisRow);
           d += "M" + [0, lineY] + "L" + [thisRow.rw, lineY];
-        } // Draw in the last row
+        }
+
+        finalY = this.getLineY(rightHandle.row);
+        d += "M" + [0, finalY];
+      } // Draw down from the main Link line on last row
 
 
-        var _curveRightX3 = pEnd.x - this.config.linkCurveWidth;
+      var curveRightX = pEnd.x - this.config.linkCurveWidth;
+      var curveRightY = finalY + this.config.linkCurveWidth;
+      d += "L" + [curveRightX, finalY] + "Q" + [pEnd.x, finalY, pEnd.x, curveRightY] + "L" + [pEnd.x, pEnd.y];
+      var rightLabel = this.argLabels[this.handles.indexOf(rightHandle)];
+      var rightLabelCentre = pEnd.x;
 
-        _curveRightX3 = Math.max(_curveRightX3, 0);
-        var finalY = this.getLineY(rightHandle.row);
-        d += "M" + [0, finalY] + "L" + [_curveRightX3, finalY] + "C" + [pEnd.x, finalY, pEnd.x, finalY, pEnd.x, pEnd.y];
-        rightLabel.move(pEnd.x, (pEnd.y + finalY) / 2);
-      } // Arrowheads
+      if (rightLabelCentre + rightLabel.length() / 2 > rightHandle.row.rw) {
+        rightLabelCentre = rightHandle.row.rw - rightLabel.length() / 2;
+      }
 
+      if (rightLabelCentre - rightLabel.length() / 2 < 0) {
+        rightLabelCentre = rightLabel.length() / 2;
+      }
+
+      rightLabel.move(rightLabelCentre, (pEnd.y + finalY) / 2); // Arrowheads
 
       d += this._arrowhead(pStart) + this._arrowhead(pEnd); // Main label
 
@@ -40165,16 +40183,26 @@ function () {
 
     this.fontSize = parseInt($(this.svgText.node).css("font-size"));
     this.svgText.transform({
-      y: -this.fontSize + 1
+      y: -this.fontSize
     });
-    this.svgTextBbox = this.svgText.bbox(); // Background rectangle
+    this.svgTextBbox = this.svgText.bbox(); // Background (rectangle)
 
-    this.svgBackground = this.svg.rect(this.svgTextBbox.width, this.svgTextBbox.height).addClass("tag-element").addClass("link-text-bg").addClass(addClass).back(); // Transform the rectangle to sit nicely behind the label
+    this.svgBackground = this.svg.rect(this.svgTextBbox.width, this.svgTextBbox.height - 4).addClass("tag-element").addClass("link-text-bg").addClass(addClass).radius(2).back(); // Transform the rectangle to sit nicely behind the label
 
     this.svgBackground.transform({
       x: -this.svgTextBbox.width / 2,
-      y: -this.fontSize + 1
-    }); // Click events
+      y: -this.fontSize + 2
+    }); // // Background (text)
+    // this.svgBackground = this.svg.text(text)
+    //   .addClass("tag-element")
+    //   .addClass("link-text-bg")
+    //   .addClass(addClass)
+    //   .back();
+    // // Transform the background to sit nicely behind the label
+    // this.svgBackground.transform({
+    //   y: -this.fontSize
+    // });
+    // Click events
 
     this.svgText.node.oncontextmenu = function (e) {
       _this5.selectedLabel = text;
@@ -42308,7 +42336,8 @@ function () {
       // Continue to display top/bottom Links when moving Words?
       showTopLinksOnMove: true,
       showBottomLinksOnMove: false,
-      // Show argument labels on Links?
+      // Show main/argument labels on Links?
+      showMainLabel: true,
       showArgLabels: true
     }; // Initialisation
 
@@ -42472,6 +42501,12 @@ function () {
       this.links.forEach(function (link) {
         if (link.top && link.category === _this.options.topLinksCategory || !link.top && link.category === _this.options.bottomLinksCategory) {
           link.show();
+        }
+
+        if (_this.options.showMainLabel) {
+          link.showMainLabel();
+        } else {
+          link.hideMainLabel();
         }
 
         if (_this.options.showArgLabels) {
@@ -42716,6 +42751,26 @@ function () {
           link.hide();
         }
       });
+    }
+    /**
+     * Shows/hides the main label on Links
+     * @param {Boolean} visible - Show if true, hide if false
+     */
+
+  }, {
+    key: "setMainLabelVisibility",
+    value: function setMainLabelVisibility(visible) {
+      this.setOption("showMainLabel", visible);
+
+      if (visible) {
+        this.links.forEach(function (link) {
+          return link.showMainLabel();
+        });
+      } else {
+        this.links.forEach(function (link) {
+          return link.hideMainLabel();
+        });
+      }
     }
     /**
      * Shows/hides the argument labels on Links
