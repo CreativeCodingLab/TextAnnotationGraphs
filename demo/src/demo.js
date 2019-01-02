@@ -198,18 +198,29 @@ $(async () => {
       );
     });
 
-  const $optionMainLabel = $("#tag-option-main-label");
-  $optionMainLabel
-    .prop("checked", uiTag.getOption("showMainLabel"))
+  const $optionTopMainLabel = $("#tag-option-top-main-label");
+  $optionTopMainLabel
+    .prop("checked", uiTag.getOption("showTopMainLabel"))
     .on("change", () => {
-      uiTag.setMainLabelVisibility($optionMainLabel[0].checked);
+      uiTag.setTopMainLabelVisibility($optionTopMainLabel[0].checked);
     });
-
-  const $optionArgLabels = $("#tag-option-arg-labels");
-  $optionArgLabels
-    .prop("checked", uiTag.getOption("showArgLabels"))
+  const $optionTopArgLabels = $("#tag-option-top-arg-labels");
+  $optionTopArgLabels
+    .prop("checked", uiTag.getOption("showTopArgLabels"))
     .on("change", () => {
-      uiTag.setArgLabelVisibility($optionArgLabels[0].checked);
+      uiTag.setTopArgLabelVisibility($optionTopArgLabels[0].checked);
+    });
+  const $optionBottomMainLabel = $("#tag-option-bottom-main-label");
+  $optionBottomMainLabel
+    .prop("checked", uiTag.getOption("showBottomMainLabel"))
+    .on("change", () => {
+      uiTag.setBottomMainLabelVisibility($optionBottomMainLabel[0].checked);
+    });
+  const $optionBottomArgLabels = $("#tag-option-bottom-arg-labels");
+  $optionBottomArgLabels
+    .prop("checked", uiTag.getOption("showBottomArgLabels"))
+    .on("change", () => {
+      uiTag.setBottomArgLabelVisibility($optionBottomArgLabels[0].checked);
     });
 
   // --------------------------------------------------------------------------

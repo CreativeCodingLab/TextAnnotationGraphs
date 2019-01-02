@@ -39524,11 +39524,12 @@ function () {
       });
       rHandles.sort(function (a, b) {
         return a.precedes(b) ? -1 : 1;
-      }); // Start drawing lines between the Handles/text.  We can't simply draw
-      // full lines from the trigger to each argument, because we don't want
-      // to draw over any intervening argument labels.
-      // pReference will be the point next to the last drawn argument label
-      // from which the line to the next argument should begin.
+      }); // Start drawing lines between the Handles/text.
+      // To prevent drawing lines over the same coordinates repeatedly, we
+      // simply tack on additional lines as we move to the arguments further
+      // from the trigger.
+      // pReference will be the point on the last drawn argument line from
+      // which the line to the next argument should begin.
 
       var pReference; // Left handles
       // ============
@@ -39542,77 +39543,43 @@ function () {
         var pHandle = {
           x: _handle.x,
           y: this.top ? _handle.y - this.config.linkHandlePadding : _handle.y + this.config.linkHandlePadding
-        }; // Label
-        // -----
-        // The trigger always takes up index 0, so the index for the label is
-        // one less than the index for this handle in `this.handles`
-
-        var label = this.argLabels[this.handles.indexOf(_handle) - 1];
-        var textLength = label.length();
-        var textY = this.getLineY(_handle.row);
-        var textLeft = pHandle.x + this.config.linkCurveWidth;
-
-        if (textLeft + textLength > _handle.row.rw) {
-          textLeft = _handle.row.rw - textLength;
-        }
-
-        var textCentre = textLeft + textLength / 2; // Line
+        }; // Line
         // ----
-
-        var handleY = this.getLineY(_handle.row); // Argument handle to label
+        // Draw from argument handle to main Link line
 
         d += "M" + [pHandle.x, pHandle.y];
-
-        if (textLeft < pHandle.x) {
-          // Just draw a vertical line up to the label
-          d += "L" + [pHandle.x, handleY];
-        } else {
-          // Draw curve up to the main Link line, then, go up to the label
-          var curveLeftX = pHandle.x + this.config.linkCurveWidth;
-          curveLeftX = Math.min(curveLeftX, textLeft);
-          d += "C" + [pHandle.x, handleY, pHandle.x, handleY, curveLeftX, handleY] + "L" + [textLeft, handleY];
-        } // Label to pReference (if set)
-
+        var handleY = this.getLineY(_handle.row);
+        var curveLeftX = pHandle.x + this.config.linkCurveWidth;
+        var curveLeftY = this.top ? handleY + this.config.linkCurveWidth : handleY - this.config.linkCurveWidth;
+        d += "L" + [pHandle.x, curveLeftY] + "Q" + [pHandle.x, handleY, curveLeftX, handleY]; // Horizontal line to pReference (if set)
 
         if (pReference) {
-          if (_handle.row.idx === pReference.row.idx) {
-            // Same row
-            d += "M" + [textLeft + textLength, handleY] + "L" + [pReference.x, pReference.y];
-          } else {
-            // Draw in Link line across the end of the first row, and all
+          if (_handle.row.idx !== pReference.row.idx) {
+            // Draw in Link line across the end of the first row and all
             // intervening rows
-            d += "M" + [textLeft + textLength, handleY] + "L" + [_handle.row.rw, handleY];
+            d += "L" + [_handle.row.rw, handleY];
 
             for (var i = _handle.row.idx + 1; i < pReference.row.idx; i++) {
               var thisRow = this.main.rowManager.rows[i];
               var lineY = this.getLineY(thisRow);
               d += "M" + [0, lineY] + "L" + [thisRow.rw, lineY];
-            } // Draw in the last row
+            }
 
-
-            var finalY = this.getLineY(pReference.row);
-            d += "M" + [0, finalY] + "L" + [pReference.x, pReference.y];
+            d += "M" + [0, this.getLineY(pReference.row)];
           }
+
+          d += "L" + [pReference.x, pReference.y];
         }
 
         if (pReference === null) {
           // This is the first left handle; draw in the line to the trigger also.
           // Label to Trigger handle
-          if (_handle.row.idx === triggerHandle.row.idx) {
-            // Same row
-            if (textLeft + textLength > pTrigger.x) {
-              // Just draw a vertical line down to the handle
-              d += "M" + [pTrigger.x, handleY] + "L" + [pTrigger.x, pTrigger.y];
-            } else {
-              // Draw curve down from the main Link line
-              var curveRightX = pTrigger.x - this.config.linkCurveWidth;
-              curveRightX = Math.max(curveRightX, textLeft + textLength);
-              d += "M" + [textLeft + textLength, handleY] + "L" + [curveRightX, handleY] + "C" + [pTrigger.x, handleY, pTrigger.x, handleY, pTrigger.x, pTrigger.y];
-            }
-          } else {
-            // Draw in Link line across the end of the first row, and all
-            // intervening rows
-            d += "M" + [textLeft + textLength, handleY] + "L" + [_handle.row.rw, handleY];
+          // If this handle and the trigger handle are not on the same row,
+          // draw in the intervening rows first.
+          var finalY = handleY;
+
+          if (_handle.row.idx !== triggerHandle.row.idx) {
+            d += "L" + [_handle.row.rw, handleY];
 
             for (var _i3 = _handle.row.idx + 1; _i3 < triggerHandle.row.idx; _i3++) {
               var _thisRow = this.main.rowManager.rows[_i3];
@@ -39620,30 +39587,44 @@ function () {
               var _lineY = this.getLineY(_thisRow);
 
               d += "M" + [0, _lineY] + "L" + [_thisRow.rw, _lineY];
-            } // Draw in the last row
+            }
+
+            finalY = this.getLineY(triggerHandle.row);
+            d += "M" + [0, finalY];
+          } // Draw down to trigger on last row
 
 
-            var _curveRightX = pTrigger.x - this.config.linkCurveWidth;
-
-            _curveRightX = Math.max(_curveRightX, 0);
-
-            var _finalY = this.getLineY(triggerHandle.row);
-
-            d += "M" + [0, _finalY] + "L" + [_curveRightX, _finalY] + "C" + [pTrigger.x, _finalY, pTrigger.x, _finalY, pTrigger.x, pTrigger.y];
-          }
-        } // pReference for the next handle will be the lower-left corner of
-        // the label
+          var curveRightX = pTrigger.x - this.config.linkCurveWidth;
+          var curveRightY = this.top ? finalY + this.config.linkCurveWidth : finalY - this.config.linkCurveWidth;
+          d += "L" + [curveRightX, finalY] + "Q" + [pTrigger.x, finalY, pTrigger.x, curveRightY] + "L" + [pTrigger.x, pTrigger.y];
+        } // pReference for the next handle will be just past the curved part of
+        // the left-side vertical line
 
 
+        var refLeft = Math.min(pHandle.x + this.config.linkCurveWidth, _handle.row.rw);
         pReference = {
-          x: textLeft,
+          x: refLeft,
           y: handleY,
           row: _handle.row
         }; // Arrowhead
 
-        d += this._arrowhead(pHandle); // Move label
+        d += this._arrowhead(pHandle); // Label
+        // -----
+        // The trigger always takes up index 0, so the index for the label is
+        // one less than the index for this handle in `this.handles`
 
-        label.move(textCentre, textY);
+        var label = this.argLabels[this.handles.indexOf(_handle) - 1];
+        var labelCentre = pHandle.x;
+
+        if (labelCentre + label.length() / 2 > _handle.row.rw) {
+          labelCentre = _handle.row.rw - label.length() / 2;
+        }
+
+        if (labelCentre - label.length() / 2 < 0) {
+          labelCentre = label.length() / 2;
+        }
+
+        label.move(labelCentre, (pHandle.y + handleY) / 2);
       } // Right handles
       // ============
 
@@ -39657,49 +39638,31 @@ function () {
         var _pHandle = {
           x: _handle2.x,
           y: this.top ? _handle2.y - this.config.linkHandlePadding : _handle2.y + this.config.linkHandlePadding
-        }; // Label
-        // -----
-        // The trigger always takes up index 0, so the index for the label is
-        // one less than the index for this handle in `this.handles`
+        }; // pReference for the next handle will be just past the curved part of
+        // the right-side vertical line.  We calculate it here since we use it
+        // when drawing the line itself.
 
-        var _label = this.argLabels[this.handles.indexOf(_handle2) - 1];
-
-        var _textLength = _label.length();
-
-        var _textY = this.getLineY(_handle2.row);
-
-        var _textLeft = _pHandle.x - this.config.linkCurveWidth - _textLength;
-
-        _textLeft = Math.max(_textLeft, 0);
-
-        var _textCentre = _textLeft + _textLength / 2; // Line
+        var refRight = Math.max(_pHandle.x - this.config.linkCurveWidth, 0); // Line
         // ----
+        // Draw from main Link line to argument handle
 
+        var _handleY = this.getLineY(_handle2.row);
 
-        var _handleY = this.getLineY(_handle2.row); // Label to argument handle
+        d += "M" + [refRight, _handleY];
 
+        var _curveRightX = _pHandle.x - this.config.linkCurveWidth;
 
-        if (_textLeft + _textLength > _pHandle.x) {
-          // Just draw a vertical line down to the label
-          d += "M" + [_pHandle.x, _textY];
-          d += "L" + [_pHandle.x, _pHandle.y];
-        } else {
-          // Draw curve down from the main Link line
-          var _curveRightX2 = _pHandle.x - this.config.linkCurveWidth;
+        var _curveRightY = this.top ? _handleY + this.config.linkCurveWidth : _handleY - this.config.linkCurveWidth;
 
-          _curveRightX2 = Math.max(_curveRightX2, _textLeft + _textLength);
-          d += "M" + [_textLeft + _textLength, _textY] + "L" + [_curveRightX2, _textY] + "C" + [_pHandle.x, _textY, _pHandle.x, _textY, _pHandle.x, _pHandle.y];
-        } // pReference (if set) to label
-
+        d += "L" + [_curveRightX, _handleY] + "Q" + [_pHandle.x, _handleY, _pHandle.x, _curveRightY] + "L" + [_pHandle.x, _pHandle.y]; // Horizontal line from pReference (if set)
 
         if (pReference) {
-          if (pReference.row.idx === _handle2.row.idx) {
-            // Same row
-            d += "M" + [pReference.x, pReference.y] + "L" + [_textLeft, _handleY];
-          } else {
-            // Draw in Link line across the end of the first row, and all
+          d += "M" + [pReference.x, pReference.y];
+
+          if (pReference.row.idx !== _handle2.row.idx) {
+            // Draw in Link line across end of the first row and all
             // intervening rows
-            d += "M" + [pReference.x, pReference.y] + "L" + [pReference.row.rw, pReference.y];
+            d += "L" + [pReference.row.rw, pReference.y];
 
             for (var _i4 = pReference.row.idx + 1; _i4 < _handle2.row.idx; _i4++) {
               var _thisRow2 = this.main.rowManager.rows[_i4];
@@ -39707,39 +39670,31 @@ function () {
               var _lineY2 = this.getLineY(_thisRow2);
 
               d += "M" + [0, _lineY2] + "L" + [_thisRow2.rw, _lineY2];
-            } // Draw in the last row
+            }
 
-
-            var _finalY2 = this.getLineY(_handle2.row);
-
-            d += "M" + [0, _finalY2] + "L" + [_textLeft, _finalY2];
+            d += "M" + [0, _handleY];
           }
+
+          d += "L" + [refRight, _handleY];
         }
 
         if (pReference === null) {
           // This is the first right handle; draw in the line from the trigger
           // also.
-          var triggerY = this.getLineY(triggerHandle.row); // Trigger handle to label
+          d += "M" + [pTrigger.x, pTrigger.y]; // Draw up from trigger handle to main line, then draw across
+          // intervening rows if trigger handle and this handle are not on the
+          // same row
 
-          if (triggerHandle.row.idx === _handle2.row.idx) {
-            // Same row
-            if (_textLeft < pTrigger.x) {
-              // Just draw a vertical line up to the label
-              d += "M" + [pTrigger.x, pTrigger.y] + "L" + [pTrigger.x, triggerY];
-            } else {
-              // Draw curve up to the main Link line, then, go up to the label
-              var _curveLeftX = pTrigger.x + this.config.linkCurveWidth;
+          var triggerY = this.getLineY(triggerHandle.row);
 
-              _curveLeftX = Math.min(_curveLeftX, _textLeft);
-              d += "M" + [pTrigger.x, pTrigger.y] + "C" + [pTrigger.x, triggerY, pTrigger.x, triggerY, _curveLeftX, triggerY] + "L" + [_textLeft, triggerY];
-            }
-          } else {
-            // Draw in Link line across the end of the trigger row, and all
-            // intervening rows
-            var _curveLeftX2 = pTrigger.x + this.config.linkCurveWidth;
+          var _curveLeftX = pTrigger.x + this.config.linkCurveWidth;
 
-            _curveLeftX2 = Math.min(_curveLeftX2, triggerHandle.row.rw);
-            d += "M" + [pTrigger.x, pTrigger.y] + "C" + [pTrigger.x, triggerY, pTrigger.x, triggerY, _curveLeftX2, triggerY] + "L" + [_handle2.row.rw, triggerY];
+          var _curveLeftY = this.top ? triggerY + this.config.linkCurveWidth : triggerY - this.config.linkCurveWidth;
+
+          d += "L" + [pTrigger.x, _curveLeftY] + "Q" + [pTrigger.x, triggerY, _curveLeftX, triggerY];
+
+          if (triggerHandle.row.idx !== _handle2.row.idx) {
+            d += "L" + [triggerHandle.row.rw, triggerY];
 
             for (var _i5 = triggerHandle.row.idx + 1; _i5 < _handle2.row.idx; _i5++) {
               var _thisRow3 = this.main.rowManager.rows[_i5];
@@ -39747,32 +39702,65 @@ function () {
               var _lineY3 = this.getLineY(_thisRow3);
 
               d += "M" + [0, _lineY3] + "L" + [_thisRow3.rw, _lineY3];
-            } // Draw in the last row
+            }
 
-
-            var _finalY3 = this.getLineY(_handle2.row);
-
-            d += "M" + [0, _finalY3] + "L" + [_textLeft, _finalY3];
+            d += "M" + [0, _handleY];
           }
-        } // pReference for the next handle will be the lower-right corner of
-        // the label
+
+          d += "L" + [refRight, _handleY];
+        } // pReference for the next handle is just inside the curved part of
+        // the right-side vertical line
 
 
         pReference = {
-          x: _textLeft + _textLength,
+          x: refRight,
           y: _handleY,
           row: _handle2.row
         }; // Arrowhead
 
-        d += this._arrowhead(_pHandle); // Move label
+        d += this._arrowhead(_pHandle); // Label
+        // -----
+        // The trigger always takes up index 0, so the index for the label is
+        // one less than the index for this handle in `this.handles`
 
-        _label.move(_textCentre, _textY);
+        var _label = this.argLabels[this.handles.indexOf(_handle2) - 1];
+        var _labelCentre = _pHandle.x;
+
+        if (_labelCentre + _label.length() / 2 > _handle2.row.rw) {
+          _labelCentre = _handle2.row.rw - _label.length() / 2;
+        }
+
+        if (_labelCentre - _label.length() / 2 < 0) {
+          _labelCentre = _label.length() / 2;
+        }
+
+        _label.move(_labelCentre, (_pHandle.y + _handleY) / 2);
       } // Add flat arrowhead to trigger handle if there are both leftward and
       // rightward handles
 
 
       if (lHandles.length > 0 && rHandles.length > 0) {
         d += "M" + [pTrigger.x, pTrigger.y] + "m" + [this.config.linkArrowWidth, 0] + "l" + [-2 * this.config.linkArrowWidth, 0];
+      } // Figure out where to put the main link label
+
+
+      var linkLabelY = this.getLineY(triggerHandle.row);
+
+      if (lHandles.length > 0 && rHandles.length > 0) {
+        // Put it in the middle, right on top of the trigger Word
+        this.linkLabel.move(triggerHandle.x, linkLabelY);
+      } else if (lHandles.length === 0) {
+        // Put it in between the trigger and the first right handle
+        var rHandle = rHandles[0];
+        var linkLabelX = rHandle.row.idx === triggerHandle.row.idx ? (triggerHandle.x + rHandle.x) / 2 : (triggerHandle.x + triggerHandle.row.rw) / 2;
+        this.linkLabel.move(linkLabelX, linkLabelY);
+      } else if (rHandles.length === 0) {
+        // Put it in between the trigger and the first left handle
+        var lHandle = lHandles[0];
+
+        var _linkLabelX = lHandle.row.idx === triggerHandle.row.idx ? (triggerHandle.x + lHandle.x) / 2 : triggerHandle.x / 2;
+
+        this.linkLabel.move(_linkLabelX, linkLabelY);
       } // Perform draw
 
 
@@ -39822,7 +39810,7 @@ function () {
       var firstY = this.getLineY(leftHandle.row);
       var curveLeftX = pStart.x + this.config.linkCurveWidth;
       curveLeftX = Math.min(curveLeftX, leftHandle.row.rw);
-      var curveLeftY = firstY + this.config.linkCurveWidth;
+      var curveLeftY = this.top ? firstY + this.config.linkCurveWidth : firstY - this.config.linkCurveWidth;
       d += "L" + [pStart.x, curveLeftY] + "Q" + [pStart.x, firstY, curveLeftX, firstY];
       var leftLabel = this.argLabels[this.handles.indexOf(leftHandle)];
       var leftLabelCentre = pStart.x;
@@ -39858,7 +39846,7 @@ function () {
 
 
       var curveRightX = pEnd.x - this.config.linkCurveWidth;
-      var curveRightY = finalY + this.config.linkCurveWidth;
+      var curveRightY = this.top ? finalY + this.config.linkCurveWidth : finalY - this.config.linkCurveWidth;
       d += "L" + [curveRightX, finalY] + "Q" + [pEnd.x, finalY, pEnd.x, curveRightY] + "L" + [pEnd.x, pEnd.y];
       var rightLabel = this.argLabels[this.handles.indexOf(rightHandle)];
       var rightLabelCentre = pEnd.x;
@@ -40069,7 +40057,7 @@ function () {
     }); // Magic number for width to distribute handles across on the same anchor
     // TODO: Base on anchor width?
 
-    var w = 10; // Distribute the handles based on their sort position
+    var w = 15; // Distribute the handles based on their sort position
 
     if (l.length > 1) {
       if (anchor instanceof Link) {
@@ -42337,8 +42325,10 @@ function () {
       showTopLinksOnMove: true,
       showBottomLinksOnMove: false,
       // Show main/argument labels on Links?
-      showMainLabel: true,
-      showArgLabels: true
+      showTopMainLabel: true,
+      showTopArgLabels: false,
+      showBottomMainLabel: true,
+      showBottomArgLabels: false
     }; // Initialisation
 
     this.resize();
@@ -42503,13 +42493,13 @@ function () {
           link.show();
         }
 
-        if (_this.options.showMainLabel) {
+        if (link.top && _this.options.showTopMainLabel || !link.top && _this.options.showBottomMainLabel) {
           link.showMainLabel();
         } else {
           link.hideMainLabel();
         }
 
-        if (_this.options.showArgLabels) {
+        if (link.top && _this.options.showTopArgLabels || !link.top && _this.options.showBottomArgLabels) {
           link.showArgLabels();
         } else {
           link.hideArgLabels();
@@ -42753,41 +42743,97 @@ function () {
       });
     }
     /**
-     * Shows/hides the main label on Links
+     * Shows/hides the main label on top Links
      * @param {Boolean} visible - Show if true, hide if false
      */
 
   }, {
-    key: "setMainLabelVisibility",
-    value: function setMainLabelVisibility(visible) {
-      this.setOption("showMainLabel", visible);
+    key: "setTopMainLabelVisibility",
+    value: function setTopMainLabelVisibility(visible) {
+      this.setOption("showTopMainLabel", visible);
 
       if (visible) {
-        this.links.forEach(function (link) {
+        this.links.filter(function (link) {
+          return link.top;
+        }).forEach(function (link) {
           return link.showMainLabel();
         });
       } else {
-        this.links.forEach(function (link) {
+        this.links.filter(function (link) {
+          return link.top;
+        }).forEach(function (link) {
           return link.hideMainLabel();
         });
       }
     }
     /**
-     * Shows/hides the argument labels on Links
+     * Shows/hides the argument labels on top Links
      * @param {Boolean} visible - Show if true, hide if false
      */
 
   }, {
-    key: "setArgLabelVisibility",
-    value: function setArgLabelVisibility(visible) {
-      this.setOption("showArgLabels", visible);
+    key: "setTopArgLabelVisibility",
+    value: function setTopArgLabelVisibility(visible) {
+      this.setOption("showTopArgLabels", visible);
 
       if (visible) {
-        this.links.forEach(function (link) {
+        this.links.filter(function (link) {
+          return link.top;
+        }).forEach(function (link) {
           return link.showArgLabels();
         });
       } else {
-        this.links.forEach(function (link) {
+        this.links.filter(function (link) {
+          return link.top;
+        }).forEach(function (link) {
+          return link.hideArgLabels();
+        });
+      }
+    }
+    /**
+     * Shows/hides the main label on bottom Links
+     * @param {Boolean} visible - Show if true, hide if false
+     */
+
+  }, {
+    key: "setBottomMainLabelVisibility",
+    value: function setBottomMainLabelVisibility(visible) {
+      this.setOption("showBottomMainLabel", visible);
+
+      if (visible) {
+        this.links.filter(function (link) {
+          return !link.top;
+        }).forEach(function (link) {
+          return link.showMainLabel();
+        });
+      } else {
+        this.links.filter(function (link) {
+          return !link.top;
+        }).forEach(function (link) {
+          return link.hideMainLabel();
+        });
+      }
+    }
+    /**
+     * Shows/hides the argument labels on bottom Links
+     * @param {Boolean} visible - Show if true, hide if false
+     */
+
+  }, {
+    key: "setBottomArgLabelVisibility",
+    value: function setBottomArgLabelVisibility(visible) {
+      this.setOption("showBottomArgLabels", visible);
+
+      if (visible) {
+        this.links.filter(function (link) {
+          return !link.top;
+        }).forEach(function (link) {
+          return link.showArgLabels();
+        });
+      } else {
+        this.links.filter(function (link) {
+          return !link.top;
+        }).forEach(function (link) {
           return link.hideArgLabels();
         });
       }

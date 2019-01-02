@@ -67,8 +67,10 @@ class Main {
       showBottomLinksOnMove: false,
 
       // Show main/argument labels on Links?
-      showMainLabel: true,
-      showArgLabels: true
+      showTopMainLabel: true,
+      showTopArgLabels: false,
+      showBottomMainLabel: true,
+      showBottomArgLabels: false
     };
 
     // Initialisation
@@ -178,13 +180,15 @@ class Main {
         link.show();
       }
 
-      if (this.options.showMainLabel) {
+      if ((link.top && this.options.showTopMainLabel) ||
+        (!link.top && this.options.showBottomMainLabel)) {
         link.showMainLabel();
       } else {
         link.hideMainLabel();
       }
 
-      if (this.options.showArgLabels) {
+      if ((link.top && this.options.showTopArgLabels) ||
+        (!link.top && this.options.showBottomArgLabels)) {
         link.showArgLabels();
       } else {
         link.hideArgLabels();
@@ -406,28 +410,70 @@ class Main {
   }
 
   /**
-   * Shows/hides the main label on Links
+   * Shows/hides the main label on top Links
    * @param {Boolean} visible - Show if true, hide if false
    */
-  setMainLabelVisibility(visible) {
-    this.setOption("showMainLabel", visible);
+  setTopMainLabelVisibility(visible) {
+    this.setOption("showTopMainLabel", visible);
     if (visible) {
-      this.links.forEach(link => link.showMainLabel());
+      this.links
+        .filter(link => link.top)
+        .forEach(link => link.showMainLabel());
     } else {
-      this.links.forEach(link => link.hideMainLabel());
+      this.links
+        .filter(link => link.top)
+        .forEach(link => link.hideMainLabel());
     }
   }
 
   /**
-   * Shows/hides the argument labels on Links
+   * Shows/hides the argument labels on top Links
    * @param {Boolean} visible - Show if true, hide if false
    */
-  setArgLabelVisibility(visible) {
-    this.setOption("showArgLabels", visible);
+  setTopArgLabelVisibility(visible) {
+    this.setOption("showTopArgLabels", visible);
     if (visible) {
-      this.links.forEach(link => link.showArgLabels());
+      this.links
+        .filter(link => link.top)
+        .forEach(link => link.showArgLabels());
     } else {
-      this.links.forEach(link => link.hideArgLabels());
+      this.links
+        .filter(link => link.top)
+        .forEach(link => link.hideArgLabels());
+    }
+  }
+
+  /**
+   * Shows/hides the main label on bottom Links
+   * @param {Boolean} visible - Show if true, hide if false
+   */
+  setBottomMainLabelVisibility(visible) {
+    this.setOption("showBottomMainLabel", visible);
+    if (visible) {
+      this.links
+        .filter(link => !link.top)
+        .forEach(link => link.showMainLabel());
+    } else {
+      this.links
+        .filter(link => !link.top)
+        .forEach(link => link.hideMainLabel());
+    }
+  }
+
+  /**
+   * Shows/hides the argument labels on bottom Links
+   * @param {Boolean} visible - Show if true, hide if false
+   */
+  setBottomArgLabelVisibility(visible) {
+    this.setOption("showBottomArgLabels", visible);
+    if (visible) {
+      this.links
+        .filter(link => !link.top)
+        .forEach(link => link.showArgLabels());
+    } else {
+      this.links
+        .filter(link => !link.top)
+        .forEach(link => link.hideArgLabels());
     }
   }
 
