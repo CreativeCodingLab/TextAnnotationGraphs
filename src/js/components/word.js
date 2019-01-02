@@ -223,11 +223,17 @@ class Word {
     this.initialised = true;
   }
 
+  /**
+   * Redraw Links
+   */
   redrawLinks() {
     this.links.forEach(l => l.draw(this));
     this.redrawClusters();
   }
 
+  /**
+   * Redraw all clusters (they should always be visible)
+   */
   redrawClusters() {
     this.clusters.forEach(cluster => {
       if (cluster.endpoints.indexOf(this) > -1) {

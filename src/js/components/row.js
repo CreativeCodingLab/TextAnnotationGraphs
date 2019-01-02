@@ -238,7 +238,7 @@ class Row {
   redrawLinksAndClusters() {
     const elements = [];
     for (const word of this.words) {
-      for (const link of word.links) {
+      for (const link of word.passingLinks) {
         if (elements.indexOf(link) < 0) {
           elements.push(link);
         }
@@ -265,7 +265,7 @@ class Row {
    * @return {number}
    */
   get ry2() {
-    return this.ry + this.rh + this.descent;
+    return this.ry + this.rh + this.minDescent;
   }
 
   /**
@@ -352,41 +352,85 @@ class Row {
 
   /**
    * Returns the minimum amount of height above the baseline needed to fit
-   * all this Row's Words, top WordTags and top Links.
+   * all this Row's Words, top WordTags and currently-visible top Links.
    * Includes vertical Row padding.
    * @return {number}
    */
   get minHeight() {
-    let height = this.wordHeight +
-      this.maxSlot * this.config.linkSlotInterval +
-      this.config.rowVerticalPadding;
+    // Minimum height needed for Words + padding only
+    let height = this.wordHeight + this.config.rowVerticalPadding;
 
-    // Because top Link labels are above the Link lines, we need to add
-    // their height if any of the Words on this Row is an endpoint for a Link
-    for (const word of this.words) {
-      for (const link of word.links) {
-        if (link.top) {
-          // This Word anchors some top Link
-          return height + this.config.rowExtraTopPadding;
+    // Highest visible top Link
+    let maxVisibleSlot = 0;
+
+    let checkWords = this.words;
+    if (checkWords.length === 0 && this.lastRemovedWord !== null) {
+      // We let all our Words go; what was the last one that mattered?
+      checkWords = [this.lastRemovedWord];
+    }
+
+    for (const word of checkWords) {
+      for (const link of word.links.concat(word.passingLinks)) {
+        if (link.top && link.visible) {
+          maxVisibleSlot = Math.max(
+            maxVisibleSlot,
+            link.slot
+          );
         }
       }
     }
 
-    // Still here?
+    // Because top Link labels are above the Link lines, we need to add
+    // their height if any of the Words on this Row is an endpoint for a Link
+    if (maxVisibleSlot > 0) {
+      return height +
+        maxVisibleSlot * this.config.linkSlotInterval +
+        this.config.rowExtraTopPadding;
+    }
+
+    // Still here?  No visible top Links on this row.
     return height;
   }
 
   /**
-   * Returns the amount of descent below the baseline needed to fit
-   * all this Row's bottom WordTags and Links.
+   * Returns the minimum amount of descent below the baseline needed to fit
+   * all this Row's bottom WordTags and currently-visible bottom Links.
    * Includes vertical Row padding.
-   * TODO: Have this account for whether or not bottom Links are visible.
    * @return {number}
    */
-  get descent() {
-    return this.wordDescent +
-      Math.abs(this.minSlot) * this.config.linkSlotInterval +
-      this.config.rowVerticalPadding;
+  get minDescent() {
+    // Minimum height needed for WordTags + padding only
+    let descent = this.wordDescent + this.config.rowVerticalPadding;
+
+    // Lowest visible bottom Link
+    let minVisibleSlot = 0;
+
+    let checkWords = this.words;
+    if (checkWords.length === 0 && this.lastRemovedWord !== null) {
+      // We let all our Words go; what was the last one that mattered?
+      checkWords = [this.lastRemovedWord];
+    }
+
+    for (const word of checkWords) {
+      for (const link of word.links.concat(word.passingLinks)) {
+        if (!link.top && link.visible) {
+          minVisibleSlot = Math.min(
+            minVisibleSlot,
+            link.slot
+          );
+        }
+      }
+    }
+
+    // Unlike in the `minHeight()` function, bottom Link labels do not
+    // extend below the Link lines, so we don't need to add extra padding
+    // for them.
+    if (minVisibleSlot < 0) {
+      return descent + Math.abs(minVisibleSlot) * this.config.linkSlotInterval;
+    }
+
+    // Still here?  No visible bottom Links on this row.
+    return descent;
   }
 
   /**

@@ -195,6 +195,9 @@ class Main {
       }
     });
 
+    // Now that Links are visible, make sure that all Rows have enough space
+    this.rowManager.resizeAll();
+
     // Change token colours based on the current taxonomy, if loaded
     this.taxonomyManager.colour(this.words);
   }
@@ -378,6 +381,9 @@ class Main {
           link.hide();
         }
       });
+
+    // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
   }
 
   /**
@@ -407,6 +413,9 @@ class Main {
           link.hide();
         }
       });
+
+    // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
   }
 
   /**

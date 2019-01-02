@@ -38746,7 +38746,9 @@ function () {
     this.top = top;
     this.category = category; // Is this Link currently visible in the visualisation?
 
-    this.visible = false; // Slots are the y-intervals at which links may be drawn.
+    this.visible = false; // Should this Link be drawn onto the visualisation?
+
+    this.enabled = false; // Slots are the y-intervals at which links may be drawn.
     // The main instance will need to provide the `.calculateSlot()` method
     // with the full set of Words in the data so that we can check for
     // crossing/intervening Links.
@@ -38952,36 +38954,38 @@ function () {
   }, {
     key: "toggle",
     value: function toggle() {
-      if (this.visible) {
+      if (this.enabled) {
         this.hide();
       } else {
         this.show();
       }
-
-      this.visible = !this.visible;
     }
     /**
-     * Shows this Link
+     * Enables this Link and draws it onto the visualisation
      */
 
   }, {
     key: "show",
     value: function show() {
-      if (this.svg) {
+      this.enabled = true;
+
+      if (this.svg && !this.svg.visible()) {
         this.svg.show();
-        this.draw();
       }
 
+      this.draw();
       this.visible = true;
     }
     /**
-     * Hides this Link
+     * Disables this Link and removes it from the visualisation
      */
 
   }, {
     key: "hide",
     value: function hide() {
-      if (this.svg) {
+      this.enabled = false;
+
+      if (this.svg && this.svg.visible()) {
         this.svg.hide();
       }
 
@@ -38994,7 +38998,8 @@ function () {
   }, {
     key: "showMainLabel",
     value: function showMainLabel() {
-      this.linkLabel.show();
+      this.linkLabel.show(); // Redraw the Link to make sure that the label ends up in the correct spot
+
       this.draw();
     }
     /**
@@ -39015,7 +39020,8 @@ function () {
     value: function showArgLabels() {
       this.argLabels.forEach(function (label) {
         return label.show();
-      });
+      }); // Redraw the Link to make sure that the label ends up in the correct spot
+
       this.draw();
     }
     /**
@@ -39042,7 +39048,7 @@ function () {
     value: function draw(modAnchor) {
       var _this3 = this;
 
-      if (!this.initialised) {
+      if (!this.initialised || !this.enabled) {
         return;
       } // Recalculate handle positions
 
@@ -39056,7 +39062,10 @@ function () {
         })];
       }
 
-      var changedHandles = [];
+      var changedHandles = []; // One or more of our anchors might be nested Links.  We need to make
+      // sure that all of them are already drawn in, so that our offset
+      // calculations and the like are accurate.
+
       var _iteratorNormalCompletion2 = true;
       var _didIteratorError2 = false;
       var _iteratorError2 = undefined;
@@ -39064,62 +39073,12 @@ function () {
       try {
         for (var _iterator2 = calcHandles[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
           var handle = _step2.value;
-          var anchor = handle.anchor; // Two possibilities: The anchor is a Word/WordCluster, or it is a
-          // Link.
+          var anchor = handle.anchor;
 
-          if (!(anchor instanceof Link)) {
-            // No need to account for multiple rows (the handle will be resting
-            // on the label for a Word/WordCluster)
-            // The 0-offset location is the centre of the anchor.
-            var newX = anchor.cx + handle.offset;
-            var newY = this.top ? anchor.absoluteY : anchor.absoluteDescent;
-
-            if (handle.x !== newX || handle.y !== newY) {
-              handle.x = newX;
-              handle.y = newY;
-              handle.row = anchor.row;
-              changedHandles.push(handle);
-            }
-          } else {
-            // The anchor is a Link; the handle rests on another Link's line,
-            // and the offset might extend to the next row and beyond.
-            if (!anchor.visible) {
-              // We need to draw in our anchor before proceeding with our own draw
-              anchor.draw();
-            }
-
-            var baseLeft = anchor.leftHandle; // First, make sure the offset doesn't overshoot the base row
-
-            handle.offset = Math.min(handle.offset, anchor.width);
-            handle.offset = Math.max(handle.offset, 0); // Handle intervening rows without modifying `handle.offset` or
-            // the anchor Link directly
-
-            var calcOffset = handle.offset;
-            var calcRow = baseLeft.row;
-            var calcX = baseLeft.x;
-
-            while (calcOffset > calcRow.rw - calcX) {
-              calcOffset -= calcRow.rw - calcX;
-              calcX = 0;
-              calcRow = this.main.rowManager.rows[calcRow.idx + 1];
-            } // Last row - Deal with remaining offset
-
-
-            var _newX = calcX + calcOffset;
-
-            var _newY = anchor.getLineY(calcRow);
-
-            if (handle.x !== _newX || handle.y !== _newY) {
-              handle.x = _newX;
-              handle.y = _newY;
-              handle.row = calcRow;
-              changedHandles.push(handle);
-            }
+          if (anchor instanceof Link && !anchor.visible) {
+            anchor.show();
           }
-        } // If our width has changed, we should update the offset of any of our
-        // parent Links.
-        // The parent Link will be redrawn after we're done redrawing this
-        // one, and any adjustments will be made automatically during the redraw.
+        } // Offset calculations
 
       } catch (err) {
         _didIteratorError2 = true;
@@ -39136,6 +39095,80 @@ function () {
         }
       }
 
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = calcHandles[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var _handle = _step3.value;
+          var _anchor = _handle.anchor; // Two possibilities: The anchor is a Word/WordCluster, or it is a
+          // Link.
+
+          if (!(_anchor instanceof Link)) {
+            // No need to account for multiple rows (the handle will be resting
+            // on the label for a Word/WordCluster)
+            // The 0-offset location is the centre of the anchor.
+            var newX = _anchor.cx + _handle.offset;
+            var newY = this.top ? _anchor.absoluteY : _anchor.absoluteDescent;
+
+            if (_handle.x !== newX || _handle.y !== newY) {
+              _handle.x = newX;
+              _handle.y = newY;
+              _handle.row = _anchor.row;
+              changedHandles.push(_handle);
+            }
+          } else {
+            // The anchor is a Link; the handle rests on another Link's line,
+            // and the offset might extend to the next row and beyond.
+            var baseLeft = _anchor.leftHandle; // First, make sure the offset doesn't overshoot the base row
+
+            _handle.offset = Math.min(_handle.offset, _anchor.width);
+            _handle.offset = Math.max(_handle.offset, 0); // Handle intervening rows without modifying `handle.offset` or
+            // the anchor Link directly
+
+            var calcOffset = _handle.offset;
+            var calcRow = baseLeft.row;
+            var calcX = baseLeft.x;
+
+            while (calcOffset > calcRow.rw - calcX) {
+              calcOffset -= calcRow.rw - calcX;
+              calcX = 0;
+              calcRow = this.main.rowManager.rows[calcRow.idx + 1];
+            } // Last row - Deal with remaining offset
+
+
+            var _newX = calcX + calcOffset;
+
+            var _newY = _anchor.getLineY(calcRow);
+
+            if (_handle.x !== _newX || _handle.y !== _newY) {
+              _handle.x = _newX;
+              _handle.y = _newY;
+              _handle.row = calcRow;
+              changedHandles.push(_handle);
+            }
+          }
+        } // If our width has changed, we should update the offset of any of our
+        // parent Links.
+        // The parent Link will be redrawn after we're done redrawing this
+        // one, and any adjustments will be made automatically during the redraw.
+
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+
       if (this.lastDrawnWidth === null) {
         this.lastDrawnWidth = this.width;
       } else {
@@ -39144,13 +39177,13 @@ function () {
         // possible, we should adjust its offset only if our left handle changed
 
         if (changedHandles.length === 1 && changedHandles[0] === this.leftHandle) {
-          var _iteratorNormalCompletion3 = true;
-          var _didIteratorError3 = false;
-          var _iteratorError3 = undefined;
+          var _iteratorNormalCompletion4 = true;
+          var _didIteratorError4 = false;
+          var _iteratorError4 = undefined;
 
           try {
-            for (var _iterator3 = this.links[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-              var parentLink = _step3.value;
+            for (var _iterator4 = this.links[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+              var parentLink = _step4.value;
               var parentHandle = parentLink.handles.find(function (h) {
                 return h.anchor === _this3;
               });
@@ -39158,16 +39191,16 @@ function () {
               parentHandle.offset = Math.max(parentHandle.offset, 0);
             }
           } catch (err) {
-            _didIteratorError3 = true;
-            _iteratorError3 = err;
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-                _iterator3.return();
+              if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
+                _iterator4.return();
               }
             } finally {
-              if (_didIteratorError3) {
-                throw _iteratorError3;
+              if (_didIteratorError4) {
+                throw _iteratorError4;
               }
             }
           }
@@ -39183,11 +39216,6 @@ function () {
         // This Link has no trigger (Relation)
         this._drawAsRelation();
       }
-
-      this.visible = true;
-      this.links.forEach(function (l) {
-        return l.draw(_this3);
-      });
     }
     /**
      * Removes this Link's SVG elements from the visualisation, and removes
@@ -39273,23 +39301,23 @@ function () {
 
       words[this.endpoints[0].idx].passingLinks.push(this);
       words[this.endpoints[1].idx].passingLinks.push(this);
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
+      var _iteratorNormalCompletion5 = true;
+      var _didIteratorError5 = false;
+      var _iteratorError5 = undefined;
 
       try {
-        for (var _iterator4 = coveredWords[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-          var word = _step4.value;
+        for (var _iterator5 = coveredWords[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+          var word = _step5.value;
           // Let this Word know we're watching it
           word.passingLinks.push(this); // Word Links
 
-          var _iteratorNormalCompletion6 = true;
-          var _didIteratorError6 = false;
-          var _iteratorError6 = undefined;
+          var _iteratorNormalCompletion7 = true;
+          var _didIteratorError7 = false;
+          var _iteratorError7 = undefined;
 
           try {
-            for (var _iterator6 = word.links[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-              var link = _step6.value;
+            for (var _iterator7 = word.links[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+              var link = _step7.value;
 
               // Only consider Links on the same side of the Row as this one
               if (link !== this && link.top === this.top && intervening.indexOf(link) < 0) {
@@ -39297,55 +39325,6 @@ function () {
               }
             } // WordCluster Links
 
-          } catch (err) {
-            _didIteratorError6 = true;
-            _iteratorError6 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-                _iterator6.return();
-              }
-            } finally {
-              if (_didIteratorError6) {
-                throw _iteratorError6;
-              }
-            }
-          }
-
-          var _iteratorNormalCompletion7 = true;
-          var _didIteratorError7 = false;
-          var _iteratorError7 = undefined;
-
-          try {
-            for (var _iterator7 = word.clusters[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-              var cluster = _step7.value;
-              var _iteratorNormalCompletion8 = true;
-              var _didIteratorError8 = false;
-              var _iteratorError8 = undefined;
-
-              try {
-                for (var _iterator8 = cluster.links[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-                  var _link = _step8.value;
-
-                  if (_link !== this && _link.top === this.top && intervening.indexOf(_link) < 0) {
-                    intervening.push(_link);
-                  }
-                }
-              } catch (err) {
-                _didIteratorError8 = true;
-                _iteratorError8 = err;
-              } finally {
-                try {
-                  if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
-                    _iterator8.return();
-                  }
-                } finally {
-                  if (_didIteratorError8) {
-                    throw _iteratorError8;
-                  }
-                }
-              }
-            }
           } catch (err) {
             _didIteratorError7 = true;
             _iteratorError7 = err;
@@ -39360,35 +39339,57 @@ function () {
               }
             }
           }
+
+          var _iteratorNormalCompletion8 = true;
+          var _didIteratorError8 = false;
+          var _iteratorError8 = undefined;
+
+          try {
+            for (var _iterator8 = word.clusters[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+              var cluster = _step8.value;
+              var _iteratorNormalCompletion9 = true;
+              var _didIteratorError9 = false;
+              var _iteratorError9 = undefined;
+
+              try {
+                for (var _iterator9 = cluster.links[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+                  var _link = _step9.value;
+
+                  if (_link !== this && _link.top === this.top && intervening.indexOf(_link) < 0) {
+                    intervening.push(_link);
+                  }
+                }
+              } catch (err) {
+                _didIteratorError9 = true;
+                _iteratorError9 = err;
+              } finally {
+                try {
+                  if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
+                    _iterator9.return();
+                  }
+                } finally {
+                  if (_didIteratorError9) {
+                    throw _iteratorError9;
+                  }
+                }
+              }
+            }
+          } catch (err) {
+            _didIteratorError8 = true;
+            _iteratorError8 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
+                _iterator8.return();
+              }
+            } finally {
+              if (_didIteratorError8) {
+                throw _iteratorError8;
+              }
+            }
+          }
         } // All of our own nested Links are also intervening Links
 
-      } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-            _iterator4.return();
-          }
-        } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
-          }
-        }
-      }
-
-      var _iteratorNormalCompletion5 = true;
-      var _didIteratorError5 = false;
-      var _iteratorError5 = undefined;
-
-      try {
-        for (var _iterator5 = this.arguments[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-          var arg = _step5.value;
-
-          if (arg.anchor instanceof Link && intervening.indexOf(arg.anchor) < 0) {
-            intervening.push(arg.anchor);
-          }
-        }
       } catch (err) {
         _didIteratorError5 = true;
         _iteratorError5 = err;
@@ -39400,6 +39401,33 @@ function () {
         } finally {
           if (_didIteratorError5) {
             throw _iteratorError5;
+          }
+        }
+      }
+
+      var _iteratorNormalCompletion6 = true;
+      var _didIteratorError6 = false;
+      var _iteratorError6 = undefined;
+
+      try {
+        for (var _iterator6 = this.arguments[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+          var arg = _step6.value;
+
+          if (arg.anchor instanceof Link && intervening.indexOf(arg.anchor) < 0) {
+            intervening.push(arg.anchor);
+          }
+        }
+      } catch (err) {
+        _didIteratorError6 = true;
+        _iteratorError6 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
+            _iterator6.return();
+          }
+        } finally {
+          if (_didIteratorError6) {
+            throw _iteratorError6;
           }
         }
       }
@@ -39486,13 +39514,13 @@ function () {
 
       var lHandles = [];
       var rHandles = [];
-      var _iteratorNormalCompletion9 = true;
-      var _didIteratorError9 = false;
-      var _iteratorError9 = undefined;
+      var _iteratorNormalCompletion10 = true;
+      var _didIteratorError10 = false;
+      var _iteratorError10 = undefined;
 
       try {
-        for (var _iterator9 = this.handles[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-          var handle = _step9.value;
+        for (var _iterator10 = this.handles[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+          var handle = _step10.value;
 
           if (handle === triggerHandle) {
             continue;
@@ -39505,16 +39533,16 @@ function () {
           }
         }
       } catch (err) {
-        _didIteratorError9 = true;
-        _iteratorError9 = err;
+        _didIteratorError10 = true;
+        _iteratorError10 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-            _iterator9.return();
+          if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
+            _iterator10.return();
           }
         } finally {
-          if (_didIteratorError9) {
-            throw _iteratorError9;
+          if (_didIteratorError10) {
+            throw _iteratorError10;
           }
         }
       }
@@ -39537,29 +39565,29 @@ function () {
       pReference = null;
 
       for (var _i = 0; _i < lHandles.length; _i++) {
-        var _handle = lHandles[_i];
+        var _handle2 = lHandles[_i];
         // Handle
         // ------
         var pHandle = {
-          x: _handle.x,
-          y: this.top ? _handle.y - this.config.linkHandlePadding : _handle.y + this.config.linkHandlePadding
+          x: _handle2.x,
+          y: this.top ? _handle2.y - this.config.linkHandlePadding : _handle2.y + this.config.linkHandlePadding
         }; // Line
         // ----
         // Draw from argument handle to main Link line
 
         d += "M" + [pHandle.x, pHandle.y];
-        var handleY = this.getLineY(_handle.row);
+        var handleY = this.getLineY(_handle2.row);
         var curveLeftX = pHandle.x + this.config.linkCurveWidth;
         var curveLeftY = this.top ? handleY + this.config.linkCurveWidth : handleY - this.config.linkCurveWidth;
         d += "L" + [pHandle.x, curveLeftY] + "Q" + [pHandle.x, handleY, curveLeftX, handleY]; // Horizontal line to pReference (if set)
 
         if (pReference) {
-          if (_handle.row.idx !== pReference.row.idx) {
+          if (_handle2.row.idx !== pReference.row.idx) {
             // Draw in Link line across the end of the first row and all
             // intervening rows
-            d += "L" + [_handle.row.rw, handleY];
+            d += "L" + [_handle2.row.rw, handleY];
 
-            for (var i = _handle.row.idx + 1; i < pReference.row.idx; i++) {
+            for (var i = _handle2.row.idx + 1; i < pReference.row.idx; i++) {
               var thisRow = this.main.rowManager.rows[i];
               var lineY = this.getLineY(thisRow);
               d += "M" + [0, lineY] + "L" + [thisRow.rw, lineY];
@@ -39578,10 +39606,10 @@ function () {
           // draw in the intervening rows first.
           var finalY = handleY;
 
-          if (_handle.row.idx !== triggerHandle.row.idx) {
-            d += "L" + [_handle.row.rw, handleY];
+          if (_handle2.row.idx !== triggerHandle.row.idx) {
+            d += "L" + [_handle2.row.rw, handleY];
 
-            for (var _i3 = _handle.row.idx + 1; _i3 < triggerHandle.row.idx; _i3++) {
+            for (var _i3 = _handle2.row.idx + 1; _i3 < triggerHandle.row.idx; _i3++) {
               var _thisRow = this.main.rowManager.rows[_i3];
 
               var _lineY = this.getLineY(_thisRow);
@@ -39601,11 +39629,11 @@ function () {
         // the left-side vertical line
 
 
-        var refLeft = Math.min(pHandle.x + this.config.linkCurveWidth, _handle.row.rw);
+        var refLeft = Math.min(pHandle.x + this.config.linkCurveWidth, _handle2.row.rw);
         pReference = {
           x: refLeft,
           y: handleY,
-          row: _handle.row
+          row: _handle2.row
         }; // Arrowhead
 
         d += this._arrowhead(pHandle); // Label
@@ -39613,11 +39641,11 @@ function () {
         // The trigger always takes up index 0, so the index for the label is
         // one less than the index for this handle in `this.handles`
 
-        var label = this.argLabels[this.handles.indexOf(_handle) - 1];
+        var label = this.argLabels[this.handles.indexOf(_handle2) - 1];
         var labelCentre = pHandle.x;
 
-        if (labelCentre + label.length() / 2 > _handle.row.rw) {
-          labelCentre = _handle.row.rw - label.length() / 2;
+        if (labelCentre + label.length() / 2 > _handle2.row.rw) {
+          labelCentre = _handle2.row.rw - label.length() / 2;
         }
 
         if (labelCentre - label.length() / 2 < 0) {
@@ -39632,12 +39660,12 @@ function () {
       pReference = null;
 
       for (var _i2 = 0; _i2 < rHandles.length; _i2++) {
-        var _handle2 = rHandles[_i2];
+        var _handle3 = rHandles[_i2];
         // Handle
         // ------
         var _pHandle = {
-          x: _handle2.x,
-          y: this.top ? _handle2.y - this.config.linkHandlePadding : _handle2.y + this.config.linkHandlePadding
+          x: _handle3.x,
+          y: this.top ? _handle3.y - this.config.linkHandlePadding : _handle3.y + this.config.linkHandlePadding
         }; // pReference for the next handle will be just past the curved part of
         // the right-side vertical line.  We calculate it here since we use it
         // when drawing the line itself.
@@ -39646,7 +39674,7 @@ function () {
         // ----
         // Draw from main Link line to argument handle
 
-        var _handleY = this.getLineY(_handle2.row);
+        var _handleY = this.getLineY(_handle3.row);
 
         d += "M" + [refRight, _handleY];
 
@@ -39659,12 +39687,12 @@ function () {
         if (pReference) {
           d += "M" + [pReference.x, pReference.y];
 
-          if (pReference.row.idx !== _handle2.row.idx) {
+          if (pReference.row.idx !== _handle3.row.idx) {
             // Draw in Link line across end of the first row and all
             // intervening rows
             d += "L" + [pReference.row.rw, pReference.y];
 
-            for (var _i4 = pReference.row.idx + 1; _i4 < _handle2.row.idx; _i4++) {
+            for (var _i4 = pReference.row.idx + 1; _i4 < _handle3.row.idx; _i4++) {
               var _thisRow2 = this.main.rowManager.rows[_i4];
 
               var _lineY2 = this.getLineY(_thisRow2);
@@ -39693,10 +39721,10 @@ function () {
 
           d += "L" + [pTrigger.x, _curveLeftY] + "Q" + [pTrigger.x, triggerY, _curveLeftX, triggerY];
 
-          if (triggerHandle.row.idx !== _handle2.row.idx) {
+          if (triggerHandle.row.idx !== _handle3.row.idx) {
             d += "L" + [triggerHandle.row.rw, triggerY];
 
-            for (var _i5 = triggerHandle.row.idx + 1; _i5 < _handle2.row.idx; _i5++) {
+            for (var _i5 = triggerHandle.row.idx + 1; _i5 < _handle3.row.idx; _i5++) {
               var _thisRow3 = this.main.rowManager.rows[_i5];
 
               var _lineY3 = this.getLineY(_thisRow3);
@@ -39715,7 +39743,7 @@ function () {
         pReference = {
           x: refRight,
           y: _handleY,
-          row: _handle2.row
+          row: _handle3.row
         }; // Arrowhead
 
         d += this._arrowhead(_pHandle); // Label
@@ -39723,11 +39751,11 @@ function () {
         // The trigger always takes up index 0, so the index for the label is
         // one less than the index for this handle in `this.handles`
 
-        var _label = this.argLabels[this.handles.indexOf(_handle2) - 1];
+        var _label = this.argLabels[this.handles.indexOf(_handle3) - 1];
         var _labelCentre = _pHandle.x;
 
-        if (_labelCentre + _label.length() / 2 > _handle2.row.rw) {
-          _labelCentre = _handle2.row.rw - _label.length() / 2;
+        if (_labelCentre + _label.length() / 2 > _handle3.row.rw) {
+          _labelCentre = _handle3.row.rw - _label.length() / 2;
         }
 
         if (_labelCentre - _label.length() / 2 < 0) {
@@ -40069,13 +40097,13 @@ function () {
         // account for the fact that offset 0 is the centre of the anchor
         var leftLinks = [];
         var rightLinks = [];
-        var _iteratorNormalCompletion10 = true;
-        var _didIteratorError10 = false;
-        var _iteratorError10 = undefined;
+        var _iteratorNormalCompletion11 = true;
+        var _didIteratorError11 = false;
+        var _iteratorError11 = undefined;
 
         try {
-          for (var _iterator10 = l[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-            var link = _step10.value;
+          for (var _iterator11 = l[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+            var link = _step11.value;
 
             if (anchor.idx > link.endpoints[0].idx) {
               leftLinks.push(link);
@@ -40086,16 +40114,16 @@ function () {
           // so that the ones with smaller slots are on the left.
 
         } catch (err) {
-          _didIteratorError10 = true;
-          _iteratorError10 = err;
+          _didIteratorError11 = true;
+          _iteratorError11 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
-              _iterator10.return();
+            if (!_iteratorNormalCompletion11 && _iterator11.return != null) {
+              _iterator11.return();
             }
           } finally {
-            if (_didIteratorError10) {
-              throw _iteratorError10;
+            if (_didIteratorError11) {
+              throw _iteratorError11;
             }
           }
         }
@@ -40553,7 +40581,7 @@ function () {
           var _iteratorError2 = undefined;
 
           try {
-            for (var _iterator2 = word.links[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            for (var _iterator2 = word.passingLinks[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
               var link = _step2.value;
 
               if (elements.indexOf(link) < 0) {
@@ -40653,7 +40681,7 @@ function () {
   }, {
     key: "ry2",
     get: function get() {
-      return this.ry + this.rh + this.descent;
+      return this.ry + this.rh + this.minDescent;
     }
     /**
      * Returns the maximum slot occupied by Links related to Words on this Row.
@@ -40915,7 +40943,7 @@ function () {
     }
     /**
      * Returns the minimum amount of height above the baseline needed to fit
-     * all this Row's Words, top WordTags and top Links.
+     * all this Row's Words, top WordTags and currently-visible top Links.
      * Includes vertical Row padding.
      * @return {number}
      */
@@ -40923,27 +40951,34 @@ function () {
   }, {
     key: "minHeight",
     get: function get() {
-      var height = this.wordHeight + this.maxSlot * this.config.linkSlotInterval + this.config.rowVerticalPadding; // Because top Link labels are above the Link lines, we need to add
-      // their height if any of the Words on this Row is an endpoint for a Link
+      // Minimum height needed for Words + padding only
+      var height = this.wordHeight + this.config.rowVerticalPadding; // Highest visible top Link
+
+      var maxVisibleSlot = 0;
+      var checkWords = this.words;
+
+      if (checkWords.length === 0 && this.lastRemovedWord !== null) {
+        // We let all our Words go; what was the last one that mattered?
+        checkWords = [this.lastRemovedWord];
+      }
 
       var _iteratorNormalCompletion12 = true;
       var _didIteratorError12 = false;
       var _iteratorError12 = undefined;
 
       try {
-        for (var _iterator12 = this.words[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+        for (var _iterator12 = checkWords[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
           var word = _step12.value;
           var _iteratorNormalCompletion13 = true;
           var _didIteratorError13 = false;
           var _iteratorError13 = undefined;
 
           try {
-            for (var _iterator13 = word.links[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+            for (var _iterator13 = word.links.concat(word.passingLinks)[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
               var link = _step13.value;
 
-              if (link.top) {
-                // This Word anchors some top Link
-                return height + this.config.rowExtraTopPadding;
+              if (link.top && link.visible) {
+                maxVisibleSlot = Math.max(maxVisibleSlot, link.slot);
               }
             }
           } catch (err) {
@@ -40960,7 +40995,8 @@ function () {
               }
             }
           }
-        } // Still here?
+        } // Because top Link labels are above the Link lines, we need to add
+        // their height if any of the Words on this Row is an endpoint for a Link
 
       } catch (err) {
         _didIteratorError12 = true;
@@ -40977,20 +41013,92 @@ function () {
         }
       }
 
+      if (maxVisibleSlot > 0) {
+        return height + maxVisibleSlot * this.config.linkSlotInterval + this.config.rowExtraTopPadding;
+      } // Still here?  No visible top Links on this row.
+
+
       return height;
     }
     /**
-     * Returns the amount of descent below the baseline needed to fit
-     * all this Row's bottom WordTags and Links.
+     * Returns the minimum amount of descent below the baseline needed to fit
+     * all this Row's bottom WordTags and currently-visible bottom Links.
      * Includes vertical Row padding.
-     * TODO: Have this account for whether or not bottom Links are visible.
      * @return {number}
      */
 
   }, {
-    key: "descent",
+    key: "minDescent",
     get: function get() {
-      return this.wordDescent + Math.abs(this.minSlot) * this.config.linkSlotInterval + this.config.rowVerticalPadding;
+      // Minimum height needed for WordTags + padding only
+      var descent = this.wordDescent + this.config.rowVerticalPadding; // Lowest visible bottom Link
+
+      var minVisibleSlot = 0;
+      var checkWords = this.words;
+
+      if (checkWords.length === 0 && this.lastRemovedWord !== null) {
+        // We let all our Words go; what was the last one that mattered?
+        checkWords = [this.lastRemovedWord];
+      }
+
+      var _iteratorNormalCompletion14 = true;
+      var _didIteratorError14 = false;
+      var _iteratorError14 = undefined;
+
+      try {
+        for (var _iterator14 = checkWords[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+          var word = _step14.value;
+          var _iteratorNormalCompletion15 = true;
+          var _didIteratorError15 = false;
+          var _iteratorError15 = undefined;
+
+          try {
+            for (var _iterator15 = word.links.concat(word.passingLinks)[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+              var link = _step15.value;
+
+              if (!link.top && link.visible) {
+                minVisibleSlot = Math.min(minVisibleSlot, link.slot);
+              }
+            }
+          } catch (err) {
+            _didIteratorError15 = true;
+            _iteratorError15 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion15 && _iterator15.return != null) {
+                _iterator15.return();
+              }
+            } finally {
+              if (_didIteratorError15) {
+                throw _iteratorError15;
+              }
+            }
+          }
+        } // Unlike in the `minHeight()` function, bottom Link labels do not
+        // extend below the Link lines, so we don't need to add extra padding
+        // for them.
+
+      } catch (err) {
+        _didIteratorError14 = true;
+        _iteratorError14 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion14 && _iterator14.return != null) {
+            _iterator14.return();
+          }
+        } finally {
+          if (_didIteratorError14) {
+            throw _iteratorError14;
+          }
+        }
+      }
+
+      if (minVisibleSlot < 0) {
+        return descent + Math.abs(minVisibleSlot) * this.config.linkSlotInterval;
+      } // Still here?  No visible bottom Links on this row.
+
+
+      return descent;
     }
     /**
      * Returns the amount of space available at the end of this Row for adding
@@ -41896,6 +42004,10 @@ function () {
 
       this.initialised = true;
     }
+    /**
+     * Redraw Links
+     */
+
   }, {
     key: "redrawLinks",
     value: function redrawLinks() {
@@ -41906,6 +42018,10 @@ function () {
       });
       this.redrawClusters();
     }
+    /**
+     * Redraw all clusters (they should always be visible)
+     */
+
   }, {
     key: "redrawClusters",
     value: function redrawClusters() {
@@ -42504,7 +42620,9 @@ function () {
         } else {
           link.hideArgLabels();
         }
-      }); // Change token colours based on the current taxonomy, if loaded
+      }); // Now that Links are visible, make sure that all Rows have enough space
+
+      this.rowManager.resizeAll(); // Change token colours based on the current taxonomy, if loaded
 
       this.taxonomyManager.colour(this.words);
     }
@@ -42706,7 +42824,9 @@ function () {
         } else {
           link.hide();
         }
-      });
+      }); // Always resize when the set of visible Links may have changed
+
+      this.rowManager.resizeAll();
     }
     /**
      * Returns an Array of all the categories available for the bottom Links
@@ -42740,7 +42860,9 @@ function () {
         } else {
           link.hide();
         }
-      });
+      }); // Always resize when the set of visible Links may have changed
+
+      this.rowManager.resizeAll();
     }
     /**
      * Shows/hides the main label on top Links
@@ -43120,7 +43242,6 @@ function () {
      *
      * If called without a `dy`, simply ensures that the Row's height is at
      * least as large as its minimum height.
-     * (Row descents are fixed and vary according to their bottom Links)
      */
 
   }, {
@@ -43128,24 +43249,34 @@ function () {
     value: function resizeRow(i) {
       var dy = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
       var row = this._rows[i];
-      if (row === undefined) return; // Adjust height for the main Row
-      // (Row descent is fixed, and depends on the number of bottom Links in
-      // the Row)
+      if (!row) return; // Height adjustment
 
       var newHeight = Math.max(row.rh + dy, row.minHeight);
 
       if (row.rh !== newHeight) {
         row.height(newHeight);
         row.redrawLinksAndClusters();
-      } // Adjust the positions of all following Rows
+      } // Adjust position/height of all following Rows
 
 
       for (i = i + 1; i < this._rows.length; i++) {
         var prevRow = this._rows[i - 1];
-        var thisRow = this._rows[i];
+        var thisRow = this._rows[i]; // Height check
+
+        var changed = false;
+
+        if (thisRow.rh < thisRow.minHeight) {
+          thisRow.height(thisRow.minHeight);
+          changed = true;
+        } // Position check
+
 
         if (thisRow.ry !== prevRow.ry2) {
           thisRow.move(prevRow.ry2);
+          changed = true;
+        }
+
+        if (changed) {
           thisRow.redrawLinksAndClusters();
         }
       }
@@ -43175,14 +43306,7 @@ function () {
           }
         } else {
           // Redraw Words/Links that might have changed
-          row.words.forEach(function (word) {
-            word.links.forEach(function (l) {
-              if (l.endpoints[1].row !== l.endpoints[0].row) {
-                l.draw(word);
-              }
-            });
-            word.redrawClusters();
-          });
+          row.redrawLinksAndClusters();
         }
       });
     }
@@ -43444,20 +43568,7 @@ function () {
     value: function moveLastWordDown(index) {
       var nextRow = this._rows[index + 1] || this.appendRow();
       this.addWordToRow(this._rows[index].removeLastWord(), nextRow, 0);
-    } //
-    // getSlotRange(acc, anchor) {
-    //   if (anchor instanceof Link && !anchor.visible) {
-    //     return [acc[0], acc[1]];
-    //   }
-    //   if (anchor.links.length === 0) {
-    //     return [Math.min(acc[0], 0), Math.max(acc[1], 0)];
-    //     // return [Math.min(acc[0], anchor.slot), Math.max(acc[1],
-    // anchor.slot)]; } let a = anchor.links.reduce((acc, val) =>
-    // this.getSlotRange(acc, val), [0, 0]); return [Math.min(acc[0], a[0]),
-    // Math.max(acc[1], a[1])]; }  recalculateRowSlots(row) { [row.minSlot,
-    // row.maxSlot] = row.words .reduce((acc, val) => this.getSlotRange(acc,
-    // val), [0, 0]); }
-
+    }
     /**
      * Returns the last Row managed by the RowManager
      * @return {*}

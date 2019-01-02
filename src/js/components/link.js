@@ -45,6 +45,9 @@ class Link {
     // Is this Link currently visible in the visualisation?
     this.visible = false;
 
+    // Should this Link be drawn onto the visualisation?
+    this.enabled = false;
+
     // Slots are the y-intervals at which links may be drawn.
     // The main instance will need to provide the `.calculateSlot()` method
     // with the full set of Words in the data so that we can check for
@@ -246,31 +249,33 @@ class Link {
    * Toggles the visibility of this Link
    */
   toggle() {
-    if (this.visible) {
+    if (this.enabled) {
       this.hide();
     } else {
       this.show();
     }
-
-    this.visible = !this.visible;
   }
 
   /**
-   * Shows this Link
+   * Enables this Link and draws it onto the visualisation
    */
   show() {
-    if (this.svg) {
+    this.enabled = true;
+
+    if (this.svg && !this.svg.visible()) {
       this.svg.show();
-      this.draw();
     }
+    this.draw();
     this.visible = true;
   }
 
   /**
-   * Hides this Link
+   * Disables this Link and removes it from the visualisation
    */
   hide() {
-    if (this.svg) {
+    this.enabled = false;
+
+    if (this.svg && this.svg.visible()) {
       this.svg.hide();
     }
     this.visible = false;
@@ -281,6 +286,7 @@ class Link {
    */
   showMainLabel() {
     this.linkLabel.show();
+    // Redraw the Link to make sure that the label ends up in the correct spot
     this.draw();
   }
 
@@ -296,6 +302,7 @@ class Link {
    */
   showArgLabels() {
     this.argLabels.forEach(label => label.show());
+    // Redraw the Link to make sure that the label ends up in the correct spot
     this.draw();
   }
 
@@ -314,7 +321,7 @@ class Link {
    *     redraw. If not, the positions of all handles will be recalculated.
    */
   draw(modAnchor) {
-    if (!this.initialised) {
+    if (!this.initialised || !this.enabled) {
       return;
     }
 
@@ -326,6 +333,17 @@ class Link {
     }
     const changedHandles = [];
 
+    // One or more of our anchors might be nested Links.  We need to make
+    // sure that all of them are already drawn in, so that our offset
+    // calculations and the like are accurate.
+    for (let handle of calcHandles) {
+      const anchor = handle.anchor;
+      if (anchor instanceof Link && !anchor.visible) {
+        anchor.show();
+      }
+    }
+
+    // Offset calculations
     for (let handle of calcHandles) {
       const anchor = handle.anchor;
       // Two possibilities: The anchor is a Word/WordCluster, or it is a
@@ -348,10 +366,6 @@ class Link {
       } else {
         // The anchor is a Link; the handle rests on another Link's line,
         // and the offset might extend to the next row and beyond.
-        if (!anchor.visible) {
-          // We need to draw in our anchor before proceeding with our own draw
-          anchor.draw();
-        }
         const baseLeft = anchor.leftHandle;
 
         // First, make sure the offset doesn't overshoot the base row
@@ -414,10 +428,6 @@ class Link {
       // This Link has no trigger (Relation)
       this._drawAsRelation();
     }
-
-    this.visible = true;
-
-    this.links.forEach(l => l.draw(this));
   }
 
   /**

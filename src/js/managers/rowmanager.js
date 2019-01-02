@@ -27,27 +27,37 @@ class RowManager {
    *
    * If called without a `dy`, simply ensures that the Row's height is at
    * least as large as its minimum height.
-   * (Row descents are fixed and vary according to their bottom Links)
    */
   resizeRow(i, dy = 0) {
     const row = this._rows[i];
-    if (row === undefined) return;
+    if (!row) return;
 
-    // Adjust height for the main Row
-    // (Row descent is fixed, and depends on the number of bottom Links in
-    // the Row)
+    // Height adjustment
     const newHeight = Math.max(row.rh + dy, row.minHeight);
     if (row.rh !== newHeight) {
       row.height(newHeight);
       row.redrawLinksAndClusters();
     }
 
-    // Adjust the positions of all following Rows
+    // Adjust position/height of all following Rows
     for (i = i + 1; i < this._rows.length; i++) {
       const prevRow = this._rows[i - 1];
       const thisRow = this._rows[i];
+
+      // Height check
+      let changed = false;
+      if (thisRow.rh < thisRow.minHeight) {
+        thisRow.height(thisRow.minHeight);
+        changed = true;
+      }
+
+      // Position check
       if (thisRow.ry !== prevRow.ry2) {
         thisRow.move(prevRow.ry2);
+        changed = true;
+      }
+
+      if (changed) {
         thisRow.redrawLinksAndClusters();
       }
     }
@@ -73,14 +83,7 @@ class RowManager {
         }
       } else {
         // Redraw Words/Links that might have changed
-        row.words.forEach(word => {
-          word.links.forEach(function (l) {
-            if (l.endpoints[1].row !== l.endpoints[0].row) {
-              l.draw(word);
-            }
-          });
-          word.redrawClusters();
-        });
+        row.redrawLinksAndClusters();
       }
     });
   }
@@ -328,20 +331,6 @@ class RowManager {
     let nextRow = this._rows[index + 1] || this.appendRow();
     this.addWordToRow(this._rows[index].removeLastWord(), nextRow, 0);
   }
-
-  //
-  // getSlotRange(acc, anchor) {
-  //   if (anchor instanceof Link && !anchor.visible) {
-  //     return [acc[0], acc[1]];
-  //   }
-  //   if (anchor.links.length === 0) {
-  //     return [Math.min(acc[0], 0), Math.max(acc[1], 0)];
-  //     // return [Math.min(acc[0], anchor.slot), Math.max(acc[1],
-  // anchor.slot)]; } let a = anchor.links.reduce((acc, val) =>
-  // this.getSlotRange(acc, val), [0, 0]); return [Math.min(acc[0], a[0]),
-  // Math.max(acc[1], a[1])]; }  recalculateRowSlots(row) { [row.minSlot,
-  // row.maxSlot] = row.words .reduce((acc, val) => this.getSlotRange(acc,
-  // val), [0, 0]); }
 
   /**
    * Returns the last Row managed by the RowManager
