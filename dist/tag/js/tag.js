@@ -42408,8 +42408,10 @@ function () {
    * @param {String|Element|jQuery} container - Either a string containing the
    *     ID of the container element, or the element itself (as a
    *     native/jQuery object)
+   * @param {Object} options - Overrides for default library options
    */
   function Main(container) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     (0, _classCallCheck2.default)(this, Main);
     this.config = new _config.default(); // SVG.Doc expects either a string with the element's ID, or the element
     // itself (not a jQuery object).
@@ -42432,7 +42434,8 @@ function () {
     this.words = [];
     this.links = []; // Options
 
-    this.options = {
+    this.options = _lodash.default.defaults(options, // Default options
+    {
       // Category of top Links to show
       topLinksCategory: "default",
       // Category of bottom Links to show
@@ -42445,7 +42448,7 @@ function () {
       showTopArgLabels: false,
       showBottomMainLabel: true,
       showBottomArgLabels: false
-    }; // Initialisation
+    }); // Initialisation
 
     this.resize();
 

@@ -28,8 +28,9 @@ class Main {
    * @param {String|Element|jQuery} container - Either a string containing the
    *     ID of the container element, or the element itself (as a
    *     native/jQuery object)
+   * @param {Object} options - Overrides for default library options
    */
-  constructor(container) {
+  constructor(container, options = {}) {
     this.config = new Config();
 
     // SVG.Doc expects either a string with the element's ID, or the element
@@ -56,22 +57,27 @@ class Main {
     this.links = [];
 
     // Options
-    this.options = {
-      // Category of top Links to show
-      topLinksCategory: "default",
-      // Category of bottom Links to show
-      bottomLinksCategory: "none",
+    this.options = _.defaults(
+      options,
 
-      // Continue to display top/bottom Links when moving Words?
-      showTopLinksOnMove: true,
-      showBottomLinksOnMove: false,
+      // Default options
+      {
+        // Category of top Links to show
+        topLinksCategory: "default",
+        // Category of bottom Links to show
+        bottomLinksCategory: "none",
 
-      // Show main/argument labels on Links?
-      showTopMainLabel: true,
-      showTopArgLabels: false,
-      showBottomMainLabel: true,
-      showBottomArgLabels: false
-    };
+        // Continue to display top/bottom Links when moving Words?
+        showTopLinksOnMove: true,
+        showBottomLinksOnMove: false,
+
+        // Show main/argument labels on Links?
+        showTopMainLabel: true,
+        showTopArgLabels: false,
+        showBottomMainLabel: true,
+        showBottomArgLabels: false
+      }
+    );
 
     // Initialisation
     this.resize();

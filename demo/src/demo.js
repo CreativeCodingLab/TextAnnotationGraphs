@@ -57,7 +57,12 @@ $(async () => {
     // String.
     // See the full documentation for details.
     data: require("../data/test-odin.json"),
-    format: "odin"
+    format: "odin",
+
+    // Overrides for default options
+    options: {
+      showTopArgLabels: true
+    }
   });
 
   // -------------------
