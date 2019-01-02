@@ -1298,9 +1298,11 @@ class Label {
       y: -this.fontSize + 1
     });
 
+    this.svgTextBbox = this.svgText.bbox();
+
     // Background (rectangle)
     this.svgBackground = this.svg.rect(
-      this.svgText.length() + 2,
+      this.svgTextBbox.width + 2,
       this.fontSize + 2
     )
       .addClass("tag-element")
@@ -1310,7 +1312,7 @@ class Label {
       .back();
     // Transform the rectangle to sit nicely behind the label
     this.svgBackground.transform({
-      x: -this.svgText.length() / 2 - 1,
+      x: -this.svgTextBbox.width / 2 - 1,
       y: -this.fontSize + 2.5
     });
 

@@ -40201,12 +40201,13 @@ function () {
     this.fontSize = parseInt($(this.svgText.node).css("font-size"));
     this.svgText.transform({
       y: -this.fontSize + 1
-    }); // Background (rectangle)
+    });
+    this.svgTextBbox = this.svgText.bbox(); // Background (rectangle)
 
-    this.svgBackground = this.svg.rect(this.svgText.length() + 2, this.fontSize + 2).addClass("tag-element").addClass("link-text-bg").addClass(addClass).radius(2.5).back(); // Transform the rectangle to sit nicely behind the label
+    this.svgBackground = this.svg.rect(this.svgTextBbox.width + 2, this.fontSize + 2).addClass("tag-element").addClass("link-text-bg").addClass(addClass).radius(2.5).back(); // Transform the rectangle to sit nicely behind the label
 
     this.svgBackground.transform({
-      x: -this.svgText.length() / 2 - 1,
+      x: -this.svgTextBbox.width / 2 - 1,
       y: -this.fontSize + 2.5
     }); // // Background (text)
     // this.svgBackground = this.svg.text(text)
