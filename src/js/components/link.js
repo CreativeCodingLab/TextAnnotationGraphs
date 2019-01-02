@@ -415,6 +415,7 @@ class Link {
           const parentHandle = parentLink.handles.find(h => h.anchor === this);
           parentHandle.offset += growth;
           parentHandle.offset = Math.max(parentHandle.offset, 0);
+          parentLink.draw(this);
         }
       }
     }
@@ -1291,28 +1292,26 @@ class Label {
       .addClass("link-text")
       .addClass(addClass);
     // Transform the text based on its font-size so that we can position it
-    // relative to its baseline
+    // relative to its baseline (with a bit of a fudge factor)
     this.fontSize = parseInt($(this.svgText.node).css("font-size"));
     this.svgText.transform({
-      y: -this.fontSize
+      y: -this.fontSize + 1
     });
-
-    this.svgTextBbox = this.svgText.bbox();
 
     // Background (rectangle)
     this.svgBackground = this.svg.rect(
-      this.svgTextBbox.width,
-      this.svgTextBbox.height - 4
+      this.svgText.length() + 2,
+      this.fontSize + 2
     )
       .addClass("tag-element")
       .addClass("link-text-bg")
       .addClass(addClass)
-      .radius(2)
+      .radius(2.5)
       .back();
     // Transform the rectangle to sit nicely behind the label
     this.svgBackground.transform({
-      x: -this.svgTextBbox.width / 2,
-      y: -this.fontSize + 2
+      x: -this.svgText.length() / 2 - 1,
+      y: -this.fontSize + 2.5
     });
 
     // // Background (text)

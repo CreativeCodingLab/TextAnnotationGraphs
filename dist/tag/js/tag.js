@@ -39189,6 +39189,7 @@ function () {
               });
               parentHandle.offset += growth;
               parentHandle.offset = Math.max(parentHandle.offset, 0);
+              parentLink.draw(this);
             }
           } catch (err) {
             _didIteratorError4 = true;
@@ -40195,19 +40196,18 @@ function () {
     /** @type svgjs.Text */
 
     this.svgText = this.svg.text(text).leading(1).addClass("tag-element").addClass("link-text").addClass(addClass); // Transform the text based on its font-size so that we can position it
-    // relative to its baseline
+    // relative to its baseline (with a bit of a fudge factor)
 
     this.fontSize = parseInt($(this.svgText.node).css("font-size"));
     this.svgText.transform({
-      y: -this.fontSize
-    });
-    this.svgTextBbox = this.svgText.bbox(); // Background (rectangle)
+      y: -this.fontSize + 1
+    }); // Background (rectangle)
 
-    this.svgBackground = this.svg.rect(this.svgTextBbox.width, this.svgTextBbox.height - 4).addClass("tag-element").addClass("link-text-bg").addClass(addClass).radius(2).back(); // Transform the rectangle to sit nicely behind the label
+    this.svgBackground = this.svg.rect(this.svgText.length() + 2, this.fontSize + 2).addClass("tag-element").addClass("link-text-bg").addClass(addClass).radius(2.5).back(); // Transform the rectangle to sit nicely behind the label
 
     this.svgBackground.transform({
-      x: -this.svgTextBbox.width / 2,
-      y: -this.fontSize + 2
+      x: -this.svgText.length() / 2 - 1,
+      y: -this.fontSize + 2.5
     }); // // Background (text)
     // this.svgBackground = this.svg.text(text)
     //   .addClass("tag-element")
