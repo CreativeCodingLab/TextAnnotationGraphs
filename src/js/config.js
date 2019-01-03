@@ -14,7 +14,7 @@ class Config {
     this.rowEdgePadding = 10;
 
     // Padding on the top/bottom of each Row
-    this.rowVerticalPadding = 10;
+    this.rowVerticalPadding = 20;
 
     // Extra padding on Row top for Link labels
     // (Labels for top Links are drawn above their line, and it is not
@@ -50,7 +50,7 @@ class Config {
     // Drawing options for Links in the visualisation
 
     // Vertical distance between each Link slot (for crossing/overlapping Links)
-    this.linkSlotInterval = 35;
+    this.linkSlotInterval = 40;
 
     // Vertical padding between Link arrowheads and their anchors
     this.linkHandlePadding = 2;

@@ -41,6 +41,25 @@ window.jQuery = $;
 
 // Main function
 $(async () => {
+  // -----
+  // Fonts
+  // -----
+  // Because the demo uses an externally-loaded font, we use the Web Font
+  // Loader to ensure that it is available before initialisation (so that we
+  // can calculate the dimensions of SVG Text elements accurately)
+  const fontLoadPromise = new Promise((resolve, reject) => {
+    WebFont.load({
+      google: {
+        families: ["Nunito:600,700"]
+      },
+      active: () => {
+        resolve();
+      }
+    });
+  });
+
+  await fontLoadPromise;
+
   // -------------
   // Basic example
   // -------------

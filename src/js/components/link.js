@@ -1286,24 +1286,24 @@ class Label {
 
     // Main label
     /** @type svgjs.Text */
-    this.svgText = this.svg.text(text)
-      .leading(1)
+    this.svgText = this.svg.plain(text)
       .addClass("tag-element")
       .addClass("link-text")
       .addClass(addClass);
-    // Transform the text based on its font-size so that we can position it
-    // relative to its baseline (with a bit of a fudge factor)
-    this.fontSize = parseInt($(this.svgText.node).css("font-size"));
-    this.svgText.transform({
-      y: -this.fontSize + 1
-    });
 
+    // Calculate the y-interval between the Text element's top edge and
+    // baseline, so that we can transform the background / move the Label
+    // around accordingly.
+    // Svg.js has actually already done this for us -- the value of `.y()`
+    // is the top edge, and `.attr("y")` is the baseline
     this.svgTextBbox = this.svgText.bbox();
+    this.ascent = this.svgText.attr("y") - this.svgText.y();
+    this.baselineYOffset = this.ascent - this.svgTextBbox.h / 2;
 
     // Background (rectangle)
     this.svgBackground = this.svg.rect(
       this.svgTextBbox.width + 2,
-      this.fontSize + 2
+      this.svgTextBbox.height
     )
       .addClass("tag-element")
       .addClass("link-text-bg")
@@ -1313,7 +1313,7 @@ class Label {
     // Transform the rectangle to sit nicely behind the label
     this.svgBackground.transform({
       x: -this.svgTextBbox.width / 2 - 1,
-      y: -this.fontSize + 2.5
+      y: -this.ascent
     });
 
     // // Background (text)
@@ -1322,11 +1322,6 @@ class Label {
     //   .addClass("link-text-bg")
     //   .addClass(addClass)
     //   .back();
-    // // Transform the background to sit nicely behind the label
-    // this.svgBackground.transform({
-    //   y: -this.fontSize
-    // });
-
 
     // Click events
     this.svgText.node.oncontextmenu = (e) => {
@@ -1369,15 +1364,26 @@ class Label {
   }
 
   /**
-   * Moves the Label text elements to the given coordinates
+   * Moves the centre of the baseline of the Label text elements to the given
+   * coordinates
    * (N.B.: SVG Text elements are positioned horizontally by their centres,
-   * by default)
-   * @param x
-   * @param y
+   * by default.  Also, setting the y-attribute directly allows us to move
+   * the Text element directly by its baseline, rather than its top edge)
+   * @param x - New horizontal centre of the Label
+   * @param y - New baseline of the Label
    */
   move(x, y) {
     this.svgBackground.move(x, y);
-    this.svgText.move(x, y);
+    this.svgText.attr({x, y});
+  }
+
+  /**
+   * Centres the Label elements horizontally and vertically on the given point
+   * @param x - New horizontal centre of the Label
+   * @param y - New vertical centre of the Label
+   */
+  centre(x, y) {
+    return this.move(x, y + this.baselineYOffset);
   }
 
   /**
@@ -1386,6 +1392,20 @@ class Label {
    */
   length() {
     return this.svgText.length();
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Debug functions
+  /**
+   * Draws the outline of the text element's bounding box
+   */
+  drawTextBbox() {
+    const bbox = this.svgText.bbox();
+    this.svg.polyline([
+      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
+      [bbox.x, bbox.y]])
+      .fill("none")
+      .stroke({width: 1});
   }
 }
 
