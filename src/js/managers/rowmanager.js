@@ -33,7 +33,9 @@ class RowManager {
     if (!row) return;
 
     // Height adjustment
-    const newHeight = Math.max(row.rh + dy, row.minHeight);
+    const newHeight = this.config.compactRows
+      ? row.minHeight
+      : Math.max(row.rh + dy, row.minHeight);
     if (row.rh !== newHeight) {
       row.height(newHeight);
       row.redrawLinksAndClusters();
@@ -46,8 +48,11 @@ class RowManager {
 
       // Height check
       let changed = false;
-      if (thisRow.rh < thisRow.minHeight) {
-        thisRow.height(thisRow.minHeight);
+      const newHeight = this.config.compactRows
+        ? thisRow.minHeight
+        : Math.max(thisRow.rh, thisRow.minHeight);
+      if (thisRow.rh !== newHeight) {
+        thisRow.height(newHeight);
         changed = true;
       }
 

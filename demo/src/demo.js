@@ -33,6 +33,9 @@ const tplTaxonomy = require("./taxonomy.hbs");
 const Handlebars = require("hbsfy/runtime");
 Handlebars.registerPartial("taxonomySubtree", tplTaxonomy);
 
+// Sliders for setting display options on the fly
+require("bootstrap-slider");
+
 // The colour picker script itself is included in the main HTML, because it
 // doesn't play nice with Browserify.  Here we expose the jquery globals it
 // needs.
@@ -202,6 +205,17 @@ $(async () => {
 
   refreshLinkCategories();
 
+  const $optionCompact = $("#tag-option-compact");
+  $optionCompact
+    .prop("checked", uiTag.getOption("compactRows"))
+    .on("change", () => {
+      uiTag.setOption(
+        "compactRows",
+        $optionCompact[0].checked
+      );
+      uiTag.draw();
+    });
+
   const $optionTopLinksOnMove = $("#tag-option-top-links-on-move");
   $optionTopLinksOnMove
     .prop("checked", uiTag.getOption("showTopLinksOnMove"))
@@ -211,7 +225,6 @@ $(async () => {
         $optionTopLinksOnMove[0].checked
       );
     });
-
   const $optionBottomLinksOnMove = $("#tag-option-bottom-links-on-move");
   $optionBottomLinksOnMove
     .prop("checked", uiTag.getOption("showBottomLinksOnMove"))
@@ -246,6 +259,33 @@ $(async () => {
     .on("change", () => {
       uiTag.setBottomArgLabelVisibility($optionBottomArgLabels[0].checked);
     });
+
+  // We can change various drawing options on the fly.
+  // This example uses a slider to change the intervals for overlapping links.
+  const $optionLinkSlot = $("#tag-option-link-slot");
+  const $optionLinkSlotValue = $("#tag-option-link-slot-value");
+  $optionLinkSlot.slider({
+    min: 10,
+    max: 200,
+    step: 10,
+    value: uiTag.getOption("linkSlotInterval"),
+    tooltip: "hide"
+  });
+  $optionLinkSlotValue.text($optionLinkSlot.val());
+  $optionLinkSlot.on("slide", (event) => {
+    $optionLinkSlotValue.text(event.value);
+    uiTag.setOption("linkSlotInterval", event.value);
+    uiTag.draw();
+  });
+  // For direct click events, we need to target the slider directly, rather
+  // than our initial text input
+  $optionLinkSlot.siblings(".slider").on("click", () => {
+    const newValue = $optionLinkSlot.slider("getValue");
+    $optionLinkSlotValue.text(newValue);
+    uiTag.setOption("linkSlotInterval", newValue);
+    uiTag.draw();
+  });
+
 
   // --------------------------------------------------------------------------
 

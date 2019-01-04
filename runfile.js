@@ -284,7 +284,7 @@ watch.styles = {
 
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-    return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && cleancss ${output} -o ${output}"`, {async: true});
+    return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && cleancss ${output} -o ${output} -d"`, {async: true});
   },
   async quickTag() {
     const input = "src/css/tag.scss";
@@ -294,7 +294,7 @@ watch.styles = {
 
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-    return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace"`, {async: true});
+    return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace --verbose"`, {async: true});
   },
 
   all() {

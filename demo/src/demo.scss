@@ -5,6 +5,8 @@
 @import "../../node_modules/bootstrap/scss/bootstrap";
 // Import Prismjs styles
 @import "../../node_modules/prismjs/themes/prism";
+// Import Bootstrap-slider styles
+@import "../../node_modules/bootstrap-slider/dist/css/bootstrap-slider";
 // Core TAG styles
 @import "../../dist/tag/css/tag";
 
@@ -60,6 +62,16 @@
 
 .tag-cp input[type=text] {
   width: 100px;
+}
+
+// Styles for the bootstrap-slider plugin
+.slider.slider-horizontal {
+  width: 300px;
+}
+
+.slider-selection {
+  background: #337ab7;
+  opacity: 0.75;
 }
 
 // Fonts used in the visualisation

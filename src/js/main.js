@@ -31,7 +31,11 @@ class Main {
    * @param {Object} options - Overrides for default library options
    */
   constructor(container, options = {}) {
-    this.config = new Config();
+    // Config options
+    this.config = _.defaults(
+      options,
+      new Config()
+    );
 
     // SVG.Doc expects either a string with the element's ID, or the element
     // itself (not a jQuery object).
@@ -55,29 +59,6 @@ class Main {
     // Tokens and links that are currently drawn on the visualisation
     this.words = [];
     this.links = [];
-
-    // Options
-    this.options = _.defaults(
-      options,
-
-      // Default options
-      {
-        // Category of top Links to show
-        topLinksCategory: "default",
-        // Category of bottom Links to show
-        bottomLinksCategory: "none",
-
-        // Continue to display top/bottom Links when moving Words?
-        showTopLinksOnMove: true,
-        showBottomLinksOnMove: false,
-
-        // Show main/argument labels on Links?
-        showTopMainLabel: true,
-        showTopArgLabels: false,
-        showBottomMainLabel: true,
-        showBottomArgLabels: false
-      }
-    );
 
     // Initialisation
     this.resize();
@@ -125,7 +106,7 @@ class Main {
     const readPromises = _.map(fileList, (file) => {
       const reader = new FileReader();
       reader.readAsText(file);
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         reader.onload = () => {
           resolve({
             name: file.name,
@@ -145,9 +126,11 @@ class Main {
   // Controlling the SVG element
 
   /**
-   * Draws elements (rows, words, links, etc.) onto the visualisation
+   * Prepares all the Rows/Words/Links.
+   * Adds all Words/WordClusters to Rows in the visualisation, but does not draw
+   * Links or colour the various Words/WordTags
    */
-  draw() {
+  init() {
     // Save a reference to the currently loaded tokens and links
     const data = this.parser.getParsedData();
     this.words = data.words;
@@ -178,23 +161,29 @@ class Main {
     this.links.forEach(link => {
       link.init(this);
     });
+  }
 
+  /**
+   * Resizes Rows and (re-)draws Links and WordClusters, without changing
+   * the positions of Words/Link handles
+   */
+  draw() {
     // Draw in the currently toggled Links
     this.links.forEach(link => {
-      if ((link.top && link.category === this.options.topLinksCategory) ||
-        (!link.top && link.category === this.options.bottomLinksCategory)) {
+      if ((link.top && link.category === this.config.topLinksCategory) ||
+        (!link.top && link.category === this.config.bottomLinksCategory)) {
         link.show();
       }
 
-      if ((link.top && this.options.showTopMainLabel) ||
-        (!link.top && this.options.showBottomMainLabel)) {
+      if ((link.top && this.config.showTopMainLabel) ||
+        (!link.top && this.config.showBottomMainLabel)) {
         link.showMainLabel();
       } else {
         link.hideMainLabel();
       }
 
-      if ((link.top && this.options.showTopArgLabels) ||
-        (!link.top && this.options.showBottomArgLabels)) {
+      if ((link.top && this.config.showTopArgLabels) ||
+        (!link.top && this.config.showBottomArgLabels)) {
         link.showArgLabels();
       } else {
         link.hideArgLabels();
@@ -203,6 +192,13 @@ class Main {
 
     // Now that Links are visible, make sure that all Rows have enough space
     this.rowManager.resizeAll();
+
+    // And change the Row resize cursor if compact mode is on
+    this.rowManager.rows.forEach(row => {
+      this.config.compactRows
+        ? row.draggable.addClass("row-drag-compact")
+        : row.draggable.removeClass("row-drag-compact");
+    });
 
     // Change token colours based on the current taxonomy, if loaded
     this.taxonomyManager.colour(this.words);
@@ -226,11 +222,12 @@ class Main {
   }
 
   /**
-   * Redraws the visualisation using the data currently stored by the Parser
-   * (if any)
+   * Resets and redraws the visualisation using the data currently stored by the
+   * Parser (if any)
    */
   redraw() {
     this.clear();
+    this.init();
     this.draw();
   }
 
@@ -349,7 +346,7 @@ class Main {
    * @param value
    */
   setOption(option, value) {
-    this.options[option] = value;
+    this.config[option] = value;
   }
 
   /**
@@ -357,7 +354,7 @@ class Main {
    * @param {String} option
    */
   getOption(option) {
-    return this.options[option];
+    return this.config[option];
   }
 
   /**
@@ -517,8 +514,8 @@ class Main {
 
     this.svg.on("word-move-start", () => {
       this.links.forEach(link => {
-        if ((link.top && !this.options.showTopLinksOnMove) ||
-          (!link.top && !this.options.showBottomLinksOnMove)) {
+        if ((link.top && !this.config.showTopLinksOnMove) ||
+          (!link.top && !this.config.showBottomLinksOnMove)) {
           link.hide();
         }
       });
@@ -532,8 +529,8 @@ class Main {
 
     this.svg.on("word-move-end", () => {
       this.links.forEach(link => {
-        if ((link.top && link.category === this.options.topLinksCategory) ||
-          (!link.top && link.category === this.options.bottomLinksCategory)) {
+        if ((link.top && link.category === this.config.topLinksCategory) ||
+          (!link.top && link.category === this.config.bottomLinksCategory)) {
           link.show();
         }
       });

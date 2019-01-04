@@ -2,11 +2,35 @@
  * Configuration options for the library
  *
  * Each TAG instance will instantiate its own instance of the Config object, so
- * that various options can be changed on the fly
+ * that various options can be changed on the fly.
+ *
+ * These options can be changed at init-time by the user, or on the fly via
+ * API methods.
  */
 
 class Config {
   constructor() {
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // User options
+
+    // Category of top Links to show
+    this.topLinksCategory = "default";
+    // Category of bottom Links to show
+    this.bottomLinksCategory = "none";
+
+    // Lock Rows to minimum height?
+    this.compactRows = false;
+
+    // Continue to display top/bottom Links when moving Words?
+    this.showTopLinksOnMove = true;
+    this.showBottomLinksOnMove = false;
+
+    // Show main/argument labels on Links?
+    this.showTopMainLabel = true;
+    this.showTopArgLabels = false;
+    this.showBottomMainLabel = true;
+    this.showBottomArgLabels = false;
+
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Drawing options for Rows
 

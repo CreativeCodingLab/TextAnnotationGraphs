@@ -176,7 +176,7 @@
               </div>
 
               <div class="modal-body">
-                <div class="p-3">
+                <div class="px-3">
                   Show the following category of top links:
                   <select id="tag-option-top-links" class="custom-select mb-3">
                     <!-- Options will be added at run time in `demo.js` based on the categories available in the
@@ -202,7 +202,7 @@
                     </label>
                   </div>
 
-                  <div class="custom-control custom-checkbox mt-3">
+                  <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" id="tag-option-top-main-label">
                     <label class="custom-control-label" for="tag-option-top-main-label">
                       Show main label on top links
@@ -226,6 +226,28 @@
                     <label class="custom-control-label" for="tag-option-bottom-arg-labels">
                       Show argument labels on bottom links
                     </label>
+                  </div>
+
+                  <div class="custom-control custom-checkbox mt-3">
+                    <input type="checkbox" class="custom-control-input" id="tag-option-compact">
+                    <label class="custom-control-label" for="tag-option-compact">
+                      Lock rows to the minimum height needed to fit links
+                    </label>
+                  </div>
+
+                  <div class="form-group mt-3">
+                    <div>Link slot interval</div>
+                    <div class="form-row">
+                      <div class="d-flex">
+                        <div class="col-auto">
+                          <input id="tag-option-link-slot" type="text"
+                                 title="Link slot interval">
+                        </div>
+                        <div class="col">
+                          <span id="tag-option-link-slot-value"></span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

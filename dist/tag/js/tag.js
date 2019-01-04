@@ -42339,13 +42339,32 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
  * Configuration options for the library
  *
  * Each TAG instance will instantiate its own instance of the Config object, so
- * that various options can be changed on the fly
+ * that various options can be changed on the fly.
+ *
+ * These options can be changed at init-time by the user, or on the fly via
+ * API methods.
  */
 var Config = function Config() {
   (0, _classCallCheck2.default)(this, Config);
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // User options
+  // Category of top Links to show
+  this.topLinksCategory = "default"; // Category of bottom Links to show
+
+  this.bottomLinksCategory = "none"; // Lock Rows to minimum height?
+
+  this.compactRows = false; // Continue to display top/bottom Links when moving Words?
+
+  this.showTopLinksOnMove = true;
+  this.showBottomLinksOnMove = false; // Show main/argument labels on Links?
+
+  this.showTopMainLabel = true;
+  this.showTopArgLabels = false;
+  this.showBottomMainLabel = true;
+  this.showBottomArgLabels = false; // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // Drawing options for Rows
   // Padding on the left/right edges of each Row
+
   this.rowEdgePadding = 10; // Padding on the top/bottom of each Row
 
   this.rowVerticalPadding = 20; // Extra padding on Row top for Link labels
@@ -42441,7 +42460,8 @@ function () {
   function Main(container) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     (0, _classCallCheck2.default)(this, Main);
-    this.config = new _config.default(); // SVG.Doc expects either a string with the element's ID, or the element
+    // Config options
+    this.config = _lodash.default.defaults(options, new _config.default()); // SVG.Doc expects either a string with the element's ID, or the element
     // itself (not a jQuery object).
 
     if (_lodash.default.hasIn(container, "jquery")) {
@@ -42460,23 +42480,7 @@ function () {
     this.taxonomyManager = new _taxonomy.default(this.config); // Tokens and links that are currently drawn on the visualisation
 
     this.words = [];
-    this.links = []; // Options
-
-    this.options = _lodash.default.defaults(options, // Default options
-    {
-      // Category of top Links to show
-      topLinksCategory: "default",
-      // Category of bottom Links to show
-      bottomLinksCategory: "none",
-      // Continue to display top/bottom Links when moving Words?
-      showTopLinksOnMove: true,
-      showBottomLinksOnMove: false,
-      // Show main/argument labels on Links?
-      showTopMainLabel: true,
-      showTopArgLabels: false,
-      showBottomMainLabel: true,
-      showBottomArgLabels: false
-    }); // Initialisation
+    this.links = []; // Initialisation
 
     this.resize();
 
@@ -42563,7 +42567,7 @@ function () {
                 readPromises = _lodash.default.map(fileList, function (file) {
                   var reader = new FileReader();
                   reader.readAsText(file);
-                  return new Promise(function (resolve, reject) {
+                  return new Promise(function (resolve) {
                     reader.onload = function () {
                       resolve({
                         name: file.name,
@@ -42596,12 +42600,14 @@ function () {
     // Controlling the SVG element
 
     /**
-     * Draws elements (rows, words, links, etc.) onto the visualisation
+     * Prepares all the Rows/Words/Links.
+     * Adds all Words/WordClusters to Rows in the visualisation, but does not draw
+     * Links or colour the various Words/WordTags
      */
 
   }, {
-    key: "draw",
-    value: function draw() {
+    key: "init",
+    value: function init() {
       var _this = this;
 
       // Save a reference to the currently loaded tokens and links
@@ -42633,27 +42639,42 @@ function () {
 
       this.links.forEach(function (link) {
         link.init(_this);
-      }); // Draw in the currently toggled Links
+      });
+    }
+    /**
+     * Resizes Rows and (re-)draws Links and WordClusters, without changing
+     * the positions of Words/Link handles
+     */
 
+  }, {
+    key: "draw",
+    value: function draw() {
+      var _this2 = this;
+
+      // Draw in the currently toggled Links
       this.links.forEach(function (link) {
-        if (link.top && link.category === _this.options.topLinksCategory || !link.top && link.category === _this.options.bottomLinksCategory) {
+        if (link.top && link.category === _this2.config.topLinksCategory || !link.top && link.category === _this2.config.bottomLinksCategory) {
           link.show();
         }
 
-        if (link.top && _this.options.showTopMainLabel || !link.top && _this.options.showBottomMainLabel) {
+        if (link.top && _this2.config.showTopMainLabel || !link.top && _this2.config.showBottomMainLabel) {
           link.showMainLabel();
         } else {
           link.hideMainLabel();
         }
 
-        if (link.top && _this.options.showTopArgLabels || !link.top && _this.options.showBottomArgLabels) {
+        if (link.top && _this2.config.showTopArgLabels || !link.top && _this2.config.showBottomArgLabels) {
           link.showArgLabels();
         } else {
           link.hideArgLabels();
         }
       }); // Now that Links are visible, make sure that all Rows have enough space
 
-      this.rowManager.resizeAll(); // Change token colours based on the current taxonomy, if loaded
+      this.rowManager.resizeAll(); // And change the Row resize cursor if compact mode is on
+
+      this.rowManager.rows.forEach(function (row) {
+        _this2.config.compactRows ? row.draggable.addClass("row-drag-compact") : row.draggable.removeClass("row-drag-compact");
+      }); // Change token colours based on the current taxonomy, if loaded
 
       this.taxonomyManager.colour(this.words);
     }
@@ -42682,14 +42703,15 @@ function () {
       this.taxonomyManager.resetDefaultColours();
     }
     /**
-     * Redraws the visualisation using the data currently stored by the Parser
-     * (if any)
+     * Resets and redraws the visualisation using the data currently stored by the
+     * Parser (if any)
      */
 
   }, {
     key: "redraw",
     value: function redraw() {
       this.clear();
+      this.init();
       this.draw();
     }
     /**
@@ -42811,7 +42833,7 @@ function () {
   }, {
     key: "setOption",
     value: function setOption(option, value) {
-      this.options[option] = value;
+      this.config[option] = value;
     }
     /**
      * Gets the current value for the given option setting
@@ -42821,7 +42843,7 @@ function () {
   }, {
     key: "getOption",
     value: function getOption(option) {
-      return this.options[option];
+      return this.config[option];
     }
     /**
      * Returns an Array of all the categories available for the top Links
@@ -43005,12 +43027,12 @@ function () {
   }, {
     key: "_setupSVGListeners",
     value: function _setupSVGListeners() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.svg.on("row-resize", function (event) {
-        _this2.labelManager.stopEditing();
+        _this3.labelManager.stopEditing();
 
-        _this2.rowManager.resizeRow(event.detail.object.idx, event.detail.y);
+        _this3.rowManager.resizeRow(event.detail.object.idx, event.detail.y);
       }); // svg.on('label-updated', function(e) {
       //   // TODO: so so incomplete
       //   let color = tm.getColor(e.detail.label, e.detail.object);
@@ -43018,21 +43040,21 @@ function () {
       // });
 
       this.svg.on("word-move-start", function () {
-        _this2.links.forEach(function (link) {
-          if (link.top && !_this2.options.showTopLinksOnMove || !link.top && !_this2.options.showBottomLinksOnMove) {
+        _this3.links.forEach(function (link) {
+          if (link.top && !_this3.config.showTopLinksOnMove || !link.top && !_this3.config.showBottomLinksOnMove) {
             link.hide();
           }
         });
       });
       this.svg.on("word-move", function (event) {
         // tooltip.clear();
-        _this2.labelManager.stopEditing();
+        _this3.labelManager.stopEditing();
 
-        _this2.rowManager.moveWordOnRow(event.detail.object, event.detail.x);
+        _this3.rowManager.moveWordOnRow(event.detail.object, event.detail.x);
       });
       this.svg.on("word-move-end", function () {
-        _this2.links.forEach(function (link) {
-          if (link.top && link.category === _this2.options.topLinksCategory || !link.top && link.category === _this2.options.bottomLinksCategory) {
+        _this3.links.forEach(function (link) {
+          if (link.top && link.category === _this3.config.topLinksCategory || !link.top && link.category === _this3.config.bottomLinksCategory) {
             link.show();
           }
         });
@@ -43073,11 +43095,11 @@ function () {
   }, {
     key: "_setupUIListeners",
     value: function _setupUIListeners() {
-      var _this3 = this;
+      var _this4 = this;
 
       // Browser window resize
       (0, _jquery.default)(window).on("resize", _lodash.default.throttle(function () {
-        _this3.resize();
+        _this4.resize();
       }, 50));
     } // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Debug functions
@@ -43282,7 +43304,7 @@ function () {
       var row = this._rows[i];
       if (!row) return; // Height adjustment
 
-      var newHeight = Math.max(row.rh + dy, row.minHeight);
+      var newHeight = this.config.compactRows ? row.minHeight : Math.max(row.rh + dy, row.minHeight);
 
       if (row.rh !== newHeight) {
         row.height(newHeight);
@@ -43296,8 +43318,10 @@ function () {
 
         var changed = false;
 
-        if (thisRow.rh < thisRow.minHeight) {
-          thisRow.height(thisRow.minHeight);
+        var _newHeight = this.config.compactRows ? thisRow.minHeight : Math.max(thisRow.rh, thisRow.minHeight);
+
+        if (thisRow.rh !== _newHeight) {
+          thisRow.height(_newHeight);
           changed = true;
         } // Position check
 
