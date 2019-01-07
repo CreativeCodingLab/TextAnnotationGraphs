@@ -13,10 +13,13 @@ class Config {
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // User options
 
-    // Category of top Links to show
-    this.topLinksCategory = "default";
-    // Category of bottom Links to show
-    this.bottomLinksCategory = "none";
+    // Category of top/bottom Links to show
+    this.topLinkCategory = "default";
+    this.bottomLinkCategory = "none";
+
+    // Category of top/bottom tags to show
+    this.topTagCategory = "default";
+    this.bottomTagCategory = "POS";
 
     // Lock Rows to minimum height?
     this.compactRows = false;

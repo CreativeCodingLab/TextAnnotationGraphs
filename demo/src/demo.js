@@ -108,7 +108,7 @@ $(async () => {
     event.preventDefault();
     const $link = $(event.target);
     await uiTag.loadUrlAsync($link.data("path"), $link.data("format"));
-    refreshLinkCategories();
+    refreshLinkAndTagCategories();
   });
 
   // --------------------------------------------------------------------------
@@ -133,7 +133,7 @@ $(async () => {
       // (In that order: We need to load the files before resetting the
       // form, or the reference to the FileList gets lost)
       await uiTag.loadFilesAsync(files, format);
-      refreshLinkCategories();
+      refreshLinkAndTagCategories();
 
       const $modal = $("#tag-upload");
 
@@ -154,23 +154,23 @@ $(async () => {
 
 
   /**
-   * The categories available for the top and bottom Links depends on the
+   * The categories available for the top and bottom Links/tags depends on the
    * currently loaded data, so we call for a refresh any time the data changes
    */
-  function refreshLinkCategories() {
+  function refreshLinkAndTagCategories() {
     // [Categories for top Links]
     // We will populate the select menu and add a change handler
     const $optionTopLinks = $("#tag-option-top-links")
       .empty()
       .append($("<option value='none'>None</option>"));
 
-    const currentTop = uiTag.getOption("topLinksCategory");
+    const currentTopLinks = uiTag.getOption("topLinkCategory");
     for (const category of uiTag.getTopLinkCategories()) {
       const $option = $("<option></option>")
         .attr("value", category)
         .text(_.upperFirst(category));
 
-      if (category === currentTop) {
+      if (category === currentTopLinks) {
         $option.prop("selected", true);
       }
 
@@ -186,13 +186,13 @@ $(async () => {
       .empty()
       .append($("<option value='none'>None</option>"));
 
-    const currentBottom = uiTag.getOption("bottomLinksCategory");
+    const currentBottomLinks = uiTag.getOption("bottomLinkCategory");
     for (const category of uiTag.getBottomLinkCategories()) {
       const $option = $("<option></option>")
         .attr("value", category)
         .text(_.upperFirst(category));
 
-      if (category === currentBottom) {
+      if (category === currentBottomLinks) {
         $option.prop("selected", true);
       }
 
@@ -201,9 +201,53 @@ $(async () => {
     $optionBottomLinks.on("change", () => {
       uiTag.setBottomLinkCategory($optionBottomLinks.val());
     });
+
+    // [Categories for top tags]
+    // We will populate the select menu and add a change handler
+    const $optionTopTags = $("#tag-option-top-tags")
+      .empty()
+      .append($("<option value='none'>None</option>"));
+
+    const currentTopTags = uiTag.getOption("topTagCategory");
+    for (const category of uiTag.getTagCategories()) {
+      const $option = $("<option></option>")
+        .attr("value", category)
+        .text(_.upperFirst(category));
+
+      if (category === currentTopTags) {
+        $option.prop("selected", true);
+      }
+
+      $optionTopTags.append($option);
+    }
+    $optionTopTags.on("change", () => {
+      uiTag.setTopTagCategory($optionTopTags.val());
+    });
+
+    // [Categories for bottom tags]
+    // We will populate the select menu and add a change handler
+    const $optionBottomTags = $("#tag-option-bottom-tags")
+      .empty()
+      .append($("<option value='none'>None</option>"));
+
+    const currentBottomTags = uiTag.getOption("bottomTagCategory");
+    for (const category of uiTag.getTagCategories()) {
+      const $option = $("<option></option>")
+        .attr("value", category)
+        .text(_.upperFirst(category));
+
+      if (category === currentBottomTags) {
+        $option.prop("selected", true);
+      }
+
+      $optionBottomTags.append($option);
+    }
+    $optionBottomTags.on("change", () => {
+      uiTag.setBottomTagCategory($optionBottomTags.val());
+    });
   }
 
-  refreshLinkCategories();
+  refreshLinkAndTagCategories();
 
   const $optionCompact = $("#tag-option-compact");
   $optionCompact

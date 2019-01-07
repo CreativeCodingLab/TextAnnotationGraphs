@@ -1,34 +1,35 @@
-import Word from '../components/word.js';
-import Link from '../components/link.js';
+import Word from "../components/word.js";
+import Link from "../components/link.js";
 
 class BratParser {
   constructor() {
     this.data = {};
-    this.re = /:+(?=[TER]\d+$)/;    // regular expression for reading in a mention
+    this.re = /:+(?=[TER]\d+$)/;    // regular expression for reading in a
+                                    // mention
     this.text = "";
     this.mentions = {};
   }
 
-/*
-  @param textInput : Source text     or  text + input in standoff format
-  @param entInput  : entity annotation or input in standoff format
-  @param evtInput  : event annotations or {undefined}
- */
+  /*
+    @param textInput : Source text     or  text + input in standoff format
+    @param entInput  : entity annotation or input in standoff format
+    @param evtInput  : event annotations or {undefined}
+   */
   parse(textInput, entInput, evtInput) {
     this.mentions = {};
     let lines;
 
     // separate source text and annotation
     if (!entInput) {
-      let splitLines = textInput.split('\n');
+      let splitLines = textInput.split("\n");
       this.text = splitLines[0];
       lines = splitLines.slice(1);
     } else {
       this.text = textInput;
-      lines = entInput.split('\n');
+      lines = entInput.split("\n");
       if (evtInput) {
         lines = lines.concat(
-          evtInput.split('\n'));
+          evtInput.split("\n"));
       }
     }
 
@@ -39,7 +40,7 @@ class BratParser {
         this.mentions[tokens[0]] = {
           annotation: tokens,
           object: null
-        }
+        };
       }
     });
 
@@ -101,7 +102,7 @@ class BratParser {
     // parse annotation
     let tokens = m.annotation;
     switch (tokens[0].charAt(0)) {
-      case 'T':
+      case "T":
         /**
          * Entity annotations have:
          * - Unique ID
@@ -120,7 +121,7 @@ class BratParser {
           m.object = tbm;
           return tbm;
         }
-      case 'E':
+      case "E":
         /**
          * Event annotations have:
          * - Unique ID
@@ -138,7 +139,7 @@ class BratParser {
           m.object = em;
           return em;
         }
-      case 'R':
+      case "R":
         /**
          * Binary relations have:
          * - Unique ID
@@ -156,7 +157,7 @@ class BratParser {
           m.object = rm;
           return rm;
         }
-      case 'A':
+      case "A":
         break;
     }
     return null;
@@ -171,7 +172,7 @@ class BratParser {
     if (charStart >= 0 && charStart < charEnd && charEnd <= this.text.length) {
       // create Word
       let word = new Word(this.text.slice(charStart, charEnd), Number(id));
-      word.setTag(label);
+      word.registerTag("default", label);
       word.addEventId(id);
 
       // cut textArray
@@ -183,7 +184,7 @@ class BratParser {
 
       let i = this.textArray.findIndex(token => token.charEnd > charStart);
       if (i === -1) {
-        console.log('// mistake in tokenizing string')
+        console.log("// mistake in tokenizing string");
       } else if (this.textArray[i].charStart < charStart) {
         // textArray[i] starts to the left of the word
         let tempEnd = this.textArray[i].charEnd;
@@ -228,22 +229,22 @@ class BratParser {
     let successfulParse = true;
     const id = tokens[0];
     const args = tokens.slice(1)
-        .map((token, i) => {
-            let [label, id] = token.split(this.re);
-            let object = this.parseAnnotation(id, graph)
-            if (object !== null) {
-              return {
-                type: label,
-                anchor: object
-              };
-            } else {
-              if (i === 0) {
-                successfulParse = false;
-              }
-              return null;
-            }
-        })
-        .filter(arg => arg);
+      .map((token, i) => {
+        let [label, id] = token.split(this.re);
+        let object = this.parseAnnotation(id, graph);
+        if (object !== null) {
+          return {
+            type: label,
+            anchor: object
+          };
+        } else {
+          if (i === 0) {
+            successfulParse = false;
+          }
+          return null;
+        }
+      })
+      .filter(arg => arg);
     if (successfulParse && args.length > 1) {
       // create link
       return new Link(id, args[0].anchor, args.slice(1));
@@ -274,7 +275,7 @@ class BratParser {
       });
 
     if (successfulParse === true) {
-      return new Link(id, null, args, reltype)
+      return new Link(id, null, args, reltype);
     } else {
       return null;
     }

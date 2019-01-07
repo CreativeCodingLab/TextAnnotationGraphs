@@ -13,11 +13,13 @@ class RowManager {
   }
 
   /**
-   * Resizes all the Rows in the visualisation
+   * Resizes all the Rows in the visualisation, making sure that they all
+   * fit the parent container and that none of the Rows/Words overlap
    */
   resizeAll() {
     this.width(this._svg.width());
     this.resizeRow(0);
+    this.fitWords();
   }
 
   /**
@@ -91,6 +93,32 @@ class RowManager {
         row.redrawLinksAndClusters();
       }
     });
+  }
+
+  /**
+   * Makes sure that all Words fit nicely on their Rows without overlaps.
+   * Runs through all the Words on all the Rows in order; the moment one is
+   * found that overlaps with a neighbour, a recursive move is initiated.
+   */
+  fitWords() {
+    for (const row of this._rows) {
+      for (let i = 1; i < row.words.length; i++) {
+        const prevWord = row.words[i - 1];
+        const thisWord = row.words[i];
+        const thisWordPadding = thisWord.isPunct
+          ? this.config.wordPunctPadding
+          : this.config.wordPadding;
+        const thisMinX = prevWord.x + prevWord.minWidth + thisWordPadding;
+        const diff = thisMinX - thisWord.x;
+        if (diff > 0) {
+          return this.moveWordRight({
+            row: row,
+            wordIndex: i,
+            dx: diff
+          });
+        }
+      }
+    }
   }
 
   /**

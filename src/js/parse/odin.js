@@ -96,7 +96,12 @@ class OdinParser {
      * Each sentence is an object with a number of pre-defined properties;
      * we are interested in the following.
      * @property {String[]} words
+     * @property raw
      * @property tags
+     * @property lemmas
+     * @property entities
+     * @property norms
+     * @property chunks
      * @property graphs
      */
     for (const [sentenceId, sentence] of document.sentences.entries()) {
@@ -105,7 +110,7 @@ class OdinParser {
       // (which rely on sentence-level indices, not global indices)
       const thisSentence = [];
 
-      // The lengths of the `words` and `tags` arrays should be the same
+      // Read any token-level annotations
       for (let thisIdx = 0; thisIdx < sentence.words.length; thisIdx++) {
         const thisWord = new Word(
           // Text
@@ -113,7 +118,26 @@ class OdinParser {
           // (Global) Word index
           thisIdx + this.lastWordIdx + 1
         );
-        thisWord.setSyntaxTag(sentence.tags[thisIdx]);
+
+        // Various token-level tags, if they are available
+        if (sentence.raw) {
+          thisWord.registerTag("raw", sentence.raw[thisIdx]);
+        }
+        if (sentence.tags) {
+          thisWord.registerTag("POS", sentence.tags[thisIdx]);
+        }
+        if (sentence.lemmas) {
+          thisWord.registerTag("lemma", sentence.lemmas[thisIdx]);
+        }
+        if (sentence.entities) {
+          thisWord.registerTag("entity", sentence.entities[thisIdx]);
+        }
+        if (sentence.norms) {
+          thisWord.registerTag("norm", sentence.norms[thisIdx]);
+        }
+        if (sentence.chunks) {
+          thisWord.registerTag("chunk", sentence.chunks[thisIdx]);
+        }
 
         thisSentence.push(thisWord);
         this.data.words.push(thisWord);
@@ -205,7 +229,11 @@ class OdinParser {
       const label = mention.labels[0];
 
       if (tokens.length === 1) {
-        tokens[0].setTag(label);
+        // Set the annotation tag for this Word
+        tokens[0].registerTag("default", label);
+
+        // tokens[0].setTag(label);
+
         this.parsedMentions[mention.id] = tokens[0];
         return tokens[0];
       } else {

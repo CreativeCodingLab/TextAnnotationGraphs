@@ -38908,10 +38908,10 @@ function () {
           // centre of the tag
           var halfWidth;
 
-          if (_this2.top && anchor.tag instanceof _wordTag.default) {
-            halfWidth = anchor.tag.textWidth / 2;
-          } else if (!_this2.top && anchor.syntaxTag instanceof _wordTag.default) {
-            halfWidth = anchor.syntaxTag.textWidth / 2;
+          if (_this2.top && anchor.topTag instanceof _wordTag.default) {
+            halfWidth = anchor.topTag.textWidth / 2;
+          } else if (!_this2.top && anchor.bottomTag instanceof _wordTag.default) {
+            halfWidth = anchor.bottomTag.textWidth / 2;
           } else if (_this2.top && anchor instanceof _wordCluster.default) {
             halfWidth = anchor.textWidth / 2;
           } else {
@@ -41610,21 +41610,7 @@ function () {
       // is the text's baseline (not any of the bounding box sides).
       // N.B.: Typographical baselines ignore descenders
 
-      this.svgText = this.svg.text(this.val).addClass("tag-element").addClass(this.top ? "word-tag" : "word-tag syntax-tag").leading(1); // Centre the WordTag horizontally
-      // (SVG text elements are positioned on the x-axis by their centres)
-      // Also position the WordTag above/below the main Word
-      // (It starts with its upper-left corner on the Row's main line)
-
-      var newX, newY;
-      newX = this.word.textRcx;
-
-      if (this.top) {
-        newY = -this.word.textHeight - this.svgText.bbox().height - this.config.wordTopTagPadding;
-      } else {
-        newY = this.config.wordBottomTagPadding;
-      }
-
-      this.svgText.move(newX, newY); // add click and right-click listeners
+      this.svgText = this.svg.text(this.val).addClass("tag-element").addClass(this.top ? "word-tag" : "word-tag syntax-tag").leading(1); // add click and right-click listeners
 
       var mainSvg = this.word.main.svg;
 
@@ -41644,7 +41630,36 @@ function () {
       // it's a top tag
 
       this.line = this.svg.path();
-      this.drawTagLine();
+      this.drawTagLine(); // Centre the WordTag and its line horizontally
+      // (SVG text elements are positioned on the x-axis by their centres)
+
+      this.centre(); // Position the WordTag above/below the main Word
+      // (It starts with its upper-left corner on the Row's baseline)
+
+      var newY;
+
+      if (this.top) {
+        newY = -this.word.textHeight - this.svgText.bbox().height - this.config.wordTopTagPadding;
+      } else {
+        newY = this.config.wordBottomTagPadding;
+      }
+
+      this.svgText.y(newY);
+      this.line.cy((this.svgText.bbox().y2 + this.word.svgText.bbox().y) / 2);
+    }
+    /**
+     * Centres this WordTag and its line horizontally against the base Word's
+     * current position
+     * (N.B.: SVG Text elements are positioned on the x-axis by their centres)
+     */
+
+  }, {
+    key: "centre",
+    value: function centre() {
+      // Centre the Text element
+      this.svgText.x(this.word.textRcx); // Centre the line between the Word and WordTag
+
+      this.line.cx(this.svgText.cx());
     }
     /**
      * Removes this WordTag's SVG elements from the visualisation
@@ -41681,11 +41696,7 @@ function () {
         var height = this.config.wordTagLineLength;
         var arm = wordWidth / 2;
         this.line.plot("M0,0" + "c" + [0, height, arm, 0, arm, height] + "M0,0" + "c" + [0, height, -arm, 0, -arm, height]);
-      } // Centre the line between the Word and WordTag
-
-
-      this.line.cx(this.svgText.cx());
-      this.line.cy((this.svgText.bbox().y2 + this.word.svgText.bbox().y) / 2);
+      }
     }
     /**
      * Sets the text of this WordTag, or returns this WordTag's SVG text element
@@ -41841,15 +41852,15 @@ function () {
     // -----------------------------------------
 
     this.eventIds = [];
-    this.syntaxId = "";
-    this.tagText = "";
-    this.syntaxTagText = ""; // Back-references that will be set when this Word is used in
+    this.registeredTags = {};
+    this.topTagCategory = "";
+    this.bottomTagCategory = ""; // Back-references that will be set when this Word is used in
     // other structures
     // ---------------------------------------------------------
     // WordTag
 
-    this.tag = null;
-    this.syntaxTag = null; // WordCluster
+    this.topTag = null;
+    this.bottomTag = null; // WordCluster
 
     this.clusters = []; // Link
 
@@ -41889,52 +41900,82 @@ function () {
       }
     }
     /**
-     * The syntax ID (essentially an arbitrary label) that this Word is
-     * associated with
-     * @param id
+     * Register a tag for this word under the given category.
+     * At run-time, one category of tags can be shown above this Word and
+     * another can be shown below it.
+     * @param {String} category
+     * @param {String} tag
      */
 
   }, {
-    key: "setSyntaxId",
-    value: function setSyntaxId(id) {
-      this.syntaxId = id;
+    key: "registerTag",
+    value: function registerTag() {
+      var category = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "default";
+      var tag = arguments.length > 1 ? arguments[1] : undefined;
+      this.registeredTags[category] = tag;
     }
     /**
-     * Sets the main tag text for this Word, redrawing it if it is initialised
-     * @param {String} tag
-     * @return {null}
+     * Returns all the unique tag categories currently registered for this Word
      */
 
   }, {
-    key: "setTag",
-    value: function setTag(tag) {
-      this.tagText = tag;
+    key: "getTagCategories",
+    value: function getTagCategories() {
+      return Object.keys(this.registeredTags);
+    }
+    /**
+     * Sets the top tag category for this Word, redrawing it if it is initialised
+     * @param {String} category
+     */
+
+  }, {
+    key: "setTopTagCategory",
+    value: function setTopTagCategory(category) {
+      if (this.topTag) {
+        this.topTag.remove();
+        this.topTag = null;
+      } // Not all categories of tags will be available for all Words
+
+
+      if (!this.registeredTags[category]) {
+        return;
+      }
+
+      this.topTagCategory = category;
 
       if (this.initialised) {
-        if (this.tag instanceof _wordTag.default) {
-          this.tag.remove();
-        }
+        this.topTag = new _wordTag.default(this.registeredTags[category], this, this.config); // Since one of the Word's tags has changed, recalculate/realign its
+        // bounding box
 
-        this.tag = new _wordTag.default(tag, this, this.config);
+        this.alignBox();
       }
     }
     /**
-     * Sets the syntax tag text for this Word, redrawing it if it is initialised
-     * @param {String} tag
-     * @return {null}
+     * Sets the bottom tag category for this Word, redrawing it if it is
+     * initialised
+     * @param {String} category
      */
 
   }, {
-    key: "setSyntaxTag",
-    value: function setSyntaxTag(tag) {
-      this.syntaxTagText = tag;
+    key: "setBottomTagCategory",
+    value: function setBottomTagCategory(category) {
+      if (this.bottomTag) {
+        this.bottomTag.remove();
+        this.bottomTag = null;
+      } // Not all categories of tags will be available for all Words
+
+
+      if (!this.registeredTags[category]) {
+        return;
+      }
+
+      this.bottomTagCategory = category;
 
       if (this.initialised) {
-        if (this.syntaxTag instanceof _wordTag.default) {
-          this.syntaxTag.remove();
-        }
+        this.bottomTag = new _wordTag.default(this.registeredTags[category], this, this.config, false); // Since one of the Word's tags has changed, recalculate/realign its
+        // bounding box
 
-        this.syntaxTag = new _wordTag.default(tag, this, this.config, false);
+        this.alignBox();
       }
     }
     /**
@@ -41963,31 +42004,30 @@ function () {
       // Word's bounding box, but since we are working relative to the Row's
       // main line, we need to move the Word upwards so that the lower-left
       // corner meets the Row.
+      // The desired final outcome is for the Text element's bbox to have an
+      // x-value of 0 and a y2-value of 0.
 
       var currentBox = this.svgText.bbox();
-      this.svgText.move(currentBox.width / 2, -currentBox.height); // Cache the text bounding box values
-
+      this.svgText.move(-currentBox.x, -currentBox.height);
       this._textBbox = this.svgText.bbox(); // ------------------------
       // Draw in this Word's tags
 
-      if (this.tagText && !(this.tag instanceof _wordTag.default)) {
-        this.tag = new _wordTag.default(this.tagText, this, this.config);
+      if (this.topTagCategory) {
+        this.topTag = new _wordTag.default(this.registeredTags[this.topTagCategory], this, this.config);
       }
 
-      if (this.syntaxTagText && !(this.syntaxTag instanceof _wordTag.default)) {
-        this.syntaxTag = new _wordTag.default(this.syntaxTagText, this, this.config, false);
+      if (this.bottomTagCategory) {
+        this.bottomTag = new _wordTag.default(this.registeredTags[this.bottomTagCategory], this, this.config, false);
       } // Draw cluster info
 
 
       this.clusters.forEach(function (cluster) {
         cluster.init(_this, main);
-      }); // Cache the overall bounding box values, and ensure that all the SVG
-      // elements for this Word and any WordTags are well-positioned within
-      // the Word's bounding box
+      }); // Ensure that all the SVG elements for this Word and any WordTags are
+      // well-positioned within the Word's bounding box, and set the cached
+      // values this._textBbox and this._bbox
 
-      this._bbox = this.svg.bbox();
-      this.alignBox(); // And cache the overall bounding box values
-      // ---------------------
+      this.alignBox(); // ---------------------
       // Attach drag listeners
 
       var x = 0;
@@ -42096,25 +42136,54 @@ function () {
   }, {
     key: "alignBox",
     value: function alignBox() {
-      // Generally, we will only need to move things around if the WordTags
+      // We begin by resetting the position of the Text elements of this Word
+      // and any WordTags, so that consecutive calls to `.alignBox()` don't
+      // push them further and further away from their starting point
+      this.svgText.attr({
+        x: 0,
+        y: 0
+      });
+      var currentBox = this.svgText.bbox();
+      this.svgText.move(-currentBox.x, -currentBox.height);
+      this._textBbox = this.svgText.bbox();
+
+      if (this.topTag) {
+        this.topTag.centre();
+      }
+
+      if (this.bottomTag) {
+        this.bottomTag.centre();
+      } // Generally, we will only need to move things around if the WordTags
       // are wider than the Word, which gives the Word's bounding box a
       // negative x-value.
+
+
+      this._bbox = this.svg.bbox();
       var diff = -this._bbox.x;
 
-      if (diff > 0) {
-        // We can't apply the `.x()` translation directly to this Word's SVG
-        // group, or it will simply set a transformation on the group (leaving
-        // the bounding box unchanged).  We need to move all its children instead.
+      if (diff <= 0) {
+        return;
+      } // We can't apply the `.x()` translation directly to this Word's SVG
+      // group, or it will simply set a transformation on the group (leaving
+      // the bounding box unchanged).  We need to move all its children
+      // (recursively) instead.
+
+
+      function childrenDx(parent, diff) {
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
         var _iteratorError = undefined;
 
         try {
-          for (var _iterator = this.svg.children()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          for (var _iterator = parent.children()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
             var child = _step.value;
-            child.dx(diff);
-          } // And updated the cached values
 
+            if (child.children && child.children()) {
+              childrenDx(child, diff);
+            } else {
+              child.dx(diff);
+            }
+          }
         } catch (err) {
           _didIteratorError = true;
           _iteratorError = err;
@@ -42129,9 +42198,11 @@ function () {
             }
           }
         }
-
-        this._bbox = this.svg.bbox();
       }
+
+      childrenDx(this.svg, diff); // And update the cached values
+
+      this._bbox = this.svg.bbox();
     }
     /**
      * Returns the width of the bounding box for this Word and its WordTags.
@@ -42348,10 +42419,12 @@ var Config = function Config() {
   (0, _classCallCheck2.default)(this, Config);
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // User options
-  // Category of top Links to show
-  this.topLinksCategory = "default"; // Category of bottom Links to show
+  // Category of top/bottom Links to show
+  this.topLinkCategory = "default";
+  this.bottomLinkCategory = "none"; // Category of top/bottom tags to show
 
-  this.bottomLinksCategory = "none"; // Lock Rows to minimum height?
+  this.topTagCategory = "default";
+  this.bottomTagCategory = "POS"; // Lock Rows to minimum height?
 
   this.compactRows = false; // Continue to display top/bottom Links when moving Words?
 
@@ -42631,6 +42704,11 @@ function () {
 
 
       this.words.forEach(function (word) {
+        // If the tag categories to show for the Word are already set (via the
+        // default config or user options), set them here so that the Word can
+        // draw them directly on init
+        word.setTopTagCategory(_this.config.topTagCategory);
+        word.setBottomTagCategory(_this.config.bottomTagCategory);
         word.init(_this);
 
         _this.rowManager.addWordToRow(word, _this.rowManager.lastRow);
@@ -42653,7 +42731,7 @@ function () {
 
       // Draw in the currently toggled Links
       this.links.forEach(function (link) {
-        if (link.top && link.category === _this2.config.topLinksCategory || !link.top && link.category === _this2.config.bottomLinksCategory) {
+        if (link.top && link.category === _this2.config.topLinkCategory || !link.top && link.category === _this2.config.bottomLinkCategory) {
           link.show();
         }
 
@@ -42868,7 +42946,7 @@ function () {
   }, {
     key: "setTopLinkCategory",
     value: function setTopLinkCategory(category) {
-      this.setOption("topLinksCategory", category);
+      this.setOption("topLinkCategory", category);
       this.links.filter(function (link) {
         return link.top;
       }).forEach(function (link) {
@@ -42904,7 +42982,7 @@ function () {
   }, {
     key: "setBottomLinkCategory",
     value: function setBottomLinkCategory(category) {
-      this.setOption("bottomLinksCategory", category);
+      this.setOption("bottomLinkCategory", category);
       this.links.filter(function (link) {
         return !link.top;
       }).forEach(function (link) {
@@ -42913,6 +42991,57 @@ function () {
         } else {
           link.hide();
         }
+      }); // Always resize when the set of visible Links may have changed
+
+      this.rowManager.resizeAll();
+    }
+    /**
+     * Returns an Array of all the categories available for top Word tags
+     * (Generally, text-bound mentions)
+     */
+
+  }, {
+    key: "getTagCategories",
+    value: function getTagCategories() {
+      var categories = this.words.flatMap(function (word) {
+        return word.getTagCategories();
+      });
+      return _lodash.default.uniq(categories);
+    }
+    /**
+     * Shows the specified category of top Word tags
+     * @param category
+     */
+
+  }, {
+    key: "setTopTagCategory",
+    value: function setTopTagCategory(category) {
+      this.setOption("topTagCategory", category);
+      this.words.forEach(function (word) {
+        word.setTopTagCategory(category);
+        word.passingLinks.forEach(function (link) {
+          return link.draw();
+        });
+      }); // (Re-)colour the labels
+
+      this.taxonomyManager.colour(this.words); // Always resize when the set of visible Links may have changed
+
+      this.rowManager.resizeAll();
+    }
+    /**
+     * Shows the specified category of bottom Word tags
+     * @param category
+     */
+
+  }, {
+    key: "setBottomTagCategory",
+    value: function setBottomTagCategory(category) {
+      this.setOption("bottomTagCategory", category);
+      this.words.forEach(function (word) {
+        word.setBottomTagCategory(category);
+        word.passingLinks.forEach(function (link) {
+          return link.draw();
+        });
       }); // Always resize when the set of visible Links may have changed
 
       this.rowManager.resizeAll();
@@ -43054,7 +43183,7 @@ function () {
       });
       this.svg.on("word-move-end", function () {
         _this3.links.forEach(function (link) {
-          if (link.top && link.category === _this3.config.topLinksCategory || !link.top && link.category === _this3.config.bottomLinksCategory) {
+          if (link.top && link.category === _this3.config.topLinkCategory || !link.top && link.category === _this3.config.bottomLinkCategory) {
             link.show();
           }
         });
@@ -43278,7 +43407,8 @@ function () {
     this._rows = [];
   }
   /**
-   * Resizes all the Rows in the visualisation
+   * Resizes all the Rows in the visualisation, making sure that they all
+   * fit the parent container and that none of the Rows/Words overlap
    */
 
 
@@ -43287,6 +43417,7 @@ function () {
     value: function resizeAll() {
       this.width(this._svg.width());
       this.resizeRow(0);
+      this.fitWords();
     }
     /**
      * Attempts to adjust the height of the Row with index `i` by the specified
@@ -43364,6 +43495,54 @@ function () {
           row.redrawLinksAndClusters();
         }
       });
+    }
+    /**
+     * Makes sure that all Words fit nicely on their Rows without overlaps.
+     * Runs through all the Words on all the Rows in order; the moment one is
+     * found that overlaps with a neighbour, a recursive move is initiated.
+     */
+
+  }, {
+    key: "fitWords",
+    value: function fitWords() {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this._rows[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var row = _step.value;
+
+          for (var i = 1; i < row.words.length; i++) {
+            var prevWord = row.words[i - 1];
+            var thisWord = row.words[i];
+            var thisWordPadding = thisWord.isPunct ? this.config.wordPunctPadding : this.config.wordPadding;
+            var thisMinX = prevWord.x + prevWord.minWidth + thisWordPadding;
+            var diff = thisMinX - thisWord.x;
+
+            if (diff > 0) {
+              return this.moveWordRight({
+                row: row,
+                wordIndex: i,
+                dx: diff
+              });
+            }
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return != null) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
     }
     /**
      * Adds a new Row to the bottom of the svg and sets the height of the main
@@ -43759,13 +43938,13 @@ function () {
 
       words.forEach(function (word) {
         // Words with WordTags
-        if (word.tag) {
-          if (!_this.tagColours[word.tag.val]) {
+        if (word.topTag) {
+          if (!_this.tagColours[word.topTag.val]) {
             // We have yet to assign this tag a colour
-            _this.assignColour(word.tag.val, _this.getNewColour());
+            _this.assignColour(word.topTag.val, _this.getNewColour());
           }
 
-          TaxonomyManager.setColour(word, _this.tagColours[word.tag.val]);
+          TaxonomyManager.setColour(word, _this.tagColours[word.topTag.val]);
         } // Words with WordClusters
 
 
@@ -43848,7 +44027,7 @@ function () {
     value: function setColour(element, colour) {
       if (element instanceof _word.default) {
         // Set the colour of the tag
-        element.tag.svgText.node.style.fill = colour;
+        element.topTag.svgText.node.style.fill = colour;
       } else {
         // Set the colour of the element itself
         element.svgText.node.style.fill = colour;
@@ -43881,7 +44060,8 @@ function () {
   function BratParser() {
     (0, _classCallCheck2.default)(this, BratParser);
     this.data = {};
-    this.re = /:+(?=[TER]\d+$)/; // regular expression for reading in a mention
+    this.re = /:+(?=[TER]\d+$)/; // regular expression for reading in a
+    // mention
 
     this.text = "";
     this.mentions = {};
@@ -43902,15 +44082,15 @@ function () {
       var lines; // separate source text and annotation
 
       if (!entInput) {
-        var splitLines = textInput.split('\n');
+        var splitLines = textInput.split("\n");
         this.text = splitLines[0];
         lines = splitLines.slice(1);
       } else {
         this.text = textInput;
-        lines = entInput.split('\n');
+        lines = entInput.split("\n");
 
         if (evtInput) {
-          lines = lines.concat(evtInput.split('\n'));
+          lines = lines.concat(evtInput.split("\n"));
         }
       } // filter out non-annotation lines
 
@@ -43987,7 +44167,7 @@ function () {
       var tokens = m.annotation;
 
       switch (tokens[0].charAt(0)) {
-        case 'T':
+        case "T":
           /**
            * Entity annotations have:
            * - Unique ID
@@ -44008,7 +44188,7 @@ function () {
             return tbm;
           }
 
-        case 'E':
+        case "E":
           /**
            * Event annotations have:
            * - Unique ID
@@ -44028,7 +44208,7 @@ function () {
             return em;
           }
 
-        case 'R':
+        case "R":
           /**
            * Binary relations have:
            * - Unique ID
@@ -44048,7 +44228,7 @@ function () {
             return rm;
           }
 
-        case 'A':
+        case "A":
           break;
       }
 
@@ -44065,7 +44245,7 @@ function () {
       if (charStart >= 0 && charStart < charEnd && charEnd <= this.text.length) {
         // create Word
         var word = new _word.default(this.text.slice(charStart, charEnd), Number(id));
-        word.setTag(label);
+        word.registerTag("default", label);
         word.addEventId(id); // cut textArray
 
         var textWord = {
@@ -44078,7 +44258,7 @@ function () {
         });
 
         if (i === -1) {
-          console.log('// mistake in tokenizing string');
+          console.log("// mistake in tokenizing string");
         } else if (this.textArray[i].charStart < charStart) {
           // textArray[i] starts to the left of the word
           var tempEnd = this.textArray[i].charEnd;
@@ -44355,7 +44535,12 @@ function () {
        * Each sentence is an object with a number of pre-defined properties;
        * we are interested in the following.
        * @property {String[]} words
+       * @property raw
        * @property tags
+       * @property lemmas
+       * @property entities
+       * @property norms
+       * @property chunks
        * @property graphs
        */
 
@@ -44372,13 +44557,37 @@ function () {
           // Hold on to the Words we generate even as we push them up to the
           // main data store, so that we can create their syntax Links too
           // (which rely on sentence-level indices, not global indices)
-          var thisSentence = []; // The lengths of the `words` and `tags` arrays should be the same
+          var thisSentence = []; // Read any token-level annotations
 
           for (var thisIdx = 0; thisIdx < sentence.words.length; thisIdx++) {
             var thisWord = new _word.default( // Text
             sentence.words[thisIdx], // (Global) Word index
-            thisIdx + this.lastWordIdx + 1);
-            thisWord.setSyntaxTag(sentence.tags[thisIdx]);
+            thisIdx + this.lastWordIdx + 1); // Various token-level tags, if they are available
+
+            if (sentence.raw) {
+              thisWord.registerTag("raw", sentence.raw[thisIdx]);
+            }
+
+            if (sentence.tags) {
+              thisWord.registerTag("POS", sentence.tags[thisIdx]);
+            }
+
+            if (sentence.lemmas) {
+              thisWord.registerTag("lemma", sentence.lemmas[thisIdx]);
+            }
+
+            if (sentence.entities) {
+              thisWord.registerTag("entity", sentence.entities[thisIdx]);
+            }
+
+            if (sentence.norms) {
+              thisWord.registerTag("norm", sentence.norms[thisIdx]);
+            }
+
+            if (sentence.chunks) {
+              thisWord.registerTag("chunk", sentence.chunks[thisIdx]);
+            }
+
             thisSentence.push(thisWord);
             this.data.words.push(thisWord);
           } // Update the global Word index offset for the next sentence
@@ -44499,7 +44708,9 @@ function () {
         var label = mention.labels[0];
 
         if (tokens.length === 1) {
-          tokens[0].setTag(label);
+          // Set the annotation tag for this Word
+          tokens[0].registerTag("default", label); // tokens[0].setTag(label);
+
           this.parsedMentions[mention.id] = tokens[0];
           return tokens[0];
         } else {

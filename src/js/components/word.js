@@ -29,16 +29,17 @@ class Word {
     // Optional properties that may be set later
     // -----------------------------------------
     this.eventIds = [];
-    this.syntaxId = "";
-    this.tagText = "";
-    this.syntaxTagText = "";
+
+    this.registeredTags = {};
+    this.topTagCategory = "";
+    this.bottomTagCategory = "";
 
     // Back-references that will be set when this Word is used in
     // other structures
     // ---------------------------------------------------------
     // WordTag
-    this.tag = null;
-    this.syntaxTag = null;
+    this.topTag = null;
+    this.bottomTag = null;
 
     // WordCluster
     this.clusters = [];
@@ -86,41 +87,80 @@ class Word {
   }
 
   /**
-   * The syntax ID (essentially an arbitrary label) that this Word is
-   * associated with
-   * @param id
+   * Register a tag for this word under the given category.
+   * At run-time, one category of tags can be shown above this Word and
+   * another can be shown below it.
+   * @param {String} category
+   * @param {String} tag
    */
-  setSyntaxId(id) {
-    this.syntaxId = id;
+  registerTag(category = "default", tag) {
+    this.registeredTags[category] = tag;
   }
 
   /**
-   * Sets the main tag text for this Word, redrawing it if it is initialised
-   * @param {String} tag
-   * @return {null}
+   * Returns all the unique tag categories currently registered for this Word
    */
-  setTag(tag) {
-    this.tagText = tag;
+  getTagCategories() {
+    return Object.keys(this.registeredTags);
+  }
+
+  /**
+   * Sets the top tag category for this Word, redrawing it if it is initialised
+   * @param {String} category
+   */
+  setTopTagCategory(category) {
+    if (this.topTag) {
+      this.topTag.remove();
+      this.topTag = null;
+    }
+
+    // Not all categories of tags will be available for all Words
+    if (!this.registeredTags[category]) {
+      return;
+    }
+
+    this.topTagCategory = category;
     if (this.initialised) {
-      if (this.tag instanceof WordTag) {
-        this.tag.remove();
-      }
-      this.tag = new WordTag(tag, this, this.config);
+      this.topTag = new WordTag(
+        this.registeredTags[category],
+        this,
+        this.config
+      );
+
+      // Since one of the Word's tags has changed, recalculate/realign its
+      // bounding box
+      this.alignBox();
     }
   }
 
   /**
-   * Sets the syntax tag text for this Word, redrawing it if it is initialised
-   * @param {String} tag
-   * @return {null}
+   * Sets the bottom tag category for this Word, redrawing it if it is
+   * initialised
+   * @param {String} category
    */
-  setSyntaxTag(tag) {
-    this.syntaxTagText = tag;
+  setBottomTagCategory(category) {
+    if (this.bottomTag) {
+      this.bottomTag.remove();
+      this.bottomTag = null;
+    }
+
+    // Not all categories of tags will be available for all Words
+    if (!this.registeredTags[category]) {
+      return;
+    }
+
+    this.bottomTagCategory = category;
     if (this.initialised) {
-      if (this.syntaxTag instanceof WordTag) {
-        this.syntaxTag.remove();
-      }
-      this.syntaxTag = new WordTag(tag, this, this.config, false);
+      this.bottomTag = new WordTag(
+        this.registeredTags[category],
+        this,
+        this.config,
+        false
+      );
+
+      // Since one of the Word's tags has changed, recalculate/realign its
+      // bounding box
+      this.alignBox();
     }
   }
 
@@ -149,26 +189,34 @@ class Word {
       .addClass("word-text")
       .leading(1);
 
-
     // The positioning anchor for the text element is its centre, so we need
     // to translate the entire Word rightward by half its width.
     // In addition, the x/y-position points at the upper-left corner of the
     // Word's bounding box, but since we are working relative to the Row's
     // main line, we need to move the Word upwards so that the lower-left
     // corner meets the Row.
+    // The desired final outcome is for the Text element's bbox to have an
+    // x-value of 0 and a y2-value of 0.
     const currentBox = this.svgText.bbox();
-    this.svgText.move(currentBox.width / 2, -currentBox.height);
-
-    // Cache the text bounding box values
+    this.svgText.move(-currentBox.x, -currentBox.height);
     this._textBbox = this.svgText.bbox();
 
     // ------------------------
     // Draw in this Word's tags
-    if (this.tagText && !(this.tag instanceof WordTag)) {
-      this.tag = new WordTag(this.tagText, this, this.config);
+    if (this.topTagCategory) {
+      this.topTag = new WordTag(
+        this.registeredTags[this.topTagCategory],
+        this,
+        this.config
+      );
     }
-    if (this.syntaxTagText && !(this.syntaxTag instanceof WordTag)) {
-      this.syntaxTag = new WordTag(this.syntaxTagText, this, this.config, false);
+    if (this.bottomTagCategory) {
+      this.bottomTag = new WordTag(
+        this.registeredTags[this.bottomTagCategory],
+        this,
+        this.config,
+        false
+      );
     }
 
     // Draw cluster info
@@ -176,14 +224,10 @@ class Word {
       cluster.init(this, main);
     });
 
-
-    // Cache the overall bounding box values, and ensure that all the SVG
-    // elements for this Word and any WordTags are well-positioned within
-    // the Word's bounding box
-    this._bbox = this.svg.bbox();
+    // Ensure that all the SVG elements for this Word and any WordTags are
+    // well-positioned within the Word's bounding box, and set the cached
+    // values this._textBbox and this._bbox
     this.alignBox();
-
-    // And cache the overall bounding box values
 
     // ---------------------
     // Attach drag listeners
@@ -268,21 +312,48 @@ class Word {
    * equal to its width
    */
   alignBox() {
+    // We begin by resetting the position of the Text elements of this Word
+    // and any WordTags, so that consecutive calls to `.alignBox()` don't
+    // push them further and further away from their starting point
+    this.svgText.attr({x: 0, y: 0});
+    const currentBox = this.svgText.bbox();
+    this.svgText.move(-currentBox.x, -currentBox.height);
+    this._textBbox = this.svgText.bbox();
+
+    if (this.topTag) {
+      this.topTag.centre();
+    }
+    if (this.bottomTag) {
+      this.bottomTag.centre();
+    }
+
     // Generally, we will only need to move things around if the WordTags
     // are wider than the Word, which gives the Word's bounding box a
     // negative x-value.
+    this._bbox = this.svg.bbox();
     const diff = -this._bbox.x;
-
-    if (diff > 0) {
-      // We can't apply the `.x()` translation directly to this Word's SVG
-      // group, or it will simply set a transformation on the group (leaving
-      // the bounding box unchanged).  We need to move all its children instead.
-      for (const child of this.svg.children()) {
-        child.dx(diff);
-      }
-      // And updated the cached values
-      this._bbox = this.svg.bbox();
+    if (diff <= 0) {
+      return;
     }
+
+    // We can't apply the `.x()` translation directly to this Word's SVG
+    // group, or it will simply set a transformation on the group (leaving
+    // the bounding box unchanged).  We need to move all its children
+    // (recursively) instead.
+    function childrenDx(parent, diff) {
+      for (const child of parent.children()) {
+        if (child.children && child.children()) {
+          childrenDx(child, diff);
+        } else {
+          child.dx(diff);
+        }
+      }
+    }
+
+    childrenDx(this.svg, diff);
+
+    // And update the cached values
+    this._bbox = this.svg.bbox();
   }
 
   /**

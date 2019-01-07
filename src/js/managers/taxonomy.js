@@ -87,12 +87,12 @@ class TaxonomyManager {
   colour(words) {
     words.forEach(word => {
       // Words with WordTags
-      if (word.tag) {
-        if (!this.tagColours[word.tag.val]) {
+      if (word.topTag) {
+        if (!this.tagColours[word.topTag.val]) {
           // We have yet to assign this tag a colour
-          this.assignColour(word.tag.val, this.getNewColour());
+          this.assignColour(word.topTag.val, this.getNewColour());
         }
-        TaxonomyManager.setColour(word, this.tagColours[word.tag.val]);
+        TaxonomyManager.setColour(word, this.tagColours[word.topTag.val]);
       }
 
       // Words with WordClusters
@@ -133,7 +133,7 @@ class TaxonomyManager {
   static setColour(element, colour) {
     if (element instanceof Word) {
       // Set the colour of the tag
-      element.tag.svgText.node.style.fill = colour;
+      element.topTag.svgText.node.style.fill = colour;
     } else {
       // Set the colour of the element itself
       element.svgText.node.style.fill = colour;

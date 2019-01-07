@@ -207,10 +207,10 @@ class Link {
           // The handle is resting on a WordTag/WordCluster; offset 0 is the
           // centre of the tag
           let halfWidth;
-          if (this.top && anchor.tag instanceof WordTag) {
-            halfWidth = anchor.tag.textWidth / 2;
-          } else if (!this.top && anchor.syntaxTag instanceof WordTag) {
-            halfWidth = anchor.syntaxTag.textWidth / 2;
+          if (this.top && anchor.topTag instanceof WordTag) {
+            halfWidth = anchor.topTag.textWidth / 2;
+          } else if (!this.top && anchor.bottomTag instanceof WordTag) {
+            halfWidth = anchor.bottomTag.textWidth / 2;
           } else if (this.top && anchor instanceof WordCluster) {
             halfWidth = anchor.textWidth / 2;
           } else {

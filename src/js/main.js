@@ -152,6 +152,11 @@ class Main {
 
     // Draw the Words onto the visualisation
     this.words.forEach(word => {
+      // If the tag categories to show for the Word are already set (via the
+      // default config or user options), set them here so that the Word can
+      // draw them directly on init
+      word.setTopTagCategory(this.config.topTagCategory);
+      word.setBottomTagCategory(this.config.bottomTagCategory);
       word.init(this);
       this.rowManager.addWordToRow(word, this.rowManager.lastRow);
     });
@@ -170,8 +175,8 @@ class Main {
   draw() {
     // Draw in the currently toggled Links
     this.links.forEach(link => {
-      if ((link.top && link.category === this.config.topLinksCategory) ||
-        (!link.top && link.category === this.config.bottomLinksCategory)) {
+      if ((link.top && link.category === this.config.topLinkCategory) ||
+        (!link.top && link.category === this.config.bottomLinkCategory)) {
         link.show();
       }
 
@@ -374,7 +379,7 @@ class Main {
    * @param category
    */
   setTopLinkCategory(category) {
-    this.setOption("topLinksCategory", category);
+    this.setOption("topLinkCategory", category);
     this.links
       .filter(link => link.top)
       .forEach(link => {
@@ -406,7 +411,7 @@ class Main {
    * @param category
    */
   setBottomLinkCategory(category) {
-    this.setOption("bottomLinksCategory", category);
+    this.setOption("bottomLinkCategory", category);
     this.links
       .filter(link => !link.top)
       .forEach(link => {
@@ -416,6 +421,49 @@ class Main {
           link.hide();
         }
       });
+
+    // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
+  }
+
+  /**
+   * Returns an Array of all the categories available for top Word tags
+   * (Generally, text-bound mentions)
+   */
+  getTagCategories() {
+    const categories = this.words
+      .flatMap(word => word.getTagCategories());
+    return _.uniq(categories);
+  }
+
+  /**
+   * Shows the specified category of top Word tags
+   * @param category
+   */
+  setTopTagCategory(category) {
+    this.setOption("topTagCategory", category);
+    this.words.forEach(word => {
+      word.setTopTagCategory(category);
+      word.passingLinks.forEach(link => link.draw());
+    });
+
+    // (Re-)colour the labels
+    this.taxonomyManager.colour(this.words);
+
+    // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
+  }
+
+  /**
+   * Shows the specified category of bottom Word tags
+   * @param category
+   */
+  setBottomTagCategory(category) {
+    this.setOption("bottomTagCategory", category);
+    this.words.forEach(word => {
+      word.setBottomTagCategory(category);
+      word.passingLinks.forEach(link => link.draw());
+    });
 
     // Always resize when the set of visible Links may have changed
     this.rowManager.resizeAll();
@@ -529,8 +577,8 @@ class Main {
 
     this.svg.on("word-move-end", () => {
       this.links.forEach(link => {
-        if ((link.top && link.category === this.config.topLinksCategory) ||
-          (!link.top && link.category === this.config.bottomLinksCategory)) {
+        if ((link.top && link.category === this.config.topLinkCategory) ||
+          (!link.top && link.category === this.config.bottomLinkCategory)) {
           link.show();
         }
       });

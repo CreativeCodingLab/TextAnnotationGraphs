@@ -53,20 +53,6 @@ class WordTag {
       .addClass(this.top ? "word-tag" : "word-tag syntax-tag")
       .leading(1);
 
-    // Centre the WordTag horizontally
-    // (SVG text elements are positioned on the x-axis by their centres)
-    // Also position the WordTag above/below the main Word
-    // (It starts with its upper-left corner on the Row's main line)
-    let newX, newY;
-    newX = this.word.textRcx;
-    if (this.top) {
-      newY = -this.word.textHeight - this.svgText.bbox().height
-        - this.config.wordTopTagPadding;
-    } else {
-      newY = this.config.wordBottomTagPadding;
-    }
-    this.svgText.move(newX, newY);
-
     // add click and right-click listeners
     let mainSvg = this.word.main.svg;
     this.svgText.node.oncontextmenu = (e) => {
@@ -79,6 +65,35 @@ class WordTag {
     // it's a top tag
     this.line = this.svg.path();
     this.drawTagLine();
+
+    // Centre the WordTag and its line horizontally
+    // (SVG text elements are positioned on the x-axis by their centres)
+    this.centre();
+
+    // Position the WordTag above/below the main Word
+    // (It starts with its upper-left corner on the Row's baseline)
+    let newY;
+    if (this.top) {
+      newY = -this.word.textHeight - this.svgText.bbox().height
+        - this.config.wordTopTagPadding;
+    } else {
+      newY = this.config.wordBottomTagPadding;
+    }
+    this.svgText.y(newY);
+    this.line.cy((this.svgText.bbox().y2 + this.word.svgText.bbox().y) / 2);
+  }
+
+  /**
+   * Centres this WordTag and its line horizontally against the base Word's
+   * current position
+   * (N.B.: SVG Text elements are positioned on the x-axis by their centres)
+   */
+  centre() {
+    // Centre the Text element
+    this.svgText.x(this.word.textRcx);
+
+    // Centre the line between the Word and WordTag
+    this.line.cx(this.svgText.cx());
   }
 
   /**
@@ -117,10 +132,6 @@ class WordTag {
         "c" + [0, height, -arm, 0, -arm, height]
       );
     }
-
-    // Centre the line between the Word and WordTag
-    this.line.cx(this.svgText.cx());
-    this.line.cy((this.svgText.bbox().y2 + this.word.svgText.bbox().y) / 2);
   }
 
 
