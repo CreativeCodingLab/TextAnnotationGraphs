@@ -1,19 +1,19 @@
 # TextAnnotationGraphs (TAG)
 A modular annotation system that supports complex, interactive annotation graphs embedded on top of sequences of text. An additional view displays a subgraph of selected connections between words/phrases using an interactive network layout.
 
-![TAG](/figs/OneRow.png)
+![TAG](figs/OneRow.png)
 
 ---
 
-![TAG](/figs/taxonomyColors.png)
+![TAG](figs/taxonomyColors.png)
 
 ---
 
-![TAG](/figs/TwoRows.png)
+![TAG](figs/TwoRows.png)
 
 ---
 
-![TAG](/figs/trees.png)
+![TAG](figs/trees.png)
 
 
 ## Development
@@ -93,8 +93,18 @@ Assuming you've cloned the repository, simply run `npm install && npm run build`
 
 ### Live monitoring of changes
 
-For convenience, you can monitor changes to the library's sources (css + js) with the following `npm` task:
+For convenience, you can monitor changes to the library's sources (css + js) with the following `npm` task: 
 
 ```
 npm run watch
 ```
+
+### Generating documentation
+
+TAG uses [JSDoc](http://usejsdoc.org/) to generate its documentation. By default, the documentation is generated using the template in `src/jsdoc-template` (adapted from the [Braintree JSDoc Template](https://github.com/braintree/jsdoc-template)) and stored in the `docs` folder.
+
+To regenerate the documentation, use the following `npm` task:
+
+```
+npm run generate-docs
+``` 

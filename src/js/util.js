@@ -1,5 +1,6 @@
 /**
  * Utility functions
+ * @module Util
  */
 
 import _ from "lodash";
@@ -15,19 +16,22 @@ import * as draggable from "svg.draggable.js";
  * Get all the CSS rules that match the given elements
  * Adapted from:
  * https://stackoverflow.com/questions/2952667/find-all-css-rules-that-apply-to-an-element
+ *
  * @param {Array} elements - Array of elements to get rules for
  * @return {Array}
+ * @memberof module:Util
  */
 function getCssRules(elements) {
-  var sheets = document.styleSheets, ret = [];
+  const sheets = document.styleSheets;
+  const ret = [];
   let importRules = [];
 
-  for (var i in sheets) {
-    var rules = sheets[i].rules || sheets[i].cssRules;
-    for (var r in rules) {
+  for (const i in sheets) {
+    const rules = sheets[i].rules || sheets[i].cssRules;
+    for (const r in rules) {
       // Include @import rules by default, since we can't be sure if they
       // apply, and since they are generally used for fonts
-      if (rules[r].type == CSSRule.IMPORT_RULE) {
+      if (rules[r].type === CSSRule.IMPORT_RULE) {
         importRules.push(rules[r].cssText);
         continue;
       }
@@ -45,9 +49,7 @@ function getCssRules(elements) {
   }
 
   // Import rules have to be at the top of the styles list
-  ret = importRules.concat(ret);
-
-  return _.uniq(ret);
+  return _.uniq(importRules.concat(ret));
 }
 
 /**
@@ -59,6 +61,7 @@ function getCssRules(elements) {
  * 2) Secondary sort by number of Words covered, descending
  *
  * @param links
+ * @memberof module:Util
  */
 function sortForSlotting(links) {
   const sortingArray = links.map((link, idx) => {
@@ -76,7 +79,7 @@ function sortForSlotting(links) {
   return sortingArray.map(link => links[link.idx]);
 }
 
-module.exports = {
+export default {
   getCssRules,
   sortForSlotting
 };

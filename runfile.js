@@ -135,18 +135,66 @@ build.app.styles = {
   }
 };
 
+// App docs
+// --------
+// Generates the documentation for the app
+build.app.docs = {
+  // JSDoc
+  // -----
+  async jsdoc() {
+    const input = "src/js";
+    const output = "docs";
+    const type = "Build";
+    const desc = "Main TAG documentation";
+
+    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+
+    // Clean and (re-)build docs
+    await run(`rimraf ${output}`, {async: true});
+    await run(`jsdoc ${input} README.md -c .jsdoc.json -d ${output} --verbose`, {async: true});
+    return build.app.docs.figures();
+  },
+
+  // Copy figures to doc directory
+  async figures() {
+    const input = "figs";
+    const output = "docs/figs";
+    const type = "Build";
+    const desc = "TAG documentation figures";
+
+    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+
+    return run(`cpy ${input} ${output}`, {async: true});
+  },
+
+  // All/Quick
+  // ---------
+  all() {
+    return Promise.all([
+      build.app.docs.jsdoc()
+    ]);
+  },
+  quick() {
+    return Promise.all([
+      build.app.docs.jsdoc()
+    ]);
+  }
+};
+
 // All/quick
 // ---------
 build.app.all = async () => {
   return Promise.all([
     build.app.scripts.all(),
-    build.app.styles.all()
+    build.app.styles.all(),
+    build.app.docs.all()
   ]);
 };
 build.app.quick = async () => {
   return Promise.all([
     build.app.scripts.quick(),
-    build.app.styles.quick()
+    build.app.styles.quick(),
+    build.app.docs.all()
   ]);
 };
 
@@ -428,7 +476,22 @@ const demo = {
 
       console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
-      return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && sass ${input2} ${output2} && postcss ${output2} --use autoprefixer --replace && cleancss ${output2} -o ${output2}`, {async: true});
+      return run(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && sass ${input2} ${output2} && postcss ${output2} --use autoprefixer --replace && cleancss ${output2} -o ${output2}"`, {async: true});
+    },
+
+    async docs() {
+      // This task regenerates the documentation whenever one of the
+      // source files (or the JSDoc template) changes
+      const input = "src/**/*.js";
+      const input2 = "README.md";
+      const input3 = "src/jsdoc-template/**/*";
+      const output = `${config.assetsDir}/${config.stylesDir}/tag.css`;
+      const type = "Watch";
+      const desc = "Main TAG documentation";
+
+      console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+
+      return run(`chokidar "${input}" "${input2}" "${input3}" --initial -c "npm run generate-docs"`);
     },
 
     async all() {
@@ -436,7 +499,8 @@ const demo = {
         demo.watch.scripts(),
         demo.watch.BSColourPicker(),
         demo.watch.styles(),
-        demo.watch.coreStyles()
+        demo.watch.coreStyles(),
+        demo.watch.docs()
       ]);
     }
   },

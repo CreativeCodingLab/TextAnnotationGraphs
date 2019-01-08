@@ -1,9 +1,9 @@
+import $ from "jquery";
+
 import WordTag from "./word-tag.js";
 import WordCluster from "./word-cluster.js";
 
-const $ = require("jquery");
-
-const Util = require("../util.js");
+import Util from "../util.js";
 
 class Link {
   /**
@@ -482,7 +482,8 @@ class Link {
    *    left to right and descending order of length (in terms of number of
    *    Words covered)
    *
-   * Sorting of the full Links array is handled by `Util.sortForSlotting()`
+   * Sorting of the full Links array is handled by
+   * {@link module:Util.sortForSlotting Util.sortForSlotting}.
    *
    * @param {Word[]} words
    */
@@ -608,7 +609,7 @@ class Link {
    * Gets the left-most and right-most Word anchors that come under this Link.
    * (Nested Links are treated as extensions of this Link, so the relevant
    * endpoint of the nested Link is recursively found and used)
-   * @return {*[]}
+   * @return {Word[]}
    */
   get endpoints() {
     let minWord = null;
@@ -1409,4 +1410,4 @@ class Label {
   }
 }
 
-module.exports = Link;
+export default Link;

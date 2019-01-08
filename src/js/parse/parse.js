@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import BratParser from "./ann.js";
+import BratParser from "./brat.js";
 import OdinParser from "./odin.js";
 
 const re = /.*(?=\.(\S+))|.*/;
@@ -137,4 +137,4 @@ class Parser {
   }
 }
 
-module.exports = Parser;
+export default Parser;

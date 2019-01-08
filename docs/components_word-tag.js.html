@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+      components/word-tag.js - Documentation
+  </title>
+
+  <link href="https://www.braintreepayments.com/images/favicon-ccda0b14.png" rel="icon" type="image/png">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+  <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+  <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+  
+
+  
+
+  <!-- start Mixpanel -->
+  <script type="text/javascript">(function(e,a){if(!a.__SV){var b=window;try{var c,l,i,j=b.location,g=j.hash;c=function(a,b){return(l=a.match(RegExp(b+"=([^&]*)")))?l[1]:null};g&&c(g,"state")&&(i=JSON.parse(decodeURIComponent(c(g,"state"))),"mpeditor"===i.action&&(b.sessionStorage.setItem("_mpcehash",g),history.replaceState(i.desiredHash||"",e.title,j.pathname+j.search)))}catch(m){}var k,h;window.mixpanel=a;a._i=[];a.init=function(b,c,f){function e(b,a){var c=a.split(".");2==c.length&&(b=b[c[0]],a=c[1]);b[a]=function(){b.push([a].concat(Array.prototype.slice.call(arguments,
+  0)))}}var d=a;"undefined"!==typeof f?d=a[f]=[]:f="mixpanel";d.people=d.people||[];d.toString=function(b){var a="mixpanel";"mixpanel"!==f&&(a+="."+f);b||(a+=" (stub)");return a};d.people.toString=function(){return d.toString(1)+".people (stub)"};k="disable time_event track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config reset people.set people.set_once people.increment people.append people.union people.track_charge people.clear_charges people.delete_user".split(" ");
+  for(h=0;h<k.length;h++)e(d,k[h]);a._i.push([b,c,f])};a.__SV=1.2;b=e.createElement("script");b.type="text/javascript";b.async=!0;b.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===e.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";c=e.getElementsByTagName("script")[0];c.parentNode.insertBefore(b,c)}})(document,window.mixpanel||[]);
+  mixpanel.init("1919205b2da72e4da3b9b6639b444d59");</script>
+  <!-- end Mixpanel -->
+</head>
+
+<body>
+  <svg style="display: none;">
+    <defs>
+      <symbol id="linkIcon" fill="#706d77" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 0h24v24H0z" fill="none"/>
+          <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+  <label for="nav-trigger" class="navicon-button x">
+    <div class="navicon"></div>
+  </label>
+
+  <label for="nav-trigger" class="overlay"></label>
+
+  <div class="top-nav-wrapper">
+    <ul>
+      <li >
+        <a href="index.html">
+          
+            <svg fill="#6D6D6D" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+              <path d="M0 0h24v24H0z" fill="none"/>
+            </svg>
+          
+          
+        </a>
+      </li>
+
+      
+
+    </ul>
+  </div>
+
+  <nav>
+    <h3 class="reference-title">
+      TextAnnotationGraphs
+    </h3>
+
+    
+      <h3>
+        Resources
+      </h3>
+      
+        <a href="https://www.w3.org/TR/SVG/paths.html#PathData">SVG Path Spec<br></a>
+      
+        <a href="https://codepen.io/explosion/pen/YGApwd">SVG Cubic Bézier Curve Generator</a>
+      
+    
+
+    <h3>Classes</h3><ul><li id="Link-nav"><a href="Link.html">Link</a><ul class='methods'><li data-type="method" id="Link-init-nav"><a href="Link.html#init">init</a></li><li data-type="method" id="Link-toggle-nav"><a href="Link.html#toggle">toggle</a></li><li data-type="method" id="Link-show-nav"><a href="Link.html#show">show</a></li><li data-type="method" id="Link-hide-nav"><a href="Link.html#hide">hide</a></li><li data-type="method" id="Link-showMainLabel-nav"><a href="Link.html#showMainLabel">showMainLabel</a></li><li data-type="method" id="Link-hideMainLabel-nav"><a href="Link.html#hideMainLabel">hideMainLabel</a></li><li data-type="method" id="Link-showArgLabels-nav"><a href="Link.html#showArgLabels">showArgLabels</a></li><li data-type="method" id="Link-hideArgLabels-nav"><a href="Link.html#hideArgLabels">hideArgLabels</a></li><li data-type="method" id="Link-draw-nav"><a href="Link.html#draw">draw</a></li><li data-type="method" id="Link-remove-nav"><a href="Link.html#remove">remove</a></li><li data-type="method" id="Link-getLineY-nav"><a href="Link.html#getLineY">getLineY</a></li><li data-type="method" id="Link-calculateSlot-nav"><a href="Link.html#calculateSlot">calculateSlot</a></li><li data-type="method" id="Link-drawBbox-nav"><a href="Link.html#drawBbox">drawBbox</a></li><li data-type="method" id="Link-drawTextBbox-nav"><a href="Link.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="Handle-nav"><a href="Handle.html">Handle</a><ul class='methods'><li data-type="method" id="Handle-precedes-nav"><a href="Handle.html#precedes">precedes</a></li></ul></li><li id="Label-nav"><a href="Label.html">Label</a><ul class='methods'><li data-type="method" id="Label-show-nav"><a href="Label.html#show">show</a></li><li data-type="method" id="Label-hide-nav"><a href="Label.html#hide">hide</a></li><li data-type="method" id="Label-move-nav"><a href="Label.html#move">move</a></li><li data-type="method" id="Label-centre-nav"><a href="Label.html#centre">centre</a></li><li data-type="method" id="Label-length-nav"><a href="Label.html#length">length</a></li><li data-type="method" id="Label-drawTextBbox-nav"><a href="Label.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="Row-nav"><a href="Row.html">Row</a><ul class='methods'><li data-type="method" id="Row-svgInit-nav"><a href="Row.html#svgInit">svgInit</a></li><li data-type="method" id="Row-remove-nav"><a href="Row.html#remove">remove</a></li><li data-type="method" id="Row-dy-nav"><a href="Row.html#dy">dy</a></li><li data-type="method" id="Row-move-nav"><a href="Row.html#move">move</a></li><li data-type="method" id="Row-height-nav"><a href="Row.html#height">height</a></li><li data-type="method" id="Row-width-nav"><a href="Row.html#width">width</a></li><li data-type="method" id="Row-addWord-nav"><a href="Row.html#addWord">addWord</a></li><li data-type="method" id="Row-positionWord-nav"><a href="Row.html#positionWord">positionWord</a></li><li data-type="method" id="Row-removeWord-nav"><a href="Row.html#removeWord">removeWord</a></li><li data-type="method" id="Row-removeLastWord-nav"><a href="Row.html#removeLastWord">removeLastWord</a></li><li data-type="method" id="Row-redrawLinksAndClusters-nav"><a href="Row.html#redrawLinksAndClusters">redrawLinksAndClusters</a></li><li data-type="method" id="Row-drawBbox-nav"><a href="Row.html#drawBbox">drawBbox</a></li></ul></li><li id="WordCluster-nav"><a href="WordCluster.html">WordCluster</a><ul class='methods'><li data-type="method" id="WordCluster-addEventId-nav"><a href="WordCluster.html#addEventId">addEventId</a></li><li data-type="method" id="WordCluster-text-nav"><a href="WordCluster.html#text">text</a></li><li data-type="method" id="WordCluster-init-nav"><a href="WordCluster.html#init">init</a></li><li data-type="method" id="WordCluster-draw-nav"><a href="WordCluster.html#draw">draw</a></li><li data-type="method" id="WordCluster-getBaseY-nav"><a href="WordCluster.html#getBaseY">getBaseY</a></li><li data-type="method" id="WordCluster-drawBbox-nav"><a href="WordCluster.html#drawBbox">drawBbox</a></li><li data-type="method" id="WordCluster-drawTextBbox-nav"><a href="WordCluster.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="WordTag-nav"><a href="WordTag.html">WordTag</a><ul class='methods'><li data-type="method" id="WordTag-draw-nav"><a href="WordTag.html#draw">draw</a></li><li data-type="method" id="WordTag-centre-nav"><a href="WordTag.html#centre">centre</a></li><li data-type="method" id="WordTag-remove-nav"><a href="WordTag.html#remove">remove</a></li><li data-type="method" id="WordTag-drawTagLine-nav"><a href="WordTag.html#drawTagLine">drawTagLine</a></li><li data-type="method" id="WordTag-text-nav"><a href="WordTag.html#text">text</a></li><li data-type="method" id="WordTag-boxWidth-nav"><a href="WordTag.html#boxWidth">boxWidth</a></li><li data-type="method" id="WordTag-drawBbox-nav"><a href="WordTag.html#drawBbox">drawBbox</a></li><li data-type="method" id="WordTag-drawTextBbox-nav"><a href="WordTag.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="Word-nav"><a href="Word.html">Word</a><ul class='methods'><li data-type="method" id="Word-addEventId-nav"><a href="Word.html#addEventId">addEventId</a></li><li data-type="method" id="Word-registerTag-nav"><a href="Word.html#registerTag">registerTag</a></li><li data-type="method" id="Word-getTagCategories-nav"><a href="Word.html#getTagCategories">getTagCategories</a></li><li data-type="method" id="Word-setTopTagCategory-nav"><a href="Word.html#setTopTagCategory">setTopTagCategory</a></li><li data-type="method" id="Word-setBottomTagCategory-nav"><a href="Word.html#setBottomTagCategory">setBottomTagCategory</a></li><li data-type="method" id="Word-init-nav"><a href="Word.html#init">init</a></li><li data-type="method" id="Word-redrawLinks-nav"><a href="Word.html#redrawLinks">redrawLinks</a></li><li data-type="method" id="Word-redrawClusters-nav"><a href="Word.html#redrawClusters">redrawClusters</a></li><li data-type="method" id="Word-move-nav"><a href="Word.html#move">move</a></li><li data-type="method" id="Word-dx-nav"><a href="Word.html#dx">dx</a></li><li data-type="method" id="Word-alignBox-nav"><a href="Word.html#alignBox">alignBox</a></li><li data-type="method" id="Word-drawBbox-nav"><a href="Word.html#drawBbox">drawBbox</a></li><li data-type="method" id="Word-drawTextBbox-nav"><a href="Word.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="Config-nav"><a href="Config.html">Config</a></li><li id="Main-nav"><a href="Main.html">Main</a><ul class='methods'><li data-type="method" id="Main-loadData-nav"><a href="Main.html#loadData">loadData</a></li><li data-type="method" id="Main-loadUrlAsync-nav"><a href="Main.html#loadUrlAsync">loadUrlAsync</a></li><li data-type="method" id="Main-loadFilesAsync-nav"><a href="Main.html#loadFilesAsync">loadFilesAsync</a></li><li data-type="method" id="Main-init-nav"><a href="Main.html#init">init</a></li><li data-type="method" id="Main-draw-nav"><a href="Main.html#draw">draw</a></li><li data-type="method" id="Main-clear-nav"><a href="Main.html#clear">clear</a></li><li data-type="method" id="Main-redraw-nav"><a href="Main.html#redraw">redraw</a></li><li data-type="method" id="Main-resize-nav"><a href="Main.html#resize">resize</a></li><li data-type="method" id="Main-loadTaxonomyYaml-nav"><a href="Main.html#loadTaxonomyYaml">loadTaxonomyYaml</a></li><li data-type="method" id="Main-getTaxonomyYaml-nav"><a href="Main.html#getTaxonomyYaml">getTaxonomyYaml</a></li><li data-type="method" id="Main-getTaxonomyTree-nav"><a href="Main.html#getTaxonomyTree">getTaxonomyTree</a></li><li data-type="method" id="Main-getColour-nav"><a href="Main.html#getColour">getColour</a></li><li data-type="method" id="Main-setColour-nav"><a href="Main.html#setColour">setColour</a></li><li data-type="method" id="Main-exportSvg-nav"><a href="Main.html#exportSvg">exportSvg</a></li><li data-type="method" id="Main-setOption-nav"><a href="Main.html#setOption">setOption</a></li><li data-type="method" id="Main-getOption-nav"><a href="Main.html#getOption">getOption</a></li><li data-type="method" id="Main-getTopLinkCategories-nav"><a href="Main.html#getTopLinkCategories">getTopLinkCategories</a></li><li data-type="method" id="Main-setTopLinkCategory-nav"><a href="Main.html#setTopLinkCategory">setTopLinkCategory</a></li><li data-type="method" id="Main-getBottomLinkCategories-nav"><a href="Main.html#getBottomLinkCategories">getBottomLinkCategories</a></li><li data-type="method" id="Main-setBottomLinkCategory-nav"><a href="Main.html#setBottomLinkCategory">setBottomLinkCategory</a></li><li data-type="method" id="Main-getTagCategories-nav"><a href="Main.html#getTagCategories">getTagCategories</a></li><li data-type="method" id="Main-setTopTagCategory-nav"><a href="Main.html#setTopTagCategory">setTopTagCategory</a></li><li data-type="method" id="Main-setBottomTagCategory-nav"><a href="Main.html#setBottomTagCategory">setBottomTagCategory</a></li><li data-type="method" id="Main-setTopMainLabelVisibility-nav"><a href="Main.html#setTopMainLabelVisibility">setTopMainLabelVisibility</a></li><li data-type="method" id="Main-setTopArgLabelVisibility-nav"><a href="Main.html#setTopArgLabelVisibility">setTopArgLabelVisibility</a></li><li data-type="method" id="Main-setBottomMainLabelVisibility-nav"><a href="Main.html#setBottomMainLabelVisibility">setBottomMainLabelVisibility</a></li><li data-type="method" id="Main-setBottomArgLabelVisibility-nav"><a href="Main.html#setBottomArgLabelVisibility">setBottomArgLabelVisibility</a></li></ul></li><li id="RowManager-nav"><a href="RowManager.html">RowManager</a><ul class='methods'><li data-type="method" id="RowManager-resizeAll-nav"><a href="RowManager.html#resizeAll">resizeAll</a></li><li data-type="method" id="RowManager-resizeRow-nav"><a href="RowManager.html#resizeRow">resizeRow</a></li><li data-type="method" id="RowManager-width-nav"><a href="RowManager.html#width">width</a></li><li data-type="method" id="RowManager-fitWords-nav"><a href="RowManager.html#fitWords">fitWords</a></li><li data-type="method" id="RowManager-appendRow-nav"><a href="RowManager.html#appendRow">appendRow</a></li><li data-type="method" id="RowManager-removeLastRow-nav"><a href="RowManager.html#removeLastRow">removeLastRow</a></li><li data-type="method" id="RowManager-addWordToRow-nav"><a href="RowManager.html#addWordToRow">addWordToRow</a></li><li data-type="method" id="RowManager-moveWordRight-nav"><a href="RowManager.html#moveWordRight">moveWordRight</a></li><li data-type="method" id="RowManager-moveWordLeft-nav"><a href="RowManager.html#moveWordLeft">moveWordLeft</a></li><li data-type="method" id="RowManager-moveFirstWordUp-nav"><a href="RowManager.html#moveFirstWordUp">moveFirstWordUp</a></li><li data-type="method" id="RowManager-moveLastWordDown-nav"><a href="RowManager.html#moveLastWordDown">moveLastWordDown</a></li></ul></li></ul><h3>Modules</h3><ul><li id="Util-nav"><a href="module-Util.html">Util</a><ul class='methods'><li data-type="method" id="Util-getCssRules-nav"><a href="module-Util.html#.getCssRules">getCssRules</a></li><li data-type="method" id="Util-sortForSlotting-nav"><a href="module-Util.html#.sortForSlotting">sortForSlotting</a></li></ul></li></ul><h3 id="global-nav">Global</h3><ul><li><a href="global.html#tag">tag</a></li></ul>
+  </nav>
+
+  <div id="main">
+    
+      <h1 class="page-title">
+        components/word-tag.js
+      </h1>
+    
+
+    
+      
+
+<section>
+  <article>
+    <pre class="prettyprint source linenums"><code>/**
+ * Tags for single entities/tokens.
+ * Essentially a helper class for Words; should not be directly instantiated
+ * by Parsers.
+ *
+ *   [WordTag] -> Word -> Row
+ *   WordCluster
+ *   Link
+ */
+
+class WordTag {
+  /**
+   * Creates a new WordTag instance
+   * @param {String} val - The raw text for this WordTag
+   * @param {Word} word - The parent Word for this WordTag
+   * @param {Config~Config} config - The Config object for the parent TAG
+   *   instance
+   * @param {Boolean} top - True if this WordTag should be drawn above the
+   *     parent Word, false if it should be drawn below
+   */
+  constructor(val, word, config, top = true) {
+    this.val = val;
+    this.word = word;
+    this.config = config;
+    this.top = top;
+
+    if (!word.svg) {
+      throw "Error: Trying to initialise WordTag on Word without SVG" +
+      " element";
+    }
+
+    this.draw();
+  }
+
+  /**
+   * (Re-)draws this WordTag's SVG elements onto the visualisation
+   */
+  draw() {
+    if (this.svg) {
+      // Delete remnants of any previous draw
+      this.remove();
+    }
+
+    // Prepare our SVG elements as a group within the Word's SVG element
+    this.svg = this.word.svg.group();
+
+    // Draw in the SVG text element.
+    // Note that applying classes to the text element may change its font
+    // size, and if its font size changes, the anchor point for the resizing
+    // is the text's baseline (not any of the bounding box sides).
+    // N.B.: Typographical baselines ignore descenders
+    this.svgText = this.svg.text(this.val)
+      .addClass("tag-element")
+      .addClass(this.top ? "word-tag" : "word-tag syntax-tag")
+      .leading(1);
+
+    // add click and right-click listeners
+    let mainSvg = this.word.main.svg;
+    this.svgText.node.oncontextmenu = (e) => {
+      e.preventDefault();
+      mainSvg.fire("tag-right-click", {object: this, event: e});
+    };
+    this.svgText.click(() => mainSvg.fire("tag-edit", {object: this}));
+
+    // Draws a line / curly bracket between the Word and this WordTag, if
+    // it's a top tag
+    this.line = this.svg.path();
+    this.drawTagLine();
+
+    // Centre the WordTag and its line horizontally
+    // (SVG text elements are positioned on the x-axis by their centres)
+    this.centre();
+
+    // Position the WordTag above/below the main Word
+    // (It starts with its upper-left corner on the Row's baseline)
+    let newY;
+    if (this.top) {
+      newY = -this.word.textHeight - this.svgText.bbox().height
+        - this.config.wordTopTagPadding;
+    } else {
+      newY = this.config.wordBottomTagPadding;
+    }
+    this.svgText.y(newY);
+    this.line.cy((this.svgText.bbox().y2 + this.word.svgText.bbox().y) / 2);
+  }
+
+  /**
+   * Centres this WordTag and its line horizontally against the base Word's
+   * current position
+   * (N.B.: SVG Text elements are positioned on the x-axis by their centres)
+   */
+  centre() {
+    // Centre the Text element
+    this.svgText.x(this.word.textRcx);
+
+    // Centre the line between the Word and WordTag
+    this.line.cx(this.svgText.cx());
+  }
+
+  /**
+   * Removes this WordTag's SVG elements from the visualisation
+   * If this instance is not deleted, it can be redrawn with the `.draw()`
+   * method
+   * @return {*}
+   */
+  remove() {
+    this.svg.remove();
+    this.svg = null;
+  }
+
+  /**
+   * Draws a connecting line between this WordTag and its parent Word, if
+   * this is a top WordTag.
+   */
+  drawTagLine() {
+    if (!this.top) {
+      return;
+    }
+
+    const wordWidth = this.word.textWidth;
+
+    if (wordWidth &lt; this.config.wordBraceThreshold) {
+      // Draw a single vertical line
+      this.line.plot("M 0,0, 0," + this.config.wordTagLineLength);
+    } else {
+      // Draw a curly brace
+      const height = this.config.wordTagLineLength;
+      const arm = wordWidth / 2;
+      this.line.plot(
+        "M0,0" +
+        "c" + [0, height, arm, 0, arm, height] +
+        "M0,0" +
+        "c" + [0, height, -arm, 0, -arm, height]
+      );
+    }
+  }
+
+
+  /**
+   * Sets the text of this WordTag, or returns this WordTag's SVG text element
+   * @param val
+   * @return {*}
+   */
+  text(val) {
+    if (val === undefined) {
+      return this.svgText;
+    }
+
+    this.val = val;
+    this.svgText.text(this.val);
+
+    if (this.editingRect) {
+      let bbox = this.svgText.bbox();
+      if (bbox.width > 0) {
+        this.editingRect
+          .width(bbox.width + 8)
+          .height(bbox.height + 4)
+          .x(bbox.x - 4)
+          .y(bbox.y - 2);
+      } else {
+        this.editingRect.width(10)
+          .x(-5);
+      }
+    }
+  }
+
+  /**
+   * Returns the width of the bounding box for this WordTag
+   */
+  boxWidth() {
+    return this.svg.bbox().width;
+  }
+
+  /**
+   * Returns the width of the bounding box of the WordTag's SVG text element
+   * @return {Number}
+   */
+  get textWidth() {
+    return this.svgText.bbox().width;
+  }
+
+  changeEntity(word) {
+    if (this.word) {
+      this.word.tag = null;
+    }
+
+    this.word = word;
+    this.word.tag = this;
+    this.word.svg.add(this.svg);
+  }
+
+  listenForEdit() {
+    this.isEditing = true;
+    let bbox = this.svgText.bbox();
+
+    this.svg
+      .addClass("tag-element")
+      .addClass("editing");
+    this.editingRect = this.svg.rect(bbox.width + 8, bbox.height + 4)
+      .x(bbox.x - 4)
+      .y(bbox.y - 2)
+      .rx(2)
+      .ry(2)
+      .back();
+  }
+
+  stopEditing() {
+    this.isEditing = false;
+    this.svg.removeClass("editing");
+    this.editingRect.remove();
+    this.editingRect = null;
+    this.val = this.val.trim();
+    if (!this.val) {
+      this.remove();
+    } else {
+      this.word.alignBox();
+    }
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Debug functions
+  /**
+   * Draws the outline of this component's bounding box
+   */
+  drawBbox() {
+    const bbox = this.svg.bbox();
+    this.svg.polyline([
+      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
+      [bbox.x, bbox.y]])
+      .fill("none")
+      .stroke({width: 1});
+  }
+
+  /**
+   * Draws the outline of the text element's bounding box
+   */
+  drawTextBbox() {
+    const bbox = this.svgText.bbox();
+    this.svg.polyline([
+      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
+      [bbox.x, bbox.y]])
+      .fill("none")
+      .stroke({width: 1});
+  }
+}
+
+export default WordTag;</code></pre>
+  </article>
+</section>
+
+    
+
+
+  </div>
+
+  <br class="clear">
+
+  <footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+  </footer>
+
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/pagelocation.js"></script>
+
+  
+
+</body>
+</html>

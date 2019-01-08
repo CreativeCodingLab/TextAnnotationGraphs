@@ -13,7 +13,7 @@ import Taxonomy from "./managers/taxonomy.js";
 
 import Config from "./config.js";
 
-import * as Util from "./util.js";
+import Util from "./util.js";
 
 /**
  * Take a small performance hit from `autobind` to ensure that the scope of
@@ -638,4 +638,4 @@ class Main {
   }
 }
 
-module.exports = Main;
+export default Main;

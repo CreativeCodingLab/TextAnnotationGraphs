@@ -508,4 +508,4 @@ class Word {
   }
 }
 
-module.exports = Word;
+export default Word;

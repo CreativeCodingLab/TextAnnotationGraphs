@@ -17,10 +17,11 @@ const app = express();
 const logger = require("morgan");
 app.use(logger("dev"));
 
-// Demo files
-// ----------
+// Demo files and documentation
+// ----------------------------
 app.use(express.static(__dirname));
 app.use("/dist", express.static(path.join(__dirname, "..", "dist")));
+app.use("/docs", express.static(path.join(__dirname, "..", "docs")));
 
 // Set up HTTP interface
 // ---------------------

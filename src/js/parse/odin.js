@@ -292,4 +292,4 @@ class OdinParser {
   }
 }
 
-module.exports = OdinParser;
+export default OdinParser;

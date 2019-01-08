@@ -1,4 +1,14 @@
 class Row {
+  /**
+   * Creates a new Row for holding Words.
+   *
+   * @param svg - This Row's SVG group
+   * @param {Config~Config} config - The Config object for the parent TAG
+   *   instance
+   * @param {Number} idx - The Row's index
+   * @param {Number} ry - The y-position of the Row's top edge
+   * @param {Number} rh - The Row's height
+   */
   constructor(svg, config, idx = 0, ry = 0, rh = 100) {
     this.config = config;
 
@@ -461,4 +471,4 @@ class Row {
   }
 }
 
-module.exports = Row;
+export default Row;

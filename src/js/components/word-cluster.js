@@ -381,4 +381,4 @@ class WordCluster {
   }
 }
 
-module.exports = WordCluster;
+export default WordCluster;

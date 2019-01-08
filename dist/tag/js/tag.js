@@ -38693,17 +38693,22 @@ return SVG
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var _jquery = _interopRequireDefault(require("jquery"));
 
 var _wordTag = _interopRequireDefault(require("./word-tag.js"));
 
 var _wordCluster = _interopRequireDefault(require("./word-cluster.js"));
 
-var $ = require("jquery");
-
-var Util = require("../util.js");
+var _util = _interopRequireDefault(require("../util.js"));
 
 var Link =
 /*#__PURE__*/
@@ -38832,7 +38837,7 @@ function () {
         var dragX = e.detail.p.x; // `dragY` is adjusted for the document's scroll position, but we
         // want to compare it against our internal container coordinates
 
-        var dragY = e.detail.p.y - $(window).scrollTop();
+        var dragY = e.detail.p.y - (0, _jquery.default)(window).scrollTop();
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
         var _iteratorError = undefined;
@@ -39272,7 +39277,8 @@ function () {
      *    left to right and descending order of length (in terms of number of
      *    Words covered)
      *
-     * Sorting of the full Links array is handled by `Util.sortForSlotting()`
+     * Sorting of the full Links array is handled by
+     * {@link module:Util.sortForSlotting Util.sortForSlotting}.
      *
      * @param {Word[]} words
      */
@@ -39433,7 +39439,7 @@ function () {
         }
       }
 
-      intervening = Util.sortForSlotting(intervening); // Map to slots, reduce to the highest number seen so far (or 0 if there
+      intervening = _util.default.sortForSlotting(intervening); // Map to slots, reduce to the highest number seen so far (or 0 if there
       // are none)
 
       var maxSlot = intervening.map(function (link) {
@@ -39490,7 +39496,7 @@ function () {
      * Gets the left-most and right-most Word anchors that come under this Link.
      * (Nested Links are treated as extensions of this Link, so the relevant
      * endpoint of the nested Link is recursively found and used)
-     * @return {*[]}
+     * @return {Word[]}
      */
 
   }, {
@@ -40324,12 +40330,18 @@ function () {
   return Label;
 }();
 
-module.exports = Link;
+var _default = Link;
+exports.default = _default;
 
 },{"../util.js":62,"./word-cluster.js":51,"./word-tag.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],50:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
@@ -40338,6 +40350,16 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/creat
 var Row =
 /*#__PURE__*/
 function () {
+  /**
+   * Creates a new Row for holding Words.
+   *
+   * @param svg - This Row's SVG group
+   * @param {Config~Config} config - The Config object for the parent TAG
+   *   instance
+   * @param {Number} idx - The Row's index
+   * @param {Number} ry - The y-position of the Row's top edge
+   * @param {Number} rh - The Row's height
+   */
   function Row(svg, config) {
     var idx = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
     var ry = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
@@ -41147,12 +41169,18 @@ function () {
   return Row;
 }();
 
-module.exports = Row;
+var _default = Row;
+exports.default = _default;
 
 },{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],51:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
@@ -41543,12 +41571,18 @@ function () {
   return WordCluster;
 }();
 
-module.exports = WordCluster;
+var _default = WordCluster;
+exports.default = _default;
 
 },{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],52:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
@@ -41570,7 +41604,8 @@ function () {
    * Creates a new WordTag instance
    * @param {String} val - The raw text for this WordTag
    * @param {Word} word - The parent Word for this WordTag
-   * @param {Config} config - The Config object for the parent TAG instance
+   * @param {Config~Config} config - The Config object for the parent TAG
+   *   instance
    * @param {Boolean} top - True if this WordTag should be drawn above the
    *     parent Word, false if it should be drawn below
    */
@@ -41807,12 +41842,18 @@ function () {
   return WordTag;
 }();
 
-module.exports = WordTag;
+var _default = WordTag;
+exports.default = _default;
 
 },{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],53:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
@@ -42397,25 +42438,115 @@ function () {
   return Word;
 }();
 
-module.exports = Word;
+var _default = Word;
+exports.default = _default;
 
 },{"./word-tag.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],54:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
 /**
- * Configuration options for the library
+ * *Configuration options for the library*
  *
  * Each TAG instance will instantiate its own instance of the Config object, so
  * that various options can be changed on the fly.
  *
- * These options can be changed at init-time by the user, or on the fly via
- * API methods.
+ * These options can be changed at init-time by the user via the `options`
+ * parameter, or on the fly via other API methods.
  */
-var Config = function Config() {
+
+/**
+ * Available configuration options:
+ * @typedef {Object} Config~Config
+ *
+ * @property {String|"none"} topLinkCategory="default"
+ *   The category of {@link Link} to show above the text.
+ * @property {String|"none"} bottomLinkCategory="none"
+ *   The category of {@link Link} to show below the text.
+ *
+ * @property {String|"none"} topTagCategory="default"
+ *   The category of {@link WordTag} to show above the text.
+ * @property {String|"none"} bottomTagCategory="POS"
+ *   The category of {@link WordTag} to show below the text.
+ *
+ * @property {Boolean} compactRows=false
+ *   Whether or not to lock every {@link Row} to its minimum height.
+ *
+ * @property {Boolean} showTopLinksOnMove=true
+ *   Continue to display top {@link Link}s when the user drags {@link
+  *   Word Words} around.
+ * @property {Boolean} showBottomLinksOnMove=true
+ *   Continue to display bottom {@link Link}s when the user drags {@link
+  *   Word Words} around.
+ *
+ * @property {Boolean} showTopMainLabel=true
+ *   Display the main type label for top {@link Link Links}.
+ * @property {Boolean} showTopArgLabels=false
+ *   Display the type labels for each argument for top {@link Link Links}.
+ * @property {Boolean} showBottomMainLabel=true
+ *   Display the main type label for bottom {@link Link Links}.
+ * @property {Boolean} showBottomArgLabels=false
+ *   Display the type labels for each argument for bottom {@link Link Links}.
+ *
+ * @property {Number} rowEdgePadding=10
+ *   Padding on the left/right edges of each {@link Row}.
+ * @property {Number} rowVerticalPadding=20
+ *   Padding on the top/bottom of each {@link Row}.
+ * @property {Number} rowExtraTopPadding=10
+ *   Extra padding on {@link Row} top for {@link Link} labels.<br>
+ *   (Labels for top Links are drawn above their line, and it is not trivial
+ *   to get a good value for how high they are, so swe use a pre-configured
+ *   value here.)
+ *
+ * @property {Number} wordPadding=10
+ *   Padding on the left of {@link Word Words}.
+ * @property {Number} wordPunctPadding=2
+ *   Padding on the left of {@link Word Words} that contain a single
+ *   punctuation character.
+ * @property {Number} wordTopTagPadding=10
+ *   Padding between {@link Word Words} and the {@link WordTag WordTags}
+ *   drawn above them.
+ * @property {Number} wordBottomTagPadding=0
+ *   Padding between {@link Word Words} and the {@link WordTag WordTags}
+ *   drawn below them.
+ * @property {Number} wordTagLineLength=9
+ *   For {@link WordTag WordTags} drawn above {@link Word Words}, the height
+ *   of the connecting line/brace between the {@link Word} and the
+ *   {@link WordTag}.
+ * @property {Number} wordBraceThreshold=100
+ *   {@link Word Words} that are wider than this will have curly braces
+ *   drawn between them and their {@link WordTag WordTags} (rather than a
+ *   single vertical line).
+ *
+ * @property {Number} linkSlotInterval=40
+ *   Vertical distance between each overlapping {@link Link} slot.
+ * @property {Number} linkHandlePadding=2
+ *   Vertical padding between {@link Link} handles and their anchors.
+ * @property {Number} linkCurveWidth=5
+ *   Corner curve width for {@link Link} lines.
+ * @property {Number} linkArrowWidth=5
+ *   Width of arrowheads for {@link Link} handles.
+ *
+ * @property {String[]} tagDefaultColours=...
+ *   The first *n* default colours to use for {@link WordTag WordTags} (as a
+ *   queue).  After this array is exhausted, {@link WordTag WordTags} will
+ *   be assigned random colours by default.<br>
+ *   See the source for the pre-configured default values.
+ */
+var Config =
+/**
+ * Instantiates a new configuration object.
+ * @returns {Config~Config}
+ */
+function Config() {
   (0, _classCallCheck2.default)(this, Config);
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // User options
@@ -42481,7 +42612,8 @@ var Config = function Config() {
   this.tagDefaultColours = ["#3fa1d1", "#ed852a", "#2ca02c", "#c34a1d", "#a048b3", "#e377c2", "#bcbd22", "#17becf", "#e7298a", "#e6ab02", "#7570b3", "#a6761d", "#7f7f7f"];
 };
 
-module.exports = Config;
+var _default = Config;
+exports.default = _default;
 
 },{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],55:[function(require,module,exports){
 "use strict";
@@ -42489,6 +42621,11 @@ module.exports = Config;
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -42514,7 +42651,7 @@ var _taxonomy = _interopRequireDefault(require("./managers/taxonomy.js"));
 
 var _config = _interopRequireDefault(require("./config.js"));
 
-var Util = _interopRequireWildcard(require("./util.js"));
+var _util = _interopRequireDefault(require("./util.js"));
 
 var _autobindDecorator = _interopRequireDefault(require("autobind-decorator"));
 
@@ -42692,7 +42829,7 @@ function () {
       // we sort it here first in case they aren't sorted in the original
       // annotation data.
 
-      this.links = Util.sortForSlotting(this.links);
+      this.links = _util.default.sortForSlotting(this.links);
       this.links.forEach(function (link) {
         return link.calculateSlot(_this.words);
       }); // Initialise the first Row; new ones will be added automatically as
@@ -42894,7 +43031,8 @@ function () {
       var exportedSVG = this.svg.svg(); // We also need to inline a copy of the relevant SVG styles, which might
       // have been modified/overwritten by the user
 
-      var svgRules = Util.getCssRules(this.$container.find(".tag-element").toArray());
+      var svgRules = _util.default.getCssRules(this.$container.find(".tag-element").toArray());
+
       var i = exportedSVG.indexOf("</defs>");
       exportedSVG = exportedSVG.slice(0, i) + "<style>" + svgRules.join("\n") + "</style>" + exportedSVG.slice(i); // Create a virtual download link and simulate a click on it (using the
       // native `.click()` method, since jQuery cannot `.trigger()` it
@@ -43251,7 +43389,8 @@ function () {
   return Main;
 }()) || _class;
 
-module.exports = Main;
+var _default = Main;
+exports.default = _default;
 
 },{"./config.js":54,"./managers/labelmanager.js":56,"./managers/rowmanager.js":57,"./managers/taxonomy.js":58,"./parse/parse.js":61,"./util.js":62,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":48}],56:[function(require,module,exports){
 "use strict";
@@ -43262,6 +43401,9 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 
 var _link = _interopRequireDefault(require("../components/link.js"));
 
+/**
+ * Not currently in use.
+ */
 module.exports = function () {
   var _svg;
 
@@ -43286,8 +43428,8 @@ module.exports = function () {
     (0, _classCallCheck2.default)(this, LabelManager);
     // listeners for label handling
     _svg = svg;
-    svg.on('tag-edit', listenForEdit);
-    svg.on('link-label-edit', listenForEdit);
+    svg.on("tag-edit", listenForEdit);
+    svg.on("link-label-edit", listenForEdit);
     this.stopEditing = stopEditing;
   };
 
@@ -43305,7 +43447,7 @@ module.exports = function () {
       var text = activeObject.text();
 
       if (text && !(activeObject instanceof _link.default)) {
-        _svg.fire('label-updated', {
+        _svg.fire("label-updated", {
           object: text,
           label: text.text()
         });
@@ -43322,7 +43464,7 @@ module.exports = function () {
     activeObject.text(string);
   }
 
-  document.addEventListener('keydown', function (e) {
+  document.addEventListener("keydown", function (e) {
     if (activeObject && activeObject.isEditing) {
       if (KeyValues.indexOf(e.keyCode) > -1) {
         switch (e.keyCode) {
@@ -43361,7 +43503,7 @@ module.exports = function () {
       ;
     }
   });
-  document.addEventListener('keypress', function (e) {
+  document.addEventListener("keypress", function (e) {
     // console.log(String.fromCharCode(e.which), e.which, e.metaKey);
     if (activeObject && activeObject.isEditing) {
       if (e.which === 32) {
@@ -43370,14 +43512,14 @@ module.exports = function () {
 
       if (e.which > 31 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         if (string === null) {
-          string = '';
+          string = "";
         }
 
         updateString(string + String.fromCharCode(e.which));
       }
     }
   });
-  document.addEventListener('mousedown', stopEditing);
+  document.addEventListener("mousedown", stopEditing);
   return LabelManager;
 }();
 
@@ -43385,6 +43527,11 @@ module.exports = function () {
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
@@ -43827,16 +43974,28 @@ function () {
   return RowManager;
 }();
 
-module.exports = RowManager;
+var _default = RowManager;
+exports.default = _default;
 
 },{"../components/row.js":50,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],58:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var _lodash = _interopRequireDefault(require("lodash"));
+
+var _randomcolor = _interopRequireDefault(require("randomcolor"));
+
+var _jsYaml = _interopRequireDefault(require("js-yaml"));
 
 var _word = _interopRequireDefault(require("../components/word.js"));
 
@@ -43844,12 +44003,6 @@ var _word = _interopRequireDefault(require("../components/word.js"));
  * Manages the user-provided taxonomy tree, and the colouring of the
  * associated elements in the visualisation
  */
-var randomColor = require("randomcolor");
-
-var yaml = require("js-yaml");
-
-var _ = require("lodash");
-
 var TaxonomyManager =
 /*#__PURE__*/
 function () {
@@ -43865,7 +44018,7 @@ function () {
     this.tagColours = {}; // An array containing the first n default colours to use (as a queue).
     // When this array is exhausted, we will switch to using randomColor.
 
-    this.defaultColours = _.cloneDeep(config.tagDefaultColours);
+    this.defaultColours = _lodash.default.cloneDeep(config.tagDefaultColours);
   }
   /**
    * Loads a new taxonomy specification (in YAML form) into the module
@@ -43877,7 +44030,7 @@ function () {
   (0, _createClass2.default)(TaxonomyManager, [{
     key: "loadTaxonomyYaml",
     value: function loadTaxonomyYaml(taxonomyYaml) {
-      this.taxonomy = yaml.safeLoad(taxonomyYaml);
+      this.taxonomy = _jsYaml.default.safeLoad(taxonomyYaml);
       this.taxonomyYaml = taxonomyYaml;
     }
     /**
@@ -44009,7 +44162,7 @@ function () {
       if (this.defaultColours.length > 0) {
         return this.defaultColours.shift();
       } else {
-        return randomColor();
+        return (0, _randomcolor.default)();
       }
     }
     /**
@@ -44020,7 +44173,7 @@ function () {
   }, {
     key: "resetDefaultColours",
     value: function resetDefaultColours() {
-      this.defaultColours = _.cloneDeep(this.config.tagDefaultColours);
+      this.defaultColours = _lodash.default.cloneDeep(this.config.tagDefaultColours);
     }
   }], [{
     key: "setColour",
@@ -44037,12 +44190,18 @@ function () {
   return TaxonomyManager;
 }();
 
-module.exports = TaxonomyManager;
+var _default = TaxonomyManager;
+exports.default = _default;
 
 },{"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"js-yaml":13,"lodash":43,"randomcolor":44}],59:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
@@ -44378,12 +44537,18 @@ function () {
   return BratParser;
 }();
 
-module.exports = BratParser;
+var _default = BratParser;
+exports.default = _default;
 
 },{"../components/link.js":49,"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],60:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
@@ -44794,12 +44959,18 @@ function () {
   return OdinParser;
 }();
 
-module.exports = OdinParser;
+var _default = OdinParser;
+exports.default = _default;
 
 },{"../components/link.js":49,"../components/word-cluster.js":51,"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],61:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
@@ -44807,7 +44978,7 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/creat
 
 var _lodash = _interopRequireDefault(require("lodash"));
 
-var _ann = _interopRequireDefault(require("./ann.js"));
+var _brat = _interopRequireDefault(require("./brat.js"));
 
 var _odin = _interopRequireDefault(require("./odin.js"));
 
@@ -44827,7 +44998,7 @@ function () {
     };
     /* supported formats */
 
-    this.ann = new _ann.default();
+    this.ann = new _brat.default();
     this.odin = new _odin.default();
   }
   /**
@@ -44981,14 +45152,20 @@ function () {
   return Parser;
 }();
 
-module.exports = Parser;
+var _default = Parser;
+exports.default = _default;
 
-},{"./ann.js":59,"./odin.js":60,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],62:[function(require,module,exports){
+},{"./brat.js":59,"./odin.js":60,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],62:[function(require,module,exports){
 "use strict";
 
 var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
 var _lodash = _interopRequireDefault(require("lodash"));
 
@@ -44998,6 +45175,7 @@ var draggable = _interopRequireWildcard(require("svg.draggable.js"));
 
 /**
  * Utility functions
+ * @module Util
  */
 // For some reason, the `draggable` import has to be in a different file
 // from `main.js`.  This has something to do with the way ES6 imports work,
@@ -45008,12 +45186,14 @@ var draggable = _interopRequireWildcard(require("svg.draggable.js"));
  * Get all the CSS rules that match the given elements
  * Adapted from:
  * https://stackoverflow.com/questions/2952667/find-all-css-rules-that-apply-to-an-element
+ *
  * @param {Array} elements - Array of elements to get rules for
  * @return {Array}
+ * @memberof module:Util
  */
 function getCssRules(elements) {
-  var sheets = document.styleSheets,
-      ret = [];
+  var sheets = document.styleSheets;
+  var ret = [];
   var importRules = [];
 
   for (var i in sheets) {
@@ -45022,7 +45202,7 @@ function getCssRules(elements) {
     for (var r in rules) {
       // Include @import rules by default, since we can't be sure if they
       // apply, and since they are generally used for fonts
-      if (rules[r].type == CSSRule.IMPORT_RULE) {
+      if (rules[r].type === CSSRule.IMPORT_RULE) {
         importRules.push(rules[r].cssText);
         continue;
       } // For other types of rules, check against the listed elements
@@ -45060,8 +45240,7 @@ function getCssRules(elements) {
   } // Import rules have to be at the top of the styles list
 
 
-  ret = importRules.concat(ret);
-  return _lodash.default.uniq(ret);
+  return _lodash.default.uniq(importRules.concat(ret));
 }
 /**
  * Sort some given array of Links in preparation for determining their slots
@@ -45072,6 +45251,7 @@ function getCssRules(elements) {
  * 2) Secondary sort by number of Words covered, descending
  *
  * @param links
+ * @memberof module:Util
  */
 
 
@@ -45097,9 +45277,10 @@ function sortForSlotting(links) {
   });
 }
 
-module.exports = {
+var _default = {
   getCssRules: getCssRules,
   sortForSlotting: sortForSlotting
 };
+exports.default = _default;
 
 },{"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"lodash":43,"svg.draggable.js":47,"svg.js":48}]},{},[55]);

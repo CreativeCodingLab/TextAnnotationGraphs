@@ -13,7 +13,8 @@ class WordTag {
    * Creates a new WordTag instance
    * @param {String} val - The raw text for this WordTag
    * @param {Word} word - The parent Word for this WordTag
-   * @param {Config} config - The Config object for the parent TAG instance
+   * @param {Config~Config} config - The Config object for the parent TAG
+   *   instance
    * @param {Boolean} top - True if this WordTag should be drawn above the
    *     parent Word, false if it should be drawn below
    */
@@ -243,4 +244,4 @@ class WordTag {
   }
 }
 
-module.exports = WordTag;
+export default WordTag;

@@ -382,4 +382,4 @@ class RowManager {
   }
 }
 
-module.exports = RowManager;
+export default RowManager;

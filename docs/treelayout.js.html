@@ -1,0 +1,469 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+      treelayout.js - Documentation
+  </title>
+
+  <link href="https://www.braintreepayments.com/images/favicon-ccda0b14.png" rel="icon" type="image/png">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+  <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+  <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+  
+
+  
+
+  <!-- start Mixpanel -->
+  <script type="text/javascript">(function(e,a){if(!a.__SV){var b=window;try{var c,l,i,j=b.location,g=j.hash;c=function(a,b){return(l=a.match(RegExp(b+"=([^&]*)")))?l[1]:null};g&&c(g,"state")&&(i=JSON.parse(decodeURIComponent(c(g,"state"))),"mpeditor"===i.action&&(b.sessionStorage.setItem("_mpcehash",g),history.replaceState(i.desiredHash||"",e.title,j.pathname+j.search)))}catch(m){}var k,h;window.mixpanel=a;a._i=[];a.init=function(b,c,f){function e(b,a){var c=a.split(".");2==c.length&&(b=b[c[0]],a=c[1]);b[a]=function(){b.push([a].concat(Array.prototype.slice.call(arguments,
+  0)))}}var d=a;"undefined"!==typeof f?d=a[f]=[]:f="mixpanel";d.people=d.people||[];d.toString=function(b){var a="mixpanel";"mixpanel"!==f&&(a+="."+f);b||(a+=" (stub)");return a};d.people.toString=function(){return d.toString(1)+".people (stub)"};k="disable time_event track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config reset people.set people.set_once people.increment people.append people.union people.track_charge people.clear_charges people.delete_user".split(" ");
+  for(h=0;h<k.length;h++)e(d,k[h]);a._i.push([b,c,f])};a.__SV=1.2;b=e.createElement("script");b.type="text/javascript";b.async=!0;b.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===e.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";c=e.getElementsByTagName("script")[0];c.parentNode.insertBefore(b,c)}})(document,window.mixpanel||[]);
+  mixpanel.init("1919205b2da72e4da3b9b6639b444d59");</script>
+  <!-- end Mixpanel -->
+</head>
+
+<body>
+  <svg style="display: none;">
+    <defs>
+      <symbol id="linkIcon" fill="#706d77" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 0h24v24H0z" fill="none"/>
+          <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+  <label for="nav-trigger" class="navicon-button x">
+    <div class="navicon"></div>
+  </label>
+
+  <label for="nav-trigger" class="overlay"></label>
+
+  <div class="top-nav-wrapper">
+    <ul>
+      <li >
+        <a href="index.html">
+          
+            <svg fill="#6D6D6D" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+              <path d="M0 0h24v24H0z" fill="none"/>
+            </svg>
+          
+          
+        </a>
+      </li>
+
+      
+
+    </ul>
+  </div>
+
+  <nav>
+    <h3 class="reference-title">
+      TextAnnotationGraphs
+    </h3>
+
+    
+      <h3>
+        Resources
+      </h3>
+      
+        <a href="https://www.w3.org/TR/SVG/paths.html#PathData">SVG Path Spec<br></a>
+      
+        <a href="https://codepen.io/explosion/pen/YGApwd">SVG Cubic Bézier Curve Generator</a>
+      
+    
+
+    <h3>Classes</h3><ul><li id="Link-nav"><a href="Link.html">Link</a><ul class='methods'><li data-type="method" id="Link-init-nav"><a href="Link.html#init">init</a></li><li data-type="method" id="Link-toggle-nav"><a href="Link.html#toggle">toggle</a></li><li data-type="method" id="Link-show-nav"><a href="Link.html#show">show</a></li><li data-type="method" id="Link-hide-nav"><a href="Link.html#hide">hide</a></li><li data-type="method" id="Link-showMainLabel-nav"><a href="Link.html#showMainLabel">showMainLabel</a></li><li data-type="method" id="Link-hideMainLabel-nav"><a href="Link.html#hideMainLabel">hideMainLabel</a></li><li data-type="method" id="Link-showArgLabels-nav"><a href="Link.html#showArgLabels">showArgLabels</a></li><li data-type="method" id="Link-hideArgLabels-nav"><a href="Link.html#hideArgLabels">hideArgLabels</a></li><li data-type="method" id="Link-draw-nav"><a href="Link.html#draw">draw</a></li><li data-type="method" id="Link-remove-nav"><a href="Link.html#remove">remove</a></li><li data-type="method" id="Link-getLineY-nav"><a href="Link.html#getLineY">getLineY</a></li><li data-type="method" id="Link-calculateSlot-nav"><a href="Link.html#calculateSlot">calculateSlot</a></li><li data-type="method" id="Link-drawBbox-nav"><a href="Link.html#drawBbox">drawBbox</a></li><li data-type="method" id="Link-drawTextBbox-nav"><a href="Link.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="Handle-nav"><a href="Handle.html">Handle</a><ul class='methods'><li data-type="method" id="Handle-precedes-nav"><a href="Handle.html#precedes">precedes</a></li></ul></li><li id="Label-nav"><a href="Label.html">Label</a><ul class='methods'><li data-type="method" id="Label-show-nav"><a href="Label.html#show">show</a></li><li data-type="method" id="Label-hide-nav"><a href="Label.html#hide">hide</a></li><li data-type="method" id="Label-move-nav"><a href="Label.html#move">move</a></li><li data-type="method" id="Label-centre-nav"><a href="Label.html#centre">centre</a></li><li data-type="method" id="Label-length-nav"><a href="Label.html#length">length</a></li><li data-type="method" id="Label-drawTextBbox-nav"><a href="Label.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="Row-nav"><a href="Row.html">Row</a><ul class='methods'><li data-type="method" id="Row-svgInit-nav"><a href="Row.html#svgInit">svgInit</a></li><li data-type="method" id="Row-remove-nav"><a href="Row.html#remove">remove</a></li><li data-type="method" id="Row-dy-nav"><a href="Row.html#dy">dy</a></li><li data-type="method" id="Row-move-nav"><a href="Row.html#move">move</a></li><li data-type="method" id="Row-height-nav"><a href="Row.html#height">height</a></li><li data-type="method" id="Row-width-nav"><a href="Row.html#width">width</a></li><li data-type="method" id="Row-addWord-nav"><a href="Row.html#addWord">addWord</a></li><li data-type="method" id="Row-positionWord-nav"><a href="Row.html#positionWord">positionWord</a></li><li data-type="method" id="Row-removeWord-nav"><a href="Row.html#removeWord">removeWord</a></li><li data-type="method" id="Row-removeLastWord-nav"><a href="Row.html#removeLastWord">removeLastWord</a></li><li data-type="method" id="Row-redrawLinksAndClusters-nav"><a href="Row.html#redrawLinksAndClusters">redrawLinksAndClusters</a></li><li data-type="method" id="Row-drawBbox-nav"><a href="Row.html#drawBbox">drawBbox</a></li></ul></li><li id="WordCluster-nav"><a href="WordCluster.html">WordCluster</a><ul class='methods'><li data-type="method" id="WordCluster-addEventId-nav"><a href="WordCluster.html#addEventId">addEventId</a></li><li data-type="method" id="WordCluster-text-nav"><a href="WordCluster.html#text">text</a></li><li data-type="method" id="WordCluster-init-nav"><a href="WordCluster.html#init">init</a></li><li data-type="method" id="WordCluster-draw-nav"><a href="WordCluster.html#draw">draw</a></li><li data-type="method" id="WordCluster-getBaseY-nav"><a href="WordCluster.html#getBaseY">getBaseY</a></li><li data-type="method" id="WordCluster-drawBbox-nav"><a href="WordCluster.html#drawBbox">drawBbox</a></li><li data-type="method" id="WordCluster-drawTextBbox-nav"><a href="WordCluster.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="WordTag-nav"><a href="WordTag.html">WordTag</a><ul class='methods'><li data-type="method" id="WordTag-draw-nav"><a href="WordTag.html#draw">draw</a></li><li data-type="method" id="WordTag-centre-nav"><a href="WordTag.html#centre">centre</a></li><li data-type="method" id="WordTag-remove-nav"><a href="WordTag.html#remove">remove</a></li><li data-type="method" id="WordTag-drawTagLine-nav"><a href="WordTag.html#drawTagLine">drawTagLine</a></li><li data-type="method" id="WordTag-text-nav"><a href="WordTag.html#text">text</a></li><li data-type="method" id="WordTag-boxWidth-nav"><a href="WordTag.html#boxWidth">boxWidth</a></li><li data-type="method" id="WordTag-drawBbox-nav"><a href="WordTag.html#drawBbox">drawBbox</a></li><li data-type="method" id="WordTag-drawTextBbox-nav"><a href="WordTag.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="Word-nav"><a href="Word.html">Word</a><ul class='methods'><li data-type="method" id="Word-addEventId-nav"><a href="Word.html#addEventId">addEventId</a></li><li data-type="method" id="Word-registerTag-nav"><a href="Word.html#registerTag">registerTag</a></li><li data-type="method" id="Word-getTagCategories-nav"><a href="Word.html#getTagCategories">getTagCategories</a></li><li data-type="method" id="Word-setTopTagCategory-nav"><a href="Word.html#setTopTagCategory">setTopTagCategory</a></li><li data-type="method" id="Word-setBottomTagCategory-nav"><a href="Word.html#setBottomTagCategory">setBottomTagCategory</a></li><li data-type="method" id="Word-init-nav"><a href="Word.html#init">init</a></li><li data-type="method" id="Word-redrawLinks-nav"><a href="Word.html#redrawLinks">redrawLinks</a></li><li data-type="method" id="Word-redrawClusters-nav"><a href="Word.html#redrawClusters">redrawClusters</a></li><li data-type="method" id="Word-move-nav"><a href="Word.html#move">move</a></li><li data-type="method" id="Word-dx-nav"><a href="Word.html#dx">dx</a></li><li data-type="method" id="Word-alignBox-nav"><a href="Word.html#alignBox">alignBox</a></li><li data-type="method" id="Word-drawBbox-nav"><a href="Word.html#drawBbox">drawBbox</a></li><li data-type="method" id="Word-drawTextBbox-nav"><a href="Word.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="Config-nav"><a href="Config.html">Config</a></li><li id="Main-nav"><a href="Main.html">Main</a><ul class='methods'><li data-type="method" id="Main-loadData-nav"><a href="Main.html#loadData">loadData</a></li><li data-type="method" id="Main-loadUrlAsync-nav"><a href="Main.html#loadUrlAsync">loadUrlAsync</a></li><li data-type="method" id="Main-loadFilesAsync-nav"><a href="Main.html#loadFilesAsync">loadFilesAsync</a></li><li data-type="method" id="Main-init-nav"><a href="Main.html#init">init</a></li><li data-type="method" id="Main-draw-nav"><a href="Main.html#draw">draw</a></li><li data-type="method" id="Main-clear-nav"><a href="Main.html#clear">clear</a></li><li data-type="method" id="Main-redraw-nav"><a href="Main.html#redraw">redraw</a></li><li data-type="method" id="Main-resize-nav"><a href="Main.html#resize">resize</a></li><li data-type="method" id="Main-loadTaxonomyYaml-nav"><a href="Main.html#loadTaxonomyYaml">loadTaxonomyYaml</a></li><li data-type="method" id="Main-getTaxonomyYaml-nav"><a href="Main.html#getTaxonomyYaml">getTaxonomyYaml</a></li><li data-type="method" id="Main-getTaxonomyTree-nav"><a href="Main.html#getTaxonomyTree">getTaxonomyTree</a></li><li data-type="method" id="Main-getColour-nav"><a href="Main.html#getColour">getColour</a></li><li data-type="method" id="Main-setColour-nav"><a href="Main.html#setColour">setColour</a></li><li data-type="method" id="Main-exportSvg-nav"><a href="Main.html#exportSvg">exportSvg</a></li><li data-type="method" id="Main-setOption-nav"><a href="Main.html#setOption">setOption</a></li><li data-type="method" id="Main-getOption-nav"><a href="Main.html#getOption">getOption</a></li><li data-type="method" id="Main-getTopLinkCategories-nav"><a href="Main.html#getTopLinkCategories">getTopLinkCategories</a></li><li data-type="method" id="Main-setTopLinkCategory-nav"><a href="Main.html#setTopLinkCategory">setTopLinkCategory</a></li><li data-type="method" id="Main-getBottomLinkCategories-nav"><a href="Main.html#getBottomLinkCategories">getBottomLinkCategories</a></li><li data-type="method" id="Main-setBottomLinkCategory-nav"><a href="Main.html#setBottomLinkCategory">setBottomLinkCategory</a></li><li data-type="method" id="Main-getTagCategories-nav"><a href="Main.html#getTagCategories">getTagCategories</a></li><li data-type="method" id="Main-setTopTagCategory-nav"><a href="Main.html#setTopTagCategory">setTopTagCategory</a></li><li data-type="method" id="Main-setBottomTagCategory-nav"><a href="Main.html#setBottomTagCategory">setBottomTagCategory</a></li><li data-type="method" id="Main-setTopMainLabelVisibility-nav"><a href="Main.html#setTopMainLabelVisibility">setTopMainLabelVisibility</a></li><li data-type="method" id="Main-setTopArgLabelVisibility-nav"><a href="Main.html#setTopArgLabelVisibility">setTopArgLabelVisibility</a></li><li data-type="method" id="Main-setBottomMainLabelVisibility-nav"><a href="Main.html#setBottomMainLabelVisibility">setBottomMainLabelVisibility</a></li><li data-type="method" id="Main-setBottomArgLabelVisibility-nav"><a href="Main.html#setBottomArgLabelVisibility">setBottomArgLabelVisibility</a></li></ul></li><li id="RowManager-nav"><a href="RowManager.html">RowManager</a><ul class='methods'><li data-type="method" id="RowManager-resizeAll-nav"><a href="RowManager.html#resizeAll">resizeAll</a></li><li data-type="method" id="RowManager-resizeRow-nav"><a href="RowManager.html#resizeRow">resizeRow</a></li><li data-type="method" id="RowManager-width-nav"><a href="RowManager.html#width">width</a></li><li data-type="method" id="RowManager-fitWords-nav"><a href="RowManager.html#fitWords">fitWords</a></li><li data-type="method" id="RowManager-appendRow-nav"><a href="RowManager.html#appendRow">appendRow</a></li><li data-type="method" id="RowManager-removeLastRow-nav"><a href="RowManager.html#removeLastRow">removeLastRow</a></li><li data-type="method" id="RowManager-addWordToRow-nav"><a href="RowManager.html#addWordToRow">addWordToRow</a></li><li data-type="method" id="RowManager-moveWordRight-nav"><a href="RowManager.html#moveWordRight">moveWordRight</a></li><li data-type="method" id="RowManager-moveWordLeft-nav"><a href="RowManager.html#moveWordLeft">moveWordLeft</a></li><li data-type="method" id="RowManager-moveFirstWordUp-nav"><a href="RowManager.html#moveFirstWordUp">moveFirstWordUp</a></li><li data-type="method" id="RowManager-moveLastWordDown-nav"><a href="RowManager.html#moveLastWordDown">moveLastWordDown</a></li></ul></li></ul><h3>Modules</h3><ul><li id="Util-nav"><a href="module-Util.html">Util</a><ul class='methods'><li data-type="method" id="Util-getCssRules-nav"><a href="module-Util.html#.getCssRules">getCssRules</a></li><li data-type="method" id="Util-sortForSlotting-nav"><a href="module-Util.html#.sortForSlotting">sortForSlotting</a></li></ul></li></ul><h3 id="global-nav">Global</h3><ul><li><a href="global.html#tag">tag</a></li></ul>
+  </nav>
+
+  <div id="main">
+    
+      <h1 class="page-title">
+        treelayout.js
+      </h1>
+    
+
+    
+      
+
+<section>
+  <article>
+    <pre class="prettyprint source linenums"><code>/**
+ * Not currently in use.
+ */
+
+import * as d3 from "d3";
+import Word from "./components/word.js";
+import Link from "./components/link.js";
+
+module.exports = (function () {
+
+  // depth of recursion
+  let maxDepth;
+  const rh = 50;  // row height
+
+  // recursively build hierarchy from a root word or link
+  function addNode(node, depth, source) {
+    let incoming = [];
+
+    let data = {
+      node,
+      incoming,
+      name: node instanceof Word ? node.val : node.textStr,
+      type: node instanceof Word ? "Word" : "Link"
+    };
+
+    if (depth &lt; maxDepth) {
+      let children = node.links
+        .filter(parent => {
+          // ignore "incoming" links
+          if (parent !== source &amp;&amp; parent instanceof Link) {
+            const i = parent.words.indexOf(node);
+            if (i &lt; 0 || parent.arrowDirections[i] === -1) {
+              incoming.push(parent);
+              return false;
+            }
+          }
+          return parent !== source;
+        })
+        .map((parent) => addNode(parent, depth + 1, node));
+
+      if (node instanceof Link) {
+        let anchors = node.words
+          .map((word, i) => {
+            if (word !== source) {
+              const newNode = addNode(word, depth + 1, node);
+
+              if (node.arrowDirections[i] === -1) {
+                newNode.receivesArrow = true;
+              }
+
+              return newNode;
+            }
+            return null;
+          })
+          .filter(word => word);
+
+        children = children.concat(anchors);
+      }
+
+      if (children.length > 0) {
+        data.children = children;
+      }
+    }
+
+    return data;
+  };
+
+  class TreeLayout {
+    constructor(el, mainSVG, openInModal) {
+      // container element
+      this.isInModal = openInModal;
+      this.svg = openInModal ? d3.select(el) : d3.select(document.body).append("svg")
+        .attr("id", "tree-svg");
+      this.draggable = this.svg.append("g");
+      this.g = this.draggable.append("g");
+
+      let self = this;
+      // this.svg.append('text')
+      //   .text(openInModal ? 'Show in main window' : 'Pop into modal')
+      //   .attr('id', 'tree-popout')
+      //   .attr('x', 15)
+      //   .attr('y', 25)
+      //   .on('click', function() {
+      //     let node = document.getElementById('tree-svg');
+      //     let parent = node.parentNode;
+      //     if (parent === document.body) {
+      //       d3.select(this).text('Show in main window');
+      //       d3.select(el).node().appendChild(node);
+      //       self.isInModal = true;
+      //     }
+      //     else {
+      //       d3.select(this).text('Pop into modal');
+      //       document.body.appendChild(node);
+      //       self.isInModal = false;
+      //     }
+      //     mainSVG.fire('build-tree');
+      //   });
+      this.svg.append("text")
+        .text("Close")
+        .attr("id", "tree-close")
+        .attr("x", this.svg.node().getBoundingClientRect().width - 15)
+        .attr("text-anchor", "end")
+        .attr("y", 25)
+        .on("click", () => {
+          document.body.classList.add("tree-closed");
+        });
+
+      // add zoom/pan events
+      this.svg.call(d3.zoom()
+        .scaleExtent([1 / 2, 4])
+        .on("zoom", () => {
+          this.draggable.attr("transform", d3.event.transform);
+        }))
+        .on("dblclick.zoom", null);
+
+      // selected words to generate graph around
+      this.maxDepth = 20; // default value for max dist from root
+      this.maxWidth = 0;
+      this.layers = [];
+    }
+
+    resize() {
+      let bounds = this.svg.node().getBoundingClientRect();
+      this.g.attr("transform", "translate(" + [bounds.width / 2 - this.maxWidth / 2, bounds.height / 2 - (this.layers.length - 1) * rh / 2] + ")");
+    }
+
+    clear() {
+      this.g.selectAll("*").remove();
+    }
+
+    /**
+     * construct a set of hierarchies from an array of
+     * Word or Link "root" nodes
+     */
+    graph(selected) {
+      maxDepth = this.maxDepth;
+
+      let data = [];
+
+      function addNode(node, source = null, depth = 0) {
+        let data = {
+          node,
+          depth,
+          children: [],
+          siblings: []
+        };
+
+        if (depth &lt; maxDepth) {
+          let links = node.links.filter(l => l.top);
+          let args = [];
+          let corefs = links.filter(x => !x.trigger &amp;&amp; (!source || x !== source.node))
+            .map(coref => {
+              return {
+                type: coref.reltype,
+                args: coref.arguments.filter(x => x.anchor !== node &amp;&amp; x.anchor !== source)
+                  .map(x => addNode(x.anchor, node, depth))
+              };
+            });
+
+          if (node instanceof Word) {
+            args = links.filter(x => x.trigger === node);
+          } else if (node instanceof Link) {
+            args = node.arguments.map(x => x.anchor);
+          }
+
+          data.children = args.map(arg => addNode(arg, data, depth + 1));
+          data.siblings = corefs;
+        }
+
+        return data;
+      }
+
+      let hierarchy = addNode(selected);
+
+      let [nodes, links] = (function () {
+        let nodes = [];
+        let links = [];
+
+        function flatten(node) {
+          nodes.push(node);
+          node.siblings.forEach(sibling => {
+            sibling.args.forEach(arg => {
+              flatten(arg);
+              links.push({
+                type: "sibling",
+                label: sibling.type,
+                source: node,
+                target: arg
+              });
+            });
+          });
+          node.children.forEach(child => {
+            flatten(child);
+            links.push({
+              type: "child",
+              source: node,
+              target: child
+            });
+          });
+        }
+
+        flatten(hierarchy);
+
+        return [nodes, links];
+      })();
+
+
+      let maxWidth = 0;
+      let layers = [];
+      nodes.forEach(node => {
+        layers[node.depth] = layers[node.depth] || [];
+        layers[node.depth].push(node);
+      });
+
+      function shiftSubtree(node, dx, root) {
+        node.offset += dx;
+        if (node.offset > maxWidth) {
+          maxWidth = node.offset;
+        }
+        if (!root) {
+          node.siblings.forEach(node => shiftSubtree(node, dx));
+        }
+        node.children.forEach(node => shiftSubtree(node, dx));
+      }
+
+      for (let i = layers.length - 1; i >= 0; --i) {
+        layers[i].forEach((node, j) => {
+          // 1st pass: assign an initial offset according to children
+          if (node.children.length > 0) {
+            let leftChild = node.children[0];
+            let rightChild = node.children[node.children.length - 1];
+            node.offset = (leftChild.offset + rightChild.offset) / 2;
+          } else if (j > 0) {
+            node.offset = layers[i][j - 1].offset;
+          } else {
+            node.offset = 0;
+          }
+        });
+
+        // 2nd pass: check that subtree doesn't collide with left tree
+        function computeWidth(word, svg) {
+          let text = svg.append("text").text(word);
+          let length = text.node().getComputedTextLength();
+          text.remove();
+          return length;
+        }
+
+        layers[i].forEach((node, j) => {
+          node.width = computeWidth(node.node.val, this.svg);
+          if (j > 0) {
+            const prev = layers[i][j - 1];
+            const separation = prev.siblings.some(sibling => sibling.args.indexOf(node) > -1) ? 50 : 20; // TODO: make more universal
+
+            let dx = prev.offset + prev.width / 2 + node.width / 2 - node.offset + separation;
+            if (dx > 0) {
+              // shift subtree and right-ward trees by dx
+              for (let k = j; k &lt; layers[i].length; ++k) {
+                shiftSubtree(layers[i][k], dx, true);
+              }
+            }
+          }
+          if (node.offset > maxWidth) {
+            maxWidth = node.offset;
+          }
+        });
+      }// end for
+
+      this.maxWidth = maxWidth;
+      this.layers = layers;
+
+      let nodeSVG = this.g.selectAll(".node")
+        .data(nodes, d => d.node);
+
+      let edgeLabel = this.g.selectAll(".edgeLabel")
+        .data(links.filter(l => l.source.node instanceof Link), d => d.source.node);
+
+      let edgeSVG = this.g.selectAll(".edge")
+        .data(links, d => d.source.node);
+
+      nodeSVG.exit().remove();
+      nodeSVG.enter().append("text")
+        .attr("class", "node")
+        .attr("text-anchor", "middle")
+        .attr("transform", d => "translate(" + [d.offset, d.depth * rh] + ")")
+        .merge(nodeSVG)
+        .text(d => d.node.val)
+        .transition()
+        .attr("transform", d => "translate(" + [d.offset, d.depth * rh] + ")");
+
+      // resize
+      this.resize();
+
+      edgeSVG.exit().remove();
+      edgeSVG.enter().append("path")
+        .attr("class", "edge")
+        .attr("stroke", "grey")
+        .attr("stroke-dasharray", d => d.source.node instanceof Word ? [2, 2] : null)
+        .attr("stroke-width", "1px")
+        .attr("fill", "none")
+        .merge(edgeSVG)
+        .attr("d", d => {
+          if (d.type === "sibling") {
+            let x1, x2;
+            if (d.target.offset > d.source.offset) {
+              x1 = d.source.offset + d.source.width / 2;
+              x2 = d.target.offset - d.target.width / 2;
+            } else {
+              x1 = d.target.offset + d.target.width / 2;
+              x2 = d.source.offset - d.source.width / 2;
+            }
+            return "M" + [x1 - 10, d.source.depth * rh + 5]
+              + "v7h" + (x2 - x1 + 20) + "v-7";
+          } else if (d.type === "child") {
+            let offset = 0;
+            if (d.source.node.arguments) {
+              offset = -7;
+            }
+            return "M" + [d.source.offset, d.source.depth * rh + 5]
+              + "C" + [
+                d.source.offset, d.source.depth * rh + 25,
+                d.target.offset, d.target.depth * rh - 40,
+                d.target.offset, d.target.depth * rh - 15 + offset
+              ];
+          }
+        });
+
+      edgeLabel.exit().remove();
+      edgeLabel.enter().append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", d => "translate(" + [d.target.offset, d.target.depth * rh] + ")")
+        .attr("class", "edgeLabel")
+        .attr("font-size", "0.65em")
+        .merge(edgeLabel)
+        .text((d, i) => {
+          let arg = d.source.node.arguments.find(arg => arg.anchor === d.target.node);
+          if (arg) {
+            return arg.type;
+          }
+        })
+        .transition()
+        .attr("transform", d => "translate(" + [d.target.offset, d.target.depth * rh - 13] + ")");
+    }
+  }//end class TreeLayout
+
+  return TreeLayout;
+})();
+</code></pre>
+  </article>
+</section>
+
+    
+
+
+  </div>
+
+  <br class="clear">
+
+  <footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+  </footer>
+
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/pagelocation.js"></script>
+
+  
+
+</body>
+</html>

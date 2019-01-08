@@ -3,9 +3,9 @@
  * associated elements in the visualisation
  */
 
-const randomColor = require("randomcolor");
-const yaml = require("js-yaml");
-const _ = require("lodash");
+import _ from "lodash";
+import randomColor from "randomcolor";
+import yaml from "js-yaml";
 
 import Word from "../components/word.js";
 
@@ -171,4 +171,4 @@ class TaxonomyManager {
   }
 }
 
-module.exports = TaxonomyManager;
+export default TaxonomyManager;
