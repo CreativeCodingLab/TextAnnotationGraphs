@@ -67,13 +67,14 @@ const TAG = require("text-annotation-graphs");
 import TAG from "text-annotation-graphs";
 ```
 
-Then initialise the visualisation on an element, optionally specifying the initial data set to load.  For more details, consult the full API documentation.
+Then initialise the visualisation on an element, optionally specifying the initial data set to load and any overrides to the default options.  For more details, consult the full API documentation.
 
 ```
 const graph = TAG.tag({
   container: $container,
-  data: <...>,
-  format: "json"
+  data: {...},
+  format: "odin",
+  options: {...}
 });
 ```
 
@@ -84,6 +85,9 @@ Tasks are managed via [`npm` scripts](https://docs.npmjs.com/misc/scripts) and t
 ### Demo
 
 After cloning the repository and installing the project dependencies via `npm install`, you can run the interactive demo using `npm run demo` and directing your browser to `localhost:8080`.
+
+To run the demo on a different port, set the `PORT` environmental variable. For example, running `PORT=9000 npm run demo` will start the demo server on `localhost:9000` instead.
+
 
 ### Building the source
 
