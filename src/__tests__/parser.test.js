@@ -8,11 +8,11 @@ describe("The annotation parser", () => {
   it("returns a cloned copy of the parsed data with circular references" +
     " intact", () => {
     // Pull the sample annotation file
-    const jsonData = require("./data/reach.json");
+    const jsonData = require("./data/test-odin.json");
 
     // Parse and get cloned copy
     const parser = new Parser();
-    const parsed = parser.loadData(jsonData, "json");
+    const parsed = parser.loadData(jsonData, "odin");
 
     // Check circular references
     // (Using the first word/link pair as a proxy for the others)
