@@ -127,25 +127,32 @@ function getCssRules(elements) {
   const ret = [];
   let importRules = [];
 
-  for (const i in sheets) {
-    const rules = sheets[i].rules || sheets[i].cssRules;
-    for (const r in rules) {
-      // Include @import rules by default, since we can't be sure if they
-      // apply, and since they are generally used for fonts
-      if (rules[r].type === CSSRule.IMPORT_RULE) {
-        importRules.push(rules[r].cssText);
-        continue;
-      }
+  for (const sheet of sheets) {
+    try {
+      const rules = sheet.rules || sheets.cssRules;
+      for (const rule of rules) {
+        // Include @import rules by default, since we can't be sure if they
+        // apply, and since they are generally used for fonts
+        if (rule.type === CSSRule.IMPORT_RULE) {
+          importRules.push(rule.cssText);
+          continue;
+        }
 
-      // For other types of rules, check against the listed elements
-      for (const el of elements) {
-        el.matches = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector
-          || el.msMatchesSelector || el.oMatchesSelector;
-        if (el.matches(rules[r].selectorText)) {
-          ret.push(rules[r].cssText);
-          break;
+        // For other types of rules, check against the listed elements
+        for (const el of elements) {
+          el.matches = el.matches || el.webkitMatchesSelector ||
+            el.mozMatchesSelector || el.msMatchesSelector ||
+            el.oMatchesSelector;
+          if (el.matches(rule.selectorText)) {
+            ret.push(rule.cssText);
+            break;
+          }
         }
       }
+    } catch (err) {
+      // Sometimes we get CORS errors with Chrome and external stylesheets,
+      // but we should be all right to keep going
+      console.log("Warning:", err);
     }
   }
 

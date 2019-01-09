@@ -75,7 +75,10 @@
 }
 
 // Fonts used in the visualisation
-// The actual loading of the font happens at the start of `demo.js` via the Web Font Loader
+// The actual loading of the font happens at the start of `demo.js` via the Web Font Loader, but we include the Google
+// fonts import here as well so that they work properly for downloaded SVGs.
+@import url("https://fonts.googleapis.com/css?family=Nunito:400,600,700");
+
 svg, svg text {
   font-family: Nunito, futura, helvetica, arial, sans-serif;
   font-weight: 600;

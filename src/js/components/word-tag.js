@@ -64,7 +64,8 @@ class WordTag {
 
     // Draws a line / curly bracket between the Word and this WordTag, if
     // it's a top tag
-    this.line = this.svg.path();
+    this.line = this.svg.path()
+      .addClass("tag-element");
     this.drawTagLine();
 
     // Centre the WordTag and its line horizontally

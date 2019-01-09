@@ -41664,7 +41664,7 @@ function () {
       }); // Draws a line / curly bracket between the Word and this WordTag, if
       // it's a top tag
 
-      this.line = this.svg.path();
+      this.line = this.svg.path().addClass("tag-element");
       this.drawTagLine(); // Centre the WordTag and its line horizontally
       // (SVG text elements are positioned on the x-axis by their centres)
 
@@ -45195,50 +45195,96 @@ function getCssRules(elements) {
   var sheets = document.styleSheets;
   var ret = [];
   var importRules = [];
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
 
-  for (var i in sheets) {
-    var rules = sheets[i].rules || sheets[i].cssRules;
-
-    for (var r in rules) {
-      // Include @import rules by default, since we can't be sure if they
-      // apply, and since they are generally used for fonts
-      if (rules[r].type === CSSRule.IMPORT_RULE) {
-        importRules.push(rules[r].cssText);
-        continue;
-      } // For other types of rules, check against the listed elements
-
-
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
+  try {
+    for (var _iterator = sheets[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var sheet = _step.value;
 
       try {
-        for (var _iterator = elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var el = _step.value;
-          el.matches = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector || el.oMatchesSelector;
+        var rules = sheet.rules || sheets.cssRules;
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
 
-          if (el.matches(rules[r].selectorText)) {
-            ret.push(rules[r].cssText);
-            break;
+        try {
+          for (var _iterator2 = rules[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var rule = _step2.value;
+
+            // Include @import rules by default, since we can't be sure if they
+            // apply, and since they are generally used for fonts
+            if (rule.type === CSSRule.IMPORT_RULE) {
+              importRules.push(rule.cssText);
+              continue;
+            } // For other types of rules, check against the listed elements
+
+
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
+
+            try {
+              for (var _iterator3 = elements[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                var el = _step3.value;
+                el.matches = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector || el.oMatchesSelector;
+
+                if (el.matches(rule.selectorText)) {
+                  ret.push(rule.cssText);
+                  break;
+                }
+              }
+            } catch (err) {
+              _didIteratorError3 = true;
+              _iteratorError3 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+                  _iterator3.return();
+                }
+              } finally {
+                if (_didIteratorError3) {
+                  throw _iteratorError3;
+                }
+              }
+            }
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+              _iterator2.return();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
           }
         }
       } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return != null) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
+        // Sometimes we get CORS errors with Chrome and external stylesheets,
+        // but we should be all right to keep going
+        console.log("Warning:", err);
+      }
+    } // Import rules have to be at the top of the styles list
+
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return != null) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
       }
     }
-  } // Import rules have to be at the top of the styles list
-
+  }
 
   return _lodash.default.uniq(importRules.concat(ret));
 }
