@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TAG Demo</title>
+
+  <!-- Font Awesome webfont for icons -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+        integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
+  <!-- Demo-specific styles (fonts, positioning, etc.)
+    -- The core TAG styles, as well as the Bootstrap/Prism styles used for the UI demo below, are also imported within
+    -- `demo.scss`.
+    -->
+  <link href="demo.min.css" rel="stylesheet">
+
+  <!-- In particular, we use the Web Font Loader library to ensure that the fonts we are using for the demo are
+    -- available (so that our width/height calculations for Text elements are accurate)
+    -->
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+</head>
+<body>
+<div class="container py-5">
+  <h2 class="mb-5">TextAnnotationGraphs (TAG) Demo</h2>
+
+  <div class="row mb-3">
+    <div class="col">
+      <h4>Documentation</h4>
+      <p>
+        See the API documentation <a href="/docs" target="_blank">here</a>.
+      </p>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col">
+      <h4>Basic example</h4>
+      <p>
+        For a minimal embedded TAG visualisation, simply specify the container element, the annotation data to load, and
+        the format that the data is in.
+      </p>
+      <p>
+        See the full source for this example in the "Basic example" section of
+        <code class="bg-light">src/demo.js</code>.
+      </p>
+
+      <pre class="mb-4">
+<code class="language-javascript">const tag = TAG.tag({
+  container: "container-id",
+  data: {...},
+  format: "odin",
+  options: {
+    showTopArgLabels: true
+  }
+});</code></pre>
+
+      <div id="basicContainer" style="border: solid 1px lightgray"></div>
+
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col">
+      <h4>Extended UI example</h4>
+      <p>
+        It is also possible to build a UI around the TAG visualisation using the various API functions.
+      </p>
+      <p>
+        This example uses Bootstrap 4 styles and components. See the source in the "Advanced/UI example" section of
+        <code class="bg-light">src/demo.js</code>.
+      </p>
+
+      <!-- Control buttons -->
+      <div class="mb-2">
+        <!-- Sample dataset loader -->
+        <div class="btn-group" id="tag-change-dataset">
+          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false">
+            Load sample dataset
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item tag-dataset" data-path="data/test-brat.ann" data-format="brat" href="#">
+              Brat format test (test-brat.ann)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/example1.ann" data-format="brat" href="#">
+              Morphology 1 (example1.ann)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/example2.ann" data-format="brat" href="#">
+              Morphology 2 (example2.ann)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/example3.ann" data-format="brat" href="#">
+              Brat event annotations (example3.ann)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/test-odin.json" data-format="odin"
+               href="#">
+              Odin format test (test-odin.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/sentence-1-odin.json" data-format="odin"
+               href="#">
+              Sentence 1 (sentence-1-odin.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/sentence-2-odin.json" data-format="odin"
+               href="#">
+              Sentence 2 (sentence-2-odin.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/sentence-3-odin.json" data-format="odin"
+               href="#">
+              Sentence 3 (sentence-3-odin.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/paragraph-1-odin.json" data-format="odin"
+               href="#">
+              Paragraph (paragraph-1-odin.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/passage-1-odin.json" data-format="odin"
+               href="#">
+              Passage 1 (passage-1-odin.json)
+            </a>
+            <a class="dropdown-item tag-dataset" data-path="data/passage-2-odin.json" data-format="odin"
+               href="#">
+              Passage 2 (passage-2-odin.json)
+            </a>
+          </div>
+        </div>
+
+        <!-- Upload button/modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tag-upload">
+          Custom annotation
+        </button>
+
+        <div class="modal" id="tag-upload" tabindex="-1" role="dialog"
+             aria-labelledby="upload-title" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="upload-title">Custom Annotation</h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body">
+                Upload a custom annotation to display:
+                <div class="custom-file mt-1">
+                  <input type="file" class="custom-file-input" id="tag-upload-input" multiple>
+                  <label class="custom-file-label" for="tag-upload-input"
+                         id="tag-upload-label">
+                    Choose file(s)
+                  </label>
+                </div>
+
+                <div class="d-flex align-items-center mt-3">
+                  <div>Format:</div>
+                  <select class="custom-select ml-3" id="tag-upload-format">
+                    <option value="odin">Odin</option>
+                    <option value="brat">Brat</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" id="tag-upload-confirm" class="btn btn-success">
+                  Upload
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Options button/modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tag-options">
+          Options
+        </button>
+
+        <div class="modal" id="tag-options" tabindex="-1" role="dialog"
+             aria-labelledby="options-title" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="options-title">Options</h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body">
+                <div class="px-3">
+                  Show the following types of links above words:
+                  <select id="tag-option-top-links" class="custom-select mb-2">
+                    <!-- Options will be added at run time in `demo.js` based on the categories available in the
+                    data loaded -->
+                  </select>
+
+                  Show the following types of links below words:
+                  <select id="tag-option-bottom-links" class="custom-select mb-3">
+                    <!-- Options will be added at run time in `demo.js` based on the categories available in the
+                    data loaded -->
+                  </select>
+
+                  Show the following types of tags above words:
+                  <select id="tag-option-top-tags" class="custom-select mb-2">
+                    <!-- Options will be added at run time in `demo.js` based on the categories available in the
+                    data loaded -->
+                  </select>
+
+                  Show the following types of tags below words:
+                  <select id="tag-option-bottom-tags" class="custom-select mb-3">
+                    <!-- Options will be added at run time in `demo.js` based on the categories available in the
+                    data loaded -->
+                  </select>
+
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="tag-option-top-links-on-move">
+                    <label class="custom-control-label" for="tag-option-top-links-on-move">
+                      Show top links when moving words
+                    </label>
+                  </div>
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="tag-option-bottom-links-on-move">
+                    <label class="custom-control-label" for="tag-option-bottom-links-on-move">
+                      Show bottom links when moving words
+                    </label>
+                  </div>
+
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="tag-option-top-main-label">
+                    <label class="custom-control-label" for="tag-option-top-main-label">
+                      Show main label on top links
+                    </label>
+                  </div>
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="tag-option-top-arg-labels">
+                    <label class="custom-control-label" for="tag-option-top-arg-labels">
+                      Show argument labels on top links
+                    </label>
+                  </div>
+
+                  <div class="custom-control custom-checkbox mt-3">
+                    <input type="checkbox" class="custom-control-input" id="tag-option-bottom-main-label">
+                    <label class="custom-control-label" for="tag-option-bottom-main-label">
+                      Show main label on bottom links
+                    </label>
+                  </div>
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="tag-option-bottom-arg-labels">
+                    <label class="custom-control-label" for="tag-option-bottom-arg-labels">
+                      Show argument labels on bottom links
+                    </label>
+                  </div>
+
+                  <div class="custom-control custom-checkbox mt-3">
+                    <input type="checkbox" class="custom-control-input" id="tag-option-compact">
+                    <label class="custom-control-label" for="tag-option-compact">
+                      Lock rows to the minimum height needed to fit links
+                    </label>
+                  </div>
+
+                  <div class="form-group mt-3">
+                    <div>Link slot interval</div>
+                    <div class="form-row">
+                      <div class="d-flex">
+                        <div class="col-auto">
+                          <input id="tag-option-link-slot" type="text"
+                                 title="Link slot interval">
+                        </div>
+                        <div class="col">
+                          <span id="tag-option-link-slot-value"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Download button -->
+        <button type="button" class="btn btn-primary" id="tag-download">Download as SVG</button>
+
+        <!-- Taxonomy button/modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tag-taxonomy">
+          Taxonomy/Colours
+        </button>
+
+        <div class="modal" id="tag-taxonomy" tabindex="-1" role="dialog"
+             aria-labelledby="taxonomy-title" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="taxonomy-title">Taxonomy/Colours</h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body">
+                <!-- Taxonomy viewer/colour picker -->
+                <div id="tag-taxonomy-view">
+
+                  <button type="button" class="btn btn-primary" id="tag-taxonomy-start-edit">
+                    Edit taxonomy
+                  </button>
+
+                  <!-- Will be dynamically generated using a Handlebars template -->
+                  <div class="card mt-2" id="tag-taxonomy-tree">
+
+                  </div>
+                </div>
+
+                <!-- On-the-fly editor -->
+                <div id="tag-taxonomy-edit">
+                  <div id="tag-taxonomy-editor"></div>
+                  <div id="tag-taxonomy-editor-errors" class="invalid-feedback"></div>
+                  <button type="button" class="btn btn-primary mt-2" id="tag-taxonomy-stop-edit">
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="uiContainer" style="border: solid 1px lightgray"></div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Main demo bundle
+  -- The Bootstrap/Prism code used for the UI demo is included directly into the bundle.
+  -->
+<script src="demo.min.js"></script>
+<!-- Colour picker script
+  -- Included directly here because it doesn't play nice with Browserify
+  -->
+<script src="bootstrap-colorpicker.min.js"></script>
+</body>
+</html>

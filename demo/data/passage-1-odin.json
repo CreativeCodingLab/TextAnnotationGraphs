@@ -1,0 +1,2976 @@
+{
+  "documents" : {
+    "-817467340" : {
+      "id" : "passage-1-odin",
+      "text" : "We hypothesized that MEK inhibition activates AKT by inhibiting ERK activity, which blocks an inhibitory threonine phosphorylation on the juxtamembrane domains of EGFR and HER2, thereby increasing ERBB3 phosphorylation.\nTo test this hypothesis, we transiently transfected CHO-KI cells, which do not express ERBB receptors endogenously, with wild-type ERBB3 with either wild-type EGFR or EGFRT669A.\nIn cells transfected with wild-type EGFR, MEK inhibition led to feedback activation of phospho-ERBB3 and phosho-EGFR, recapitulating the results we had observed in our panel of cancer cell lines (Figure 6A).\nIn contrast, the EGFRT669A mutant increased both basal EGFR and ERBB3 tyrosine phosphorylation that was not augmented by MEK inhibition.\nAs a control, we treated CHO-KI cells expressing EGFRT669A with HRG ligand to induce maximal ERBB3 phosphorylation (Figure 6A), indicating that the lack of induction of phospho-ERBB3 in EGFRT669A expressing cells following MEK inhibition was not simply due to the saturation of the system with phospho-ERBB3.\nWe observed analogous results in CHO-KI cells expressing wild-type ERBB3 in combination with wild-type or T677A mutant HER2 (Figure 6B).\nTogether these results support the hypothesis that inhibition of ERK-mediated phosphorylation of a conserved juxtamembrane domain threonine residue leads to feedback activation of EGFR, HER2, and ERBB3 (Figure 7).",
+      "sentences" : [ {
+        "words" : [ "We", "hypothesized", "that", "MEK", "inhibition", "activates", "AKT", "by", "inhibiting", "ERK", "activity", ",", "which", "blocks", "an", "inhibitory", "threonine", "phosphorylation", "on", "the", "juxtamembrane", "domains", "of", "EGFR", "and", "HER2", ",", "thereby", "increasing", "ERBB3", "phosphorylation", "." ],
+        "startOffsets" : [ 0, 3, 16, 21, 25, 36, 46, 50, 53, 64, 68, 76, 78, 84, 91, 94, 105, 115, 131, 134, 138, 152, 160, 163, 168, 172, 176, 178, 186, 197, 203, 218 ],
+        "endOffsets" : [ 2, 15, 20, 24, 35, 45, 49, 52, 63, 67, 76, 77, 83, 90, 93, 104, 114, 130, 133, 137, 151, 159, 162, 167, 171, 176, 177, 185, 196, 202, 218, 219 ],
+        "raw" : [ "We", "hypothesized", "that", "MEK", "inhibition", "activates", "AKT", "by", "inhibiting", "ERK", "activity", ",", "which", "blocks", "an", "inhibitory", "threonine", "phosphorylation", "on", "the", "juxtamembrane", "domains", "of", "EGFR", "and", "HER2", ",", "thereby", "increasing", "ERBB3", "phosphorylation", "." ],
+        "tags" : [ "PRP", "VBD", "IN", "NN", "NN", "VBZ", "NN", "IN", "VBG", "NN", "NN", ",", "WDT", "VBZ", "DT", "JJ", "NN", "NN", "IN", "DT", "NN", "NNS", "IN", "NN", "CC", "NN", ",", "RB", "VBG", "NN", "NN", "." ],
+        "lemmas" : [ "we", "hypothesize", "that", "mek", "inhibition", "activate", "akt", "by", "inhibit", "erk", "activity", ",", "which", "block", "a", "inhibitory", "threonine", "phosphorylation", "on", "the", "juxtamembrane", "domain", "of", "egfr", "and", "her2", ",", "thereby", "increase", "erbb3", "phosphorylation", "." ],
+        "entities" : [ "O", "O", "O", "B-Family", "O", "O", "B-Family", "O", "O", "B-Family", "O", "O", "O", "O", "O", "O", "B-Site", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "O", "O", "B-Gene_or_gene_product", "O", "O" ],
+        "chunks" : [ "B-NP", "B-VP", "B-SBAR", "B-NP", "I-NP", "B-VP", "B-NP", "B-PP", "B-VP", "B-NP", "I-NP", "O", "B-NP", "B-VP", "B-NP", "I-NP", "I-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "O", "B-VP", "I-VP", "B-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 1,
+              "destination" : 5,
+              "relation" : "ccomp"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "compound"
+            }, {
+              "source" : 5,
+              "destination" : 2,
+              "relation" : "mark"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 6,
+              "relation" : "dobj"
+            }, {
+              "source" : 5,
+              "destination" : 10,
+              "relation" : "nmod_by"
+            }, {
+              "source" : 10,
+              "destination" : 7,
+              "relation" : "case"
+            }, {
+              "source" : 10,
+              "destination" : 8,
+              "relation" : "amod"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "compound"
+            }, {
+              "source" : 10,
+              "destination" : 12,
+              "relation" : "ref"
+            }, {
+              "source" : 10,
+              "destination" : 13,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 13,
+              "destination" : 17,
+              "relation" : "dobj"
+            }, {
+              "source" : 13,
+              "destination" : 21,
+              "relation" : "nmod_on"
+            }, {
+              "source" : 13,
+              "destination" : 10,
+              "relation" : "nsubj"
+            }, {
+              "source" : 13,
+              "destination" : 28,
+              "relation" : "advcl"
+            }, {
+              "source" : 17,
+              "destination" : 15,
+              "relation" : "amod"
+            }, {
+              "source" : 17,
+              "destination" : 16,
+              "relation" : "compound"
+            }, {
+              "source" : 17,
+              "destination" : 14,
+              "relation" : "det"
+            }, {
+              "source" : 21,
+              "destination" : 18,
+              "relation" : "case"
+            }, {
+              "source" : 21,
+              "destination" : 19,
+              "relation" : "det"
+            }, {
+              "source" : 21,
+              "destination" : 20,
+              "relation" : "compound"
+            }, {
+              "source" : 21,
+              "destination" : 23,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 21,
+              "destination" : 25,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 23,
+              "destination" : 22,
+              "relation" : "case"
+            }, {
+              "source" : 23,
+              "destination" : 24,
+              "relation" : "cc"
+            }, {
+              "source" : 23,
+              "destination" : 25,
+              "relation" : "conj_and"
+            }, {
+              "source" : 28,
+              "destination" : 27,
+              "relation" : "advmod"
+            }, {
+              "source" : 28,
+              "destination" : 30,
+              "relation" : "dobj"
+            }, {
+              "source" : 30,
+              "destination" : 29,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 1 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 1,
+              "destination" : 5,
+              "relation" : "ccomp"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "compound"
+            }, {
+              "source" : 5,
+              "destination" : 2,
+              "relation" : "mark"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 6,
+              "relation" : "dobj"
+            }, {
+              "source" : 5,
+              "destination" : 10,
+              "relation" : "nmod"
+            }, {
+              "source" : 10,
+              "destination" : 7,
+              "relation" : "case"
+            }, {
+              "source" : 10,
+              "destination" : 8,
+              "relation" : "amod"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "compound"
+            }, {
+              "source" : 10,
+              "destination" : 13,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 13,
+              "destination" : 17,
+              "relation" : "dobj"
+            }, {
+              "source" : 13,
+              "destination" : 21,
+              "relation" : "nmod"
+            }, {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "nsubj"
+            }, {
+              "source" : 13,
+              "destination" : 28,
+              "relation" : "advcl"
+            }, {
+              "source" : 17,
+              "destination" : 15,
+              "relation" : "amod"
+            }, {
+              "source" : 17,
+              "destination" : 16,
+              "relation" : "compound"
+            }, {
+              "source" : 17,
+              "destination" : 14,
+              "relation" : "det"
+            }, {
+              "source" : 21,
+              "destination" : 18,
+              "relation" : "case"
+            }, {
+              "source" : 21,
+              "destination" : 19,
+              "relation" : "det"
+            }, {
+              "source" : 21,
+              "destination" : 20,
+              "relation" : "compound"
+            }, {
+              "source" : 21,
+              "destination" : 23,
+              "relation" : "nmod"
+            }, {
+              "source" : 23,
+              "destination" : 22,
+              "relation" : "case"
+            }, {
+              "source" : 23,
+              "destination" : 24,
+              "relation" : "cc"
+            }, {
+              "source" : 23,
+              "destination" : 25,
+              "relation" : "conj"
+            }, {
+              "source" : 28,
+              "destination" : 27,
+              "relation" : "advmod"
+            }, {
+              "source" : 28,
+              "destination" : 30,
+              "relation" : "dobj"
+            }, {
+              "source" : 30,
+              "destination" : 29,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 1 ]
+          }
+        }
+      }, {
+        "words" : [ "To", "test", "this", "hypothesis", ",", "we", "transiently", "transfected", "CHO-KI", "cells", ",", "which", "do", "not", "express", "ERBB", "receptors", "endogenously", ",", "with", "wild-type", "ERBB3", "with", "either", "wild-type", "EGFR", "or", "EGFRT669A", "." ],
+        "startOffsets" : [ 220, 223, 228, 233, 243, 245, 248, 260, 272, 279, 284, 286, 292, 295, 299, 307, 312, 322, 334, 336, 341, 351, 357, 362, 369, 379, 384, 387, 396 ],
+        "endOffsets" : [ 222, 227, 232, 243, 244, 247, 259, 271, 278, 284, 285, 291, 294, 298, 306, 311, 321, 334, 335, 340, 350, 356, 361, 368, 378, 383, 386, 396, 397 ],
+        "raw" : [ "To", "test", "this", "hypothesis", ",", "we", "transiently", "transfected", "CHO-KI", "cells", ",", "which", "do", "not", "express", "ERBB", "receptors", "endogenously", ",", "with", "wild-type", "ERBB3", "with", "either", "wild-type", "EGFR", "or", "EGFRT669A", "." ],
+        "tags" : [ "TO", "VB", "DT", "NN", ",", "PRP", "RB", "VBD", "NN", "NNS", ",", "WDT", "VBP", "RB", "VB", "NN", "NNS", "RB", ",", "IN", "JJ", "NN", "IN", "CC", "JJ", "NN", "CC", "NN", "." ],
+        "lemmas" : [ "to", "test", "this", "hypothesis", ",", "we", "transiently", "transfect", "cho-ki", "cell", ",", "which", "do", "not", "express", "erbb", "receptor", "endogenously", ",", "with", "wild-type", "erbb3", "with", "either", "wild-type", "egfr", "or", "egfrt669a", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O" ],
+        "chunks" : [ "B-VP", "I-VP", "B-NP", "I-NP", "O", "B-NP", "B-ADVP", "B-VP", "B-NP", "I-NP", "O", "B-NP", "B-VP", "I-VP", "I-VP", "B-NP", "I-NP", "B-ADVP", "O", "B-PP", "B-NP", "I-NP", "B-PP", "O", "B-NP", "I-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "dobj"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "mark"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "det"
+            }, {
+              "source" : 7,
+              "destination" : 5,
+              "relation" : "nsubj"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "advmod"
+            }, {
+              "source" : 7,
+              "destination" : 9,
+              "relation" : "dobj"
+            }, {
+              "source" : 7,
+              "destination" : 1,
+              "relation" : "advcl_to"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "compound"
+            }, {
+              "source" : 9,
+              "destination" : 11,
+              "relation" : "ref"
+            }, {
+              "source" : 9,
+              "destination" : 14,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 14,
+              "destination" : 21,
+              "relation" : "nmod_with"
+            }, {
+              "source" : 14,
+              "destination" : 9,
+              "relation" : "nsubj"
+            }, {
+              "source" : 14,
+              "destination" : 12,
+              "relation" : "aux"
+            }, {
+              "source" : 14,
+              "destination" : 13,
+              "relation" : "neg"
+            }, {
+              "source" : 14,
+              "destination" : 16,
+              "relation" : "dobj"
+            }, {
+              "source" : 14,
+              "destination" : 17,
+              "relation" : "advmod"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "compound"
+            }, {
+              "source" : 21,
+              "destination" : 19,
+              "relation" : "case"
+            }, {
+              "source" : 21,
+              "destination" : 20,
+              "relation" : "amod"
+            }, {
+              "source" : 21,
+              "destination" : 25,
+              "relation" : "nmod_with"
+            }, {
+              "source" : 21,
+              "destination" : 27,
+              "relation" : "nmod_with"
+            }, {
+              "source" : 25,
+              "destination" : 22,
+              "relation" : "case"
+            }, {
+              "source" : 25,
+              "destination" : 23,
+              "relation" : "cc:preconj"
+            }, {
+              "source" : 25,
+              "destination" : 24,
+              "relation" : "amod"
+            }, {
+              "source" : 25,
+              "destination" : 26,
+              "relation" : "cc"
+            }, {
+              "source" : 25,
+              "destination" : 27,
+              "relation" : "conj_or"
+            } ],
+            "roots" : [ 7 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "dobj"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "mark"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "det"
+            }, {
+              "source" : 7,
+              "destination" : 5,
+              "relation" : "nsubj"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "advmod"
+            }, {
+              "source" : 7,
+              "destination" : 9,
+              "relation" : "dobj"
+            }, {
+              "source" : 7,
+              "destination" : 1,
+              "relation" : "advcl"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "compound"
+            }, {
+              "source" : 9,
+              "destination" : 14,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 14,
+              "destination" : 21,
+              "relation" : "nmod"
+            }, {
+              "source" : 14,
+              "destination" : 11,
+              "relation" : "nsubj"
+            }, {
+              "source" : 14,
+              "destination" : 12,
+              "relation" : "aux"
+            }, {
+              "source" : 14,
+              "destination" : 13,
+              "relation" : "neg"
+            }, {
+              "source" : 14,
+              "destination" : 16,
+              "relation" : "dobj"
+            }, {
+              "source" : 14,
+              "destination" : 17,
+              "relation" : "advmod"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "compound"
+            }, {
+              "source" : 21,
+              "destination" : 19,
+              "relation" : "case"
+            }, {
+              "source" : 21,
+              "destination" : 20,
+              "relation" : "amod"
+            }, {
+              "source" : 21,
+              "destination" : 25,
+              "relation" : "nmod"
+            }, {
+              "source" : 25,
+              "destination" : 22,
+              "relation" : "case"
+            }, {
+              "source" : 25,
+              "destination" : 23,
+              "relation" : "cc:preconj"
+            }, {
+              "source" : 25,
+              "destination" : 24,
+              "relation" : "amod"
+            }, {
+              "source" : 25,
+              "destination" : 26,
+              "relation" : "cc"
+            }, {
+              "source" : 25,
+              "destination" : 27,
+              "relation" : "conj"
+            } ],
+            "roots" : [ 7 ]
+          }
+        }
+      }, {
+        "words" : [ "In", "cells", "transfected", "with", "wild-type", "EGFR", ",", "MEK", "inhibition", "led", "to", "feedback", "activation", "of", "phospho-ERBB3", "and", "phosho-EGFR", ",", "recapitulating", "the", "results", "we", "had", "observed", "in", "our", "panel", "of", "cancer", "cell", "lines", "(", "Figure", "6A", ")", "." ],
+        "startOffsets" : [ 398, 401, 407, 419, 424, 434, 438, 440, 444, 455, 459, 462, 471, 482, 485, 499, 503, 514, 516, 531, 535, 543, 546, 550, 559, 562, 566, 572, 575, 582, 587, 593, 594, 601, 603, 604 ],
+        "endOffsets" : [ 400, 406, 418, 423, 433, 438, 439, 443, 454, 458, 461, 470, 481, 484, 498, 502, 514, 515, 530, 534, 542, 545, 549, 558, 561, 565, 571, 574, 581, 586, 592, 594, 600, 603, 604, 605 ],
+        "raw" : [ "In", "cells", "transfected", "with", "wild-type", "EGFR", ",", "MEK", "inhibition", "led", "to", "feedback", "activation", "of", "phospho-ERBB3", "and", "phosho-EGFR", ",", "recapitulating", "the", "results", "we", "had", "observed", "in", "our", "panel", "of", "cancer", "cell", "lines", "(", "Figure", "6A", ")", "." ],
+        "tags" : [ "IN", "NNS", "VBN", "IN", "JJ", "NN", ",", "NN", "NN", "VBD", "TO", "NN", "NN", "IN", "NN", "CC", "NN", ",", "VBG", "DT", "NNS", "PRP", "VBD", "VBN", "IN", "PRP$", "NN", "IN", "NN", "NN", "NNS", "-LRB-", "NN", "NN", "-RRB-", "." ],
+        "lemmas" : [ "in", "cell", "transfect", "with", "wild-type", "egfr", ",", "mek", "inhibition", "lead", "to", "feedback", "activation", "of", "phospho-erbb3", "and", "phosho-egfr", ",", "recapitulate", "the", "result", "we", "have", "observe", "in", "we", "panel", "of", "cancer", "cell", "line", "(", "figure", "6a", ")", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Family", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" ],
+        "chunks" : [ "B-PP", "B-NP", "B-VP", "B-PP", "B-NP", "I-NP", "O", "B-NP", "I-NP", "B-VP", "B-PP", "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "O", "B-VP", "B-NP", "I-NP", "B-NP", "B-VP", "I-VP", "B-PP", "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "B-NP", "I-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "amod"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "compound"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "nsubj"
+            }, {
+              "source" : 9,
+              "destination" : 12,
+              "relation" : "nmod_to"
+            }, {
+              "source" : 9,
+              "destination" : 1,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 9,
+              "destination" : 18,
+              "relation" : "xcomp"
+            }, {
+              "source" : 12,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 12,
+              "destination" : 11,
+              "relation" : "compound"
+            }, {
+              "source" : 12,
+              "destination" : 14,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 12,
+              "destination" : 16,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 14,
+              "destination" : 13,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 15,
+              "relation" : "cc"
+            }, {
+              "source" : 14,
+              "destination" : 16,
+              "relation" : "conj_and"
+            }, {
+              "source" : 18,
+              "destination" : 20,
+              "relation" : "dobj"
+            }, {
+              "source" : 20,
+              "destination" : 23,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 20,
+              "destination" : 19,
+              "relation" : "det"
+            }, {
+              "source" : 23,
+              "destination" : 21,
+              "relation" : "nsubj"
+            }, {
+              "source" : 23,
+              "destination" : 22,
+              "relation" : "aux"
+            }, {
+              "source" : 23,
+              "destination" : 26,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 26,
+              "destination" : 24,
+              "relation" : "case"
+            }, {
+              "source" : 26,
+              "destination" : 25,
+              "relation" : "nmod:poss"
+            }, {
+              "source" : 26,
+              "destination" : 30,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 30,
+              "destination" : 27,
+              "relation" : "case"
+            }, {
+              "source" : 30,
+              "destination" : 28,
+              "relation" : "compound"
+            }, {
+              "source" : 30,
+              "destination" : 29,
+              "relation" : "compound"
+            }, {
+              "source" : 30,
+              "destination" : 33,
+              "relation" : "appos"
+            }, {
+              "source" : 33,
+              "destination" : 32,
+              "relation" : "compound"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "case"
+            }, {
+              "source" : 1,
+              "destination" : 2,
+              "relation" : "acl"
+            }, {
+              "source" : 2,
+              "destination" : 5,
+              "relation" : "nmod_with"
+            } ],
+            "roots" : [ 9 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "amod"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "compound"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "nsubj"
+            }, {
+              "source" : 9,
+              "destination" : 12,
+              "relation" : "nmod"
+            }, {
+              "source" : 9,
+              "destination" : 1,
+              "relation" : "nmod"
+            }, {
+              "source" : 9,
+              "destination" : 18,
+              "relation" : "xcomp"
+            }, {
+              "source" : 12,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 12,
+              "destination" : 11,
+              "relation" : "compound"
+            }, {
+              "source" : 12,
+              "destination" : 14,
+              "relation" : "nmod"
+            }, {
+              "source" : 14,
+              "destination" : 13,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 15,
+              "relation" : "cc"
+            }, {
+              "source" : 14,
+              "destination" : 16,
+              "relation" : "conj"
+            }, {
+              "source" : 18,
+              "destination" : 20,
+              "relation" : "dobj"
+            }, {
+              "source" : 20,
+              "destination" : 23,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 20,
+              "destination" : 19,
+              "relation" : "det"
+            }, {
+              "source" : 23,
+              "destination" : 21,
+              "relation" : "nsubj"
+            }, {
+              "source" : 23,
+              "destination" : 22,
+              "relation" : "aux"
+            }, {
+              "source" : 23,
+              "destination" : 26,
+              "relation" : "nmod"
+            }, {
+              "source" : 26,
+              "destination" : 24,
+              "relation" : "case"
+            }, {
+              "source" : 26,
+              "destination" : 25,
+              "relation" : "nmod:poss"
+            }, {
+              "source" : 26,
+              "destination" : 30,
+              "relation" : "nmod"
+            }, {
+              "source" : 30,
+              "destination" : 27,
+              "relation" : "case"
+            }, {
+              "source" : 30,
+              "destination" : 28,
+              "relation" : "compound"
+            }, {
+              "source" : 30,
+              "destination" : 29,
+              "relation" : "compound"
+            }, {
+              "source" : 30,
+              "destination" : 33,
+              "relation" : "appos"
+            }, {
+              "source" : 33,
+              "destination" : 32,
+              "relation" : "compound"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "case"
+            }, {
+              "source" : 1,
+              "destination" : 2,
+              "relation" : "acl"
+            }, {
+              "source" : 2,
+              "destination" : 5,
+              "relation" : "nmod"
+            } ],
+            "roots" : [ 9 ]
+          }
+        }
+      }, {
+        "words" : [ "In", "contrast", ",", "the", "EGFRT669A", "mutant", "increased", "both", "basal", "EGFR", "and", "ERBB3", "tyrosine", "phosphorylation", "that", "was", "not", "augmented", "by", "MEK", "inhibition", "." ],
+        "startOffsets" : [ 606, 609, 617, 619, 623, 633, 640, 650, 655, 661, 666, 670, 676, 685, 701, 706, 710, 714, 724, 727, 731, 741 ],
+        "endOffsets" : [ 608, 617, 618, 622, 632, 639, 649, 654, 660, 665, 669, 675, 684, 700, 705, 709, 713, 723, 726, 730, 741, 742 ],
+        "raw" : [ "In", "contrast", ",", "the", "EGFRT669A", "mutant", "increased", "both", "basal", "EGFR", "and", "ERBB3", "tyrosine", "phosphorylation", "that", "was", "not", "augmented", "by", "MEK", "inhibition", "." ],
+        "tags" : [ "IN", "NN", ",", "DT", "NN", "NN", "VBD", "CC", "JJ", "NN", "CC", "NN", "NN", "NN", "WDT", "VBD", "RB", "VBN", "IN", "NN", "NN", "." ],
+        "lemmas" : [ "in", "contrast", ",", "the", "egfrt669a", "mutant", "increase", "both", "basal", "egfr", "and", "erbb3", "tyrosine", "phosphorylation", "that", "be", "not", "augment", "by", "mek", "inhibition", "." ],
+        "entities" : [ "O", "O", "O", "O", "B-Gene_or_gene_product", "I-Gene_or_gene_product", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "B-Site", "O", "O", "O", "O", "O", "O", "B-Family", "O", "O" ],
+        "chunks" : [ "B-PP", "B-NP", "O", "B-NP", "I-NP", "I-NP", "B-VP", "O", "B-NP", "I-NP", "O", "B-NP", "I-NP", "I-NP", "B-NP", "B-VP", "I-VP", "I-VP", "B-PP", "B-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "amod"
+            }, {
+              "source" : 9,
+              "destination" : 10,
+              "relation" : "cc"
+            }, {
+              "source" : 9,
+              "destination" : 13,
+              "relation" : "conj_and"
+            }, {
+              "source" : 9,
+              "destination" : 14,
+              "relation" : "ref"
+            }, {
+              "source" : 9,
+              "destination" : 17,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 9,
+              "destination" : 7,
+              "relation" : "case"
+            }, {
+              "source" : 13,
+              "destination" : 11,
+              "relation" : "compound"
+            }, {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "compound"
+            }, {
+              "source" : 17,
+              "destination" : 9,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 17,
+              "destination" : 13,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 17,
+              "destination" : 15,
+              "relation" : "auxpass"
+            }, {
+              "source" : 17,
+              "destination" : 16,
+              "relation" : "neg"
+            }, {
+              "source" : 17,
+              "destination" : 20,
+              "relation" : "nmod_agent"
+            }, {
+              "source" : 20,
+              "destination" : 18,
+              "relation" : "case"
+            }, {
+              "source" : 20,
+              "destination" : 19,
+              "relation" : "compound"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "det"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "compound"
+            }, {
+              "source" : 6,
+              "destination" : 9,
+              "relation" : "nmod_both"
+            }, {
+              "source" : 6,
+              "destination" : 13,
+              "relation" : "nmod_both"
+            }, {
+              "source" : 6,
+              "destination" : 1,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "nsubj"
+            } ],
+            "roots" : [ 6 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "amod"
+            }, {
+              "source" : 9,
+              "destination" : 10,
+              "relation" : "cc"
+            }, {
+              "source" : 9,
+              "destination" : 13,
+              "relation" : "conj"
+            }, {
+              "source" : 9,
+              "destination" : 17,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 9,
+              "destination" : 7,
+              "relation" : "case"
+            }, {
+              "source" : 13,
+              "destination" : 11,
+              "relation" : "compound"
+            }, {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "compound"
+            }, {
+              "source" : 17,
+              "destination" : 14,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 17,
+              "destination" : 15,
+              "relation" : "auxpass"
+            }, {
+              "source" : 17,
+              "destination" : 16,
+              "relation" : "neg"
+            }, {
+              "source" : 17,
+              "destination" : 20,
+              "relation" : "nmod"
+            }, {
+              "source" : 20,
+              "destination" : 18,
+              "relation" : "case"
+            }, {
+              "source" : 20,
+              "destination" : 19,
+              "relation" : "compound"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "det"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "compound"
+            }, {
+              "source" : 6,
+              "destination" : 9,
+              "relation" : "nmod"
+            }, {
+              "source" : 6,
+              "destination" : 1,
+              "relation" : "nmod"
+            }, {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "nsubj"
+            } ],
+            "roots" : [ 6 ]
+          }
+        }
+      }, {
+        "words" : [ "As", "a", "control", ",", "we", "treated", "CHO-KI", "cells", "expressing", "EGFRT669A", "with", "HRG", "ligand", "to", "induce", "maximal", "ERBB3", "phosphorylation", "(", "Figure", "6A", ")", ",", "indicating", "that", "the", "lack", "of", "induction", "of", "phospho-ERBB3", "in", "EGFRT669A", "expressing", "cells", "following", "MEK", "inhibition", "was", "not", "simply", "due", "to", "the", "saturation", "of", "the", "system", "with", "phospho-ERBB3", "." ],
+        "startOffsets" : [ 743, 746, 748, 755, 757, 760, 768, 775, 781, 792, 802, 807, 811, 818, 821, 828, 836, 842, 858, 859, 866, 868, 869, 871, 882, 887, 891, 896, 899, 909, 912, 926, 929, 939, 950, 956, 966, 970, 981, 985, 989, 996, 1000, 1003, 1007, 1018, 1021, 1025, 1032, 1037, 1050 ],
+        "endOffsets" : [ 745, 747, 755, 756, 759, 767, 774, 780, 791, 801, 806, 810, 817, 820, 827, 835, 841, 857, 859, 865, 868, 869, 870, 881, 886, 890, 895, 898, 908, 911, 925, 928, 938, 949, 955, 965, 969, 980, 984, 988, 995, 999, 1002, 1006, 1017, 1020, 1024, 1031, 1036, 1050, 1051 ],
+        "raw" : [ "As", "a", "control", ",", "we", "treated", "CHO-KI", "cells", "expressing", "EGFRT669A", "with", "HRG", "ligand", "to", "induce", "maximal", "ERBB3", "phosphorylation", "(", "Figure", "6A", ")", ",", "indicating", "that", "the", "lack", "of", "induction", "of", "phospho-ERBB3", "in", "EGFRT669A", "expressing", "cells", "following", "MEK", "inhibition", "was", "not", "simply", "due", "to", "the", "saturation", "of", "the", "system", "with", "phospho-ERBB3", "." ],
+        "tags" : [ "IN", "DT", "NN", ",", "PRP", "VBD", "NN", "NNS", "VBG", "NN", "IN", "NN", "NN", "TO", "VB", "JJ", "NN", "NN", "-LRB-", "NN", "NN", "-RRB-", ",", "VBG", "IN", "DT", "NN", "IN", "NN", "IN", "NN", "IN", "NN", "NN", "NNS", "VBG", "NN", "NN", "VBD", "RB", "RB", "JJ", "TO", "DT", "NN", "IN", "DT", "NN", "IN", "NN", "." ],
+        "lemmas" : [ "as", "a", "control", ",", "we", "treat", "cho-ki", "cell", "express", "egfrt669a", "with", "hrg", "ligand", "to", "induce", "maximal", "erbb3", "phosphorylation", "(", "figure", "6a", ")", ",", "indicate", "that", "the", "lack", "of", "induction", "of", "phospho-erbb3", "in", "egfrt669a", "expressing", "cell", "follow", "mek", "inhibition", "be", "not", "simply", "due", "to", "the", "saturation", "of", "the", "system", "with", "phospho-erbb3", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "O", "O", "B-Family", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" ],
+        "chunks" : [ "B-PP", "B-NP", "I-NP", "O", "B-NP", "B-VP", "B-NP", "I-NP", "B-VP", "B-NP", "B-PP", "B-NP", "I-NP", "B-VP", "I-VP", "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "O", "B-VP", "B-SBAR", "B-NP", "I-NP", "B-PP", "B-NP", "B-PP", "B-NP", "B-PP", "B-NP", "I-NP", "I-NP", "B-PP", "B-NP", "I-NP", "B-VP", "O", "B-ADJP", "I-ADJP", "B-PP", "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "B-PP", "B-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 12,
+              "destination" : 11,
+              "relation" : "compound"
+            }, {
+              "source" : 12,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 13,
+              "relation" : "mark"
+            }, {
+              "source" : 14,
+              "destination" : 17,
+              "relation" : "dobj"
+            }, {
+              "source" : 17,
+              "destination" : 15,
+              "relation" : "amod"
+            }, {
+              "source" : 17,
+              "destination" : 16,
+              "relation" : "compound"
+            }, {
+              "source" : 17,
+              "destination" : 20,
+              "relation" : "appos"
+            }, {
+              "source" : 20,
+              "destination" : 19,
+              "relation" : "compound"
+            }, {
+              "source" : 23,
+              "destination" : 41,
+              "relation" : "ccomp"
+            }, {
+              "source" : 26,
+              "destination" : 28,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 26,
+              "destination" : 25,
+              "relation" : "det"
+            }, {
+              "source" : 28,
+              "destination" : 27,
+              "relation" : "case"
+            }, {
+              "source" : 28,
+              "destination" : 30,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 30,
+              "destination" : 29,
+              "relation" : "case"
+            }, {
+              "source" : 30,
+              "destination" : 34,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 34,
+              "destination" : 31,
+              "relation" : "case"
+            }, {
+              "source" : 34,
+              "destination" : 32,
+              "relation" : "compound"
+            }, {
+              "source" : 34,
+              "destination" : 33,
+              "relation" : "compound"
+            }, {
+              "source" : 34,
+              "destination" : 37,
+              "relation" : "nmod_following"
+            }, {
+              "source" : 37,
+              "destination" : 35,
+              "relation" : "case"
+            }, {
+              "source" : 37,
+              "destination" : 36,
+              "relation" : "compound"
+            }, {
+              "source" : 41,
+              "destination" : 44,
+              "relation" : "nmod_to"
+            }, {
+              "source" : 41,
+              "destination" : 38,
+              "relation" : "cop"
+            }, {
+              "source" : 41,
+              "destination" : 39,
+              "relation" : "neg"
+            }, {
+              "source" : 41,
+              "destination" : 24,
+              "relation" : "mark"
+            }, {
+              "source" : 41,
+              "destination" : 40,
+              "relation" : "advmod"
+            }, {
+              "source" : 41,
+              "destination" : 26,
+              "relation" : "nsubj"
+            }, {
+              "source" : 44,
+              "destination" : 43,
+              "relation" : "det"
+            }, {
+              "source" : 44,
+              "destination" : 47,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 44,
+              "destination" : 42,
+              "relation" : "case"
+            }, {
+              "source" : 47,
+              "destination" : 45,
+              "relation" : "case"
+            }, {
+              "source" : 47,
+              "destination" : 46,
+              "relation" : "det"
+            }, {
+              "source" : 47,
+              "destination" : 49,
+              "relation" : "nmod_with"
+            }, {
+              "source" : 49,
+              "destination" : 48,
+              "relation" : "case"
+            }, {
+              "source" : 2,
+              "destination" : 0,
+              "relation" : "case"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "det"
+            }, {
+              "source" : 5,
+              "destination" : 2,
+              "relation" : "nmod_as"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 7,
+              "relation" : "dobj"
+            }, {
+              "source" : 5,
+              "destination" : 23,
+              "relation" : "advcl"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "compound"
+            }, {
+              "source" : 7,
+              "destination" : 8,
+              "relation" : "acl"
+            }, {
+              "source" : 8,
+              "destination" : 12,
+              "relation" : "nmod_with"
+            }, {
+              "source" : 8,
+              "destination" : 14,
+              "relation" : "advcl_to"
+            }, {
+              "source" : 8,
+              "destination" : 9,
+              "relation" : "dobj"
+            } ],
+            "roots" : [ 5 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 12,
+              "destination" : 11,
+              "relation" : "compound"
+            }, {
+              "source" : 12,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 13,
+              "relation" : "mark"
+            }, {
+              "source" : 14,
+              "destination" : 17,
+              "relation" : "dobj"
+            }, {
+              "source" : 17,
+              "destination" : 15,
+              "relation" : "amod"
+            }, {
+              "source" : 17,
+              "destination" : 16,
+              "relation" : "compound"
+            }, {
+              "source" : 17,
+              "destination" : 20,
+              "relation" : "appos"
+            }, {
+              "source" : 20,
+              "destination" : 19,
+              "relation" : "compound"
+            }, {
+              "source" : 23,
+              "destination" : 41,
+              "relation" : "ccomp"
+            }, {
+              "source" : 26,
+              "destination" : 28,
+              "relation" : "nmod"
+            }, {
+              "source" : 26,
+              "destination" : 25,
+              "relation" : "det"
+            }, {
+              "source" : 28,
+              "destination" : 27,
+              "relation" : "case"
+            }, {
+              "source" : 28,
+              "destination" : 30,
+              "relation" : "nmod"
+            }, {
+              "source" : 30,
+              "destination" : 29,
+              "relation" : "case"
+            }, {
+              "source" : 30,
+              "destination" : 34,
+              "relation" : "nmod"
+            }, {
+              "source" : 34,
+              "destination" : 31,
+              "relation" : "case"
+            }, {
+              "source" : 34,
+              "destination" : 32,
+              "relation" : "compound"
+            }, {
+              "source" : 34,
+              "destination" : 33,
+              "relation" : "compound"
+            }, {
+              "source" : 34,
+              "destination" : 37,
+              "relation" : "nmod"
+            }, {
+              "source" : 37,
+              "destination" : 35,
+              "relation" : "case"
+            }, {
+              "source" : 37,
+              "destination" : 36,
+              "relation" : "compound"
+            }, {
+              "source" : 41,
+              "destination" : 44,
+              "relation" : "nmod"
+            }, {
+              "source" : 41,
+              "destination" : 38,
+              "relation" : "cop"
+            }, {
+              "source" : 41,
+              "destination" : 39,
+              "relation" : "neg"
+            }, {
+              "source" : 41,
+              "destination" : 24,
+              "relation" : "mark"
+            }, {
+              "source" : 41,
+              "destination" : 40,
+              "relation" : "advmod"
+            }, {
+              "source" : 41,
+              "destination" : 26,
+              "relation" : "nsubj"
+            }, {
+              "source" : 44,
+              "destination" : 43,
+              "relation" : "det"
+            }, {
+              "source" : 44,
+              "destination" : 47,
+              "relation" : "nmod"
+            }, {
+              "source" : 44,
+              "destination" : 42,
+              "relation" : "case"
+            }, {
+              "source" : 47,
+              "destination" : 45,
+              "relation" : "case"
+            }, {
+              "source" : 47,
+              "destination" : 46,
+              "relation" : "det"
+            }, {
+              "source" : 47,
+              "destination" : 49,
+              "relation" : "nmod"
+            }, {
+              "source" : 49,
+              "destination" : 48,
+              "relation" : "case"
+            }, {
+              "source" : 2,
+              "destination" : 0,
+              "relation" : "case"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "det"
+            }, {
+              "source" : 5,
+              "destination" : 2,
+              "relation" : "nmod"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 7,
+              "relation" : "dobj"
+            }, {
+              "source" : 5,
+              "destination" : 23,
+              "relation" : "advcl"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "compound"
+            }, {
+              "source" : 7,
+              "destination" : 8,
+              "relation" : "acl"
+            }, {
+              "source" : 8,
+              "destination" : 12,
+              "relation" : "nmod"
+            }, {
+              "source" : 8,
+              "destination" : 14,
+              "relation" : "advcl"
+            }, {
+              "source" : 8,
+              "destination" : 9,
+              "relation" : "dobj"
+            } ],
+            "roots" : [ 5 ]
+          }
+        }
+      }, {
+        "words" : [ "We", "observed", "analogous", "results", "in", "CHO-KI", "cells", "expressing", "wild-type", "ERBB3", "in", "combination", "with", "wild-type", "or", "T677A", "mutant", "HER2", "(", "Figure", "6B", ")", "." ],
+        "startOffsets" : [ 1052, 1055, 1064, 1074, 1082, 1085, 1092, 1098, 1109, 1119, 1125, 1128, 1140, 1145, 1155, 1158, 1164, 1171, 1176, 1177, 1184, 1186, 1187 ],
+        "endOffsets" : [ 1054, 1063, 1073, 1081, 1084, 1091, 1097, 1108, 1118, 1124, 1127, 1139, 1144, 1154, 1157, 1163, 1170, 1175, 1177, 1183, 1186, 1187, 1188 ],
+        "raw" : [ "We", "observed", "analogous", "results", "in", "CHO-KI", "cells", "expressing", "wild-type", "ERBB3", "in", "combination", "with", "wild-type", "or", "T677A", "mutant", "HER2", "(", "Figure", "6B", ")", "." ],
+        "tags" : [ "PRP", "VBD", "JJ", "NNS", "IN", "NN", "NNS", "VBG", "JJ", "NN", "IN", "NN", "IN", "JJ", "CC", "NN", "NN", "NN", "-LRB-", "NNP", "NN", "-RRB-", "." ],
+        "lemmas" : [ "we", "observe", "analogous", "result", "in", "cho-ki", "cell", "express", "wild-type", "erbb3", "in", "combination", "with", "wild-type", "or", "t677a", "mutant", "her2", "(", "Figure", "6b", ")", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O" ],
+        "chunks" : [ "B-NP", "B-VP", "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "B-VP", "B-NP", "I-NP", "B-PP", "B-NP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 17,
+              "destination" : 15,
+              "relation" : "compound"
+            }, {
+              "source" : 17,
+              "destination" : 16,
+              "relation" : "compound"
+            }, {
+              "source" : 17,
+              "destination" : 20,
+              "relation" : "appos"
+            }, {
+              "source" : 20,
+              "destination" : 19,
+              "relation" : "compound"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "dobj"
+            }, {
+              "source" : 1,
+              "destination" : 6,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 1,
+              "destination" : 7,
+              "relation" : "xcomp"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "amod"
+            }, {
+              "source" : 6,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "compound"
+            }, {
+              "source" : 7,
+              "destination" : 17,
+              "relation" : "nmod_with"
+            }, {
+              "source" : 7,
+              "destination" : 9,
+              "relation" : "dobj"
+            }, {
+              "source" : 7,
+              "destination" : 11,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 7,
+              "destination" : 13,
+              "relation" : "nmod_with"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "amod"
+            }, {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 13,
+              "destination" : 14,
+              "relation" : "cc"
+            }, {
+              "source" : 13,
+              "destination" : 17,
+              "relation" : "conj_or"
+            }, {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "case"
+            } ],
+            "roots" : [ 1 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 17,
+              "destination" : 15,
+              "relation" : "compound"
+            }, {
+              "source" : 17,
+              "destination" : 16,
+              "relation" : "compound"
+            }, {
+              "source" : 17,
+              "destination" : 20,
+              "relation" : "appos"
+            }, {
+              "source" : 20,
+              "destination" : 19,
+              "relation" : "compound"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "dobj"
+            }, {
+              "source" : 1,
+              "destination" : 6,
+              "relation" : "nmod"
+            }, {
+              "source" : 1,
+              "destination" : 7,
+              "relation" : "xcomp"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "amod"
+            }, {
+              "source" : 6,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "compound"
+            }, {
+              "source" : 7,
+              "destination" : 9,
+              "relation" : "dobj"
+            }, {
+              "source" : 7,
+              "destination" : 11,
+              "relation" : "nmod"
+            }, {
+              "source" : 7,
+              "destination" : 13,
+              "relation" : "nmod"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "amod"
+            }, {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 13,
+              "destination" : 14,
+              "relation" : "cc"
+            }, {
+              "source" : 13,
+              "destination" : 17,
+              "relation" : "conj"
+            }, {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "case"
+            } ],
+            "roots" : [ 1 ]
+          }
+        }
+      }, {
+        "words" : [ "Together", "these", "results", "support", "the", "hypothesis", "that", "inhibition", "of", "ERK", "mediated", "phosphorylation", "of", "a", "conserved", "juxtamembrane", "domain", "threonine", "residue", "leads", "to", "feedback", "activation", "of", "EGFR", ",", "HER2", ",", "and", "ERBB3", "(", "Figure", "7", ")", "." ],
+        "startOffsets" : [ 1189, 1198, 1204, 1212, 1220, 1224, 1235, 1240, 1251, 1254, 1258, 1267, 1283, 1286, 1288, 1298, 1312, 1319, 1329, 1337, 1343, 1346, 1355, 1366, 1369, 1373, 1375, 1379, 1381, 1385, 1391, 1392, 1399, 1400, 1401 ],
+        "endOffsets" : [ 1197, 1203, 1211, 1219, 1223, 1234, 1239, 1250, 1253, 1257, 1266, 1282, 1285, 1287, 1297, 1311, 1318, 1328, 1336, 1342, 1345, 1354, 1365, 1368, 1373, 1374, 1379, 1380, 1384, 1390, 1392, 1398, 1400, 1401, 1402 ],
+        "raw" : [ "Together", "these", "results", "support", "the", "hypothesis", "that", "inhibition", "of", "ERK", "mediated", "phosphorylation", "of", "a", "conserved", "juxtamembrane", "domain", "threonine", "residue", "leads", "to", "feedback", "activation", "of", "EGFR", ",", "HER2", ",", "and", "ERBB3", "(", "Figure", "7", ")", "." ],
+        "tags" : [ "RB", "DT", "NNS", "VBP", "DT", "NN", "IN", "NN", "IN", "NN", "VBD", "NN", "IN", "DT", "JJ", "NN", "NN", "NN", "NN", "VBZ", "TO", "NN", "NN", "IN", "NN", ",", "NN", ",", "CC", "NN", "-LRB-", "NN", "CD", "-RRB-", "." ],
+        "lemmas" : [ "together", "these", "result", "support", "the", "hypothesis", "that", "inhibition", "of", "erk", "mediate", "phosphorylation", "of", "a", "conserved", "juxtamembrane", "domain", "threonine", "residue", "lead", "to", "feedback", "activation", "of", "egfr", ",", "her2", ",", "and", "erbb3", "(", "figure", "7", ")", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Family", "O", "O", "O", "O", "O", "O", "O", "B-Site", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O" ],
+        "chunks" : [ "B-ADVP", "B-NP", "I-NP", "B-VP", "B-NP", "I-NP", "B-SBAR", "B-NP", "B-PP", "B-NP", "B-VP", "B-NP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "B-VP", "B-PP", "B-NP", "I-NP", "B-PP", "B-NP", "O", "B-NP", "O", "O", "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 18,
+              "destination" : 17,
+              "relation" : "compound"
+            }, {
+              "source" : 18,
+              "destination" : 12,
+              "relation" : "case"
+            }, {
+              "source" : 18,
+              "destination" : 13,
+              "relation" : "det"
+            }, {
+              "source" : 18,
+              "destination" : 14,
+              "relation" : "amod"
+            }, {
+              "source" : 18,
+              "destination" : 15,
+              "relation" : "compound"
+            }, {
+              "source" : 18,
+              "destination" : 16,
+              "relation" : "compound"
+            }, {
+              "source" : 19,
+              "destination" : 22,
+              "relation" : "nmod_to"
+            }, {
+              "source" : 19,
+              "destination" : 11,
+              "relation" : "nsubj"
+            }, {
+              "source" : 22,
+              "destination" : 20,
+              "relation" : "case"
+            }, {
+              "source" : 22,
+              "destination" : 21,
+              "relation" : "compound"
+            }, {
+              "source" : 22,
+              "destination" : 24,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 22,
+              "destination" : 26,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 22,
+              "destination" : 29,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 24,
+              "destination" : 23,
+              "relation" : "case"
+            }, {
+              "source" : 24,
+              "destination" : 26,
+              "relation" : "conj_and"
+            }, {
+              "source" : 24,
+              "destination" : 28,
+              "relation" : "cc"
+            }, {
+              "source" : 24,
+              "destination" : 29,
+              "relation" : "conj_and"
+            }, {
+              "source" : 24,
+              "destination" : 31,
+              "relation" : "appos"
+            }, {
+              "source" : 31,
+              "destination" : 32,
+              "relation" : "nummod"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "det"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "nsubj"
+            }, {
+              "source" : 3,
+              "destination" : 5,
+              "relation" : "dobj"
+            }, {
+              "source" : 3,
+              "destination" : 10,
+              "relation" : "ccomp"
+            }, {
+              "source" : 3,
+              "destination" : 0,
+              "relation" : "advmod"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "det"
+            }, {
+              "source" : 7,
+              "destination" : 9,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "case"
+            }, {
+              "source" : 10,
+              "destination" : 19,
+              "relation" : "ccomp"
+            }, {
+              "source" : 10,
+              "destination" : 6,
+              "relation" : "mark"
+            }, {
+              "source" : 10,
+              "destination" : 7,
+              "relation" : "nsubj"
+            }, {
+              "source" : 11,
+              "destination" : 18,
+              "relation" : "nmod_of"
+            } ],
+            "roots" : [ 3 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 18,
+              "destination" : 17,
+              "relation" : "compound"
+            }, {
+              "source" : 18,
+              "destination" : 12,
+              "relation" : "case"
+            }, {
+              "source" : 18,
+              "destination" : 13,
+              "relation" : "det"
+            }, {
+              "source" : 18,
+              "destination" : 14,
+              "relation" : "amod"
+            }, {
+              "source" : 18,
+              "destination" : 15,
+              "relation" : "compound"
+            }, {
+              "source" : 18,
+              "destination" : 16,
+              "relation" : "compound"
+            }, {
+              "source" : 19,
+              "destination" : 22,
+              "relation" : "nmod"
+            }, {
+              "source" : 19,
+              "destination" : 11,
+              "relation" : "nsubj"
+            }, {
+              "source" : 22,
+              "destination" : 20,
+              "relation" : "case"
+            }, {
+              "source" : 22,
+              "destination" : 21,
+              "relation" : "compound"
+            }, {
+              "source" : 22,
+              "destination" : 24,
+              "relation" : "nmod"
+            }, {
+              "source" : 24,
+              "destination" : 23,
+              "relation" : "case"
+            }, {
+              "source" : 24,
+              "destination" : 26,
+              "relation" : "conj"
+            }, {
+              "source" : 24,
+              "destination" : 28,
+              "relation" : "cc"
+            }, {
+              "source" : 24,
+              "destination" : 29,
+              "relation" : "conj"
+            }, {
+              "source" : 24,
+              "destination" : 31,
+              "relation" : "appos"
+            }, {
+              "source" : 31,
+              "destination" : 32,
+              "relation" : "nummod"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "det"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "nsubj"
+            }, {
+              "source" : 3,
+              "destination" : 5,
+              "relation" : "dobj"
+            }, {
+              "source" : 3,
+              "destination" : 10,
+              "relation" : "ccomp"
+            }, {
+              "source" : 3,
+              "destination" : 0,
+              "relation" : "advmod"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "det"
+            }, {
+              "source" : 7,
+              "destination" : 9,
+              "relation" : "nmod"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "case"
+            }, {
+              "source" : 10,
+              "destination" : 19,
+              "relation" : "ccomp"
+            }, {
+              "source" : 10,
+              "destination" : 6,
+              "relation" : "mark"
+            }, {
+              "source" : 10,
+              "destination" : 7,
+              "relation" : "nsubj"
+            }, {
+              "source" : 11,
+              "destination" : 18,
+              "relation" : "nmod"
+            } ],
+            "roots" : [ 3 ]
+          }
+        }
+      } ]
+    }
+  },
+  "mentions" : [ {
+    "type" : "EventMention",
+    "id" : "E:-636470663",
+    "text" : "EGFR and ERBB3 tyrosine phosphorylation that was not augmented by MEK",
+    "labels" : [ "Negative_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:-1611410486",
+      "text" : "augmented",
+      "labels" : [ "Negative_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 17,
+        "end" : 18
+      },
+      "characterStartOffset" : 714,
+      "characterEndOffset" : 723,
+      "sentence" : 3,
+      "document" : "-817467340",
+      "keep" : true,
+      "foundBy" : "Positive_regulation_syntax_2_verb"
+    },
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "EventMention",
+        "id" : "E:-611799837",
+        "text" : "EGFR and ERBB3 tyrosine phosphorylation",
+        "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+        "trigger" : {
+          "type" : "TextBoundMention",
+          "id" : "T:-525342673",
+          "text" : "phosphorylation",
+          "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+          "tokenInterval" : {
+            "start" : 13,
+            "end" : 14
+          },
+          "characterStartOffset" : 685,
+          "characterEndOffset" : 700,
+          "sentence" : 3,
+          "document" : "-817467340",
+          "keep" : true,
+          "foundBy" : "Phosphorylation_syntax_4_noun"
+        },
+        "arguments" : {
+          "theme" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:2007578222",
+            "text" : "EGFR",
+            "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+            "tokenInterval" : {
+              "start" : 9,
+              "end" : 10
+            },
+            "characterStartOffset" : 661,
+            "characterEndOffset" : 665,
+            "sentence" : 3,
+            "document" : "-817467340",
+            "keep" : true,
+            "foundBy" : "ner-gene_or_gene_product-entities"
+          } ],
+          "site" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:843185109",
+            "text" : "tyrosine",
+            "labels" : [ "Site" ],
+            "tokenInterval" : {
+              "start" : 12,
+              "end" : 13
+            },
+            "characterStartOffset" : 676,
+            "characterEndOffset" : 684,
+            "sentence" : 3,
+            "document" : "-817467340",
+            "keep" : true,
+            "foundBy" : "site_long"
+          } ]
+        },
+        "paths" : {
+          "theme" : {
+            "T:1219434563" : [ {
+              "source" : 13,
+              "destination" : 11,
+              "relation" : "compound"
+            } ],
+            "T:2007578222" : [ {
+              "source" : 9,
+              "destination" : 13,
+              "relation" : "conj_and"
+            } ]
+          },
+          "site" : {
+            "T:843185109" : [ {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "compound"
+            } ]
+          }
+        },
+        "tokenInterval" : {
+          "start" : 9,
+          "end" : 14
+        },
+        "characterStartOffset" : 661,
+        "characterEndOffset" : 700,
+        "sentence" : 3,
+        "document" : "-817467340",
+        "keep" : true,
+        "foundBy" : "Phosphorylation_syntax_4_noun"
+      } ],
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:1985064385",
+        "text" : "MEK",
+        "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 19,
+          "end" : 20
+        },
+        "characterStartOffset" : 727,
+        "characterEndOffset" : 730,
+        "sentence" : 3,
+        "document" : "-817467340",
+        "keep" : true,
+        "foundBy" : "ner-family-entities"
+      } ]
+    },
+    "paths" : {
+      "controlled" : {
+        "E:-611799837" : [ {
+          "source" : 17,
+          "destination" : 9,
+          "relation" : "nsubjpass"
+        }, {
+          "source" : 9,
+          "destination" : 13,
+          "relation" : "conj_and"
+        }, {
+          "source" : 13,
+          "destination" : 12,
+          "relation" : "compound"
+        } ],
+        "E:713457707" : [ {
+          "source" : 17,
+          "destination" : 9,
+          "relation" : "nsubjpass"
+        }, {
+          "source" : 9,
+          "destination" : 13,
+          "relation" : "conj_and"
+        }, {
+          "source" : 13,
+          "destination" : 12,
+          "relation" : "compound"
+        } ]
+      },
+      "controller" : {
+        "T:1985064385" : [ {
+          "source" : 17,
+          "destination" : 20,
+          "relation" : "nmod_agent"
+        }, {
+          "source" : 20,
+          "destination" : 19,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 9,
+      "end" : 20
+    },
+    "characterStartOffset" : 661,
+    "characterEndOffset" : 730,
+    "sentence" : 3,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "Positive_regulation_syntax_2_verb"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:386195418",
+    "text" : "ERBB3 tyrosine phosphorylation that was not augmented by MEK",
+    "labels" : [ "Negative_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:-1611410486",
+      "text" : "augmented",
+      "labels" : [ "Negative_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 17,
+        "end" : 18
+      },
+      "characterStartOffset" : 714,
+      "characterEndOffset" : 723,
+      "sentence" : 3,
+      "document" : "-817467340",
+      "keep" : true,
+      "foundBy" : "Positive_regulation_syntax_2_verb"
+    },
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "EventMention",
+        "id" : "E:713457707",
+        "text" : "ERBB3 tyrosine phosphorylation",
+        "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+        "trigger" : {
+          "type" : "TextBoundMention",
+          "id" : "T:-525342673",
+          "text" : "phosphorylation",
+          "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+          "tokenInterval" : {
+            "start" : 13,
+            "end" : 14
+          },
+          "characterStartOffset" : 685,
+          "characterEndOffset" : 700,
+          "sentence" : 3,
+          "document" : "-817467340",
+          "keep" : true,
+          "foundBy" : "Phosphorylation_syntax_4_noun"
+        },
+        "arguments" : {
+          "theme" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:1219434563",
+            "text" : "ERBB3",
+            "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+            "tokenInterval" : {
+              "start" : 11,
+              "end" : 12
+            },
+            "characterStartOffset" : 670,
+            "characterEndOffset" : 675,
+            "sentence" : 3,
+            "document" : "-817467340",
+            "keep" : true,
+            "foundBy" : "ner-gene_or_gene_product-entities"
+          } ],
+          "site" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:843185109",
+            "text" : "tyrosine",
+            "labels" : [ "Site" ],
+            "tokenInterval" : {
+              "start" : 12,
+              "end" : 13
+            },
+            "characterStartOffset" : 676,
+            "characterEndOffset" : 684,
+            "sentence" : 3,
+            "document" : "-817467340",
+            "keep" : true,
+            "foundBy" : "site_long"
+          } ]
+        },
+        "paths" : {
+          "theme" : {
+            "T:1219434563" : [ {
+              "source" : 13,
+              "destination" : 11,
+              "relation" : "compound"
+            } ],
+            "T:2007578222" : [ {
+              "source" : 9,
+              "destination" : 13,
+              "relation" : "conj_and"
+            } ]
+          },
+          "site" : {
+            "T:843185109" : [ {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "compound"
+            } ]
+          }
+        },
+        "tokenInterval" : {
+          "start" : 11,
+          "end" : 14
+        },
+        "characterStartOffset" : 670,
+        "characterEndOffset" : 700,
+        "sentence" : 3,
+        "document" : "-817467340",
+        "keep" : true,
+        "foundBy" : "Phosphorylation_syntax_4_noun"
+      } ],
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:1985064385",
+        "text" : "MEK",
+        "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 19,
+          "end" : 20
+        },
+        "characterStartOffset" : 727,
+        "characterEndOffset" : 730,
+        "sentence" : 3,
+        "document" : "-817467340",
+        "keep" : true,
+        "foundBy" : "ner-family-entities"
+      } ]
+    },
+    "paths" : {
+      "controlled" : {
+        "E:-611799837" : [ {
+          "source" : 17,
+          "destination" : 9,
+          "relation" : "nsubjpass"
+        }, {
+          "source" : 9,
+          "destination" : 13,
+          "relation" : "conj_and"
+        }, {
+          "source" : 13,
+          "destination" : 12,
+          "relation" : "compound"
+        } ],
+        "E:713457707" : [ {
+          "source" : 17,
+          "destination" : 9,
+          "relation" : "nsubjpass"
+        }, {
+          "source" : 9,
+          "destination" : 13,
+          "relation" : "conj_and"
+        }, {
+          "source" : 13,
+          "destination" : 12,
+          "relation" : "compound"
+        } ]
+      },
+      "controller" : {
+        "T:1985064385" : [ {
+          "source" : 17,
+          "destination" : 20,
+          "relation" : "nmod_agent"
+        }, {
+          "source" : 20,
+          "destination" : 19,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 11,
+      "end" : 20
+    },
+    "characterStartOffset" : 670,
+    "characterEndOffset" : 730,
+    "sentence" : 3,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "Positive_regulation_syntax_2_verb"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1484037178",
+    "text" : "MEK",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 3,
+      "end" : 4
+    },
+    "characterStartOffset" : 21,
+    "characterEndOffset" : 24,
+    "sentence" : 0,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1479275769",
+    "text" : "AKT",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 6,
+      "end" : 7
+    },
+    "characterStartOffset" : 46,
+    "characterEndOffset" : 49,
+    "sentence" : 0,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1032290371",
+    "text" : "ERK",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 9,
+      "end" : 10
+    },
+    "characterStartOffset" : 64,
+    "characterEndOffset" : 67,
+    "sentence" : 0,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1505502961",
+    "text" : "threonine",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 16,
+      "end" : 17
+    },
+    "characterStartOffset" : 105,
+    "characterEndOffset" : 114,
+    "sentence" : 0,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "site_long"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1512098036",
+    "text" : "EGFR",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 23,
+      "end" : 24
+    },
+    "characterStartOffset" : 163,
+    "characterEndOffset" : 167,
+    "sentence" : 0,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-71466651",
+    "text" : "HER2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 25,
+      "end" : 26
+    },
+    "characterStartOffset" : 172,
+    "characterEndOffset" : 176,
+    "sentence" : 0,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1436409047",
+    "text" : "ERBB3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 29,
+      "end" : 30
+    },
+    "characterStartOffset" : 197,
+    "characterEndOffset" : 202,
+    "sentence" : 0,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-515183078",
+    "text" : "ERBB",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 15,
+      "end" : 16
+    },
+    "characterStartOffset" : 307,
+    "characterEndOffset" : 311,
+    "sentence" : 1,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:231658656",
+    "text" : "ERBB receptors",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 15,
+      "end" : 17
+    },
+    "characterStartOffset" : 307,
+    "characterEndOffset" : 321,
+    "sentence" : 1,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "missing-location"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:801942843",
+    "text" : "ERBB3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 21,
+      "end" : 22
+    },
+    "characterStartOffset" : 351,
+    "characterEndOffset" : 356,
+    "sentence" : 1,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1263682795",
+    "text" : "EGFR",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 25,
+      "end" : 26
+    },
+    "characterStartOffset" : 379,
+    "characterEndOffset" : 383,
+    "sentence" : 1,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:306807048",
+    "text" : "EGFRT669A",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 27,
+      "end" : 28
+    },
+    "characterStartOffset" : 387,
+    "characterEndOffset" : 396,
+    "sentence" : 1,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:956482681",
+    "text" : "EGFR",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 5,
+      "end" : 6
+    },
+    "characterStartOffset" : 434,
+    "characterEndOffset" : 438,
+    "sentence" : 2,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:209115052",
+    "text" : "MEK",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 7,
+      "end" : 8
+    },
+    "characterStartOffset" : 440,
+    "characterEndOffset" : 443,
+    "sentence" : 2,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-648200968",
+    "text" : "phospho-ERBB3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 14,
+      "end" : 15
+    },
+    "characterStartOffset" : 485,
+    "characterEndOffset" : 498,
+    "sentence" : 2,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1765686083",
+    "text" : "phosho-EGFR",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 16,
+      "end" : 17
+    },
+    "characterStartOffset" : 503,
+    "characterEndOffset" : 514,
+    "sentence" : 2,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1457719119",
+    "text" : "EGFRT669A mutant",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 4,
+      "end" : 6
+    },
+    "characterStartOffset" : 623,
+    "characterEndOffset" : 639,
+    "sentence" : 3,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:2007578222",
+    "text" : "EGFR",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 9,
+      "end" : 10
+    },
+    "characterStartOffset" : 661,
+    "characterEndOffset" : 665,
+    "sentence" : 3,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1219434563",
+    "text" : "ERBB3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 11,
+      "end" : 12
+    },
+    "characterStartOffset" : 670,
+    "characterEndOffset" : 675,
+    "sentence" : 3,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:843185109",
+    "text" : "tyrosine",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 12,
+      "end" : 13
+    },
+    "characterStartOffset" : 676,
+    "characterEndOffset" : 684,
+    "sentence" : 3,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "site_long"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1985064385",
+    "text" : "MEK",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 19,
+      "end" : 20
+    },
+    "characterStartOffset" : 727,
+    "characterEndOffset" : 730,
+    "sentence" : 3,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1695067081",
+    "text" : "EGFRT669A",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 9,
+      "end" : 10
+    },
+    "characterStartOffset" : 792,
+    "characterEndOffset" : 801,
+    "sentence" : 4,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-867527023",
+    "text" : "HRG",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 11,
+      "end" : 12
+    },
+    "characterStartOffset" : 807,
+    "characterEndOffset" : 810,
+    "sentence" : 4,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1533739738",
+    "text" : "ERBB3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 16,
+      "end" : 17
+    },
+    "characterStartOffset" : 836,
+    "characterEndOffset" : 841,
+    "sentence" : 4,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-568799546",
+    "text" : "phospho-ERBB3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 30,
+      "end" : 31
+    },
+    "characterStartOffset" : 912,
+    "characterEndOffset" : 925,
+    "sentence" : 4,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1890774864",
+    "text" : "EGFRT669A",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 32,
+      "end" : 33
+    },
+    "characterStartOffset" : 929,
+    "characterEndOffset" : 938,
+    "sentence" : 4,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1650288397",
+    "text" : "MEK",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 36,
+      "end" : 37
+    },
+    "characterStartOffset" : 966,
+    "characterEndOffset" : 969,
+    "sentence" : 4,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1053846530",
+    "text" : "ERBB3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 9,
+      "end" : 10
+    },
+    "characterStartOffset" : 1119,
+    "characterEndOffset" : 1124,
+    "sentence" : 5,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-567218927",
+    "text" : "HER2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 17,
+      "end" : 18
+    },
+    "characterStartOffset" : 1171,
+    "characterEndOffset" : 1175,
+    "sentence" : 5,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:88263993",
+    "text" : "ERK",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 9,
+      "end" : 10
+    },
+    "characterStartOffset" : 1254,
+    "characterEndOffset" : 1257,
+    "sentence" : 6,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:143178711",
+    "text" : "threonine residue",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 17,
+      "end" : 19
+    },
+    "characterStartOffset" : 1319,
+    "characterEndOffset" : 1336,
+    "sentence" : 6,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "site_long"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1539229472",
+    "text" : "EGFR",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 24,
+      "end" : 25
+    },
+    "characterStartOffset" : 1369,
+    "characterEndOffset" : 1373,
+    "sentence" : 6,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-978821358",
+    "text" : "HER2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 26,
+      "end" : 27
+    },
+    "characterStartOffset" : 1375,
+    "characterEndOffset" : 1379,
+    "sentence" : 6,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-774459500",
+    "text" : "ERBB3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 29,
+      "end" : 30
+    },
+    "characterStartOffset" : 1385,
+    "characterEndOffset" : 1390,
+    "sentence" : 6,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:2101228172",
+    "text" : "MEK inhibition activates AKT",
+    "labels" : [ "Negative_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:1409488401",
+      "text" : "activates",
+      "labels" : [ "Negative_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 5,
+        "end" : 6
+      },
+      "characterStartOffset" : 36,
+      "characterEndOffset" : 45,
+      "sentence" : 0,
+      "document" : "-817467340",
+      "keep" : true,
+      "foundBy" : "Positive_activation_syntax_3a_verb"
+    },
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-1479275769",
+        "text" : "AKT",
+        "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 6,
+          "end" : 7
+        },
+        "characterStartOffset" : 46,
+        "characterEndOffset" : 49,
+        "sentence" : 0,
+        "document" : "-817467340",
+        "keep" : true,
+        "foundBy" : "ner-family-entities"
+      } ],
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-1484037178",
+        "text" : "MEK",
+        "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 3,
+          "end" : 4
+        },
+        "characterStartOffset" : 21,
+        "characterEndOffset" : 24,
+        "sentence" : 0,
+        "document" : "-817467340",
+        "keep" : true,
+        "foundBy" : "ner-family-entities"
+      } ]
+    },
+    "paths" : {
+      "controlled" : {
+        "T:-1479275769" : [ {
+          "source" : 5,
+          "destination" : 6,
+          "relation" : "dobj"
+        } ]
+      },
+      "controller" : {
+        "T:-1484037178" : [ {
+          "source" : 5,
+          "destination" : 4,
+          "relation" : "nsubj"
+        }, {
+          "source" : 4,
+          "destination" : 3,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 3,
+      "end" : 7
+    },
+    "characterStartOffset" : 21,
+    "characterEndOffset" : 49,
+    "sentence" : 0,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "Positive_activation_syntax_3a_verb"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:-611799837",
+    "text" : "EGFR and ERBB3 tyrosine phosphorylation",
+    "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:-525342673",
+      "text" : "phosphorylation",
+      "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 13,
+        "end" : 14
+      },
+      "characterStartOffset" : 685,
+      "characterEndOffset" : 700,
+      "sentence" : 3,
+      "document" : "-817467340",
+      "keep" : true,
+      "foundBy" : "Phosphorylation_syntax_4_noun"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:2007578222",
+        "text" : "EGFR",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 9,
+          "end" : 10
+        },
+        "characterStartOffset" : 661,
+        "characterEndOffset" : 665,
+        "sentence" : 3,
+        "document" : "-817467340",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ],
+      "site" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:843185109",
+        "text" : "tyrosine",
+        "labels" : [ "Site" ],
+        "tokenInterval" : {
+          "start" : 12,
+          "end" : 13
+        },
+        "characterStartOffset" : 676,
+        "characterEndOffset" : 684,
+        "sentence" : 3,
+        "document" : "-817467340",
+        "keep" : true,
+        "foundBy" : "site_long"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:1219434563" : [ {
+          "source" : 13,
+          "destination" : 11,
+          "relation" : "compound"
+        } ],
+        "T:2007578222" : [ {
+          "source" : 9,
+          "destination" : 13,
+          "relation" : "conj_and"
+        } ]
+      },
+      "site" : {
+        "T:843185109" : [ {
+          "source" : 13,
+          "destination" : 12,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 9,
+      "end" : 14
+    },
+    "characterStartOffset" : 661,
+    "characterEndOffset" : 700,
+    "sentence" : 3,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_4_noun"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:713457707",
+    "text" : "ERBB3 tyrosine phosphorylation",
+    "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:-525342673",
+      "text" : "phosphorylation",
+      "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 13,
+        "end" : 14
+      },
+      "characterStartOffset" : 685,
+      "characterEndOffset" : 700,
+      "sentence" : 3,
+      "document" : "-817467340",
+      "keep" : true,
+      "foundBy" : "Phosphorylation_syntax_4_noun"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:1219434563",
+        "text" : "ERBB3",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 11,
+          "end" : 12
+        },
+        "characterStartOffset" : 670,
+        "characterEndOffset" : 675,
+        "sentence" : 3,
+        "document" : "-817467340",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ],
+      "site" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:843185109",
+        "text" : "tyrosine",
+        "labels" : [ "Site" ],
+        "tokenInterval" : {
+          "start" : 12,
+          "end" : 13
+        },
+        "characterStartOffset" : 676,
+        "characterEndOffset" : 684,
+        "sentence" : 3,
+        "document" : "-817467340",
+        "keep" : true,
+        "foundBy" : "site_long"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:1219434563" : [ {
+          "source" : 13,
+          "destination" : 11,
+          "relation" : "compound"
+        } ],
+        "T:2007578222" : [ {
+          "source" : 9,
+          "destination" : 13,
+          "relation" : "conj_and"
+        } ]
+      },
+      "site" : {
+        "T:843185109" : [ {
+          "source" : 13,
+          "destination" : 12,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 11,
+      "end" : 14
+    },
+    "characterStartOffset" : 670,
+    "characterEndOffset" : 700,
+    "sentence" : 3,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_4_noun"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:1715287369",
+    "text" : "ERBB3 phosphorylation",
+    "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:652905347",
+      "text" : "phosphorylation",
+      "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 17,
+        "end" : 18
+      },
+      "characterStartOffset" : 842,
+      "characterEndOffset" : 857,
+      "sentence" : 4,
+      "document" : "-817467340",
+      "keep" : true,
+      "foundBy" : "Phosphorylation_syntax_4_noun"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:1533739738",
+        "text" : "ERBB3",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 16,
+          "end" : 17
+        },
+        "characterStartOffset" : 836,
+        "characterEndOffset" : 841,
+        "sentence" : 4,
+        "document" : "-817467340",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:1533739738" : [ {
+          "source" : 17,
+          "destination" : 16,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 16,
+      "end" : 18
+    },
+    "characterStartOffset" : 836,
+    "characterEndOffset" : 857,
+    "sentence" : 4,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_4_noun"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:-348441612",
+    "text" : "ERBB3 phosphorylation",
+    "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:1246359296",
+      "text" : "phosphorylation",
+      "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 30,
+        "end" : 31
+      },
+      "characterStartOffset" : 203,
+      "characterEndOffset" : 218,
+      "sentence" : 0,
+      "document" : "-817467340",
+      "keep" : true,
+      "foundBy" : "Phosphorylation_syntax_4_noun"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:1436409047",
+        "text" : "ERBB3",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 29,
+          "end" : 30
+        },
+        "characterStartOffset" : 197,
+        "characterEndOffset" : 202,
+        "sentence" : 0,
+        "document" : "-817467340",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:1436409047" : [ {
+          "source" : 30,
+          "destination" : 29,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 29,
+      "end" : 31
+    },
+    "characterStartOffset" : 197,
+    "characterEndOffset" : 218,
+    "sentence" : 0,
+    "document" : "-817467340",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_4_noun"
+  } ]
+}

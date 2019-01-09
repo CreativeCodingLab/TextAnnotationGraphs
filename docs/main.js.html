@@ -1,0 +1,763 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+      main.js - Documentation
+  </title>
+
+  <link href="https://www.braintreepayments.com/images/favicon-ccda0b14.png" rel="icon" type="image/png">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+  <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+  <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+  
+
+  
+
+  <!-- start Mixpanel -->
+  <script type="text/javascript">(function(e,a){if(!a.__SV){var b=window;try{var c,l,i,j=b.location,g=j.hash;c=function(a,b){return(l=a.match(RegExp(b+"=([^&]*)")))?l[1]:null};g&&c(g,"state")&&(i=JSON.parse(decodeURIComponent(c(g,"state"))),"mpeditor"===i.action&&(b.sessionStorage.setItem("_mpcehash",g),history.replaceState(i.desiredHash||"",e.title,j.pathname+j.search)))}catch(m){}var k,h;window.mixpanel=a;a._i=[];a.init=function(b,c,f){function e(b,a){var c=a.split(".");2==c.length&&(b=b[c[0]],a=c[1]);b[a]=function(){b.push([a].concat(Array.prototype.slice.call(arguments,
+  0)))}}var d=a;"undefined"!==typeof f?d=a[f]=[]:f="mixpanel";d.people=d.people||[];d.toString=function(b){var a="mixpanel";"mixpanel"!==f&&(a+="."+f);b||(a+=" (stub)");return a};d.people.toString=function(){return d.toString(1)+".people (stub)"};k="disable time_event track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config reset people.set people.set_once people.increment people.append people.union people.track_charge people.clear_charges people.delete_user".split(" ");
+  for(h=0;h<k.length;h++)e(d,k[h]);a._i.push([b,c,f])};a.__SV=1.2;b=e.createElement("script");b.type="text/javascript";b.async=!0;b.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===e.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";c=e.getElementsByTagName("script")[0];c.parentNode.insertBefore(b,c)}})(document,window.mixpanel||[]);
+  mixpanel.init("1919205b2da72e4da3b9b6639b444d59");</script>
+  <!-- end Mixpanel -->
+</head>
+
+<body>
+  <svg style="display: none;">
+    <defs>
+      <symbol id="linkIcon" fill="#706d77" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 0h24v24H0z" fill="none"/>
+          <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+  <label for="nav-trigger" class="navicon-button x">
+    <div class="navicon"></div>
+  </label>
+
+  <label for="nav-trigger" class="overlay"></label>
+
+  <div class="top-nav-wrapper">
+    <ul>
+      <li >
+        <a href="index.html">
+          
+            <svg fill="#6D6D6D" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+              <path d="M0 0h24v24H0z" fill="none"/>
+            </svg>
+          
+          
+        </a>
+      </li>
+
+      
+
+    </ul>
+  </div>
+
+  <nav>
+    <h3 class="reference-title">
+      TextAnnotationGraphs
+    </h3>
+
+    
+      <h3>
+        Resources
+      </h3>
+      
+        <a href="https://www.w3.org/TR/SVG/paths.html#PathData">SVG Path Spec<br></a>
+      
+        <a href="https://codepen.io/explosion/pen/YGApwd">SVG Cubic Bézier Curve Generator</a>
+      
+    
+
+    <h3>Classes</h3><ul><li id="Link-nav"><a href="Link.html">Link</a><ul class='methods'><li data-type="method" id="Link-init-nav"><a href="Link.html#init">init</a></li><li data-type="method" id="Link-toggle-nav"><a href="Link.html#toggle">toggle</a></li><li data-type="method" id="Link-show-nav"><a href="Link.html#show">show</a></li><li data-type="method" id="Link-hide-nav"><a href="Link.html#hide">hide</a></li><li data-type="method" id="Link-showMainLabel-nav"><a href="Link.html#showMainLabel">showMainLabel</a></li><li data-type="method" id="Link-hideMainLabel-nav"><a href="Link.html#hideMainLabel">hideMainLabel</a></li><li data-type="method" id="Link-showArgLabels-nav"><a href="Link.html#showArgLabels">showArgLabels</a></li><li data-type="method" id="Link-hideArgLabels-nav"><a href="Link.html#hideArgLabels">hideArgLabels</a></li><li data-type="method" id="Link-draw-nav"><a href="Link.html#draw">draw</a></li><li data-type="method" id="Link-remove-nav"><a href="Link.html#remove">remove</a></li><li data-type="method" id="Link-getLineY-nav"><a href="Link.html#getLineY">getLineY</a></li><li data-type="method" id="Link-calculateSlot-nav"><a href="Link.html#calculateSlot">calculateSlot</a></li><li data-type="method" id="Link-drawBbox-nav"><a href="Link.html#drawBbox">drawBbox</a></li><li data-type="method" id="Link-drawTextBbox-nav"><a href="Link.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="Handle-nav"><a href="Handle.html">Handle</a><ul class='methods'><li data-type="method" id="Handle-precedes-nav"><a href="Handle.html#precedes">precedes</a></li></ul></li><li id="Label-nav"><a href="Label.html">Label</a><ul class='methods'><li data-type="method" id="Label-show-nav"><a href="Label.html#show">show</a></li><li data-type="method" id="Label-hide-nav"><a href="Label.html#hide">hide</a></li><li data-type="method" id="Label-move-nav"><a href="Label.html#move">move</a></li><li data-type="method" id="Label-centre-nav"><a href="Label.html#centre">centre</a></li><li data-type="method" id="Label-length-nav"><a href="Label.html#length">length</a></li><li data-type="method" id="Label-drawTextBbox-nav"><a href="Label.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="Row-nav"><a href="Row.html">Row</a><ul class='methods'><li data-type="method" id="Row-svgInit-nav"><a href="Row.html#svgInit">svgInit</a></li><li data-type="method" id="Row-remove-nav"><a href="Row.html#remove">remove</a></li><li data-type="method" id="Row-dy-nav"><a href="Row.html#dy">dy</a></li><li data-type="method" id="Row-move-nav"><a href="Row.html#move">move</a></li><li data-type="method" id="Row-height-nav"><a href="Row.html#height">height</a></li><li data-type="method" id="Row-width-nav"><a href="Row.html#width">width</a></li><li data-type="method" id="Row-addWord-nav"><a href="Row.html#addWord">addWord</a></li><li data-type="method" id="Row-positionWord-nav"><a href="Row.html#positionWord">positionWord</a></li><li data-type="method" id="Row-removeWord-nav"><a href="Row.html#removeWord">removeWord</a></li><li data-type="method" id="Row-removeLastWord-nav"><a href="Row.html#removeLastWord">removeLastWord</a></li><li data-type="method" id="Row-redrawLinksAndClusters-nav"><a href="Row.html#redrawLinksAndClusters">redrawLinksAndClusters</a></li><li data-type="method" id="Row-drawBbox-nav"><a href="Row.html#drawBbox">drawBbox</a></li></ul></li><li id="WordCluster-nav"><a href="WordCluster.html">WordCluster</a><ul class='methods'><li data-type="method" id="WordCluster-addEventId-nav"><a href="WordCluster.html#addEventId">addEventId</a></li><li data-type="method" id="WordCluster-text-nav"><a href="WordCluster.html#text">text</a></li><li data-type="method" id="WordCluster-init-nav"><a href="WordCluster.html#init">init</a></li><li data-type="method" id="WordCluster-draw-nav"><a href="WordCluster.html#draw">draw</a></li><li data-type="method" id="WordCluster-getBaseY-nav"><a href="WordCluster.html#getBaseY">getBaseY</a></li><li data-type="method" id="WordCluster-drawBbox-nav"><a href="WordCluster.html#drawBbox">drawBbox</a></li><li data-type="method" id="WordCluster-drawTextBbox-nav"><a href="WordCluster.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="WordTag-nav"><a href="WordTag.html">WordTag</a><ul class='methods'><li data-type="method" id="WordTag-draw-nav"><a href="WordTag.html#draw">draw</a></li><li data-type="method" id="WordTag-centre-nav"><a href="WordTag.html#centre">centre</a></li><li data-type="method" id="WordTag-remove-nav"><a href="WordTag.html#remove">remove</a></li><li data-type="method" id="WordTag-drawTagLine-nav"><a href="WordTag.html#drawTagLine">drawTagLine</a></li><li data-type="method" id="WordTag-text-nav"><a href="WordTag.html#text">text</a></li><li data-type="method" id="WordTag-boxWidth-nav"><a href="WordTag.html#boxWidth">boxWidth</a></li><li data-type="method" id="WordTag-drawBbox-nav"><a href="WordTag.html#drawBbox">drawBbox</a></li><li data-type="method" id="WordTag-drawTextBbox-nav"><a href="WordTag.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="Word-nav"><a href="Word.html">Word</a><ul class='methods'><li data-type="method" id="Word-addEventId-nav"><a href="Word.html#addEventId">addEventId</a></li><li data-type="method" id="Word-registerTag-nav"><a href="Word.html#registerTag">registerTag</a></li><li data-type="method" id="Word-getTagCategories-nav"><a href="Word.html#getTagCategories">getTagCategories</a></li><li data-type="method" id="Word-setTopTagCategory-nav"><a href="Word.html#setTopTagCategory">setTopTagCategory</a></li><li data-type="method" id="Word-setBottomTagCategory-nav"><a href="Word.html#setBottomTagCategory">setBottomTagCategory</a></li><li data-type="method" id="Word-init-nav"><a href="Word.html#init">init</a></li><li data-type="method" id="Word-redrawLinks-nav"><a href="Word.html#redrawLinks">redrawLinks</a></li><li data-type="method" id="Word-redrawClusters-nav"><a href="Word.html#redrawClusters">redrawClusters</a></li><li data-type="method" id="Word-move-nav"><a href="Word.html#move">move</a></li><li data-type="method" id="Word-dx-nav"><a href="Word.html#dx">dx</a></li><li data-type="method" id="Word-alignBox-nav"><a href="Word.html#alignBox">alignBox</a></li><li data-type="method" id="Word-drawBbox-nav"><a href="Word.html#drawBbox">drawBbox</a></li><li data-type="method" id="Word-drawTextBbox-nav"><a href="Word.html#drawTextBbox">drawTextBbox</a></li></ul></li><li id="Config-nav"><a href="Config.html">Config</a></li><li id="Main-nav"><a href="Main.html">Main</a><ul class='methods'><li data-type="method" id="Main-loadData-nav"><a href="Main.html#loadData">loadData</a></li><li data-type="method" id="Main-loadUrlAsync-nav"><a href="Main.html#loadUrlAsync">loadUrlAsync</a></li><li data-type="method" id="Main-loadFilesAsync-nav"><a href="Main.html#loadFilesAsync">loadFilesAsync</a></li><li data-type="method" id="Main-init-nav"><a href="Main.html#init">init</a></li><li data-type="method" id="Main-draw-nav"><a href="Main.html#draw">draw</a></li><li data-type="method" id="Main-clear-nav"><a href="Main.html#clear">clear</a></li><li data-type="method" id="Main-redraw-nav"><a href="Main.html#redraw">redraw</a></li><li data-type="method" id="Main-resize-nav"><a href="Main.html#resize">resize</a></li><li data-type="method" id="Main-loadTaxonomyYaml-nav"><a href="Main.html#loadTaxonomyYaml">loadTaxonomyYaml</a></li><li data-type="method" id="Main-getTaxonomyYaml-nav"><a href="Main.html#getTaxonomyYaml">getTaxonomyYaml</a></li><li data-type="method" id="Main-getTaxonomyTree-nav"><a href="Main.html#getTaxonomyTree">getTaxonomyTree</a></li><li data-type="method" id="Main-getColour-nav"><a href="Main.html#getColour">getColour</a></li><li data-type="method" id="Main-setColour-nav"><a href="Main.html#setColour">setColour</a></li><li data-type="method" id="Main-exportSvg-nav"><a href="Main.html#exportSvg">exportSvg</a></li><li data-type="method" id="Main-setOption-nav"><a href="Main.html#setOption">setOption</a></li><li data-type="method" id="Main-getOption-nav"><a href="Main.html#getOption">getOption</a></li><li data-type="method" id="Main-getTopLinkCategories-nav"><a href="Main.html#getTopLinkCategories">getTopLinkCategories</a></li><li data-type="method" id="Main-setTopLinkCategory-nav"><a href="Main.html#setTopLinkCategory">setTopLinkCategory</a></li><li data-type="method" id="Main-getBottomLinkCategories-nav"><a href="Main.html#getBottomLinkCategories">getBottomLinkCategories</a></li><li data-type="method" id="Main-setBottomLinkCategory-nav"><a href="Main.html#setBottomLinkCategory">setBottomLinkCategory</a></li><li data-type="method" id="Main-getTagCategories-nav"><a href="Main.html#getTagCategories">getTagCategories</a></li><li data-type="method" id="Main-setTopTagCategory-nav"><a href="Main.html#setTopTagCategory">setTopTagCategory</a></li><li data-type="method" id="Main-setBottomTagCategory-nav"><a href="Main.html#setBottomTagCategory">setBottomTagCategory</a></li><li data-type="method" id="Main-setTopMainLabelVisibility-nav"><a href="Main.html#setTopMainLabelVisibility">setTopMainLabelVisibility</a></li><li data-type="method" id="Main-setTopArgLabelVisibility-nav"><a href="Main.html#setTopArgLabelVisibility">setTopArgLabelVisibility</a></li><li data-type="method" id="Main-setBottomMainLabelVisibility-nav"><a href="Main.html#setBottomMainLabelVisibility">setBottomMainLabelVisibility</a></li><li data-type="method" id="Main-setBottomArgLabelVisibility-nav"><a href="Main.html#setBottomArgLabelVisibility">setBottomArgLabelVisibility</a></li></ul></li><li id="RowManager-nav"><a href="RowManager.html">RowManager</a><ul class='methods'><li data-type="method" id="RowManager-resizeAll-nav"><a href="RowManager.html#resizeAll">resizeAll</a></li><li data-type="method" id="RowManager-resizeRow-nav"><a href="RowManager.html#resizeRow">resizeRow</a></li><li data-type="method" id="RowManager-width-nav"><a href="RowManager.html#width">width</a></li><li data-type="method" id="RowManager-fitWords-nav"><a href="RowManager.html#fitWords">fitWords</a></li><li data-type="method" id="RowManager-appendRow-nav"><a href="RowManager.html#appendRow">appendRow</a></li><li data-type="method" id="RowManager-removeLastRow-nav"><a href="RowManager.html#removeLastRow">removeLastRow</a></li><li data-type="method" id="RowManager-addWordToRow-nav"><a href="RowManager.html#addWordToRow">addWordToRow</a></li><li data-type="method" id="RowManager-moveWordRight-nav"><a href="RowManager.html#moveWordRight">moveWordRight</a></li><li data-type="method" id="RowManager-moveWordLeft-nav"><a href="RowManager.html#moveWordLeft">moveWordLeft</a></li><li data-type="method" id="RowManager-moveFirstWordUp-nav"><a href="RowManager.html#moveFirstWordUp">moveFirstWordUp</a></li><li data-type="method" id="RowManager-moveLastWordDown-nav"><a href="RowManager.html#moveLastWordDown">moveLastWordDown</a></li></ul></li></ul><h3>Modules</h3><ul><li id="Util-nav"><a href="module-Util.html">Util</a><ul class='methods'><li data-type="method" id="Util-getCssRules-nav"><a href="module-Util.html#.getCssRules">getCssRules</a></li><li data-type="method" id="Util-sortForSlotting-nav"><a href="module-Util.html#.sortForSlotting">sortForSlotting</a></li></ul></li></ul><h3 id="global-nav">Global</h3><ul><li><a href="global.html#tag">tag</a></li></ul>
+  </nav>
+
+  <div id="main">
+    
+      <h1 class="page-title">
+        main.js
+      </h1>
+    
+
+    
+      
+
+<section>
+  <article>
+    <pre class="prettyprint source linenums"><code>/**
+ * Main library class
+ */
+
+import _ from "lodash";
+import $ from "jquery";
+import * as SVG from "svg.js";
+
+import Parser from "./parse/parse.js";
+import RowManager from "./managers/rowmanager.js";
+import LabelManager from "./managers/labelmanager.js";
+import Taxonomy from "./managers/taxonomy.js";
+
+import Config from "./config.js";
+
+import Util from "./util.js";
+
+/**
+ * Take a small performance hit from `autobind` to ensure that the scope of
+ * `this` is always correct for all our API methods
+ */
+import autobind from "autobind-decorator";
+
+@autobind
+class Main {
+  /**
+   * Initialises a TAG instance with the given parameters
+   * @param {String|Element|jQuery} container - Either a string containing the
+   *     ID of the container element, or the element itself (as a
+   *     native/jQuery object)
+   * @param {Object} options - Overrides for default library options
+   */
+  constructor(container, options = {}) {
+    // Config options
+    this.config = _.defaults(
+      options,
+      new Config()
+    );
+
+    // SVG.Doc expects either a string with the element's ID, or the element
+    // itself (not a jQuery object).
+    if (_.hasIn(container, "jquery")) {
+      container = container[0];
+    }
+
+    this.svg = new SVG.Doc(container);
+
+    // That said, we need to set the SVG Doc's size using absolute units
+    // (since they are used for calculating the widths of rows and other
+    // elements).  We use jQuery to get the parent's size.
+    this.$container = $(this.svg.node).parent();
+
+    // Managers/Components
+    this.parser = new Parser();
+    this.rowManager = new RowManager(this.svg, this.config);
+    this.labelManager = new LabelManager(this.svg);
+    this.taxonomyManager = new Taxonomy(this.config);
+
+    // Tokens and links that are currently drawn on the visualisation
+    this.words = [];
+    this.links = [];
+
+    // Initialisation
+    this.resize();
+    this._setupSVGListeners();
+    this._setupUIListeners();
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Loading data into the parser
+
+  /**
+   * Loads the given annotation data onto the TAG visualisation
+   * @param {Object} data - The data to load
+   * @param {String} format - One of the supported format identifiers for
+   *     the data
+   */
+  loadData(data, format) {
+    this.parser.loadData(data, format);
+    this.redraw();
+  }
+
+  /**
+   * Reads the given data file asynchronously and loads it onto the TAG
+   * visualisation
+   * @param {Object} path - The path pointing to the data
+   * @param {String} format - One of the supported format identifiers for
+   *     the data
+   */
+  async loadUrlAsync(path, format) {
+    const data = await $.ajax(path);
+    this.parser.loadData(data, format);
+    this.redraw();
+  }
+
+  /**
+   * Reads the given annotation files and loads them onto the TAG
+   * visualisation
+   * @param {FileList} fileList - We generally expect only one file here, but
+   *     some formats (e.g., Brat) involve multiple files per dataset
+   * @param {String} format
+   */
+  async loadFilesAsync(fileList, format) {
+    // Instantiate FileReaders for all the given files, and wait until they
+    // are read
+    const readPromises = _.map(fileList, (file) => {
+      const reader = new FileReader();
+      reader.readAsText(file);
+      return new Promise((resolve) => {
+        reader.onload = () => {
+          resolve({
+            name: file.name,
+            type: file.type,
+            content: reader.result
+          });
+        };
+      });
+    });
+
+    const files = await Promise.all(readPromises);
+    this.parser.loadFiles(files, format);
+    this.redraw();
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Controlling the SVG element
+
+  /**
+   * Prepares all the Rows/Words/Links.
+   * Adds all Words/WordClusters to Rows in the visualisation, but does not draw
+   * Links or colour the various Words/WordTags
+   */
+  init() {
+    // Save a reference to the currently loaded tokens and links
+    const data = this.parser.getParsedData();
+    this.words = data.words;
+    this.links = data.links;
+
+    // Calculate the Link slots (vertical intervals to separate
+    // crossing/intervening Links).
+    // Because the order of the Links array affects the slot calculations,
+    // we sort it here first in case they aren't sorted in the original
+    // annotation data.
+    this.links = Util.sortForSlotting(this.links);
+    this.links.forEach(link => link.calculateSlot(this.words));
+
+    // Initialise the first Row; new ones will be added automatically as
+    // Words are drawn onto the visualisation
+    if (this.words.length > 0 &amp;&amp; !this.rowManager.lastRow) {
+      this.rowManager.appendRow();
+    }
+
+    // Draw the Words onto the visualisation
+    this.words.forEach(word => {
+      // If the tag categories to show for the Word are already set (via the
+      // default config or user options), set them here so that the Word can
+      // draw them directly on init
+      word.setTopTagCategory(this.config.topTagCategory);
+      word.setBottomTagCategory(this.config.bottomTagCategory);
+      word.init(this);
+      this.rowManager.addWordToRow(word, this.rowManager.lastRow);
+    });
+
+    // We have to initialise all the Links before we draw any of them, to
+    // account for nested Links etc.
+    this.links.forEach(link => {
+      link.init(this);
+    });
+  }
+
+  /**
+   * Resizes Rows and (re-)draws Links and WordClusters, without changing
+   * the positions of Words/Link handles
+   */
+  draw() {
+    // Draw in the currently toggled Links
+    this.links.forEach(link => {
+      if ((link.top &amp;&amp; link.category === this.config.topLinkCategory) ||
+        (!link.top &amp;&amp; link.category === this.config.bottomLinkCategory)) {
+        link.show();
+      }
+
+      if ((link.top &amp;&amp; this.config.showTopMainLabel) ||
+        (!link.top &amp;&amp; this.config.showBottomMainLabel)) {
+        link.showMainLabel();
+      } else {
+        link.hideMainLabel();
+      }
+
+      if ((link.top &amp;&amp; this.config.showTopArgLabels) ||
+        (!link.top &amp;&amp; this.config.showBottomArgLabels)) {
+        link.showArgLabels();
+      } else {
+        link.hideArgLabels();
+      }
+    });
+
+    // Now that Links are visible, make sure that all Rows have enough space
+    this.rowManager.resizeAll();
+
+    // And change the Row resize cursor if compact mode is on
+    this.rowManager.rows.forEach(row => {
+      this.config.compactRows
+        ? row.draggable.addClass("row-drag-compact")
+        : row.draggable.removeClass("row-drag-compact");
+    });
+
+    // Change token colours based on the current taxonomy, if loaded
+    this.taxonomyManager.colour(this.words);
+  }
+
+  /**
+   * Removes all elements from the visualisation
+   */
+  clear() {
+    // Removing Rows takes care of Words and WordTags
+    while (this.rowManager.rows.length > 0) {
+      this.rowManager.removeLastRow();
+    }
+    // Links and Clusters are drawn directly on the main SVG document
+    this.links.forEach(link => link.svg &amp;&amp; link.svg.remove());
+    this.words.forEach(word => {
+      word.clusters.forEach(cluster => cluster.remove());
+    });
+    // Reset colours
+    this.taxonomyManager.resetDefaultColours();
+  }
+
+  /**
+   * Resets and redraws the visualisation using the data currently stored by the
+   * Parser (if any)
+   */
+  redraw() {
+    this.clear();
+    this.init();
+    this.draw();
+  }
+
+  /**
+   * Fits the SVG element and its children to the size of its container
+   */
+  resize() {
+    this.svg.size(this.$container.innerWidth(), this.$container.innerHeight());
+    this.rowManager.resizeAll();
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Controlling taxonomic information and associated colours
+
+  /**
+   * Loads a new taxonomy specification (in YAML form) into the module
+   * @param {String} taxonomy - A YAML string representing the taxonomy object
+   */
+  loadTaxonomyYaml(taxonomy) {
+    return this.taxonomyManager.loadTaxonomyYaml(taxonomy);
+  }
+
+  /**
+   * Returns a YAML representation of the currently loaded taxonomy
+   */
+  getTaxonomyYaml() {
+    return this.taxonomyManager.getTaxonomyYaml();
+  }
+
+  /**
+   * Returns the currently loaded taxonomy as an Array.
+   * Simple labels are stored as Strings in Arrays, and category labels are
+   * stored as single-key objects.
+   *
+   * E.g., a YAML document like the following:
+   *
+   *  - Label A
+   *  - Category 1:
+   *    - Label B
+   *    - Label C
+   *  - Label D
+   *
+   * Parses to the following taxonomy object:
+   *
+   *  [
+   *    "Label A",
+   *    {
+   *      "Category 1": [
+   *        "Label B",
+   *        "Label C"
+   *      ]
+   *    },
+   *    "Label D"
+   *  ]
+   *
+   * @return {Array}
+   */
+  getTaxonomyTree() {
+    return this.taxonomyManager.getTaxonomyTree();
+  }
+
+  /**
+   * Given some label (either for a WordTag or WordCluster), return the
+   * colour that the taxonomy manager has assigned to it
+   * @param label
+   */
+  getColour(label) {
+    return this.taxonomyManager.getColour(label);
+  }
+
+  /**
+   * Sets the colour for some label (either for a WordTag or WordCluster)
+   * and redraws the visualisation
+   * @param label
+   * @param colour
+   */
+  setColour(label, colour) {
+    this.taxonomyManager.assignColour(label, colour);
+    this.taxonomyManager.colour(this.words);
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Higher-level API functions
+
+  /**
+   * Exports the current visualisation as an SVG file
+   */
+  exportSvg() {
+    // Get the raw SVG definition
+    let exportedSVG = this.svg.svg();
+
+    // We also need to inline a copy of the relevant SVG styles, which might
+    // have been modified/overwritten by the user
+    const svgRules = Util.getCssRules(
+      this.$container.find(".tag-element").toArray()
+    );
+
+    const i = exportedSVG.indexOf("&lt;/defs>");
+    exportedSVG = exportedSVG.slice(0, i)
+      + "&lt;style>" + svgRules.join("\n") + "&lt;/style>"
+      + exportedSVG.slice(i);
+
+    // Create a virtual download link and simulate a click on it (using the
+    // native `.click()` method, since jQuery cannot `.trigger()` it
+    $(`&lt;a 
+      href="data:image/svg+xml;charset=utf-8,${encodeURIComponent(exportedSVG)}"
+      download="tag.svg">&lt;/a>`)
+      .appendTo($("body"))[0]
+      .click();
+  }
+
+  /**
+   * Changes the value of the given option setting
+   * (Redraw to see changes)
+   * @param {String} option
+   * @param value
+   */
+  setOption(option, value) {
+    this.config[option] = value;
+  }
+
+  /**
+   * Gets the current value for the given option setting
+   * @param {String} option
+   */
+  getOption(option) {
+    return this.config[option];
+  }
+
+  /**
+   * Returns an Array of all the categories available for the top Links
+   * (Generally, event/relation annotations)
+   */
+  getTopLinkCategories() {
+    const categories = this.links
+      .filter(link => link.top)
+      .map(link => link.category);
+
+    return _.uniq(categories);
+  }
+
+  /**
+   * Shows the specified category of top Links, hiding the others
+   * @param category
+   */
+  setTopLinkCategory(category) {
+    this.setOption("topLinkCategory", category);
+    this.links
+      .filter(link => link.top)
+      .forEach(link => {
+        if (link.category === category) {
+          link.show();
+        } else {
+          link.hide();
+        }
+      });
+
+    // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
+  }
+
+  /**
+   * Returns an Array of all the categories available for the bottom Links
+   * (Generally, syntactic/dependency parses)
+   */
+  getBottomLinkCategories() {
+    const categories = this.links
+      .filter(link => !link.top)
+      .map(link => link.category);
+
+    return _.uniq(categories);
+  }
+
+  /**
+   * Shows the specified category of bottom Links, hiding the others
+   * @param category
+   */
+  setBottomLinkCategory(category) {
+    this.setOption("bottomLinkCategory", category);
+    this.links
+      .filter(link => !link.top)
+      .forEach(link => {
+        if (link.category === category) {
+          link.show();
+        } else {
+          link.hide();
+        }
+      });
+
+    // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
+  }
+
+  /**
+   * Returns an Array of all the categories available for top Word tags
+   * (Generally, text-bound mentions)
+   */
+  getTagCategories() {
+    const categories = this.words
+      .flatMap(word => word.getTagCategories());
+    return _.uniq(categories);
+  }
+
+  /**
+   * Shows the specified category of top Word tags
+   * @param category
+   */
+  setTopTagCategory(category) {
+    this.setOption("topTagCategory", category);
+    this.words.forEach(word => {
+      word.setTopTagCategory(category);
+      word.passingLinks.forEach(link => link.draw());
+    });
+
+    // (Re-)colour the labels
+    this.taxonomyManager.colour(this.words);
+
+    // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
+  }
+
+  /**
+   * Shows the specified category of bottom Word tags
+   * @param category
+   */
+  setBottomTagCategory(category) {
+    this.setOption("bottomTagCategory", category);
+    this.words.forEach(word => {
+      word.setBottomTagCategory(category);
+      word.passingLinks.forEach(link => link.draw());
+    });
+
+    // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
+  }
+
+  /**
+   * Shows/hides the main label on top Links
+   * @param {Boolean} visible - Show if true, hide if false
+   */
+  setTopMainLabelVisibility(visible) {
+    this.setOption("showTopMainLabel", visible);
+    if (visible) {
+      this.links
+        .filter(link => link.top)
+        .forEach(link => link.showMainLabel());
+    } else {
+      this.links
+        .filter(link => link.top)
+        .forEach(link => link.hideMainLabel());
+    }
+  }
+
+  /**
+   * Shows/hides the argument labels on top Links
+   * @param {Boolean} visible - Show if true, hide if false
+   */
+  setTopArgLabelVisibility(visible) {
+    this.setOption("showTopArgLabels", visible);
+    if (visible) {
+      this.links
+        .filter(link => link.top)
+        .forEach(link => link.showArgLabels());
+    } else {
+      this.links
+        .filter(link => link.top)
+        .forEach(link => link.hideArgLabels());
+    }
+  }
+
+  /**
+   * Shows/hides the main label on bottom Links
+   * @param {Boolean} visible - Show if true, hide if false
+   */
+  setBottomMainLabelVisibility(visible) {
+    this.setOption("showBottomMainLabel", visible);
+    if (visible) {
+      this.links
+        .filter(link => !link.top)
+        .forEach(link => link.showMainLabel());
+    } else {
+      this.links
+        .filter(link => !link.top)
+        .forEach(link => link.hideMainLabel());
+    }
+  }
+
+  /**
+   * Shows/hides the argument labels on bottom Links
+   * @param {Boolean} visible - Show if true, hide if false
+   */
+  setBottomArgLabelVisibility(visible) {
+    this.setOption("showBottomArgLabels", visible);
+    if (visible) {
+      this.links
+        .filter(link => !link.top)
+        .forEach(link => link.showArgLabels());
+    } else {
+      this.links
+        .filter(link => !link.top)
+        .forEach(link => link.hideArgLabels());
+    }
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Private helper/setup functions
+
+  /**
+   * Sets up listeners for custom SVG.js events
+   * N.B.: Event listeners will change the execution context by default, so
+   * either provide a closure to the main library instance or use arrow
+   * functions to preserve the original context
+   * cf. http://es6-features.org/#Lexicalthis
+   * @private
+   */
+  _setupSVGListeners() {
+    this.svg.on("row-resize", (event) => {
+      this.labelManager.stopEditing();
+      this.rowManager.resizeRow(event.detail.object.idx, event.detail.y);
+    });
+
+    // svg.on('label-updated', function(e) {
+    //   // TODO: so so incomplete
+    //   let color = tm.getColor(e.detail.label, e.detail.object);
+    //   e.detail.object.node.style.fill = color;
+    // });
+
+    this.svg.on("word-move-start", () => {
+      this.links.forEach(link => {
+        if ((link.top &amp;&amp; !this.config.showTopLinksOnMove) ||
+          (!link.top &amp;&amp; !this.config.showBottomLinksOnMove)) {
+          link.hide();
+        }
+      });
+    });
+
+    this.svg.on("word-move", (event) => {
+      // tooltip.clear();
+      this.labelManager.stopEditing();
+      this.rowManager.moveWordOnRow(event.detail.object, event.detail.x);
+    });
+
+    this.svg.on("word-move-end", () => {
+      this.links.forEach(link => {
+        if ((link.top &amp;&amp; link.category === this.config.topLinkCategory) ||
+          (!link.top &amp;&amp; link.category === this.config.bottomLinkCategory)) {
+          link.show();
+        }
+      });
+    });
+
+    // this.svg.on("tag-remove", (event) => {
+    //   event.detail.object.remove();
+    //   this.taxonomyManager.remove(event.detail.object);
+    // });
+
+    // this.svg.on("row-recalculate-slots", () => {
+    //   this.links.forEach(link => {
+    //     link.slot = null;
+    //   });
+    //   this.links = Util.sortForSlotting(this.links);
+    //   this.links.forEach(link => link.calculateSlot(this.words));
+    //   this.links.forEach(link => link.draw());
+    // });
+
+    // ZW: Hardcoded dependencies on full UI
+    // this.svg.on("build-tree", (event) => {
+    //   document.body.classList.remove("tree-closed");
+    //   if (tree.isInModal) {
+    //     setActiveTab("tree");
+    //   }
+    //   else {
+    //     setActiveTab(null);
+    //   }
+    //   if (e.detail) {
+    //     tree.graph(e.detail.object);
+    //   }
+    //   else {
+    //     tree.resize();
+    //   }
+    // });
+  }
+
+  /**
+   * Sets up listeners for general browser events
+   * @private
+   */
+  _setupUIListeners() {
+    // Browser window resize
+    $(window).on("resize", _.throttle(() => {
+      this.resize();
+    }, 50));
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Debug functions
+  xLine(x) {
+    this.svg.line(x, 0, x, 1000).stroke({width: 1});
+  }
+
+  yLine(y) {
+    this.svg.line(0, y, 1000, y).stroke({width: 1});
+  }
+}
+
+export default Main;</code></pre>
+  </article>
+</section>
+
+    
+
+
+  </div>
+
+  <br class="clear">
+
+  <footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+  </footer>
+
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/pagelocation.js"></script>
+
+  
+
+</body>
+</html>

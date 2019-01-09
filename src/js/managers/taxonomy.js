@@ -1,279 +1,174 @@
-import ColorPicker from '../colorpicker.js';
-import Word from '../components/word.js';
+/**
+ * Manages the user-provided taxonomy tree, and the colouring of the
+ * associated elements in the visualisation
+ */
 
-module.exports = (function() {
-  let colors = [
-    '#3fa1d1',
-    '#ed852a',
-    '#2ca02c',
-    '#c34a1d',
-    '#a048b3',
-    '#e377c2',
-    '#bcbd22',
-    '#17becf',
-    '#e7298a',
-    '#e6ab02',
-    '#7570b3',
-    '#a6761d',
-    '#7f7f7f'
-  ];
-  let div = {};
-  let tagTypes = {};
+import _ from "lodash";
+import randomColor from "randomcolor";
+import yaml from "js-yaml";
 
-  function updateColor(word, color) {
-    if (word instanceof Word) {
-      word.tag.svgText.node.style.fill = color;
-    }
-    else {
-      word.svgText.node.style.fill = color;
-    }
-  };
+import Word from "../components/word.js";
 
-  function updateTagColor(tag, color) {
-    tagTypes[tag].forEach(word => updateColor(word, color));
-  };
+class TaxonomyManager {
+  constructor(config) {
+    // The global Config object
+    this.config = config;
 
-  class Taxonomy {
-    constructor(id) {
-      this.tree = {};
-      div = document.getElementById('taxonomy');
-    }
+    // The currently loaded taxonomy (as a JS Array representing the tree)
+    this.taxonomy = [];
 
-    draw(taxonomy, words) {
-      if (taxonomy) {
-        this.buildTree(taxonomy);
+    // The originally-loaded taxonomy string (as a YAML document)
+    this.taxonomyYaml = "";
 
-        if (words) {
-          this.buildTagTypes(words);
+    // Tag->Colour assignments for the currently loaded taxonomy
+    this.tagColours = {};
+
+    // An array containing the first n default colours to use (as a queue).
+    // When this array is exhausted, we will switch to using randomColor.
+    this.defaultColours = _.cloneDeep(config.tagDefaultColours);
+  }
+
+  /**
+   * Loads a new taxonomy specification (in YAML form) into the module
+   * @param {String} taxonomyYaml - A YAML string representing the taxonomy
+   *   object
+   */
+  loadTaxonomyYaml(taxonomyYaml) {
+    this.taxonomy = yaml.safeLoad(taxonomyYaml);
+    this.taxonomyYaml = taxonomyYaml;
+  }
+
+  /**
+   * Returns a YAML representation of the currently loaded taxonomy
+   */
+  getTaxonomyYaml() {
+    return this.taxonomyYaml;
+  }
+
+  /**
+   * Returns the currently loaded taxonomy as an Array.
+   * Simple labels are stored as Strings in Arrays, and category labels are
+   * stored as single-key objects.
+   *
+   * E.g., a YAML document like the following:
+   *
+   *  - Label A
+   *  - Category 1:
+   *    - Label B
+   *    - Label C
+   *  - Label D
+   *
+   * Parses to the following taxonomy object:
+   *
+   *  [
+   *    "Label A",
+   *    {
+   *      "Category 1": [
+   *        "Label B",
+   *        "Label C"
+   *      ]
+   *    },
+   *    "Label D"
+   *  ]
+   *
+   * @return {Array}
+   */
+  getTaxonomyTree() {
+    return this.taxonomy;
+  }
+
+  /**
+   * Given some array of Words, recolours them according to the currently
+   * loaded taxonomy.
+   * If the word has a WordTag that we are not currently tracking, it will
+   * be assigned a colour from the default colours list.
+   * @param {Array} words
+   */
+  colour(words) {
+    words.forEach(word => {
+      // Words with WordTags
+      if (word.topTag) {
+        if (!this.tagColours[word.topTag.val]) {
+          // We have yet to assign this tag a colour
+          this.assignColour(word.topTag.val, this.getNewColour());
         }
-
-        this.populateTaxonomy();
-        this.attachHandlers();
+        TaxonomyManager.setColour(word, this.tagColours[word.topTag.val]);
       }
-    }
 
-    buildTagTypes(words) {
-      tagTypes = {};
-      words.forEach(word => {
-        if (word.tag) {
-          if (tagTypes[word.tag.val]) {
-            tagTypes[word.tag.val].push(word);
+      // Words with WordClusters
+      if (word.clusters.length > 0) {
+        word.clusters.forEach(cluster => {
+          if (!this.tagColours[cluster.val]) {
+            this.assignColour(cluster.val, this.getNewColour());
           }
-          else {
-            tagTypes[word.tag.val] = [word];
-          }
-        }
-        if (word.clusters.length > 0) {
-          word.clusters.forEach(cluster => {
-            if (tagTypes[cluster.val]) {
-              tagTypes[cluster.val].push(cluster);
-            }
-            else {
-              tagTypes[cluster.val] = [cluster];
-            }
-          });
-        }
-      });
-    }
-
-    buildTree(taxonomy) {
-      // turn taxonomy into a proper tree
-      let flat = [];
-
-      function createLinks(val, i, n, parent) {
-        let index = { i, n };
-        let obj = {
-          val,
-          parent,
-          index: parent ? parent.index.concat(index) : [index],
-          depth: parent ? parent.depth + 1 : 0,
-          ancestor: parent ? parent.ancestor : null,
-          children: null
-        };
-        if (!obj.ancestor) {
-          obj.ancestor = obj;
-          obj.descendantCount = 0;
-        }
-        ++obj.ancestor.descendantCount;
-
-        flat.push(obj);
-
-        if (!(typeof val === 'string' || val instanceof String)) {
-          let key = Object.keys(val)[0];
-          obj.val = key;
-          obj.children = val[key].map((v, i) => createLinks(v, i, val[key].length, obj));
-        }
-        return obj;
+          TaxonomyManager.setColour(cluster, this.tagColours[cluster.val]);
+        });
       }
+    });
+  }
 
-      let hierarchy = taxonomy.map((val, i) => createLinks(val, i, taxonomy.length, null));
+  /**
+   * Synonym for `.colour()`
+   * @param words
+   * @return {*}
+   */
+  color(words) {
+    return this.colour(words);
+  }
 
-      this.tree = {
-          hierarchy,
-          flat
-      };
-    }
+  /**
+   * Given some label in the visualisation (either for a WordTag or a
+   * WordCluster), assigns it a colour that will be reflected the next time
+   * `.colour()` is called.
+   */
+  assignColour(label, colour) {
+    this.tagColours[label] = colour;
+  }
 
-    // populate modal window with list of taxonomic classes
-    populateTaxonomy() {
-      div.innerHTML = '<span id="toggle-taxonomy">Filter unused labels</span>';
-
-      // build list of inputs in DOM
-      let ul = document.createElement('ul');
-      div.appendChild(ul);
-
-      let nli = 1;  // number of list items
-      function createLi(node, parent) {
-        let li = document.createElement('li');
-
-        // create checkbox
-        let cbox = document.createElement('input');
-        cbox.setAttribute('type', 'checkbox');
-        cbox.id = 'cb-' + nli;
-
-        // create label for checkbox
-        let label = document.createElement('label');
-        label.setAttribute('for', cbox.id);
-        label.textContent = node.val;
-        node.cbox = cbox;
-
-        // create color picker input
-        let picker = document.createElement('input');
-        picker.className = 'colorpicker';
-        picker.value = '#000000';
-        picker.setAttribute('disabled', true);
-        picker.node = node;
-        node.picker = picker;
-
-        li.appendChild(cbox);
-        li.appendChild(label);
-        li.appendChild(picker);
-        parent.appendChild(li);
-        ++nli;
-
-        if (node.children) {
-          let childUl = document.createElement('ul');
-          li.appendChild(childUl);
-
-          node.children.forEach(child => {
-            createLi(child, childUl);
-          })
-        }
-      }
-
-      this.tree.hierarchy.forEach(node => {
-        createLi(node, ul);
-      });
-    }
-
-    // bind events to data
-    attachHandlers() {
-      // initialize colorpicker
-      this.colorpicker = new ColorPicker('colorpicker', {
-        initialColor: '#000000',
-        changeCallback: (input) => {
-          this.setColor(input.node);
-        }
-      });
-
-      const keys = Object.keys(tagTypes);
-      this.tree.flat.forEach(node => {
-        // disable/enable color picking on a node
-        node.cbox.onclick = () => this.onCheckboxClick(node);
-
-        // check if tag type exists in document
-        if (tagTypes[node.val]) {
-          this.setColor(node, colors[keys.indexOf(node.val)]);
-          node.cbox.click();
-        }
-      });
-
-      // update colors of existing data
-      Object.keys(tagTypes).forEach((tag, i) => updateTagColor(tag, colors[i]));
-    }
-
-    /* handle event when checkbox state changes */
-    onCheckboxClick(node) {
-      if (node.cbox.checked) {
-        // activate node
-        // propagate color to all descendants
-        node.picker.removeAttribute('disabled');
-        this.setColor(node);
-      } else {
-        // deactivate node
-        // undo color propagation to all descendants
-        node.picker.setAttribute('disabled', true);
-        if (node.parent) {
-          this.setColor(node, node.parent.picker.value);
-        } else {
-          this.setColor(node, '#000000');
-        }
-      }
-    }
-
-    /* change the color of a node */
-    setColor(node, color) {
-      let picker = node.picker;
-
-      // manually set color
-      if (color) {
-        this.colorpicker.setColor(picker, color);
-      }
-
-      if (tagTypes[node.val]) {
-        updateTagColor(node.val, picker.value);
-      }
-
-      // set color of input and descendant inputs
-      function inheritColor(child) {
-        if (!child.cbox.checked) {
-          // set color and style
-          child.picker.value = picker.value;
-          child.picker.style.cssText = picker.style.cssText || child.picker.style.cssText;
-          if (tagTypes[child.val]) {
-            updateTagColor(child.val, picker.value);
-          }
-
-          // recursively propagate value to all children
-          if (child.children) {
-            child.children.forEach(inheritColor);
-          }
-        }
-      }
-
-      if (node.children) {
-        node.children.forEach(inheritColor);
-      }
-    }
-
-    remove(object) {
-      // FIXME
-      return;
-      let tag = object.val;
-      let entity = object.entity;
-      if (tagTypes[tag]) {
-        let i = tagTypes[tag].indexOf(entity);
-        if (i > -1) {
-          tagTypes[tag].splice(i, 1);
-          if (tagTypes[tag].length < 1) {
-            delete tagTypes[tag];
-          }
-        }
-      }
-    }
-
-    getColor(label, object) {
-      //FIXME
-      return;
-      let keys = Object.keys(tagTypes);
-      if (tagTypes[label]) {
-        return colors[keys.indexOf(label)];
-      }
-      else {
-        tagTypes[label] = object;
-        return colors[keys.length] || 'black';
-      }
+  /**
+   * Given some element in the visualisation, change its colour
+   * @param element
+   * @param colour
+   */
+  static setColour(element, colour) {
+    if (element instanceof Word) {
+      // Set the colour of the tag
+      element.topTag.svgText.node.style.fill = colour;
+    } else {
+      // Set the colour of the element itself
+      element.svgText.node.style.fill = colour;
     }
   }
-  return Taxonomy;
-})();
+
+  /**
+   * Given some label (either for a WordTag or WordCluster), return the
+   * colour that the taxonomy manager has assigned to it
+   * @param label
+   */
+  getColour(label) {
+    return this.tagColours[label];
+  }
+
+  /**
+   * Returns a colour for a new tag.  Will pop from `.defaultColours` first,
+   * then fall back to `randomColor()`
+   */
+  getNewColour() {
+    if (this.defaultColours.length > 0) {
+      return this.defaultColours.shift();
+    } else {
+      return randomColor();
+    }
+  }
+
+
+  /**
+   * Resets `.defaultColours` to the Array specified in the Config object
+   * (Used when clearing the visualisation, for example)
+   */
+  resetDefaultColours() {
+    this.defaultColours = _.cloneDeep(this.config.tagDefaultColours);
+  }
+}
+
+export default TaxonomyManager;

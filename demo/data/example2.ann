@@ -1,0 +1,13 @@
+unlockable a b d e f
+T1 BOUND 0 2 un
+T2 FREE 2 6 lock
+T3 BOUND 6 10 able
+R1 lockable controlled:T2 controller:T3
+R2 unlockable controller:T1 controlled:R1
+T4 A 11 12 a
+T5 B 13 14 b
+R3 LongTestLabel testA:T4 testB:T5
+T6 D 15 16 d
+T7 E 17 18 e
+T8 F 19 20 f
+E1 EventTest:T7 Argument1:T6 Argument2:T8

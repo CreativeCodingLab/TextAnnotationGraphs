@@ -1,0 +1,62 @@
+Word VeryLongWord2 Word3 . This is a test . This is a test . This is a test . This is a test .
+#####
+# Test Case 1:
+# - Tokens and Links listed in arbitrary order
+# - Simple Links
+
+# The char offsets for T1 is out of order compared to T2 and T3
+T1 Tag2 19 24 Word3
+T2 Tag 0 4 Word
+T3 LongLongLongLongLongTag 5 18 VeryLongWord2
+
+# R1 and R2 show the slotting of overlapping Links that don't cross
+# To shake things up a bit, the inner Link (R1, between T1 and T3) is listed
+# before the outer Link
+R1 Link arg1:T1 arg2:T3
+R2 Link arg1:T1 arg2:T2
+
+#####
+# Test Case 2:
+# - Simple nested Links (nested, no crossings)
+
+T4 Tag 27 31 This
+T5 Tag 32 34 is
+T6 Tag 35 36 a
+T7 Tag 37 41 test
+
+R3 Left arg1:T4 arg2:T5
+R4 Right arg1:T6 arg2:T7
+R5 Top arg1:R3 arg2:R4
+
+#####
+# Test Case 3:
+# - Overlapping Links (not nested, no crossings)
+
+T8 Tag 44 48 This
+T9 Tag 49 51 is
+T10 Tag 52 53 a
+T11 Tag 54 58 test
+
+R6 A arg1:T8 arg2:T9
+R7 B arg1:T8 arg2:T10
+R8 C arg1:T8 arg2:T11
+
+#####
+# Test Case 4:
+# - Complex Links (nested, crossings)
+
+T12 Tag 61 65 This
+T13 Tag 66 68 is
+T14 Tag 69 70 a
+T15 Tag 71 75 test
+T16 Tag 78 82 This
+T17 Tag 83 85 is
+T18 Tag 86 87 a
+T19 Tag 88 92 test
+
+R9 A arg1:T12 arg2:T14
+R10 B arg1:T13 arg2:T15
+R11 C arg1:T14 arg2:T16
+R12 D arg1:T15 arg2:T17
+R13 E arg1:T18 arg2:T19
+R14 F arg1:R9 arg2:T19

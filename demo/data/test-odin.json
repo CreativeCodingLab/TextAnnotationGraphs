@@ -1,0 +1,180 @@
+{
+  "documents": {
+    "-1180172198": {
+      "sentences": [
+        {
+          "words": ["Gonzo", "married", "Camilla", "."],
+          "startOffsets": [0, 6, 14, 21],
+          "endOffsets": [5, 13, 21, 22],
+          "tags": ["NNP", "VBD", "NNP", "."],
+          "lemmas": ["Gonzo", "marry", "Camilla", "."],
+          "entities": ["O", "O", "PERSON", "O"],
+          "norms": ["O", "O", "O", "O"],
+          "chunks": ["B-NP", "B-VP", "B-NP", "O"],
+          "graphs": {
+            "stanford-basic": {
+              "edges": [
+                {
+                  "source": 1,
+                  "destination": 0,
+                  "relation": "nsubj"
+                },
+                {
+                  "source": 1,
+                  "destination": 2,
+                  "relation": "dobj"
+                },
+                {
+                  "source": 1,
+                  "destination": 3,
+                  "relation": "punct"
+                }
+              ],
+              "roots": [1]
+            },
+            "stanford-collapsed": {
+              "edges": [
+                {
+                  "source": 1,
+                  "destination": 0,
+                  "relation": "nsubj"
+                },
+                {
+                  "source": 1,
+                  "destination": 2,
+                  "relation": "dobj"
+                },
+                {
+                  "source": 1,
+                  "destination": 3,
+                  "relation": "punct"
+                }
+              ],
+              "roots": [1]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "mentions": [
+    {
+      "type": "TextBoundMention",
+      "id": "T:648733472",
+      "text": "Camilla",
+      "labels": ["Person", "PossiblePerson", "Entity"],
+      "tokenInterval": {
+        "start": 2,
+        "end": 3
+      },
+      "characterStartOffset": 14,
+      "characterEndOffset": 21,
+      "sentence": 0,
+      "document": "-1180172198",
+      "keep": true,
+      "foundBy": "ner-person"
+    },
+    {
+      "type": "EventMention",
+      "id": "E:1351231268",
+      "text": "Gonzo married Camilla",
+      "labels": ["Marry"],
+      "trigger": {
+        "type": "TextBoundMention",
+        "id": "T:1627076846",
+        "text": "married",
+        "labels": ["Marry"],
+        "tokenInterval": {
+          "start": 1,
+          "end": 2
+        },
+        "characterStartOffset": 6,
+        "characterEndOffset": 13,
+        "sentence": 0,
+        "document": "-1180172198",
+        "keep": true,
+        "foundBy": "marry-syntax-1"
+      },
+      "arguments": {
+        "spouse": [
+          {
+            "type": "TextBoundMention",
+            "id": "T:1618195043",
+            "text": "Gonzo",
+            "labels": ["Person", "PossiblePerson", "Entity"],
+            "tokenInterval": {
+              "start": 0,
+              "end": 1
+            },
+            "characterStartOffset": 0,
+            "characterEndOffset": 5,
+            "sentence": 0,
+            "document": "-1180172198",
+            "keep": true,
+            "foundBy": "ner-person"
+          },
+          {
+            "type": "TextBoundMention",
+            "id": "T:648733472",
+            "text": "Camilla",
+            "labels": ["Person", "PossiblePerson", "Entity"],
+            "tokenInterval": {
+              "start": 2,
+              "end": 3
+            },
+            "characterStartOffset": 14,
+            "characterEndOffset": 21,
+            "sentence": 0,
+            "document": "-1180172198",
+            "keep": true,
+            "foundBy": "ner-person"
+          }
+        ]
+      },
+      "paths": {
+        "spouse": {
+          "T:1618195043": [
+            {
+              "source": 1,
+              "destination": 0,
+              "relation": "nsubj"
+            }
+          ],
+          "T:648733472": [
+            {
+              "source": 1,
+              "destination": 2,
+              "relation": "dobj"
+            }
+          ]
+        }
+      },
+      "tokenInterval": {
+        "start": 0,
+        "end": 3
+      },
+      "characterStartOffset": 0,
+      "characterEndOffset": 21,
+      "sentence": 0,
+      "document": "-1180172198",
+      "keep": true,
+      "foundBy": "marry-syntax-1"
+    },
+    {
+      "type": "TextBoundMention",
+      "id": "T:1618195043",
+      "text": "Gonzo",
+      "labels": ["Person", "PossiblePerson", "Entity"],
+      "tokenInterval": {
+        "start": 0,
+        "end": 1
+      },
+      "characterStartOffset": 0,
+      "characterEndOffset": 5,
+      "sentence": 0,
+      "document": "-1180172198",
+      "keep": true,
+      "foundBy": "ner-person"
+    }
+  ]
+}

@@ -1,0 +1,5602 @@
+{
+  "documents" : {
+    "1955805614" : {
+      "id" : "passage-2-odin",
+      "text" : "We next examined the mechanisms accounting for the increase in HER3 by MAPK pathway inhibitors in BRAF mutant thyroid cell lines.\nUpregulation of HER3 has been found to mediate resistance to PI3K/AKT (26) or HER2 (27) inhibitors in HER2-amplified breast cancer cell lines, which is caused in part through a FoxO3A-dependent induction of HER3 gene transcription.\nAs shown in Fig. 5A, PLX4032 treatment increased HER3 and HER2 mRNAs in all six BRAF-mutant thyroid cancer cell lines tested.\nSimilar results were found following treatment with the MEK inhibitor AZD6244 (not shown).\nThe effects of the MEK inhibitor on total HER2, HER3 protein and on pHER3 were dose dependent, and inversely associated with the degree of inhibition of pERK (Fig. 5B).\nRAF or MEK inhibitors induced luciferase activity of a HER3 promoter construct spanning ~ 1 kb upstream of the transcriptional start site in 8505C cells.\nSerial deletions identified a minimal HER3 promoter retaining transcriptional response to vemurafenib and AZD6244, which was located between −401 and −42 bp (Fig. 5C).\nThis region does not contain any predicted FoxO binding sites.\nMoreover, PLX4032 led to an increase in phosphorylation of FoxO1/3A between 4–10h after addition of compound (not shown), which is known to promote its dissociation from DNA, and likely discards involvement of these factors as transcriptional regulators of HER3 in response to MAPK pathway inhibition.\nThe minimal HER3 promoter region regulated by MAPK inhibitors overlaps with sequences previously described to be immunoprecipitated using antibodies against the ZFN217 transcription factor and CtBP1/CtBP2 corepressors (28–30).\nCtBPs have also been described to negatively regulate transcriptional activity of the HER3 promoter in breast carcinoma cell lines (30).\nSilencing of CtBP1, and to a lesser extent CtBP2, increased basal HER3 in 8505C cells, and markedly potentiated the effects of PLX4032 (Fig. 5D and 5E).\nKnockdown of these factors modestly increased basal and PLX4032-induced HER2 levels, which likely contributes to the remarkable increase in pHER3 we observed (Fig. 5D and 5E).\nFinally, CtBP1 and CtBP2 chromatin immunoprecipitation assays showed decreased binding to the HER3 promoter after treatment with PLX4032 (Fig. 5F).\nThese findings were confirmed in a second cell line (Supplementary Fig. S5A).",
+      "sentences" : [ {
+        "words" : [ "We", "next", "examined", "the", "mechanisms", "accounting", "for", "the", "increase", "in", "HER3", "by", "MAPK", "pathway", "inhibitors", "in", "BRAF", "mutant", "thyroid", "cell", "lines", "." ],
+        "startOffsets" : [ 0, 3, 8, 17, 21, 32, 43, 47, 51, 60, 63, 68, 71, 76, 84, 95, 98, 103, 110, 118, 123, 128 ],
+        "endOffsets" : [ 2, 7, 16, 20, 31, 42, 46, 50, 59, 62, 67, 70, 75, 83, 94, 97, 102, 109, 117, 122, 128, 129 ],
+        "raw" : [ "We", "next", "examined", "the", "mechanisms", "accounting", "for", "the", "increase", "in", "HER3", "by", "MAPK", "pathway", "inhibitors", "in", "BRAF", "mutant", "thyroid", "cell", "lines", "." ],
+        "tags" : [ "PRP", "RB", "VBD", "DT", "NNS", "VBG", "IN", "DT", "NN", "IN", "NN", "IN", "NN", "NN", "NNS", "IN", "NN", "NN", "NN", "NN", "NNS", "." ],
+        "lemmas" : [ "we", "next", "examine", "the", "mechanism", "account", "for", "the", "increase", "in", "her3", "by", "mapk", "pathway", "inhibitor", "in", "braf", "mutant", "thyroid", "cell", "line", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Family", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-TissueType", "O", "O", "O" ],
+        "chunks" : [ "B-NP", "B-ADVP", "B-VP", "B-NP", "I-NP", "B-VP", "B-PP", "B-NP", "I-NP", "B-PP", "B-NP", "B-PP", "B-NP", "I-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 2,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "advmod"
+            }, {
+              "source" : 2,
+              "destination" : 4,
+              "relation" : "dobj"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "det"
+            }, {
+              "source" : 4,
+              "destination" : 5,
+              "relation" : "acl"
+            }, {
+              "source" : 5,
+              "destination" : 8,
+              "relation" : "nmod_for"
+            }, {
+              "source" : 5,
+              "destination" : 14,
+              "relation" : "nmod_by"
+            }, {
+              "source" : 8,
+              "destination" : 6,
+              "relation" : "case"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "det"
+            }, {
+              "source" : 8,
+              "destination" : 10,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 20,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 14,
+              "destination" : 11,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 12,
+              "relation" : "compound"
+            }, {
+              "source" : 14,
+              "destination" : 13,
+              "relation" : "compound"
+            }, {
+              "source" : 20,
+              "destination" : 15,
+              "relation" : "case"
+            }, {
+              "source" : 20,
+              "destination" : 16,
+              "relation" : "compound"
+            }, {
+              "source" : 20,
+              "destination" : 17,
+              "relation" : "compound"
+            }, {
+              "source" : 20,
+              "destination" : 18,
+              "relation" : "compound"
+            }, {
+              "source" : 20,
+              "destination" : 19,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 2 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 2,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "advmod"
+            }, {
+              "source" : 2,
+              "destination" : 4,
+              "relation" : "dobj"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "det"
+            }, {
+              "source" : 4,
+              "destination" : 5,
+              "relation" : "acl"
+            }, {
+              "source" : 5,
+              "destination" : 8,
+              "relation" : "nmod"
+            }, {
+              "source" : 5,
+              "destination" : 14,
+              "relation" : "nmod"
+            }, {
+              "source" : 8,
+              "destination" : 6,
+              "relation" : "case"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "det"
+            }, {
+              "source" : 8,
+              "destination" : 10,
+              "relation" : "nmod"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 20,
+              "relation" : "nmod"
+            }, {
+              "source" : 14,
+              "destination" : 11,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 12,
+              "relation" : "compound"
+            }, {
+              "source" : 14,
+              "destination" : 13,
+              "relation" : "compound"
+            }, {
+              "source" : 20,
+              "destination" : 15,
+              "relation" : "case"
+            }, {
+              "source" : 20,
+              "destination" : 16,
+              "relation" : "compound"
+            }, {
+              "source" : 20,
+              "destination" : 17,
+              "relation" : "compound"
+            }, {
+              "source" : 20,
+              "destination" : 18,
+              "relation" : "compound"
+            }, {
+              "source" : 20,
+              "destination" : 19,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 2 ]
+          }
+        }
+      }, {
+        "words" : [ "Upregulation", "of", "HER3", "has", "been", "found", "to", "mediate", "resistance", "to", "PI3K", "and", "AKT", "(", "26", ")", "or", "HER2", "(", "27", ")", "inhibitors", "in", "HER2", "amplified", "breast", "cancer", "cell", "lines", ",", "which", "is", "caused", "in", "part", "through", "a", "FoxO3A", "dependent", "induction", "of", "HER3", "gene", "transcription", "." ],
+        "startOffsets" : [ 130, 143, 146, 151, 155, 160, 166, 169, 177, 188, 191, 195, 196, 200, 201, 203, 205, 208, 213, 214, 216, 218, 229, 232, 237, 247, 254, 261, 266, 271, 273, 279, 282, 289, 292, 297, 305, 307, 314, 324, 334, 337, 342, 347, 360 ],
+        "endOffsets" : [ 142, 145, 150, 154, 159, 165, 168, 176, 187, 190, 195, 196, 199, 201, 203, 204, 207, 212, 214, 216, 217, 228, 231, 236, 246, 253, 260, 265, 271, 272, 278, 281, 288, 291, 296, 304, 306, 313, 323, 333, 336, 341, 346, 360, 361 ],
+        "raw" : [ "Upregulation", "of", "HER3", "has", "been", "found", "to", "mediate", "resistance", "to", "PI3K", "/", "AKT", "(", "26", ")", "or", "HER2", "(", "27", ")", "inhibitors", "in", "HER2", "amplified", "breast", "cancer", "cell", "lines", ",", "which", "is", "caused", "in", "part", "through", "a", "FoxO3A", "dependent", "induction", "of", "HER3", "gene", "transcription", "." ],
+        "tags" : [ "NN", "IN", "NN", "VBZ", "VBN", "VBN", "TO", "VB", "NN", "TO", "NN", "CC", "NN", "-LRB-", "CD", "-RRB-", "CC", "NN", "-LRB-", "CD", "-RRB-", "NNS", "IN", "NN", "VBD", "NN", "NN", "NN", "NNS", ",", "WDT", "VBZ", "VBN", "IN", "NN", "IN", "DT", "NN", "JJ", "NN", "IN", "NN", "NN", "NN", "." ],
+        "lemmas" : [ "upregulation", "of", "her3", "have", "be", "find", "to", "mediate", "resistance", "to", "pi3k", "and", "akt", "(", "26", ")", "or", "her2", "(", "27", ")", "inhibitor", "in", "her2", "amplify", "breast", "cancer", "cell", "line", ",", "which", "be", "cause", "in", "part", "through", "a", "foxo3a", "dependent", "induction", "of", "her3", "gene", "transcription", "." ],
+        "entities" : [ "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Family", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-TissueType", "I-TissueType", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-BioProcess", "O" ],
+        "chunks" : [ "B-NP", "B-PP", "B-NP", "B-VP", "I-VP", "I-VP", "B-VP", "I-VP", "B-NP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "O", "B-NP", "B-VP", "I-VP", "B-PP", "B-NP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 34,
+              "destination" : 33,
+              "relation" : "case"
+            }, {
+              "source" : 39,
+              "destination" : 35,
+              "relation" : "case"
+            }, {
+              "source" : 39,
+              "destination" : 36,
+              "relation" : "det"
+            }, {
+              "source" : 39,
+              "destination" : 37,
+              "relation" : "compound"
+            }, {
+              "source" : 39,
+              "destination" : 38,
+              "relation" : "amod"
+            }, {
+              "source" : 39,
+              "destination" : 43,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 43,
+              "destination" : 40,
+              "relation" : "case"
+            }, {
+              "source" : 43,
+              "destination" : 41,
+              "relation" : "compound"
+            }, {
+              "source" : 43,
+              "destination" : 42,
+              "relation" : "compound"
+            }, {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "aux"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "auxpass"
+            }, {
+              "source" : 5,
+              "destination" : 7,
+              "relation" : "xcomp"
+            }, {
+              "source" : 5,
+              "destination" : 24,
+              "relation" : "ccomp"
+            }, {
+              "source" : 5,
+              "destination" : 0,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "mark"
+            }, {
+              "source" : 7,
+              "destination" : 8,
+              "relation" : "dobj"
+            }, {
+              "source" : 7,
+              "destination" : 10,
+              "relation" : "nmod_to"
+            }, {
+              "source" : 7,
+              "destination" : 12,
+              "relation" : "nmod_to"
+            }, {
+              "source" : 7,
+              "destination" : 0,
+              "relation" : "nsubj:xsubj"
+            }, {
+              "source" : 7,
+              "destination" : 17,
+              "relation" : "nmod_to"
+            }, {
+              "source" : 10,
+              "destination" : 19,
+              "relation" : "appos"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "case"
+            }, {
+              "source" : 10,
+              "destination" : 11,
+              "relation" : "cc"
+            }, {
+              "source" : 10,
+              "destination" : 12,
+              "relation" : "conj_and"
+            }, {
+              "source" : 10,
+              "destination" : 14,
+              "relation" : "appos"
+            }, {
+              "source" : 10,
+              "destination" : 16,
+              "relation" : "cc"
+            }, {
+              "source" : 10,
+              "destination" : 17,
+              "relation" : "conj_or"
+            }, {
+              "source" : 21,
+              "destination" : 23,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 23,
+              "destination" : 22,
+              "relation" : "case"
+            }, {
+              "source" : 24,
+              "destination" : 21,
+              "relation" : "nsubj"
+            }, {
+              "source" : 24,
+              "destination" : 28,
+              "relation" : "dobj"
+            }, {
+              "source" : 28,
+              "destination" : 25,
+              "relation" : "compound"
+            }, {
+              "source" : 28,
+              "destination" : 26,
+              "relation" : "compound"
+            }, {
+              "source" : 28,
+              "destination" : 27,
+              "relation" : "compound"
+            }, {
+              "source" : 28,
+              "destination" : 30,
+              "relation" : "ref"
+            }, {
+              "source" : 28,
+              "destination" : 32,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 32,
+              "destination" : 34,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 32,
+              "destination" : 39,
+              "relation" : "nmod_through"
+            }, {
+              "source" : 32,
+              "destination" : 28,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 32,
+              "destination" : 31,
+              "relation" : "auxpass"
+            } ],
+            "roots" : [ 5 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 34,
+              "destination" : 33,
+              "relation" : "case"
+            }, {
+              "source" : 39,
+              "destination" : 35,
+              "relation" : "case"
+            }, {
+              "source" : 39,
+              "destination" : 36,
+              "relation" : "det"
+            }, {
+              "source" : 39,
+              "destination" : 37,
+              "relation" : "compound"
+            }, {
+              "source" : 39,
+              "destination" : 38,
+              "relation" : "amod"
+            }, {
+              "source" : 39,
+              "destination" : 43,
+              "relation" : "nmod"
+            }, {
+              "source" : 43,
+              "destination" : 40,
+              "relation" : "case"
+            }, {
+              "source" : 43,
+              "destination" : 41,
+              "relation" : "compound"
+            }, {
+              "source" : 43,
+              "destination" : 42,
+              "relation" : "compound"
+            }, {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "nmod"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "aux"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "auxpass"
+            }, {
+              "source" : 5,
+              "destination" : 7,
+              "relation" : "xcomp"
+            }, {
+              "source" : 5,
+              "destination" : 24,
+              "relation" : "ccomp"
+            }, {
+              "source" : 5,
+              "destination" : 0,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "mark"
+            }, {
+              "source" : 7,
+              "destination" : 8,
+              "relation" : "dobj"
+            }, {
+              "source" : 7,
+              "destination" : 10,
+              "relation" : "nmod"
+            }, {
+              "source" : 10,
+              "destination" : 19,
+              "relation" : "appos"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "case"
+            }, {
+              "source" : 10,
+              "destination" : 11,
+              "relation" : "cc"
+            }, {
+              "source" : 10,
+              "destination" : 12,
+              "relation" : "conj"
+            }, {
+              "source" : 10,
+              "destination" : 14,
+              "relation" : "appos"
+            }, {
+              "source" : 10,
+              "destination" : 16,
+              "relation" : "cc"
+            }, {
+              "source" : 10,
+              "destination" : 17,
+              "relation" : "conj"
+            }, {
+              "source" : 21,
+              "destination" : 23,
+              "relation" : "nmod"
+            }, {
+              "source" : 23,
+              "destination" : 22,
+              "relation" : "case"
+            }, {
+              "source" : 24,
+              "destination" : 21,
+              "relation" : "nsubj"
+            }, {
+              "source" : 24,
+              "destination" : 28,
+              "relation" : "dobj"
+            }, {
+              "source" : 28,
+              "destination" : 25,
+              "relation" : "compound"
+            }, {
+              "source" : 28,
+              "destination" : 26,
+              "relation" : "compound"
+            }, {
+              "source" : 28,
+              "destination" : 27,
+              "relation" : "compound"
+            }, {
+              "source" : 28,
+              "destination" : 32,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 32,
+              "destination" : 34,
+              "relation" : "nmod"
+            }, {
+              "source" : 32,
+              "destination" : 39,
+              "relation" : "nmod"
+            }, {
+              "source" : 32,
+              "destination" : 30,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 32,
+              "destination" : 31,
+              "relation" : "auxpass"
+            } ],
+            "roots" : [ 5 ]
+          }
+        }
+      }, {
+        "words" : [ "As", "shown", "in", "Fig", "." ],
+        "startOffsets" : [ 362, 365, 371, 374, 377 ],
+        "endOffsets" : [ 364, 370, 373, 377, 378 ],
+        "raw" : [ "As", "shown", "in", "Fig", "." ],
+        "tags" : [ "IN", "VBN", "IN", "NN", "." ],
+        "lemmas" : [ "as", "show", "in", "fig", "." ],
+        "entities" : [ "O", "O", "O", "B-Gene_or_gene_product", "O" ],
+        "chunks" : [ "B-SBAR", "B-VP", "B-PP", "B-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "mark"
+            }, {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "case"
+            } ],
+            "roots" : [ 1 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "mark"
+            }, {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "nmod"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "case"
+            } ],
+            "roots" : [ 1 ]
+          }
+        }
+      }, {
+        "words" : [ "5A", ",", "PLX4032", "treatment", "increased", "HER3", "and", "HER2", "mRNAs", "in", "all", "six", "BRAF-mutant", "thyroid", "cancer", "cell", "lines", "tested", "." ],
+        "startOffsets" : [ 379, 381, 383, 391, 401, 411, 416, 420, 425, 431, 434, 438, 442, 454, 462, 469, 474, 480, 486 ],
+        "endOffsets" : [ 381, 382, 390, 400, 410, 415, 419, 424, 430, 433, 437, 441, 453, 461, 468, 473, 479, 486, 487 ],
+        "raw" : [ "5A", ",", "PLX4032", "treatment", "increased", "HER3", "and", "HER2", "mRNAs", "in", "all", "six", "BRAF-mutant", "thyroid", "cancer", "cell", "lines", "tested", "." ],
+        "tags" : [ "NN", ",", "NN", "NN", "VBD", "NN", "CC", "NN", "NNS", "IN", "DT", "CD", "JJ", "NN", "NN", "NN", "NNS", "VBN", "." ],
+        "lemmas" : [ "5a", ",", "plx4032", "treatment", "increase", "her3", "and", "her2", "mrna", "in", "all", "six", "braf-mutant", "thyroid", "cancer", "cell", "line", "test", "." ],
+        "entities" : [ "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "B-TissueType", "I-TissueType", "O", "O", "O", "O" ],
+        "chunks" : [ "B-NP", "O", "B-NP", "I-NP", "B-VP", "B-NP", "I-NP", "I-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "B-VP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 8,
+              "destination" : 5,
+              "relation" : "compound"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "compound"
+            }, {
+              "source" : 16,
+              "destination" : 9,
+              "relation" : "case"
+            }, {
+              "source" : 16,
+              "destination" : 10,
+              "relation" : "det"
+            }, {
+              "source" : 16,
+              "destination" : 11,
+              "relation" : "nummod"
+            }, {
+              "source" : 16,
+              "destination" : 12,
+              "relation" : "amod"
+            }, {
+              "source" : 16,
+              "destination" : 13,
+              "relation" : "compound"
+            }, {
+              "source" : 16,
+              "destination" : 14,
+              "relation" : "compound"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "compound"
+            }, {
+              "source" : 16,
+              "destination" : 17,
+              "relation" : "acl"
+            }, {
+              "source" : 3,
+              "destination" : 0,
+              "relation" : "compound"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "dep"
+            }, {
+              "source" : 4,
+              "destination" : 8,
+              "relation" : "dobj"
+            }, {
+              "source" : 4,
+              "destination" : 16,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 6,
+              "relation" : "cc"
+            }, {
+              "source" : 5,
+              "destination" : 7,
+              "relation" : "conj_and"
+            } ],
+            "roots" : [ 4 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 8,
+              "destination" : 5,
+              "relation" : "compound"
+            }, {
+              "source" : 16,
+              "destination" : 9,
+              "relation" : "case"
+            }, {
+              "source" : 16,
+              "destination" : 10,
+              "relation" : "det"
+            }, {
+              "source" : 16,
+              "destination" : 11,
+              "relation" : "nummod"
+            }, {
+              "source" : 16,
+              "destination" : 12,
+              "relation" : "amod"
+            }, {
+              "source" : 16,
+              "destination" : 13,
+              "relation" : "compound"
+            }, {
+              "source" : 16,
+              "destination" : 14,
+              "relation" : "compound"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "compound"
+            }, {
+              "source" : 16,
+              "destination" : 17,
+              "relation" : "acl"
+            }, {
+              "source" : 3,
+              "destination" : 0,
+              "relation" : "compound"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "dep"
+            }, {
+              "source" : 4,
+              "destination" : 8,
+              "relation" : "dobj"
+            }, {
+              "source" : 4,
+              "destination" : 16,
+              "relation" : "nmod"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 6,
+              "relation" : "cc"
+            }, {
+              "source" : 5,
+              "destination" : 7,
+              "relation" : "conj"
+            } ],
+            "roots" : [ 4 ]
+          }
+        }
+      }, {
+        "words" : [ "Similar", "results", "were", "found", "following", "treatment", "with", "the", "MEK", "inhibitor", "AZD6244", "(", "not", "shown", ")", "." ],
+        "startOffsets" : [ 488, 496, 504, 509, 515, 525, 535, 540, 544, 548, 558, 566, 567, 571, 576, 577 ],
+        "endOffsets" : [ 495, 503, 508, 514, 524, 534, 539, 543, 547, 557, 565, 567, 570, 576, 577, 578 ],
+        "raw" : [ "Similar", "results", "were", "found", "following", "treatment", "with", "the", "MEK", "inhibitor", "AZD6244", "(", "not", "shown", ")", "." ],
+        "tags" : [ "JJ", "NNS", "VBD", "VBN", "VBG", "NN", "IN", "DT", "NN", "NN", "NN", "-LRB-", "RB", "VBN", "-RRB-", "." ],
+        "lemmas" : [ "similar", "result", "be", "find", "follow", "treatment", "with", "the", "mek", "inhibitor", "azd6244", "(", "not", "show", ")", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "O", "O", "O", "B-Family", "O", "B-Simple_chemical", "O", "O", "O", "O", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "B-VP", "I-VP", "B-PP", "B-NP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "B-VP", "I-VP", "I-VP", "B-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "neg"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "amod"
+            }, {
+              "source" : 3,
+              "destination" : 1,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "auxpass"
+            }, {
+              "source" : 3,
+              "destination" : 5,
+              "relation" : "nmod_following"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 10,
+              "relation" : "nmod_with"
+            }, {
+              "source" : 10,
+              "destination" : 13,
+              "relation" : "dep"
+            }, {
+              "source" : 10,
+              "destination" : 6,
+              "relation" : "case"
+            }, {
+              "source" : 10,
+              "destination" : 7,
+              "relation" : "det"
+            }, {
+              "source" : 10,
+              "destination" : 8,
+              "relation" : "compound"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 3 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "neg"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "amod"
+            }, {
+              "source" : 3,
+              "destination" : 1,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "auxpass"
+            }, {
+              "source" : 3,
+              "destination" : 5,
+              "relation" : "nmod"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 10,
+              "relation" : "nmod"
+            }, {
+              "source" : 10,
+              "destination" : 13,
+              "relation" : "dep"
+            }, {
+              "source" : 10,
+              "destination" : 6,
+              "relation" : "case"
+            }, {
+              "source" : 10,
+              "destination" : 7,
+              "relation" : "det"
+            }, {
+              "source" : 10,
+              "destination" : 8,
+              "relation" : "compound"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 3 ]
+          }
+        }
+      }, {
+        "words" : [ "The", "effects", "of", "the", "MEK", "inhibitor", "on", "total", "HER2", ",", "HER3", "protein", "and", "on", "pHER3", "were", "dose", "dependent", ",", "and", "inversely", "associated", "with", "the", "degree", "of", "inhibition", "of", "pERK", "(", "Fig", "." ],
+        "startOffsets" : [ 579, 583, 591, 594, 598, 602, 612, 615, 621, 625, 627, 632, 640, 644, 647, 653, 658, 663, 672, 674, 678, 688, 699, 704, 708, 715, 718, 729, 732, 737, 738, 741 ],
+        "endOffsets" : [ 582, 590, 593, 597, 601, 611, 614, 620, 625, 626, 631, 639, 643, 646, 652, 657, 662, 672, 673, 677, 687, 698, 703, 707, 714, 717, 728, 731, 736, 738, 741, 742 ],
+        "raw" : [ "The", "effects", "of", "the", "MEK", "inhibitor", "on", "total", "HER2", ",", "HER3", "protein", "and", "on", "pHER3", "were", "dose", "dependent", ",", "and", "inversely", "associated", "with", "the", "degree", "of", "inhibition", "of", "pERK", "(", "Fig", "." ],
+        "tags" : [ "DT", "NNS", "IN", "DT", "NN", "NN", "IN", "JJ", "NN", ",", "NN", "NN", "CC", "IN", "NN", "VBD", "NN", "JJ", ",", "CC", "RB", "VBN", "IN", "DT", "NN", "IN", "NN", "IN", "NN", "-LRB-", "NN", "." ],
+        "lemmas" : [ "the", "effect", "of", "the", "mek", "inhibitor", "on", "total", "her2", ",", "her3", "protein", "and", "on", "pher3", "be", "dose", "dependent", ",", "and", "inversely", "associate", "with", "the", "degree", "of", "inhibition", "of", "perk", "(", "fig", "." ],
+        "entities" : [ "O", "O", "O", "O", "B-Family", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "B-PP", "B-NP", "I-NP", "O", "B-NP", "I-NP", "B-PP", "B-PP", "B-NP", "B-VP", "B-ADJP", "I-ADJP", "O", "O", "B-VP", "I-VP", "B-PP", "B-NP", "I-NP", "B-PP", "B-NP", "B-PP", "B-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "det"
+            }, {
+              "source" : 1,
+              "destination" : 5,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 1,
+              "destination" : 5,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 5,
+              "destination" : 2,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "det"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "compound"
+            }, {
+              "source" : 5,
+              "destination" : 5,
+              "relation" : "conj_and"
+            }, {
+              "source" : 5,
+              "destination" : 8,
+              "relation" : "nmod_on"
+            }, {
+              "source" : 5,
+              "destination" : 12,
+              "relation" : "cc"
+            }, {
+              "source" : 5,
+              "destination" : 14,
+              "relation" : "nmod_on"
+            }, {
+              "source" : 8,
+              "destination" : 6,
+              "relation" : "case"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "amod"
+            }, {
+              "source" : 8,
+              "destination" : 11,
+              "relation" : "appos"
+            }, {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "compound"
+            }, {
+              "source" : 14,
+              "destination" : 13,
+              "relation" : "case"
+            }, {
+              "source" : 17,
+              "destination" : 15,
+              "relation" : "auxpass"
+            }, {
+              "source" : 17,
+              "destination" : 16,
+              "relation" : "nmod:npmod"
+            }, {
+              "source" : 17,
+              "destination" : 1,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 17,
+              "destination" : 19,
+              "relation" : "cc"
+            }, {
+              "source" : 17,
+              "destination" : 21,
+              "relation" : "conj_and"
+            }, {
+              "source" : 21,
+              "destination" : 30,
+              "relation" : "advcl"
+            }, {
+              "source" : 21,
+              "destination" : 1,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 21,
+              "destination" : 20,
+              "relation" : "advmod"
+            }, {
+              "source" : 21,
+              "destination" : 24,
+              "relation" : "dobj"
+            }, {
+              "source" : 24,
+              "destination" : 22,
+              "relation" : "amod"
+            }, {
+              "source" : 24,
+              "destination" : 23,
+              "relation" : "det"
+            }, {
+              "source" : 24,
+              "destination" : 26,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 26,
+              "destination" : 25,
+              "relation" : "case"
+            }, {
+              "source" : 26,
+              "destination" : 28,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 28,
+              "destination" : 27,
+              "relation" : "case"
+            } ],
+            "roots" : [ 17 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "det"
+            }, {
+              "source" : 1,
+              "destination" : 5,
+              "relation" : "nmod"
+            }, {
+              "source" : 5,
+              "destination" : 2,
+              "relation" : "case"
+            }, {
+              "source" : 5,
+              "destination" : 3,
+              "relation" : "det"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "compound"
+            }, {
+              "source" : 5,
+              "destination" : 8,
+              "relation" : "nmod"
+            }, {
+              "source" : 8,
+              "destination" : 14,
+              "relation" : "conj"
+            }, {
+              "source" : 8,
+              "destination" : 6,
+              "relation" : "case"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "amod"
+            }, {
+              "source" : 8,
+              "destination" : 11,
+              "relation" : "appos"
+            }, {
+              "source" : 8,
+              "destination" : 12,
+              "relation" : "cc"
+            }, {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "compound"
+            }, {
+              "source" : 14,
+              "destination" : 13,
+              "relation" : "case"
+            }, {
+              "source" : 17,
+              "destination" : 15,
+              "relation" : "auxpass"
+            }, {
+              "source" : 17,
+              "destination" : 16,
+              "relation" : "nmod:npmod"
+            }, {
+              "source" : 17,
+              "destination" : 1,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 17,
+              "destination" : 19,
+              "relation" : "cc"
+            }, {
+              "source" : 17,
+              "destination" : 21,
+              "relation" : "conj"
+            }, {
+              "source" : 21,
+              "destination" : 30,
+              "relation" : "advcl"
+            }, {
+              "source" : 21,
+              "destination" : 20,
+              "relation" : "advmod"
+            }, {
+              "source" : 21,
+              "destination" : 24,
+              "relation" : "dobj"
+            }, {
+              "source" : 24,
+              "destination" : 22,
+              "relation" : "amod"
+            }, {
+              "source" : 24,
+              "destination" : 23,
+              "relation" : "det"
+            }, {
+              "source" : 24,
+              "destination" : 26,
+              "relation" : "nmod"
+            }, {
+              "source" : 26,
+              "destination" : 25,
+              "relation" : "case"
+            }, {
+              "source" : 26,
+              "destination" : 28,
+              "relation" : "nmod"
+            }, {
+              "source" : 28,
+              "destination" : 27,
+              "relation" : "case"
+            } ],
+            "roots" : [ 17 ]
+          }
+        }
+      }, {
+        "words" : [ "5B", ")", "." ],
+        "startOffsets" : [ 743, 745, 746 ],
+        "endOffsets" : [ 745, 746, 747 ],
+        "raw" : [ "5B", ")", "." ],
+        "tags" : [ "NN", "-RRB-", "." ],
+        "lemmas" : [ "5b", ")", "." ],
+        "entities" : [ "B-Simple_chemical", "O", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ ],
+            "roots" : [ 0 ]
+          },
+          "universal-basic" : {
+            "edges" : [ ],
+            "roots" : [ 0 ]
+          }
+        }
+      }, {
+        "words" : [ "RAF", "or", "MEK", "inhibitors", "induced", "luciferase", "activity", "of", "a", "HER3", "promoter", "construct", "spanning", "~", "1", "kb", "upstream", "of", "the", "transcriptional", "start", "site", "in", "8505C", "cells", "." ],
+        "startOffsets" : [ 748, 752, 755, 759, 770, 778, 789, 798, 801, 803, 808, 817, 827, 836, 838, 840, 843, 852, 855, 859, 875, 881, 886, 889, 895, 900 ],
+        "endOffsets" : [ 751, 754, 758, 769, 777, 788, 797, 800, 802, 807, 816, 826, 835, 837, 839, 842, 851, 854, 858, 874, 880, 885, 888, 894, 900, 901 ],
+        "raw" : [ "RAF", "or", "MEK", "inhibitors", "induced", "luciferase", "activity", "of", "a", "HER3", "promoter", "construct", "spanning", "~", "1", "kb", "upstream", "of", "the", "transcriptional", "start", "site", "in", "8505C", "cells", "." ],
+        "tags" : [ "NN", "CC", "NN", "NNS", "VBD", "NN", "NN", "IN", "DT", "NN", "NN", "NN", "VBG", "NN", "CD", "NN", "RB", "IN", "DT", "JJ", "NN", "NN", "IN", "NN", "NNS", "." ],
+        "lemmas" : [ "raf", "or", "mek", "inhibitor", "induce", "luciferase", "activity", "of", "a", "her3", "promoter", "construct", "span", "~", "1", "kb", "upstream", "of", "the", "transcriptional", "start", "site", "in", "8505c", "cell", "." ],
+        "entities" : [ "B-Family", "O", "B-Family", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "B-Gene_or_gene_product", "I-Gene_or_gene_product", "B-CellLine", "O", "O", "O", "O", "B-Family", "O", "O", "B-CellLine", "O", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "I-NP", "I-NP", "B-VP", "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "B-VP", "B-NP", "I-NP", "I-NP", "B-PP", "I-PP", "B-NP", "I-NP", "I-NP", "I-NP", "B-PP", "B-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 0,
+              "destination" : 1,
+              "relation" : "cc"
+            }, {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "conj_or"
+            }, {
+              "source" : 3,
+              "destination" : 0,
+              "relation" : "compound"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "compound"
+            }, {
+              "source" : 4,
+              "destination" : 6,
+              "relation" : "dobj"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "nsubj"
+            }, {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "compound"
+            }, {
+              "source" : 6,
+              "destination" : 11,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 11,
+              "destination" : 7,
+              "relation" : "case"
+            }, {
+              "source" : 11,
+              "destination" : 8,
+              "relation" : "det"
+            }, {
+              "source" : 11,
+              "destination" : 9,
+              "relation" : "compound"
+            }, {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "compound"
+            }, {
+              "source" : 11,
+              "destination" : 12,
+              "relation" : "acl"
+            }, {
+              "source" : 12,
+              "destination" : 13,
+              "relation" : "dobj"
+            }, {
+              "source" : 13,
+              "destination" : 21,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 15,
+              "destination" : 14,
+              "relation" : "nummod"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "nmod:npmod"
+            }, {
+              "source" : 21,
+              "destination" : 20,
+              "relation" : "compound"
+            }, {
+              "source" : 21,
+              "destination" : 24,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 21,
+              "destination" : 16,
+              "relation" : "advmod"
+            }, {
+              "source" : 21,
+              "destination" : 17,
+              "relation" : "case"
+            }, {
+              "source" : 21,
+              "destination" : 18,
+              "relation" : "det"
+            }, {
+              "source" : 21,
+              "destination" : 19,
+              "relation" : "amod"
+            }, {
+              "source" : 24,
+              "destination" : 22,
+              "relation" : "case"
+            }, {
+              "source" : 24,
+              "destination" : 23,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 4 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 0,
+              "destination" : 1,
+              "relation" : "cc"
+            }, {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "conj"
+            }, {
+              "source" : 3,
+              "destination" : 0,
+              "relation" : "compound"
+            }, {
+              "source" : 4,
+              "destination" : 6,
+              "relation" : "dobj"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "nsubj"
+            }, {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "compound"
+            }, {
+              "source" : 6,
+              "destination" : 11,
+              "relation" : "nmod"
+            }, {
+              "source" : 11,
+              "destination" : 7,
+              "relation" : "case"
+            }, {
+              "source" : 11,
+              "destination" : 8,
+              "relation" : "det"
+            }, {
+              "source" : 11,
+              "destination" : 9,
+              "relation" : "compound"
+            }, {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "compound"
+            }, {
+              "source" : 11,
+              "destination" : 12,
+              "relation" : "acl"
+            }, {
+              "source" : 12,
+              "destination" : 13,
+              "relation" : "dobj"
+            }, {
+              "source" : 13,
+              "destination" : 21,
+              "relation" : "nmod"
+            }, {
+              "source" : 15,
+              "destination" : 14,
+              "relation" : "nummod"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "nmod:npmod"
+            }, {
+              "source" : 21,
+              "destination" : 20,
+              "relation" : "compound"
+            }, {
+              "source" : 21,
+              "destination" : 24,
+              "relation" : "nmod"
+            }, {
+              "source" : 21,
+              "destination" : 16,
+              "relation" : "advmod"
+            }, {
+              "source" : 21,
+              "destination" : 17,
+              "relation" : "case"
+            }, {
+              "source" : 21,
+              "destination" : 18,
+              "relation" : "det"
+            }, {
+              "source" : 21,
+              "destination" : 19,
+              "relation" : "amod"
+            }, {
+              "source" : 24,
+              "destination" : 22,
+              "relation" : "case"
+            }, {
+              "source" : 24,
+              "destination" : 23,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 4 ]
+          }
+        }
+      }, {
+        "words" : [ "Serial", "deletions", "identified", "a", "minimal", "HER3", "promoter", "retaining", "transcriptional", "response", "to", "vemurafenib", "and", "AZD6244", ",", "which", "was", "located", "between", "-", "401", "and", "-", "42", "bp", "(", "Fig", "." ],
+        "startOffsets" : [ 902, 909, 919, 930, 932, 940, 945, 954, 964, 980, 989, 992, 1004, 1008, 1015, 1017, 1023, 1027, 1035, 1043, 1044, 1048, 1052, 1053, 1056, 1059, 1060, 1063 ],
+        "endOffsets" : [ 908, 918, 929, 931, 939, 944, 953, 963, 979, 988, 991, 1003, 1007, 1015, 1016, 1022, 1026, 1034, 1042, 1044, 1047, 1051, 1053, 1055, 1058, 1060, 1063, 1064 ],
+        "raw" : [ "Serial", "deletions", "identified", "a", "minimal", "HER3", "promoter", "retaining", "transcriptional", "response", "to", "vemurafenib", "and", "AZD6244", ",", "which", "was", "located", "between", "−", "401", "and", "−", "42", "bp", "(", "Fig", "." ],
+        "tags" : [ "JJ", "NNS", "VBD", "DT", "JJ", "NN", "NN", "VBG", "JJ", "NN", "TO", "NN", "CC", "NN", ",", "WDT", "VBD", "JJ", "IN", ":", "CD", "CC", ":", "CD", "NN", "-LRB-", "NN", "." ],
+        "lemmas" : [ "serial", "deletion", "identify", "a", "minimal", "her3", "promoter", "retain", "transcriptional", "response", "to", "vemurafenib", "and", "azd6244", ",", "which", "be", "located", "between", "-", "401", "and", "-", "42", "bp", "(", "fig", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "B-Simple_chemical", "O", "B-Simple_chemical", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Simple_chemical", "O", "B-Gene_or_gene_product", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "B-VP", "B-NP", "I-NP", "I-NP", "I-NP", "B-VP", "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "O", "B-NP", "B-VP", "B-ADJP", "B-PP", "O", "B-NP", "O", "O", "B-NP", "I-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 24,
+              "destination" : 18,
+              "relation" : "case"
+            }, {
+              "source" : 24,
+              "destination" : 20,
+              "relation" : "dep"
+            }, {
+              "source" : 26,
+              "destination" : 8,
+              "relation" : "advmod"
+            }, {
+              "source" : 26,
+              "destination" : 16,
+              "relation" : "cop"
+            }, {
+              "source" : 26,
+              "destination" : 17,
+              "relation" : "advmod"
+            }, {
+              "source" : 26,
+              "destination" : 6,
+              "relation" : "nsubj"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "amod"
+            }, {
+              "source" : 2,
+              "destination" : 26,
+              "relation" : "ccomp"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "nsubj"
+            }, {
+              "source" : 6,
+              "destination" : 7,
+              "relation" : "acl"
+            }, {
+              "source" : 6,
+              "destination" : 3,
+              "relation" : "det"
+            }, {
+              "source" : 6,
+              "destination" : 4,
+              "relation" : "amod"
+            }, {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "compound"
+            }, {
+              "source" : 8,
+              "destination" : 15,
+              "relation" : "advcl"
+            }, {
+              "source" : 9,
+              "destination" : 11,
+              "relation" : "dep"
+            }, {
+              "source" : 9,
+              "destination" : 13,
+              "relation" : "dep"
+            }, {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 11,
+              "destination" : 12,
+              "relation" : "cc"
+            }, {
+              "source" : 11,
+              "destination" : 13,
+              "relation" : "conj_and"
+            }, {
+              "source" : 15,
+              "destination" : 9,
+              "relation" : "dep"
+            }, {
+              "source" : 17,
+              "destination" : 24,
+              "relation" : "nmod_between"
+            }, {
+              "source" : 20,
+              "destination" : 23,
+              "relation" : "dep"
+            }, {
+              "source" : 20,
+              "destination" : 21,
+              "relation" : "cc"
+            } ],
+            "roots" : [ 2 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 24,
+              "destination" : 18,
+              "relation" : "case"
+            }, {
+              "source" : 24,
+              "destination" : 20,
+              "relation" : "dep"
+            }, {
+              "source" : 26,
+              "destination" : 8,
+              "relation" : "advmod"
+            }, {
+              "source" : 26,
+              "destination" : 16,
+              "relation" : "cop"
+            }, {
+              "source" : 26,
+              "destination" : 17,
+              "relation" : "advmod"
+            }, {
+              "source" : 26,
+              "destination" : 6,
+              "relation" : "nsubj"
+            }, {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "amod"
+            }, {
+              "source" : 2,
+              "destination" : 26,
+              "relation" : "ccomp"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "nsubj"
+            }, {
+              "source" : 6,
+              "destination" : 7,
+              "relation" : "acl"
+            }, {
+              "source" : 6,
+              "destination" : 3,
+              "relation" : "det"
+            }, {
+              "source" : 6,
+              "destination" : 4,
+              "relation" : "amod"
+            }, {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "compound"
+            }, {
+              "source" : 8,
+              "destination" : 15,
+              "relation" : "advcl"
+            }, {
+              "source" : 9,
+              "destination" : 11,
+              "relation" : "dep"
+            }, {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 11,
+              "destination" : 12,
+              "relation" : "cc"
+            }, {
+              "source" : 11,
+              "destination" : 13,
+              "relation" : "conj"
+            }, {
+              "source" : 15,
+              "destination" : 9,
+              "relation" : "dep"
+            }, {
+              "source" : 17,
+              "destination" : 24,
+              "relation" : "nmod"
+            }, {
+              "source" : 20,
+              "destination" : 23,
+              "relation" : "dep"
+            }, {
+              "source" : 20,
+              "destination" : 21,
+              "relation" : "cc"
+            } ],
+            "roots" : [ 2 ]
+          }
+        }
+      }, {
+        "words" : [ "5C", ")", "." ],
+        "startOffsets" : [ 1065, 1067, 1068 ],
+        "endOffsets" : [ 1067, 1068, 1069 ],
+        "raw" : [ "5C", ")", "." ],
+        "tags" : [ "NN", "-RRB-", "." ],
+        "lemmas" : [ "5c", ")", "." ],
+        "entities" : [ "O", "O", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ ],
+            "roots" : [ 0 ]
+          },
+          "universal-basic" : {
+            "edges" : [ ],
+            "roots" : [ 0 ]
+          }
+        }
+      }, {
+        "words" : [ "This", "region", "does", "not", "contain", "any", "predicted", "FoxO", "binding", "sites", "." ],
+        "startOffsets" : [ 1070, 1075, 1082, 1087, 1091, 1099, 1103, 1113, 1118, 1126, 1131 ],
+        "endOffsets" : [ 1074, 1081, 1086, 1090, 1098, 1102, 1112, 1117, 1125, 1131, 1132 ],
+        "raw" : [ "This", "region", "does", "not", "contain", "any", "predicted", "FoxO", "binding", "sites", "." ],
+        "tags" : [ "DT", "NN", "VBZ", "RB", "VB", "DT", "JJ", "NN", "VBG", "NNS", "." ],
+        "lemmas" : [ "this", "region", "do", "not", "contain", "any", "predicted", "foxo", "bind", "site", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "O", "O", "B-Family", "O", "O", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "B-VP", "I-VP", "I-VP", "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "det"
+            }, {
+              "source" : 4,
+              "destination" : 1,
+              "relation" : "nsubj"
+            }, {
+              "source" : 4,
+              "destination" : 2,
+              "relation" : "aux"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "neg"
+            }, {
+              "source" : 4,
+              "destination" : 9,
+              "relation" : "xcomp"
+            }, {
+              "source" : 7,
+              "destination" : 5,
+              "relation" : "det"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "amod"
+            }, {
+              "source" : 9,
+              "destination" : 7,
+              "relation" : "nsubj"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "amod"
+            } ],
+            "roots" : [ 4 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "det"
+            }, {
+              "source" : 4,
+              "destination" : 1,
+              "relation" : "nsubj"
+            }, {
+              "source" : 4,
+              "destination" : 2,
+              "relation" : "aux"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "neg"
+            }, {
+              "source" : 4,
+              "destination" : 9,
+              "relation" : "xcomp"
+            }, {
+              "source" : 7,
+              "destination" : 5,
+              "relation" : "det"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "amod"
+            }, {
+              "source" : 9,
+              "destination" : 7,
+              "relation" : "nsubj"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "amod"
+            } ],
+            "roots" : [ 4 ]
+          }
+        }
+      }, {
+        "words" : [ "Moreover", ",", "PLX4032", "led", "to", "an", "increase", "in", "phosphorylation", "of", "FoxO1/3A", "between", "4", "-", "10h", "after", "addition", "of", "compound", "(", "not", "shown", ")", ",", "which", "is", "known", "to", "promote", "its", "dissociation", "from", "DNA", ",", "and", "likely", "discards", "involvement", "of", "these", "factors", "as", "transcriptional", "regulators", "of", "HER3", "in", "response", "to", "MAPK", "pathway", "inhibition", "." ],
+        "startOffsets" : [ 1133, 1141, 1143, 1151, 1155, 1158, 1161, 1170, 1173, 1189, 1192, 1201, 1209, 1210, 1211, 1215, 1221, 1230, 1233, 1242, 1243, 1247, 1252, 1253, 1255, 1261, 1264, 1270, 1273, 1281, 1285, 1298, 1303, 1306, 1308, 1312, 1319, 1328, 1340, 1343, 1349, 1357, 1360, 1376, 1387, 1390, 1395, 1398, 1407, 1410, 1415, 1423, 1433 ],
+        "endOffsets" : [ 1141, 1142, 1150, 1154, 1157, 1160, 1169, 1172, 1188, 1191, 1200, 1208, 1210, 1211, 1214, 1220, 1229, 1232, 1241, 1243, 1246, 1252, 1253, 1254, 1260, 1263, 1269, 1272, 1280, 1284, 1297, 1302, 1306, 1307, 1311, 1318, 1327, 1339, 1342, 1348, 1356, 1359, 1375, 1386, 1389, 1394, 1397, 1406, 1409, 1414, 1422, 1433, 1434 ],
+        "raw" : [ "Moreover", ",", "PLX4032", "led", "to", "an", "increase", "in", "phosphorylation", "of", "FoxO1/3A", "between", "4", "–", "10h", "after", "addition", "of", "compound", "(", "not", "shown", ")", ",", "which", "is", "known", "to", "promote", "its", "dissociation", "from", "DNA", ",", "and", "likely", "discards", "involvement", "of", "these", "factors", "as", "transcriptional", "regulators", "of", "HER3", "in", "response", "to", "MAPK", "pathway", "inhibition", "." ],
+        "tags" : [ "RB", ",", "NN", "VBD", "TO", "DT", "NN", "IN", "NN", "IN", "NN", "IN", "CD", ":", "CD", "IN", "NN", "IN", "NN", "-LRB-", "RB", "VBN", "-RRB-", ",", "WDT", "VBZ", "VBN", "TO", "VB", "PRP$", "NN", "IN", "NN", ",", "CC", "JJ", "NNS", "NN", "IN", "DT", "NNS", "IN", "JJ", "NNS", "IN", "NN", "IN", "NN", "TO", "NN", "NN", "NN", "." ],
+        "lemmas" : [ "moreover", ",", "plx4032", "lead", "to", "a", "increase", "in", "phosphorylation", "of", "foxo1/3a", "between", "4", "-", "10h", "after", "addition", "of", "compound", "(", "not", "show", ")", ",", "which", "be", "know", "to", "promote", "its", "dissociation", "from", "dna", ",", "and", "likely", "discard", "involvement", "of", "these", "factor", "as", "transcriptional", "regulator", "of", "her3", "in", "response", "to", "mapk", "pathway", "inhibition", "." ],
+        "entities" : [ "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "B-Family", "O", "O", "O" ],
+        "chunks" : [ "B-ADVP", "O", "B-NP", "B-VP", "B-PP", "B-NP", "I-NP", "B-PP", "B-NP", "B-PP", "B-NP", "B-PP", "B-NP", "O", "B-NP", "B-PP", "B-NP", "B-PP", "B-NP", "B-VP", "I-VP", "I-VP", "B-NP", "O", "B-NP", "B-VP", "I-VP", "B-VP", "I-VP", "B-NP", "I-NP", "B-PP", "B-NP", "O", "O", "B-NP", "I-NP", "I-NP", "B-PP", "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "B-PP", "B-NP", "B-PP", "B-NP", "B-PP", "B-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 3,
+              "destination" : 0,
+              "relation" : "advmod"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "nsubj"
+            }, {
+              "source" : 3,
+              "destination" : 51,
+              "relation" : "nmod_to"
+            }, {
+              "source" : 3,
+              "destination" : 37,
+              "relation" : "nmod_to"
+            }, {
+              "source" : 3,
+              "destination" : 6,
+              "relation" : "nmod_to"
+            }, {
+              "source" : 3,
+              "destination" : 43,
+              "relation" : "nmod_as"
+            }, {
+              "source" : 3,
+              "destination" : 47,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 6,
+              "destination" : 34,
+              "relation" : "cc"
+            }, {
+              "source" : 6,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "det"
+            }, {
+              "source" : 6,
+              "destination" : 37,
+              "relation" : "conj_and"
+            }, {
+              "source" : 6,
+              "destination" : 8,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 6,
+              "destination" : 24,
+              "relation" : "ref"
+            }, {
+              "source" : 6,
+              "destination" : 26,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 8,
+              "destination" : 18,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 8,
+              "destination" : 21,
+              "relation" : "dep"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "case"
+            }, {
+              "source" : 8,
+              "destination" : 10,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 8,
+              "destination" : 14,
+              "relation" : "nmod_between"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 16,
+              "relation" : "nmod_after"
+            }, {
+              "source" : 14,
+              "destination" : 11,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 12,
+              "relation" : "nummod"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "case"
+            }, {
+              "source" : 18,
+              "destination" : 17,
+              "relation" : "case"
+            }, {
+              "source" : 21,
+              "destination" : 20,
+              "relation" : "neg"
+            }, {
+              "source" : 26,
+              "destination" : 37,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 26,
+              "destination" : 6,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 26,
+              "destination" : 25,
+              "relation" : "auxpass"
+            }, {
+              "source" : 26,
+              "destination" : 28,
+              "relation" : "xcomp"
+            }, {
+              "source" : 28,
+              "destination" : 32,
+              "relation" : "nmod_from"
+            }, {
+              "source" : 28,
+              "destination" : 37,
+              "relation" : "nsubj:xsubj"
+            }, {
+              "source" : 28,
+              "destination" : 6,
+              "relation" : "nsubj:xsubj"
+            }, {
+              "source" : 28,
+              "destination" : 27,
+              "relation" : "mark"
+            }, {
+              "source" : 28,
+              "destination" : 30,
+              "relation" : "dobj"
+            }, {
+              "source" : 30,
+              "destination" : 29,
+              "relation" : "nmod:poss"
+            }, {
+              "source" : 32,
+              "destination" : 31,
+              "relation" : "case"
+            }, {
+              "source" : 37,
+              "destination" : 35,
+              "relation" : "amod"
+            }, {
+              "source" : 37,
+              "destination" : 36,
+              "relation" : "compound"
+            }, {
+              "source" : 37,
+              "destination" : 40,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 40,
+              "destination" : 38,
+              "relation" : "case"
+            }, {
+              "source" : 40,
+              "destination" : 39,
+              "relation" : "det"
+            }, {
+              "source" : 43,
+              "destination" : 41,
+              "relation" : "case"
+            }, {
+              "source" : 43,
+              "destination" : 42,
+              "relation" : "amod"
+            }, {
+              "source" : 43,
+              "destination" : 45,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 45,
+              "destination" : 44,
+              "relation" : "case"
+            }, {
+              "source" : 47,
+              "destination" : 46,
+              "relation" : "case"
+            }, {
+              "source" : 51,
+              "destination" : 48,
+              "relation" : "case"
+            }, {
+              "source" : 51,
+              "destination" : 49,
+              "relation" : "compound"
+            }, {
+              "source" : 51,
+              "destination" : 50,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 3 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 3,
+              "destination" : 0,
+              "relation" : "advmod"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "nsubj"
+            }, {
+              "source" : 3,
+              "destination" : 51,
+              "relation" : "nmod"
+            }, {
+              "source" : 3,
+              "destination" : 6,
+              "relation" : "nmod"
+            }, {
+              "source" : 3,
+              "destination" : 43,
+              "relation" : "nmod"
+            }, {
+              "source" : 3,
+              "destination" : 47,
+              "relation" : "nmod"
+            }, {
+              "source" : 6,
+              "destination" : 34,
+              "relation" : "cc"
+            }, {
+              "source" : 6,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 6,
+              "destination" : 5,
+              "relation" : "det"
+            }, {
+              "source" : 6,
+              "destination" : 37,
+              "relation" : "conj"
+            }, {
+              "source" : 6,
+              "destination" : 8,
+              "relation" : "nmod"
+            }, {
+              "source" : 6,
+              "destination" : 26,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 8,
+              "destination" : 18,
+              "relation" : "nmod"
+            }, {
+              "source" : 8,
+              "destination" : 21,
+              "relation" : "dep"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "case"
+            }, {
+              "source" : 8,
+              "destination" : 10,
+              "relation" : "nmod"
+            }, {
+              "source" : 8,
+              "destination" : 14,
+              "relation" : "nmod"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 16,
+              "relation" : "nmod"
+            }, {
+              "source" : 14,
+              "destination" : 11,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 12,
+              "relation" : "nummod"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "case"
+            }, {
+              "source" : 18,
+              "destination" : 17,
+              "relation" : "case"
+            }, {
+              "source" : 21,
+              "destination" : 20,
+              "relation" : "neg"
+            }, {
+              "source" : 26,
+              "destination" : 24,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 26,
+              "destination" : 25,
+              "relation" : "auxpass"
+            }, {
+              "source" : 26,
+              "destination" : 28,
+              "relation" : "xcomp"
+            }, {
+              "source" : 28,
+              "destination" : 32,
+              "relation" : "nmod"
+            }, {
+              "source" : 28,
+              "destination" : 27,
+              "relation" : "mark"
+            }, {
+              "source" : 28,
+              "destination" : 30,
+              "relation" : "dobj"
+            }, {
+              "source" : 30,
+              "destination" : 29,
+              "relation" : "nmod:poss"
+            }, {
+              "source" : 32,
+              "destination" : 31,
+              "relation" : "case"
+            }, {
+              "source" : 37,
+              "destination" : 35,
+              "relation" : "amod"
+            }, {
+              "source" : 37,
+              "destination" : 36,
+              "relation" : "compound"
+            }, {
+              "source" : 37,
+              "destination" : 40,
+              "relation" : "nmod"
+            }, {
+              "source" : 40,
+              "destination" : 38,
+              "relation" : "case"
+            }, {
+              "source" : 40,
+              "destination" : 39,
+              "relation" : "det"
+            }, {
+              "source" : 43,
+              "destination" : 41,
+              "relation" : "case"
+            }, {
+              "source" : 43,
+              "destination" : 42,
+              "relation" : "amod"
+            }, {
+              "source" : 43,
+              "destination" : 45,
+              "relation" : "nmod"
+            }, {
+              "source" : 45,
+              "destination" : 44,
+              "relation" : "case"
+            }, {
+              "source" : 47,
+              "destination" : 46,
+              "relation" : "case"
+            }, {
+              "source" : 51,
+              "destination" : 48,
+              "relation" : "case"
+            }, {
+              "source" : 51,
+              "destination" : 49,
+              "relation" : "compound"
+            }, {
+              "source" : 51,
+              "destination" : 50,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 3 ]
+          }
+        }
+      }, {
+        "words" : [ "The", "minimal", "HER3", "promoter", "region", "regulated", "by", "MAPK", "inhibitors", "overlaps", "with", "sequences", "previously", "described", "to", "be", "immunoprecipitated", "using", "antibodies", "against", "the", "ZFN217", "transcription", "factor", "and", "CtBP1", "and", "CtBP2", "corepressors", "(", "28", "-", "30", ")", "." ],
+        "startOffsets" : [ 1435, 1439, 1447, 1452, 1461, 1468, 1478, 1481, 1486, 1497, 1506, 1511, 1521, 1532, 1542, 1545, 1548, 1567, 1573, 1584, 1592, 1596, 1603, 1617, 1624, 1628, 1633, 1634, 1640, 1653, 1654, 1656, 1657, 1659, 1660 ],
+        "endOffsets" : [ 1438, 1446, 1451, 1460, 1467, 1477, 1480, 1485, 1496, 1505, 1510, 1520, 1531, 1541, 1544, 1547, 1566, 1572, 1583, 1591, 1595, 1602, 1616, 1623, 1627, 1633, 1634, 1639, 1652, 1654, 1656, 1657, 1659, 1660, 1661 ],
+        "raw" : [ "The", "minimal", "HER3", "promoter", "region", "regulated", "by", "MAPK", "inhibitors", "overlaps", "with", "sequences", "previously", "described", "to", "be", "immunoprecipitated", "using", "antibodies", "against", "the", "ZFN217", "transcription", "factor", "and", "CtBP1", "/", "CtBP2", "corepressors", "(", "28", "–", "30", ")", "." ],
+        "tags" : [ "DT", "JJ", "NN", "NN", "NN", "VBN", "IN", "NN", "NNS", "VBZ", "IN", "NNS", "RB", "VBN", "TO", "VB", "VBN", "VBG", "NNS", "IN", "DT", "NN", "NN", "NN", "CC", "NN", "CC", "NN", "NNS", "-LRB-", "CD", ":", "CD", "-RRB-", "." ],
+        "lemmas" : [ "the", "minimal", "her3", "promoter", "region", "regulate", "by", "mapk", "inhibitor", "overlap", "with", "sequence", "previously", "describe", "to", "be", "immunoprecipitate", "use", "antibody", "against", "the", "zfn217", "transcription", "factor", "and", "ctbp1", "and", "ctbp2", "corepressor", "(", "28", "-", "30", ")", "." ],
+        "entities" : [ "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "B-Family", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-BioProcess", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "O", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "B-VP", "B-PP", "B-NP", "I-NP", "B-VP", "B-PP", "B-NP", "B-VP", "I-VP", "I-VP", "I-VP", "I-VP", "B-VP", "B-NP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "O", "B-NP", "I-NP", "I-NP", "I-NP", "B-NP", "I-NP", "O", "B-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "compound"
+            }, {
+              "source" : 4,
+              "destination" : 5,
+              "relation" : "acl"
+            }, {
+              "source" : 4,
+              "destination" : 0,
+              "relation" : "det"
+            }, {
+              "source" : 4,
+              "destination" : 1,
+              "relation" : "amod"
+            }, {
+              "source" : 4,
+              "destination" : 2,
+              "relation" : "compound"
+            }, {
+              "source" : 5,
+              "destination" : 8,
+              "relation" : "nmod_by"
+            }, {
+              "source" : 8,
+              "destination" : 6,
+              "relation" : "case"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "compound"
+            }, {
+              "source" : 9,
+              "destination" : 4,
+              "relation" : "nsubj"
+            }, {
+              "source" : 9,
+              "destination" : 11,
+              "relation" : "nmod_with"
+            }, {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 11,
+              "destination" : 13,
+              "relation" : "acl"
+            }, {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "advmod"
+            }, {
+              "source" : 13,
+              "destination" : 16,
+              "relation" : "xcomp"
+            }, {
+              "source" : 16,
+              "destination" : 14,
+              "relation" : "mark"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "auxpass"
+            }, {
+              "source" : 16,
+              "destination" : 17,
+              "relation" : "xcomp"
+            }, {
+              "source" : 17,
+              "destination" : 23,
+              "relation" : "nmod_against"
+            }, {
+              "source" : 17,
+              "destination" : 28,
+              "relation" : "nmod_against"
+            }, {
+              "source" : 17,
+              "destination" : 30,
+              "relation" : "dep"
+            }, {
+              "source" : 17,
+              "destination" : 18,
+              "relation" : "dobj"
+            }, {
+              "source" : 23,
+              "destination" : 19,
+              "relation" : "case"
+            }, {
+              "source" : 23,
+              "destination" : 20,
+              "relation" : "det"
+            }, {
+              "source" : 23,
+              "destination" : 21,
+              "relation" : "compound"
+            }, {
+              "source" : 23,
+              "destination" : 22,
+              "relation" : "compound"
+            }, {
+              "source" : 23,
+              "destination" : 24,
+              "relation" : "cc"
+            }, {
+              "source" : 23,
+              "destination" : 28,
+              "relation" : "conj_and"
+            }, {
+              "source" : 25,
+              "destination" : 26,
+              "relation" : "cc"
+            }, {
+              "source" : 25,
+              "destination" : 27,
+              "relation" : "conj_and"
+            }, {
+              "source" : 28,
+              "destination" : 25,
+              "relation" : "compound"
+            }, {
+              "source" : 28,
+              "destination" : 27,
+              "relation" : "compound"
+            }, {
+              "source" : 30,
+              "destination" : 32,
+              "relation" : "dep"
+            } ],
+            "roots" : [ 9 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "compound"
+            }, {
+              "source" : 4,
+              "destination" : 5,
+              "relation" : "acl"
+            }, {
+              "source" : 4,
+              "destination" : 0,
+              "relation" : "det"
+            }, {
+              "source" : 4,
+              "destination" : 1,
+              "relation" : "amod"
+            }, {
+              "source" : 4,
+              "destination" : 2,
+              "relation" : "compound"
+            }, {
+              "source" : 5,
+              "destination" : 8,
+              "relation" : "nmod"
+            }, {
+              "source" : 8,
+              "destination" : 6,
+              "relation" : "case"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "compound"
+            }, {
+              "source" : 9,
+              "destination" : 4,
+              "relation" : "nsubj"
+            }, {
+              "source" : 9,
+              "destination" : 11,
+              "relation" : "nmod"
+            }, {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 11,
+              "destination" : 13,
+              "relation" : "acl"
+            }, {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "advmod"
+            }, {
+              "source" : 13,
+              "destination" : 16,
+              "relation" : "xcomp"
+            }, {
+              "source" : 16,
+              "destination" : 14,
+              "relation" : "mark"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "auxpass"
+            }, {
+              "source" : 16,
+              "destination" : 17,
+              "relation" : "xcomp"
+            }, {
+              "source" : 17,
+              "destination" : 23,
+              "relation" : "nmod"
+            }, {
+              "source" : 17,
+              "destination" : 30,
+              "relation" : "dep"
+            }, {
+              "source" : 17,
+              "destination" : 18,
+              "relation" : "dobj"
+            }, {
+              "source" : 23,
+              "destination" : 19,
+              "relation" : "case"
+            }, {
+              "source" : 23,
+              "destination" : 20,
+              "relation" : "det"
+            }, {
+              "source" : 23,
+              "destination" : 21,
+              "relation" : "compound"
+            }, {
+              "source" : 23,
+              "destination" : 22,
+              "relation" : "compound"
+            }, {
+              "source" : 23,
+              "destination" : 24,
+              "relation" : "cc"
+            }, {
+              "source" : 23,
+              "destination" : 28,
+              "relation" : "conj"
+            }, {
+              "source" : 25,
+              "destination" : 26,
+              "relation" : "cc"
+            }, {
+              "source" : 25,
+              "destination" : 27,
+              "relation" : "conj"
+            }, {
+              "source" : 28,
+              "destination" : 25,
+              "relation" : "compound"
+            }, {
+              "source" : 30,
+              "destination" : 32,
+              "relation" : "dep"
+            } ],
+            "roots" : [ 9 ]
+          }
+        }
+      }, {
+        "words" : [ "CtBPs", "have", "also", "been", "described", "to", "negatively", "regulate", "transcriptional", "activity", "of", "the", "HER3", "promoter", "in", "breast", "carcinoma", "cell", "lines", "(", "30", ")", "." ],
+        "startOffsets" : [ 1662, 1668, 1673, 1678, 1683, 1693, 1696, 1707, 1716, 1732, 1741, 1744, 1748, 1753, 1762, 1765, 1772, 1782, 1787, 1793, 1794, 1796, 1797 ],
+        "endOffsets" : [ 1667, 1672, 1677, 1682, 1692, 1695, 1706, 1715, 1731, 1740, 1743, 1747, 1752, 1761, 1764, 1771, 1781, 1786, 1792, 1794, 1796, 1797, 1798 ],
+        "raw" : [ "CtBPs", "have", "also", "been", "described", "to", "negatively", "regulate", "transcriptional", "activity", "of", "the", "HER3", "promoter", "in", "breast", "carcinoma", "cell", "lines", "(", "30", ")", "." ],
+        "tags" : [ "NNS", "VBP", "RB", "VBN", "VBN", "TO", "RB", "VB", "JJ", "NN", "IN", "DT", "NN", "NN", "IN", "NN", "NN", "NN", "NNS", "-LRB-", "CD", "-RRB-", "." ],
+        "lemmas" : [ "ctbp", "have", "also", "be", "describe", "to", "negatively", "regulate", "transcriptional", "activity", "of", "the", "her3", "promoter", "in", "breast", "carcinoma", "cell", "line", "(", "30", ")", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "B-TissueType", "I-TissueType", "O", "O", "O", "O", "O", "O" ],
+        "chunks" : [ "B-NP", "B-VP", "I-VP", "I-VP", "I-VP", "B-VP", "I-VP", "I-VP", "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "B-VP", "B-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "advmod"
+            }, {
+              "source" : 7,
+              "destination" : 9,
+              "relation" : "dobj"
+            }, {
+              "source" : 7,
+              "destination" : 0,
+              "relation" : "nsubj:xsubj"
+            }, {
+              "source" : 7,
+              "destination" : 5,
+              "relation" : "mark"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "amod"
+            }, {
+              "source" : 9,
+              "destination" : 13,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 13,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 13,
+              "destination" : 11,
+              "relation" : "det"
+            }, {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "compound"
+            }, {
+              "source" : 13,
+              "destination" : 18,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 18,
+              "destination" : 14,
+              "relation" : "case"
+            }, {
+              "source" : 18,
+              "destination" : 15,
+              "relation" : "compound"
+            }, {
+              "source" : 18,
+              "destination" : 16,
+              "relation" : "compound"
+            }, {
+              "source" : 18,
+              "destination" : 17,
+              "relation" : "compound"
+            }, {
+              "source" : 18,
+              "destination" : 20,
+              "relation" : "appos"
+            }, {
+              "source" : 4,
+              "destination" : 7,
+              "relation" : "xcomp"
+            }, {
+              "source" : 4,
+              "destination" : 0,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 4,
+              "destination" : 1,
+              "relation" : "aux"
+            }, {
+              "source" : 4,
+              "destination" : 2,
+              "relation" : "advmod"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "auxpass"
+            } ],
+            "roots" : [ 4 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "advmod"
+            }, {
+              "source" : 7,
+              "destination" : 9,
+              "relation" : "dobj"
+            }, {
+              "source" : 7,
+              "destination" : 5,
+              "relation" : "mark"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "amod"
+            }, {
+              "source" : 9,
+              "destination" : 13,
+              "relation" : "nmod"
+            }, {
+              "source" : 13,
+              "destination" : 10,
+              "relation" : "case"
+            }, {
+              "source" : 13,
+              "destination" : 11,
+              "relation" : "det"
+            }, {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "compound"
+            }, {
+              "source" : 13,
+              "destination" : 18,
+              "relation" : "nmod"
+            }, {
+              "source" : 18,
+              "destination" : 14,
+              "relation" : "case"
+            }, {
+              "source" : 18,
+              "destination" : 15,
+              "relation" : "compound"
+            }, {
+              "source" : 18,
+              "destination" : 16,
+              "relation" : "compound"
+            }, {
+              "source" : 18,
+              "destination" : 17,
+              "relation" : "compound"
+            }, {
+              "source" : 18,
+              "destination" : 20,
+              "relation" : "appos"
+            }, {
+              "source" : 4,
+              "destination" : 7,
+              "relation" : "xcomp"
+            }, {
+              "source" : 4,
+              "destination" : 0,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 4,
+              "destination" : 1,
+              "relation" : "aux"
+            }, {
+              "source" : 4,
+              "destination" : 2,
+              "relation" : "advmod"
+            }, {
+              "source" : 4,
+              "destination" : 3,
+              "relation" : "auxpass"
+            } ],
+            "roots" : [ 4 ]
+          }
+        }
+      }, {
+        "words" : [ "Silencing", "of", "CtBP1", ",", "and", "to", "a", "lesser", "extent", "CtBP2", ",", "increased", "basal", "HER3", "in", "8505C", "cells", ",", "and", "markedly", "potentiated", "the", "effects", "of", "PLX4032", "(", "Fig", "." ],
+        "startOffsets" : [ 1799, 1809, 1812, 1817, 1819, 1823, 1826, 1828, 1835, 1842, 1847, 1849, 1859, 1865, 1870, 1873, 1879, 1884, 1886, 1890, 1899, 1911, 1915, 1923, 1926, 1934, 1935, 1938 ],
+        "endOffsets" : [ 1808, 1811, 1817, 1818, 1822, 1825, 1827, 1834, 1841, 1847, 1848, 1858, 1864, 1869, 1872, 1878, 1884, 1885, 1889, 1898, 1910, 1914, 1922, 1925, 1933, 1935, 1938, 1939 ],
+        "raw" : [ "Silencing", "of", "CtBP1", ",", "and", "to", "a", "lesser", "extent", "CtBP2", ",", "increased", "basal", "HER3", "in", "8505C", "cells", ",", "and", "markedly", "potentiated", "the", "effects", "of", "PLX4032", "(", "Fig", "." ],
+        "tags" : [ "NN", "IN", "NN", ",", "CC", "TO", "DT", "JJR", "NN", "NN", ",", "VBD", "JJ", "NN", "IN", "NN", "NNS", ",", "CC", "RB", "VBD", "DT", "NNS", "IN", "NN", "-LRB-", "NN", "." ],
+        "lemmas" : [ "silencing", "of", "ctbp1", ",", "and", "to", "a", "lesser", "extent", "ctbp2", ",", "increase", "basal", "her3", "in", "8505c", "cell", ",", "and", "markedly", "potentiate", "the", "effect", "of", "plx4032", "(", "fig", "." ],
+        "entities" : [ "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-CellLine", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O" ],
+        "chunks" : [ "B-NP", "B-PP", "B-NP", "O", "O", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "O", "B-VP", "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "O", "O", "B-VP", "I-VP", "B-NP", "I-NP", "B-PP", "B-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 9,
+              "destination" : 5,
+              "relation" : "case"
+            }, {
+              "source" : 9,
+              "destination" : 6,
+              "relation" : "det"
+            }, {
+              "source" : 9,
+              "destination" : 7,
+              "relation" : "amod"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "compound"
+            }, {
+              "source" : 11,
+              "destination" : 13,
+              "relation" : "dobj"
+            }, {
+              "source" : 11,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 11,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 11,
+              "destination" : 16,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 11,
+              "destination" : 18,
+              "relation" : "cc"
+            }, {
+              "source" : 11,
+              "destination" : 20,
+              "relation" : "conj_and"
+            }, {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "amod"
+            }, {
+              "source" : 16,
+              "destination" : 14,
+              "relation" : "case"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "compound"
+            }, {
+              "source" : 20,
+              "destination" : 26,
+              "relation" : "advcl"
+            }, {
+              "source" : 20,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 20,
+              "destination" : 19,
+              "relation" : "advmod"
+            }, {
+              "source" : 20,
+              "destination" : 24,
+              "relation" : "advmod"
+            }, {
+              "source" : 22,
+              "destination" : 21,
+              "relation" : "det"
+            }, {
+              "source" : 22,
+              "destination" : 23,
+              "relation" : "case"
+            }, {
+              "source" : 24,
+              "destination" : 22,
+              "relation" : "advmod"
+            }, {
+              "source" : 0,
+              "destination" : 0,
+              "relation" : "conj_and"
+            }, {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 0,
+              "destination" : 4,
+              "relation" : "cc"
+            }, {
+              "source" : 0,
+              "destination" : 9,
+              "relation" : "nmod_to"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "case"
+            } ],
+            "roots" : [ 11 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 9,
+              "destination" : 5,
+              "relation" : "case"
+            }, {
+              "source" : 9,
+              "destination" : 6,
+              "relation" : "det"
+            }, {
+              "source" : 9,
+              "destination" : 7,
+              "relation" : "amod"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "compound"
+            }, {
+              "source" : 11,
+              "destination" : 13,
+              "relation" : "dobj"
+            }, {
+              "source" : 11,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 11,
+              "destination" : 16,
+              "relation" : "nmod"
+            }, {
+              "source" : 11,
+              "destination" : 18,
+              "relation" : "cc"
+            }, {
+              "source" : 11,
+              "destination" : 20,
+              "relation" : "conj"
+            }, {
+              "source" : 13,
+              "destination" : 12,
+              "relation" : "amod"
+            }, {
+              "source" : 16,
+              "destination" : 14,
+              "relation" : "case"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "compound"
+            }, {
+              "source" : 20,
+              "destination" : 26,
+              "relation" : "advcl"
+            }, {
+              "source" : 20,
+              "destination" : 19,
+              "relation" : "advmod"
+            }, {
+              "source" : 20,
+              "destination" : 24,
+              "relation" : "advmod"
+            }, {
+              "source" : 22,
+              "destination" : 21,
+              "relation" : "det"
+            }, {
+              "source" : 22,
+              "destination" : 23,
+              "relation" : "case"
+            }, {
+              "source" : 24,
+              "destination" : 22,
+              "relation" : "advmod"
+            }, {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "nmod"
+            }, {
+              "source" : 2,
+              "destination" : 9,
+              "relation" : "conj"
+            }, {
+              "source" : 2,
+              "destination" : 1,
+              "relation" : "case"
+            }, {
+              "source" : 2,
+              "destination" : 4,
+              "relation" : "cc"
+            } ],
+            "roots" : [ 11 ]
+          }
+        }
+      }, {
+        "words" : [ "5D", "and", "5E", ")", "." ],
+        "startOffsets" : [ 1940, 1943, 1947, 1949, 1950 ],
+        "endOffsets" : [ 1942, 1946, 1949, 1950, 1951 ],
+        "raw" : [ "5D", "and", "5E", ")", "." ],
+        "tags" : [ "NN", "CC", "NN", "-RRB-", "." ],
+        "lemmas" : [ "5d", "and", "5e", ")", "." ],
+        "entities" : [ "O", "O", "O", "O", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 0,
+              "destination" : 1,
+              "relation" : "cc"
+            }, {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "conj_and"
+            } ],
+            "roots" : [ 0 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 0,
+              "destination" : 1,
+              "relation" : "cc"
+            }, {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "conj"
+            } ],
+            "roots" : [ 0 ]
+          }
+        }
+      }, {
+        "words" : [ "Knockdown", "of", "these", "factors", "modestly", "increased", "basal", "and", "PLX4032", "induced", "HER2", "levels", ",", "which", "likely", "contributes", "to", "the", "remarkable", "increase", "in", "pHER3", "we", "observed", "(", "Fig", "." ],
+        "startOffsets" : [ 1952, 1962, 1965, 1971, 1979, 1988, 1998, 2004, 2008, 2016, 2024, 2029, 2035, 2037, 2043, 2050, 2062, 2065, 2069, 2080, 2089, 2092, 2098, 2101, 2110, 2111, 2114 ],
+        "endOffsets" : [ 1961, 1964, 1970, 1978, 1987, 1997, 2003, 2007, 2015, 2023, 2028, 2035, 2036, 2042, 2049, 2061, 2064, 2068, 2079, 2088, 2091, 2097, 2100, 2109, 2111, 2114, 2115 ],
+        "raw" : [ "Knockdown", "of", "these", "factors", "modestly", "increased", "basal", "and", "PLX4032", "induced", "HER2", "levels", ",", "which", "likely", "contributes", "to", "the", "remarkable", "increase", "in", "pHER3", "we", "observed", "(", "Fig", "." ],
+        "tags" : [ "NNP", "IN", "DT", "NNS", "RB", "VBD", "JJ", "CC", "NN", "VBD", "NN", "NNS", ",", "WDT", "RB", "VBZ", "TO", "DT", "JJ", "NN", "IN", "NN", "PRP", "VBD", "-LRB-", "NN", "." ],
+        "lemmas" : [ "Knockdown", "of", "these", "factor", "modestly", "increase", "basal", "and", "plx4032", "induce", "her2", "level", ",", "which", "likely", "contribute", "to", "the", "remarkable", "increase", "in", "pher3", "we", "observe", "(", "fig", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O" ],
+        "chunks" : [ "B-NP", "B-PP", "B-NP", "I-NP", "B-ADVP", "B-VP", "B-NP", "I-NP", "I-NP", "B-VP", "B-NP", "I-NP", "O", "B-NP", "B-ADVP", "B-VP", "B-PP", "B-NP", "I-NP", "I-NP", "B-PP", "B-NP", "B-NP", "B-VP", "B-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 15,
+              "destination" : 19,
+              "relation" : "nmod_to"
+            }, {
+              "source" : 15,
+              "destination" : 23,
+              "relation" : "ccomp"
+            }, {
+              "source" : 15,
+              "destination" : 11,
+              "relation" : "nsubj"
+            }, {
+              "source" : 15,
+              "destination" : 14,
+              "relation" : "advmod"
+            }, {
+              "source" : 19,
+              "destination" : 16,
+              "relation" : "case"
+            }, {
+              "source" : 19,
+              "destination" : 17,
+              "relation" : "det"
+            }, {
+              "source" : 19,
+              "destination" : 18,
+              "relation" : "amod"
+            }, {
+              "source" : 19,
+              "destination" : 21,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 21,
+              "destination" : 20,
+              "relation" : "case"
+            }, {
+              "source" : 23,
+              "destination" : 22,
+              "relation" : "nsubj"
+            }, {
+              "source" : 23,
+              "destination" : 25,
+              "relation" : "dobj"
+            }, {
+              "source" : 0,
+              "destination" : 3,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 3,
+              "destination" : 1,
+              "relation" : "case"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "det"
+            }, {
+              "source" : 5,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "advmod"
+            }, {
+              "source" : 5,
+              "destination" : 9,
+              "relation" : "ccomp"
+            }, {
+              "source" : 6,
+              "destination" : 7,
+              "relation" : "cc"
+            }, {
+              "source" : 6,
+              "destination" : 8,
+              "relation" : "conj_and"
+            }, {
+              "source" : 9,
+              "destination" : 6,
+              "relation" : "nsubj"
+            }, {
+              "source" : 9,
+              "destination" : 8,
+              "relation" : "nsubj"
+            }, {
+              "source" : 9,
+              "destination" : 11,
+              "relation" : "dobj"
+            }, {
+              "source" : 11,
+              "destination" : 15,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "compound"
+            }, {
+              "source" : 11,
+              "destination" : 13,
+              "relation" : "ref"
+            } ],
+            "roots" : [ 5 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 15,
+              "destination" : 19,
+              "relation" : "nmod"
+            }, {
+              "source" : 15,
+              "destination" : 23,
+              "relation" : "ccomp"
+            }, {
+              "source" : 15,
+              "destination" : 13,
+              "relation" : "nsubj"
+            }, {
+              "source" : 15,
+              "destination" : 14,
+              "relation" : "advmod"
+            }, {
+              "source" : 19,
+              "destination" : 16,
+              "relation" : "case"
+            }, {
+              "source" : 19,
+              "destination" : 17,
+              "relation" : "det"
+            }, {
+              "source" : 19,
+              "destination" : 18,
+              "relation" : "amod"
+            }, {
+              "source" : 19,
+              "destination" : 21,
+              "relation" : "nmod"
+            }, {
+              "source" : 21,
+              "destination" : 20,
+              "relation" : "case"
+            }, {
+              "source" : 23,
+              "destination" : 22,
+              "relation" : "nsubj"
+            }, {
+              "source" : 23,
+              "destination" : 25,
+              "relation" : "dobj"
+            }, {
+              "source" : 0,
+              "destination" : 3,
+              "relation" : "nmod"
+            }, {
+              "source" : 3,
+              "destination" : 1,
+              "relation" : "case"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "det"
+            }, {
+              "source" : 5,
+              "destination" : 0,
+              "relation" : "nsubj"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "advmod"
+            }, {
+              "source" : 5,
+              "destination" : 9,
+              "relation" : "ccomp"
+            }, {
+              "source" : 6,
+              "destination" : 7,
+              "relation" : "cc"
+            }, {
+              "source" : 6,
+              "destination" : 8,
+              "relation" : "conj"
+            }, {
+              "source" : 9,
+              "destination" : 6,
+              "relation" : "nsubj"
+            }, {
+              "source" : 9,
+              "destination" : 11,
+              "relation" : "dobj"
+            }, {
+              "source" : 11,
+              "destination" : 15,
+              "relation" : "acl:relcl"
+            }, {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 5 ]
+          }
+        }
+      }, {
+        "words" : [ "5D", "and", "5E", ")", "." ],
+        "startOffsets" : [ 2116, 2119, 2123, 2125, 2126 ],
+        "endOffsets" : [ 2118, 2122, 2125, 2126, 2127 ],
+        "raw" : [ "5D", "and", "5E", ")", "." ],
+        "tags" : [ "NN", "CC", "NN", "-RRB-", "." ],
+        "lemmas" : [ "5d", "and", "5e", ")", "." ],
+        "entities" : [ "O", "O", "O", "O", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "conj_and"
+            }, {
+              "source" : 0,
+              "destination" : 1,
+              "relation" : "cc"
+            } ],
+            "roots" : [ 0 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 0,
+              "destination" : 2,
+              "relation" : "conj"
+            }, {
+              "source" : 0,
+              "destination" : 1,
+              "relation" : "cc"
+            } ],
+            "roots" : [ 0 ]
+          }
+        }
+      }, {
+        "words" : [ "Finally", ",", "CtBP1", "and", "CtBP2", "chromatin", "immunoprecipitation", "assays", "showed", "decreased", "binding", "to", "the", "HER3", "promoter", "after", "treatment", "with", "PLX4032", "(", "Fig", "." ],
+        "startOffsets" : [ 2128, 2135, 2137, 2143, 2147, 2153, 2163, 2183, 2190, 2197, 2207, 2215, 2218, 2222, 2227, 2236, 2242, 2252, 2257, 2265, 2266, 2269 ],
+        "endOffsets" : [ 2135, 2136, 2142, 2146, 2152, 2162, 2182, 2189, 2196, 2206, 2214, 2217, 2221, 2226, 2235, 2241, 2251, 2256, 2264, 2266, 2269, 2270 ],
+        "raw" : [ "Finally", ",", "CtBP1", "and", "CtBP2", "chromatin", "immunoprecipitation", "assays", "showed", "decreased", "binding", "to", "the", "HER3", "promoter", "after", "treatment", "with", "PLX4032", "(", "Fig", "." ],
+        "tags" : [ "RB", ",", "NN", "CC", "NN", "NN", "NN", "NNS", "VBD", "VBN", "NN", "TO", "DT", "NN", "NN", "IN", "NN", "IN", "NN", "-LRB-", "NN", "." ],
+        "lemmas" : [ "finally", ",", "ctbp1", "and", "ctbp2", "chromatin", "immunoprecipitation", "assay", "show", "decrease", "binding", "to", "the", "her3", "promoter", "after", "treatment", "with", "plx4032", "(", "fig", "." ],
+        "entities" : [ "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O" ],
+        "chunks" : [ "B-ADVP", "O", "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "B-VP", "I-VP", "B-NP", "B-PP", "B-NP", "I-NP", "I-NP", "B-PP", "B-NP", "B-PP", "B-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 2,
+              "destination" : 3,
+              "relation" : "cc"
+            }, {
+              "source" : 2,
+              "destination" : 4,
+              "relation" : "conj_and"
+            }, {
+              "source" : 7,
+              "destination" : 5,
+              "relation" : "compound"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "compound"
+            }, {
+              "source" : 7,
+              "destination" : 2,
+              "relation" : "compound"
+            }, {
+              "source" : 7,
+              "destination" : 4,
+              "relation" : "compound"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "nsubj"
+            }, {
+              "source" : 8,
+              "destination" : 10,
+              "relation" : "dobj"
+            }, {
+              "source" : 8,
+              "destination" : 14,
+              "relation" : "nmod_to"
+            }, {
+              "source" : 8,
+              "destination" : 0,
+              "relation" : "advmod"
+            }, {
+              "source" : 8,
+              "destination" : 16,
+              "relation" : "nmod_after"
+            }, {
+              "source" : 8,
+              "destination" : 20,
+              "relation" : "nmod_with"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "amod"
+            }, {
+              "source" : 14,
+              "destination" : 11,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 12,
+              "relation" : "det"
+            }, {
+              "source" : 14,
+              "destination" : 13,
+              "relation" : "compound"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "case"
+            }, {
+              "source" : 20,
+              "destination" : 17,
+              "relation" : "case"
+            }, {
+              "source" : 20,
+              "destination" : 18,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 8 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 2,
+              "destination" : 3,
+              "relation" : "cc"
+            }, {
+              "source" : 2,
+              "destination" : 4,
+              "relation" : "conj"
+            }, {
+              "source" : 7,
+              "destination" : 5,
+              "relation" : "compound"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "compound"
+            }, {
+              "source" : 7,
+              "destination" : 2,
+              "relation" : "compound"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "nsubj"
+            }, {
+              "source" : 8,
+              "destination" : 10,
+              "relation" : "dobj"
+            }, {
+              "source" : 8,
+              "destination" : 14,
+              "relation" : "nmod"
+            }, {
+              "source" : 8,
+              "destination" : 0,
+              "relation" : "advmod"
+            }, {
+              "source" : 8,
+              "destination" : 16,
+              "relation" : "nmod"
+            }, {
+              "source" : 8,
+              "destination" : 20,
+              "relation" : "nmod"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "amod"
+            }, {
+              "source" : 14,
+              "destination" : 11,
+              "relation" : "case"
+            }, {
+              "source" : 14,
+              "destination" : 12,
+              "relation" : "det"
+            }, {
+              "source" : 14,
+              "destination" : 13,
+              "relation" : "compound"
+            }, {
+              "source" : 16,
+              "destination" : 15,
+              "relation" : "case"
+            }, {
+              "source" : 20,
+              "destination" : 17,
+              "relation" : "case"
+            }, {
+              "source" : 20,
+              "destination" : 18,
+              "relation" : "compound"
+            } ],
+            "roots" : [ 8 ]
+          }
+        }
+      }, {
+        "words" : [ "5F", ")", "." ],
+        "startOffsets" : [ 2271, 2273, 2274 ],
+        "endOffsets" : [ 2273, 2274, 2275 ],
+        "raw" : [ "5F", ")", "." ],
+        "tags" : [ "NN", "-RRB-", "." ],
+        "lemmas" : [ "5f", ")", "." ],
+        "entities" : [ "O", "O", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ ],
+            "roots" : [ 0 ]
+          },
+          "universal-basic" : {
+            "edges" : [ ],
+            "roots" : [ 0 ]
+          }
+        }
+      }, {
+        "words" : [ "These", "findings", "were", "confirmed", "in", "a", "second", "cell", "line", "(", "Supplementary", "Fig", "." ],
+        "startOffsets" : [ 2276, 2282, 2291, 2296, 2306, 2309, 2311, 2318, 2323, 2328, 2329, 2343, 2346 ],
+        "endOffsets" : [ 2281, 2290, 2295, 2305, 2308, 2310, 2317, 2322, 2327, 2329, 2342, 2346, 2347 ],
+        "raw" : [ "These", "findings", "were", "confirmed", "in", "a", "second", "cell", "line", "(", "Supplementary", "Fig", "." ],
+        "tags" : [ "DT", "NNS", "VBD", "VBN", "IN", "DT", "JJ", "NN", "NN", "-LRB-", "NNP", "NNP", "." ],
+        "lemmas" : [ "these", "finding", "be", "confirm", "in", "a", "second", "cell", "line", "(", "Supplementary", "Fig", "." ],
+        "entities" : [ "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-Gene_or_gene_product", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "B-VP", "I-VP", "B-PP", "B-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "det"
+            }, {
+              "source" : 3,
+              "destination" : 1,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "auxpass"
+            }, {
+              "source" : 3,
+              "destination" : 7,
+              "relation" : "nmod_in"
+            }, {
+              "source" : 7,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 7,
+              "destination" : 5,
+              "relation" : "det"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "amod"
+            }, {
+              "source" : 7,
+              "destination" : 8,
+              "relation" : "dep"
+            }, {
+              "source" : 8,
+              "destination" : 10,
+              "relation" : "dep"
+            }, {
+              "source" : 10,
+              "destination" : 11,
+              "relation" : "appos"
+            } ],
+            "roots" : [ 3 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "det"
+            }, {
+              "source" : 3,
+              "destination" : 1,
+              "relation" : "nsubjpass"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "auxpass"
+            }, {
+              "source" : 3,
+              "destination" : 7,
+              "relation" : "nmod"
+            }, {
+              "source" : 7,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 7,
+              "destination" : 5,
+              "relation" : "det"
+            }, {
+              "source" : 7,
+              "destination" : 6,
+              "relation" : "amod"
+            }, {
+              "source" : 7,
+              "destination" : 8,
+              "relation" : "dep"
+            }, {
+              "source" : 8,
+              "destination" : 10,
+              "relation" : "dep"
+            }, {
+              "source" : 10,
+              "destination" : 11,
+              "relation" : "appos"
+            } ],
+            "roots" : [ 3 ]
+          }
+        }
+      }, {
+        "words" : [ "S5A", ")", "." ],
+        "startOffsets" : [ 2348, 2351, 2352 ],
+        "endOffsets" : [ 2351, 2352, 2353 ],
+        "raw" : [ "S5A", ")", "." ],
+        "tags" : [ "NN", "-RRB-", "." ],
+        "lemmas" : [ "s5a", ")", "." ],
+        "entities" : [ "B-Gene_or_gene_product", "O", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ ],
+            "roots" : [ 0 ]
+          },
+          "universal-basic" : {
+            "edges" : [ ],
+            "roots" : [ 0 ]
+          }
+        }
+      } ]
+    }
+  },
+  "mentions" : [ {
+    "type" : "EventMention",
+    "id" : "E:1775103803",
+    "text" : "FoxO3A-dependent induction of HER3 gene transcription",
+    "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:2085603078",
+      "text" : "induction",
+      "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 39,
+        "end" : 40
+      },
+      "characterStartOffset" : 324,
+      "characterEndOffset" : 333,
+      "sentence" : 1,
+      "document" : "1955805614",
+      "keep" : true,
+      "foundBy" : "Positive_regulation_syntax_3_noun"
+    },
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "EventMention",
+        "id" : "E:1332281337",
+        "text" : "HER3 gene transcription",
+        "labels" : [ "Transcription", "IncreaseAmount", "Amount", "SimpleEvent", "Event", "PossibleController" ],
+        "trigger" : {
+          "type" : "TextBoundMention",
+          "id" : "T:1331776980",
+          "text" : "transcription",
+          "labels" : [ "Transcription", "IncreaseAmount", "Amount", "SimpleEvent", "Event", "PossibleController" ],
+          "tokenInterval" : {
+            "start" : 43,
+            "end" : 44
+          },
+          "characterStartOffset" : 347,
+          "characterEndOffset" : 360,
+          "sentence" : 1,
+          "document" : "1955805614",
+          "keep" : true,
+          "foundBy" : "transcription_1"
+        },
+        "arguments" : {
+          "theme" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:-2075678136",
+            "text" : "HER3",
+            "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+            "tokenInterval" : {
+              "start" : 41,
+              "end" : 42
+            },
+            "characterStartOffset" : 337,
+            "characterEndOffset" : 341,
+            "sentence" : 1,
+            "document" : "1955805614",
+            "keep" : true,
+            "foundBy" : "ner-gene_or_gene_product-entities"
+          } ]
+        },
+        "paths" : {
+          "theme" : {
+            "T:-2075678136" : [ {
+              "source" : 43,
+              "destination" : 41,
+              "relation" : "compound"
+            } ]
+          }
+        },
+        "tokenInterval" : {
+          "start" : 41,
+          "end" : 44
+        },
+        "characterStartOffset" : 337,
+        "characterEndOffset" : 360,
+        "sentence" : 1,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "transcription_1"
+      } ],
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-1671283673",
+        "text" : "FoxO3A",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 37,
+          "end" : 38
+        },
+        "characterStartOffset" : 307,
+        "characterEndOffset" : 313,
+        "sentence" : 1,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "paths" : {
+      "controlled" : {
+        "E:1332281337" : [ {
+          "source" : 39,
+          "destination" : 43,
+          "relation" : "nmod_of"
+        }, {
+          "source" : 43,
+          "destination" : 42,
+          "relation" : "compound"
+        } ]
+      },
+      "controller" : {
+        "T:-1671283673" : [ {
+          "source" : 39,
+          "destination" : 37,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 37,
+      "end" : 44
+    },
+    "characterStartOffset" : 307,
+    "characterEndOffset" : 360,
+    "sentence" : 1,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "Positive_regulation_syntax_3_noun"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:1882710110",
+    "text" : "PLX4032-induced HER2 levels",
+    "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:507337780",
+      "text" : "induced",
+      "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 9,
+        "end" : 10
+      },
+      "characterStartOffset" : 2016,
+      "characterEndOffset" : 2023,
+      "sentence" : 16,
+      "document" : "1955805614",
+      "keep" : true,
+      "foundBy" : "Positive_early_regulation"
+    },
+    "arguments" : {
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:822188338",
+        "text" : "PLX4032",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 8,
+          "end" : 9
+        },
+        "characterStartOffset" : 2008,
+        "characterEndOffset" : 2015,
+        "sentence" : 16,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ],
+      "controlled" : [ {
+        "type" : "EventMention",
+        "id" : "E:-1016857809",
+        "text" : "HER2 levels",
+        "labels" : [ "Amount", "SimpleEvent", "Event", "PossibleController" ],
+        "trigger" : {
+          "type" : "TextBoundMention",
+          "id" : "T:-1882660029",
+          "text" : "levels",
+          "labels" : [ "Amount", "SimpleEvent", "Event", "PossibleController" ],
+          "tokenInterval" : {
+            "start" : 11,
+            "end" : 12
+          },
+          "characterStartOffset" : 2029,
+          "characterEndOffset" : 2035,
+          "sentence" : 16,
+          "document" : "1955805614",
+          "keep" : true,
+          "foundBy" : "amount_1"
+        },
+        "arguments" : {
+          "theme" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:-2075982874",
+            "text" : "HER2",
+            "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+            "tokenInterval" : {
+              "start" : 10,
+              "end" : 11
+            },
+            "characterStartOffset" : 2024,
+            "characterEndOffset" : 2028,
+            "sentence" : 16,
+            "document" : "1955805614",
+            "keep" : true,
+            "foundBy" : "ner-gene_or_gene_product-entities"
+          } ]
+        },
+        "paths" : {
+          "theme" : {
+            "T:-2075982874" : [ {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "compound"
+            } ]
+          }
+        },
+        "tokenInterval" : {
+          "start" : 10,
+          "end" : 12
+        },
+        "characterStartOffset" : 2024,
+        "characterEndOffset" : 2035,
+        "sentence" : 16,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "amount_1"
+      } ]
+    },
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 12
+    },
+    "characterStartOffset" : 2008,
+    "characterEndOffset" : 2035,
+    "sentence" : 16,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "Positive_early_regulation"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1303583830",
+    "text" : "HER3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 10,
+      "end" : 11
+    },
+    "characterStartOffset" : 63,
+    "characterEndOffset" : 67,
+    "sentence" : 0,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1013598057",
+    "text" : "MAPK",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 12,
+      "end" : 13
+    },
+    "characterStartOffset" : 71,
+    "characterEndOffset" : 75,
+    "sentence" : 0,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-963442562",
+    "text" : "BRAF",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 16,
+      "end" : 17
+    },
+    "characterStartOffset" : 98,
+    "characterEndOffset" : 102,
+    "sentence" : 0,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:106152391",
+    "text" : "thyroid",
+    "labels" : [ "TissueType", "Context" ],
+    "tokenInterval" : {
+      "start" : 18,
+      "end" : 19
+    },
+    "characterStartOffset" : 110,
+    "characterEndOffset" : 117,
+    "sentence" : 0,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-tissue-type"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:898634111",
+    "text" : "HER3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 3
+    },
+    "characterStartOffset" : 146,
+    "characterEndOffset" : 150,
+    "sentence" : 1,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1875381970",
+    "text" : "PI3K",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 10,
+      "end" : 11
+    },
+    "characterStartOffset" : 191,
+    "characterEndOffset" : 195,
+    "sentence" : 1,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1205239029",
+    "text" : "AKT",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 12,
+      "end" : 13
+    },
+    "characterStartOffset" : 196,
+    "characterEndOffset" : 199,
+    "sentence" : 1,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1158458383",
+    "text" : "HER2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 17,
+      "end" : 18
+    },
+    "characterStartOffset" : 208,
+    "characterEndOffset" : 212,
+    "sentence" : 1,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1022853884",
+    "text" : "HER2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 23,
+      "end" : 24
+    },
+    "characterStartOffset" : 232,
+    "characterEndOffset" : 236,
+    "sentence" : 1,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-966021765",
+    "text" : "breast cancer",
+    "labels" : [ "TissueType", "Context" ],
+    "tokenInterval" : {
+      "start" : 25,
+      "end" : 27
+    },
+    "characterStartOffset" : 247,
+    "characterEndOffset" : 260,
+    "sentence" : 1,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-tissue-type"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1671283673",
+    "text" : "FoxO3A",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 37,
+      "end" : 38
+    },
+    "characterStartOffset" : 307,
+    "characterEndOffset" : 313,
+    "sentence" : 1,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-2075678136",
+    "text" : "HER3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 41,
+      "end" : 42
+    },
+    "characterStartOffset" : 337,
+    "characterEndOffset" : 341,
+    "sentence" : 1,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:178658708",
+    "text" : "transcription",
+    "labels" : [ "BioProcess", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 43,
+      "end" : 44
+    },
+    "characterStartOffset" : 347,
+    "characterEndOffset" : 360,
+    "sentence" : 1,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-bioprocess-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-228380575",
+    "text" : "Fig",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 3,
+      "end" : 4
+    },
+    "characterStartOffset" : 374,
+    "characterEndOffset" : 377,
+    "sentence" : 2,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:403379762",
+    "text" : "5A",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 0,
+      "end" : 1
+    },
+    "characterStartOffset" : 379,
+    "characterEndOffset" : 381,
+    "sentence" : 3,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "site_1letter_b"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-600070773",
+    "text" : "PLX4032",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 3
+    },
+    "characterStartOffset" : 383,
+    "characterEndOffset" : 390,
+    "sentence" : 3,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-727438897",
+    "text" : "PLX4032",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 3
+    },
+    "characterStartOffset" : 383,
+    "characterEndOffset" : 390,
+    "sentence" : 3,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "multi-site"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-755892971",
+    "text" : "HER3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 5,
+      "end" : 6
+    },
+    "characterStartOffset" : 411,
+    "characterEndOffset" : 415,
+    "sentence" : 3,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:514769094",
+    "text" : "HER2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 7,
+      "end" : 8
+    },
+    "characterStartOffset" : 420,
+    "characterEndOffset" : 424,
+    "sentence" : 3,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-2021306108",
+    "text" : "thyroid cancer",
+    "labels" : [ "TissueType", "Context" ],
+    "tokenInterval" : {
+      "start" : 13,
+      "end" : 15
+    },
+    "characterStartOffset" : 454,
+    "characterEndOffset" : 468,
+    "sentence" : 3,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-tissue-type"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-461748416",
+    "text" : "MEK inhibitor",
+    "labels" : [ "Simple_chemical", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 10
+    },
+    "characterStartOffset" : 544,
+    "characterEndOffset" : 557,
+    "sentence" : 4,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "protein-inhibitor"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-889240124",
+    "text" : "AZD6244",
+    "labels" : [ "Simple_chemical", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 10,
+      "end" : 11
+    },
+    "characterStartOffset" : 558,
+    "characterEndOffset" : 565,
+    "sentence" : 4,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-simple_chemical-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1398228163",
+    "text" : "MEK inhibitor",
+    "labels" : [ "Simple_chemical", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 4,
+      "end" : 6
+    },
+    "characterStartOffset" : 598,
+    "characterEndOffset" : 611,
+    "sentence" : 5,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "protein-inhibitor"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1145794671",
+    "text" : "HER2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 9
+    },
+    "characterStartOffset" : 621,
+    "characterEndOffset" : 625,
+    "sentence" : 5,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:939586212",
+    "text" : "HER3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 10,
+      "end" : 11
+    },
+    "characterStartOffset" : 627,
+    "characterEndOffset" : 631,
+    "sentence" : 5,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-777897557",
+    "text" : "pHER3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 14,
+      "end" : 15
+    },
+    "characterStartOffset" : 647,
+    "characterEndOffset" : 652,
+    "sentence" : 5,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:106829366",
+    "text" : "pERK",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 28,
+      "end" : 29
+    },
+    "characterStartOffset" : 732,
+    "characterEndOffset" : 736,
+    "sentence" : 5,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1606155643",
+    "text" : "Fig",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 30,
+      "end" : 31
+    },
+    "characterStartOffset" : 738,
+    "characterEndOffset" : 741,
+    "sentence" : 5,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1988028232",
+    "text" : "5B",
+    "labels" : [ "Simple_chemical", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 0,
+      "end" : 1
+    },
+    "characterStartOffset" : 743,
+    "characterEndOffset" : 745,
+    "sentence" : 6,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-simple_chemical-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1671442537",
+    "text" : "RAF",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 0,
+      "end" : 1
+    },
+    "characterStartOffset" : 748,
+    "characterEndOffset" : 751,
+    "sentence" : 7,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1309897062",
+    "text" : "MEK inhibitors",
+    "labels" : [ "Simple_chemical", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 4
+    },
+    "characterStartOffset" : 755,
+    "characterEndOffset" : 769,
+    "sentence" : 7,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "protein-inhibitor"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:705035474",
+    "text" : "luciferase",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 5,
+      "end" : 6
+    },
+    "characterStartOffset" : 778,
+    "characterEndOffset" : 788,
+    "sentence" : 7,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-684398735",
+    "text" : "HER3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 9,
+      "end" : 10
+    },
+    "characterStartOffset" : 803,
+    "characterEndOffset" : 807,
+    "sentence" : 7,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:739072816",
+    "text" : "~ 1",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 13,
+      "end" : 15
+    },
+    "characterStartOffset" : 836,
+    "characterEndOffset" : 839,
+    "sentence" : 7,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1043339679",
+    "text" : "kb",
+    "labels" : [ "CellLine", "Context" ],
+    "tokenInterval" : {
+      "start" : 15,
+      "end" : 16
+    },
+    "characterStartOffset" : 840,
+    "characterEndOffset" : 842,
+    "sentence" : 7,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-cell-lines"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1705879483",
+    "text" : "start",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 20,
+      "end" : 21
+    },
+    "characterStartOffset" : 875,
+    "characterEndOffset" : 880,
+    "sentence" : 7,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:348175313",
+    "text" : "8505C",
+    "labels" : [ "CellLine", "Context" ],
+    "tokenInterval" : {
+      "start" : 23,
+      "end" : 24
+    },
+    "characterStartOffset" : 889,
+    "characterEndOffset" : 894,
+    "sentence" : 7,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-cell-lines"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1208340541",
+    "text" : "8505C",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 23,
+      "end" : 24
+    },
+    "characterStartOffset" : 889,
+    "characterEndOffset" : 894,
+    "sentence" : 7,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "site_1letter_b"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:337604934",
+    "text" : "HER3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 5,
+      "end" : 6
+    },
+    "characterStartOffset" : 940,
+    "characterEndOffset" : 944,
+    "sentence" : 8,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1580626748",
+    "text" : "vemurafenib",
+    "labels" : [ "Simple_chemical", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 11,
+      "end" : 12
+    },
+    "characterStartOffset" : 992,
+    "characterEndOffset" : 1003,
+    "sentence" : 8,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-simple_chemical-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-2135680872",
+    "text" : "AZD6244",
+    "labels" : [ "Simple_chemical", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 13,
+      "end" : 14
+    },
+    "characterStartOffset" : 1008,
+    "characterEndOffset" : 1015,
+    "sentence" : 8,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-simple_chemical-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:690765380",
+    "text" : "bp",
+    "labels" : [ "Simple_chemical", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 24,
+      "end" : 25
+    },
+    "characterStartOffset" : 1056,
+    "characterEndOffset" : 1058,
+    "sentence" : 8,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-simple_chemical-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1828092531",
+    "text" : "Fig",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 26,
+      "end" : 27
+    },
+    "characterStartOffset" : 1060,
+    "characterEndOffset" : 1063,
+    "sentence" : 8,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1860146613",
+    "text" : "5C",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 0,
+      "end" : 1
+    },
+    "characterStartOffset" : 1065,
+    "characterEndOffset" : 1067,
+    "sentence" : 9,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "site_1letter_b"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1422564007",
+    "text" : "FoxO",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 7,
+      "end" : 8
+    },
+    "characterStartOffset" : 1113,
+    "characterEndOffset" : 1117,
+    "sentence" : 10,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1135045177",
+    "text" : "PLX4032",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 3
+    },
+    "characterStartOffset" : 1143,
+    "characterEndOffset" : 1150,
+    "sentence" : 11,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-984823602",
+    "text" : "FoxO1/3A",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 10,
+      "end" : 11
+    },
+    "characterStartOffset" : 1192,
+    "characterEndOffset" : 1200,
+    "sentence" : 11,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1026140275",
+    "text" : "10h",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 14,
+      "end" : 15
+    },
+    "characterStartOffset" : 1211,
+    "characterEndOffset" : 1214,
+    "sentence" : 11,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "site_1letter_b"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1947497812",
+    "text" : "factors",
+    "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController", "Gene_or_gene_product", "MacroMolecule", "Equivalable" ],
+    "tokenInterval" : {
+      "start" : 40,
+      "end" : 41
+    },
+    "characterStartOffset" : 1349,
+    "characterEndOffset" : 1356,
+    "sentence" : 11,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "Nstar_not_in_Nstar_proteins"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1617881667",
+    "text" : "HER3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 45,
+      "end" : 46
+    },
+    "characterStartOffset" : 1390,
+    "characterEndOffset" : 1394,
+    "sentence" : 11,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1495512989",
+    "text" : "MAPK",
+    "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 49,
+      "end" : 50
+    },
+    "characterStartOffset" : 1410,
+    "characterEndOffset" : 1414,
+    "sentence" : 11,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-family-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1187794849",
+    "text" : "HER3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 3
+    },
+    "characterStartOffset" : 1447,
+    "characterEndOffset" : 1451,
+    "sentence" : 12,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1009063238",
+    "text" : "MAPK inhibitors",
+    "labels" : [ "Simple_chemical", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 7,
+      "end" : 9
+    },
+    "characterStartOffset" : 1481,
+    "characterEndOffset" : 1496,
+    "sentence" : 12,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "protein-inhibitor"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1518777358",
+    "text" : "transcription",
+    "labels" : [ "BioProcess", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 22,
+      "end" : 23
+    },
+    "characterStartOffset" : 1603,
+    "characterEndOffset" : 1616,
+    "sentence" : 12,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-bioprocess-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1067234508",
+    "text" : "CtBP1",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 25,
+      "end" : 26
+    },
+    "characterStartOffset" : 1628,
+    "characterEndOffset" : 1633,
+    "sentence" : 12,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-746326082",
+    "text" : "CtBP2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 27,
+      "end" : 28
+    },
+    "characterStartOffset" : 1634,
+    "characterEndOffset" : 1639,
+    "sentence" : 12,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-2047239138",
+    "text" : "HER3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 12,
+      "end" : 13
+    },
+    "characterStartOffset" : 1748,
+    "characterEndOffset" : 1752,
+    "sentence" : 13,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1209635584",
+    "text" : "breast carcinoma",
+    "labels" : [ "TissueType", "Context" ],
+    "tokenInterval" : {
+      "start" : 15,
+      "end" : 17
+    },
+    "characterStartOffset" : 1765,
+    "characterEndOffset" : 1781,
+    "sentence" : 13,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-tissue-type"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1551548366",
+    "text" : "CtBP1",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 3
+    },
+    "characterStartOffset" : 1812,
+    "characterEndOffset" : 1817,
+    "sentence" : 14,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-562349597",
+    "text" : "CtBP2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 9,
+      "end" : 10
+    },
+    "characterStartOffset" : 1842,
+    "characterEndOffset" : 1847,
+    "sentence" : 14,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1019446249",
+    "text" : "HER3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 13,
+      "end" : 14
+    },
+    "characterStartOffset" : 1865,
+    "characterEndOffset" : 1869,
+    "sentence" : 14,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:2017269906",
+    "text" : "8505C",
+    "labels" : [ "CellLine", "Context" ],
+    "tokenInterval" : {
+      "start" : 15,
+      "end" : 16
+    },
+    "characterStartOffset" : 1873,
+    "characterEndOffset" : 1878,
+    "sentence" : 14,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-cell-lines"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1609667765",
+    "text" : "8505C",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 15,
+      "end" : 16
+    },
+    "characterStartOffset" : 1873,
+    "characterEndOffset" : 1878,
+    "sentence" : 14,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "site_1letter_b"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:2061154214",
+    "text" : "PLX4032",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 24,
+      "end" : 25
+    },
+    "characterStartOffset" : 1926,
+    "characterEndOffset" : 1933,
+    "sentence" : 14,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1833250677",
+    "text" : "Fig",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 26,
+      "end" : 27
+    },
+    "characterStartOffset" : 1935,
+    "characterEndOffset" : 1938,
+    "sentence" : 14,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-141447963",
+    "text" : "5D",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 0,
+      "end" : 1
+    },
+    "characterStartOffset" : 1940,
+    "characterEndOffset" : 1942,
+    "sentence" : 15,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "site_1letter_b"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-985764197",
+    "text" : "5E",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 3
+    },
+    "characterStartOffset" : 1947,
+    "characterEndOffset" : 1949,
+    "sentence" : 15,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "site_1letter_b"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:822188338",
+    "text" : "PLX4032",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 9
+    },
+    "characterStartOffset" : 2008,
+    "characterEndOffset" : 2015,
+    "sentence" : 16,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-2075982874",
+    "text" : "HER2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 10,
+      "end" : 11
+    },
+    "characterStartOffset" : 2024,
+    "characterEndOffset" : 2028,
+    "sentence" : 16,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:584732510",
+    "text" : "Fig",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 25,
+      "end" : 26
+    },
+    "characterStartOffset" : 2111,
+    "characterEndOffset" : 2114,
+    "sentence" : 16,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-542770113",
+    "text" : "5D",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 0,
+      "end" : 1
+    },
+    "characterStartOffset" : 2116,
+    "characterEndOffset" : 2118,
+    "sentence" : 17,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "site_1letter_b"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:503696396",
+    "text" : "5E",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 3
+    },
+    "characterStartOffset" : 2123,
+    "characterEndOffset" : 2125,
+    "sentence" : 17,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "site_1letter_b"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1363420998",
+    "text" : "CtBP1",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 3
+    },
+    "characterStartOffset" : 2137,
+    "characterEndOffset" : 2142,
+    "sentence" : 18,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-829924638",
+    "text" : "CtBP2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 4,
+      "end" : 5
+    },
+    "characterStartOffset" : 2147,
+    "characterEndOffset" : 2152,
+    "sentence" : 18,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1974625700",
+    "text" : "HER3",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 13,
+      "end" : 14
+    },
+    "characterStartOffset" : 2222,
+    "characterEndOffset" : 2226,
+    "sentence" : 18,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:406715696",
+    "text" : "PLX4032",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 18,
+      "end" : 19
+    },
+    "characterStartOffset" : 2257,
+    "characterEndOffset" : 2264,
+    "sentence" : 18,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1621758273",
+    "text" : "Fig",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 20,
+      "end" : 21
+    },
+    "characterStartOffset" : 2266,
+    "characterEndOffset" : 2269,
+    "sentence" : 18,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1593734992",
+    "text" : "5F",
+    "labels" : [ "Site" ],
+    "tokenInterval" : {
+      "start" : 0,
+      "end" : 1
+    },
+    "characterStartOffset" : 2271,
+    "characterEndOffset" : 2273,
+    "sentence" : 19,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "site_1letter_b"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-634888154",
+    "text" : "Fig",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 11,
+      "end" : 12
+    },
+    "characterStartOffset" : 2343,
+    "characterEndOffset" : 2346,
+    "sentence" : 20,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:-187210036",
+    "text" : "phosphorylation of FoxO1/3A between 4–10h",
+    "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:-477965839",
+      "text" : "phosphorylation",
+      "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 8,
+        "end" : 9
+      },
+      "characterStartOffset" : 1173,
+      "characterEndOffset" : 1188,
+      "sentence" : 11,
+      "document" : "1955805614",
+      "keep" : true,
+      "foundBy" : "Phosphorylation_syntax_1a_noun"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-984823602",
+        "text" : "FoxO1/3A",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 10,
+          "end" : 11
+        },
+        "characterStartOffset" : 1192,
+        "characterEndOffset" : 1200,
+        "sentence" : 11,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ],
+      "site" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:1026140275",
+        "text" : "10h",
+        "labels" : [ "Site" ],
+        "tokenInterval" : {
+          "start" : 14,
+          "end" : 15
+        },
+        "characterStartOffset" : 1211,
+        "characterEndOffset" : 1214,
+        "sentence" : 11,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "site_1letter_b"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:-984823602" : [ {
+          "source" : 8,
+          "destination" : 10,
+          "relation" : "nmod_of"
+        } ]
+      },
+      "site" : {
+        "T:1026140275" : [ {
+          "source" : 8,
+          "destination" : 14,
+          "relation" : "nmod_between"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 15
+    },
+    "characterStartOffset" : 1173,
+    "characterEndOffset" : 1214,
+    "sentence" : 11,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_1a_noun"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:1116981942",
+    "text" : "MEK inhibitors induced luciferase",
+    "labels" : [ "Negative_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:1524850795",
+      "text" : "induced",
+      "labels" : [ "Negative_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 4,
+        "end" : 5
+      },
+      "characterStartOffset" : 770,
+      "characterEndOffset" : 777,
+      "sentence" : 7,
+      "document" : "1955805614",
+      "keep" : true,
+      "foundBy" : "Positive_early_activation"
+    },
+    "arguments" : {
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:1309897062",
+        "text" : "MEK inhibitors",
+        "labels" : [ "Simple_chemical", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 2,
+          "end" : 4
+        },
+        "characterStartOffset" : 755,
+        "characterEndOffset" : 769,
+        "sentence" : 7,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "protein-inhibitor"
+      } ],
+      "controlled" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:705035474",
+        "text" : "luciferase",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 5,
+          "end" : 6
+        },
+        "characterStartOffset" : 778,
+        "characterEndOffset" : 788,
+        "sentence" : 7,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 6
+    },
+    "characterStartOffset" : 755,
+    "characterEndOffset" : 788,
+    "sentence" : 7,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "Positive_early_activation"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:-85190119",
+    "text" : "PLX4032 led to an increase in phosphorylation of FoxO1/3A between 4–10h after addition of compound (not shown), which is known to promote its dissociation from DNA, and likely discards involvement of these factors",
+    "labels" : [ "Positive_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:1783453408",
+      "text" : "led to",
+      "labels" : [ "Positive_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 3,
+        "end" : 5
+      },
+      "characterStartOffset" : 1151,
+      "characterEndOffset" : 1157,
+      "sentence" : 11,
+      "document" : "1955805614",
+      "keep" : true,
+      "foundBy" : "Positive_activation_nested_syntax_2_verb"
+    },
+    "arguments" : {
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:1135045177",
+        "text" : "PLX4032",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 2,
+          "end" : 3
+        },
+        "characterStartOffset" : 1143,
+        "characterEndOffset" : 1150,
+        "sentence" : 11,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ],
+      "controlled" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:1947497812",
+        "text" : "factors",
+        "labels" : [ "Generic_entity", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController", "Gene_or_gene_product", "MacroMolecule", "Equivalable" ],
+        "tokenInterval" : {
+          "start" : 40,
+          "end" : 41
+        },
+        "characterStartOffset" : 1349,
+        "characterEndOffset" : 1356,
+        "sentence" : 11,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "Nstar_not_in_Nstar_proteins"
+      } ]
+    },
+    "paths" : {
+      "controller" : {
+        "T:1135045177" : [ {
+          "source" : 3,
+          "destination" : 2,
+          "relation" : "nsubj"
+        } ]
+      },
+      "controlled" : {
+        "T:1947497812" : [ {
+          "source" : 3,
+          "destination" : 37,
+          "relation" : "nmod_to"
+        }, {
+          "source" : 37,
+          "destination" : 40,
+          "relation" : "nmod_of"
+        } ],
+        "T:-1495512989" : [ {
+          "source" : 3,
+          "destination" : 51,
+          "relation" : "nmod_to"
+        }, {
+          "source" : 51,
+          "destination" : 49,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 41
+    },
+    "characterStartOffset" : 1143,
+    "characterEndOffset" : 1356,
+    "sentence" : 11,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "Positive_activation_nested_syntax_2_verb, nounPhraseMatch, strictHeadMatch"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:-1016857809",
+    "text" : "HER2 levels",
+    "labels" : [ "Amount", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:-1882660029",
+      "text" : "levels",
+      "labels" : [ "Amount", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 11,
+        "end" : 12
+      },
+      "characterStartOffset" : 2029,
+      "characterEndOffset" : 2035,
+      "sentence" : 16,
+      "document" : "1955805614",
+      "keep" : true,
+      "foundBy" : "amount_1"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-2075982874",
+        "text" : "HER2",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 10,
+          "end" : 11
+        },
+        "characterStartOffset" : 2024,
+        "characterEndOffset" : 2028,
+        "sentence" : 16,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:-2075982874" : [ {
+          "source" : 11,
+          "destination" : 10,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 10,
+      "end" : 12
+    },
+    "characterStartOffset" : 2024,
+    "characterEndOffset" : 2035,
+    "sentence" : 16,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "amount_1"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:919967623",
+    "text" : "PLX4032-induced HER2 levels, which likely contributes to the remarkable increase in pHER3 we observed (Fig",
+    "labels" : [ "Positive_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:-485118274",
+      "text" : "contributes",
+      "labels" : [ "Positive_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 15,
+        "end" : 16
+      },
+      "characterStartOffset" : 2050,
+      "characterEndOffset" : 2061,
+      "sentence" : 16,
+      "document" : "1955805614",
+      "keep" : true,
+      "foundBy" : "Positive_activation_syntax_1_verb"
+    },
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:584732510",
+        "text" : "Fig",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 25,
+          "end" : 26
+        },
+        "characterStartOffset" : 2111,
+        "characterEndOffset" : 2114,
+        "sentence" : 16,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ],
+      "controller" : [ {
+        "type" : "EventMention",
+        "id" : "E:1882710110",
+        "text" : "PLX4032-induced HER2 levels",
+        "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+        "trigger" : {
+          "type" : "TextBoundMention",
+          "id" : "T:507337780",
+          "text" : "induced",
+          "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+          "tokenInterval" : {
+            "start" : 9,
+            "end" : 10
+          },
+          "characterStartOffset" : 2016,
+          "characterEndOffset" : 2023,
+          "sentence" : 16,
+          "document" : "1955805614",
+          "keep" : true,
+          "foundBy" : "Positive_early_regulation"
+        },
+        "arguments" : {
+          "controller" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:822188338",
+            "text" : "PLX4032",
+            "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+            "tokenInterval" : {
+              "start" : 8,
+              "end" : 9
+            },
+            "characterStartOffset" : 2008,
+            "characterEndOffset" : 2015,
+            "sentence" : 16,
+            "document" : "1955805614",
+            "keep" : true,
+            "foundBy" : "ner-gene_or_gene_product-entities"
+          } ],
+          "controlled" : [ {
+            "type" : "EventMention",
+            "id" : "E:-1016857809",
+            "text" : "HER2 levels",
+            "labels" : [ "Amount", "SimpleEvent", "Event", "PossibleController" ],
+            "trigger" : {
+              "type" : "TextBoundMention",
+              "id" : "T:-1882660029",
+              "text" : "levels",
+              "labels" : [ "Amount", "SimpleEvent", "Event", "PossibleController" ],
+              "tokenInterval" : {
+                "start" : 11,
+                "end" : 12
+              },
+              "characterStartOffset" : 2029,
+              "characterEndOffset" : 2035,
+              "sentence" : 16,
+              "document" : "1955805614",
+              "keep" : true,
+              "foundBy" : "amount_1"
+            },
+            "arguments" : {
+              "theme" : [ {
+                "type" : "TextBoundMention",
+                "id" : "T:-2075982874",
+                "text" : "HER2",
+                "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+                "tokenInterval" : {
+                  "start" : 10,
+                  "end" : 11
+                },
+                "characterStartOffset" : 2024,
+                "characterEndOffset" : 2028,
+                "sentence" : 16,
+                "document" : "1955805614",
+                "keep" : true,
+                "foundBy" : "ner-gene_or_gene_product-entities"
+              } ]
+            },
+            "paths" : {
+              "theme" : {
+                "T:-2075982874" : [ {
+                  "source" : 11,
+                  "destination" : 10,
+                  "relation" : "compound"
+                } ]
+              }
+            },
+            "tokenInterval" : {
+              "start" : 10,
+              "end" : 12
+            },
+            "characterStartOffset" : 2024,
+            "characterEndOffset" : 2035,
+            "sentence" : 16,
+            "document" : "1955805614",
+            "keep" : true,
+            "foundBy" : "amount_1"
+          } ]
+        },
+        "tokenInterval" : {
+          "start" : 8,
+          "end" : 12
+        },
+        "characterStartOffset" : 2008,
+        "characterEndOffset" : 2035,
+        "sentence" : 16,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "Positive_early_regulation"
+      } ]
+    },
+    "paths" : {
+      "controlled" : {
+        "T:584732510" : [ {
+          "source" : 15,
+          "destination" : 23,
+          "relation" : "ccomp"
+        }, {
+          "source" : 23,
+          "destination" : 25,
+          "relation" : "dobj"
+        } ]
+      },
+      "controller" : {
+        "E:1882710110" : [ {
+          "source" : 15,
+          "destination" : 11,
+          "relation" : "nsubj"
+        }, {
+          "source" : 11,
+          "destination" : 10,
+          "relation" : "compound"
+        } ],
+        "E:1565829439" : [ {
+          "source" : 15,
+          "destination" : 11,
+          "relation" : "nsubj"
+        }, {
+          "source" : 11,
+          "destination" : 10,
+          "relation" : "compound"
+        } ],
+        "E:-161860347" : [ {
+          "source" : 15,
+          "destination" : 11,
+          "relation" : "nsubj"
+        }, {
+          "source" : 11,
+          "destination" : 10,
+          "relation" : "compound"
+        } ],
+        "E:-1016857809" : [ {
+          "source" : 15,
+          "destination" : 11,
+          "relation" : "nsubj"
+        }, {
+          "source" : 11,
+          "destination" : 10,
+          "relation" : "compound"
+        } ],
+        "T:-2075982874" : [ {
+          "source" : 15,
+          "destination" : 11,
+          "relation" : "nsubj"
+        }, {
+          "source" : 11,
+          "destination" : 10,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 26
+    },
+    "characterStartOffset" : 2008,
+    "characterEndOffset" : 2114,
+    "sentence" : 16,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "Positive_activation_syntax_1_verb"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:514161484",
+    "text" : "HER2 levels, which likely contributes to the remarkable increase in pHER3 we observed (Fig",
+    "labels" : [ "Positive_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:-485118274",
+      "text" : "contributes",
+      "labels" : [ "Positive_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 15,
+        "end" : 16
+      },
+      "characterStartOffset" : 2050,
+      "characterEndOffset" : 2061,
+      "sentence" : 16,
+      "document" : "1955805614",
+      "keep" : true,
+      "foundBy" : "Positive_activation_syntax_1_verb"
+    },
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:584732510",
+        "text" : "Fig",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 25,
+          "end" : 26
+        },
+        "characterStartOffset" : 2111,
+        "characterEndOffset" : 2114,
+        "sentence" : 16,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ],
+      "controller" : [ {
+        "type" : "EventMention",
+        "id" : "E:-1016857809",
+        "text" : "HER2 levels",
+        "labels" : [ "Amount", "SimpleEvent", "Event", "PossibleController" ],
+        "trigger" : {
+          "type" : "TextBoundMention",
+          "id" : "T:-1882660029",
+          "text" : "levels",
+          "labels" : [ "Amount", "SimpleEvent", "Event", "PossibleController" ],
+          "tokenInterval" : {
+            "start" : 11,
+            "end" : 12
+          },
+          "characterStartOffset" : 2029,
+          "characterEndOffset" : 2035,
+          "sentence" : 16,
+          "document" : "1955805614",
+          "keep" : true,
+          "foundBy" : "amount_1"
+        },
+        "arguments" : {
+          "theme" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:-2075982874",
+            "text" : "HER2",
+            "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+            "tokenInterval" : {
+              "start" : 10,
+              "end" : 11
+            },
+            "characterStartOffset" : 2024,
+            "characterEndOffset" : 2028,
+            "sentence" : 16,
+            "document" : "1955805614",
+            "keep" : true,
+            "foundBy" : "ner-gene_or_gene_product-entities"
+          } ]
+        },
+        "paths" : {
+          "theme" : {
+            "T:-2075982874" : [ {
+              "source" : 11,
+              "destination" : 10,
+              "relation" : "compound"
+            } ]
+          }
+        },
+        "tokenInterval" : {
+          "start" : 10,
+          "end" : 12
+        },
+        "characterStartOffset" : 2024,
+        "characterEndOffset" : 2035,
+        "sentence" : 16,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "amount_1"
+      } ]
+    },
+    "paths" : {
+      "controlled" : {
+        "T:584732510" : [ {
+          "source" : 15,
+          "destination" : 23,
+          "relation" : "ccomp"
+        }, {
+          "source" : 23,
+          "destination" : 25,
+          "relation" : "dobj"
+        } ]
+      },
+      "controller" : {
+        "E:1882710110" : [ {
+          "source" : 15,
+          "destination" : 11,
+          "relation" : "nsubj"
+        }, {
+          "source" : 11,
+          "destination" : 10,
+          "relation" : "compound"
+        } ],
+        "E:1565829439" : [ {
+          "source" : 15,
+          "destination" : 11,
+          "relation" : "nsubj"
+        }, {
+          "source" : 11,
+          "destination" : 10,
+          "relation" : "compound"
+        } ],
+        "E:-161860347" : [ {
+          "source" : 15,
+          "destination" : 11,
+          "relation" : "nsubj"
+        }, {
+          "source" : 11,
+          "destination" : 10,
+          "relation" : "compound"
+        } ],
+        "E:-1016857809" : [ {
+          "source" : 15,
+          "destination" : 11,
+          "relation" : "nsubj"
+        }, {
+          "source" : 11,
+          "destination" : 10,
+          "relation" : "compound"
+        } ],
+        "T:-2075982874" : [ {
+          "source" : 15,
+          "destination" : 11,
+          "relation" : "nsubj"
+        }, {
+          "source" : 11,
+          "destination" : 10,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 10,
+      "end" : 26
+    },
+    "characterStartOffset" : 2024,
+    "characterEndOffset" : 2114,
+    "sentence" : 16,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "Positive_activation_syntax_1_verb"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:1332281337",
+    "text" : "HER3 gene transcription",
+    "labels" : [ "Transcription", "IncreaseAmount", "Amount", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:1331776980",
+      "text" : "transcription",
+      "labels" : [ "Transcription", "IncreaseAmount", "Amount", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 43,
+        "end" : 44
+      },
+      "characterStartOffset" : 347,
+      "characterEndOffset" : 360,
+      "sentence" : 1,
+      "document" : "1955805614",
+      "keep" : true,
+      "foundBy" : "transcription_1"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-2075678136",
+        "text" : "HER3",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 41,
+          "end" : 42
+        },
+        "characterStartOffset" : 337,
+        "characterEndOffset" : 341,
+        "sentence" : 1,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:-2075678136" : [ {
+          "source" : 43,
+          "destination" : 41,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 41,
+      "end" : 44
+    },
+    "characterStartOffset" : 337,
+    "characterEndOffset" : 360,
+    "sentence" : 1,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "transcription_1"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:-371746788",
+    "text" : "PLX4032 led to an increase in phosphorylation of FoxO1/3A between 4–10h after addition of compound (not shown), which is known to promote its dissociation from DNA, and likely discards involvement of these factors as transcriptional regulators of HER3 in response to MAPK",
+    "labels" : [ "Negative_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:-773147476",
+      "text" : "led to",
+      "labels" : [ "Negative_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 3,
+        "end" : 5
+      },
+      "characterStartOffset" : 1151,
+      "characterEndOffset" : 1157,
+      "sentence" : 11,
+      "document" : "1955805614",
+      "keep" : true,
+      "foundBy" : "Positive_activation_nested_syntax_2_verb"
+    },
+    "arguments" : {
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:1135045177",
+        "text" : "PLX4032",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 2,
+          "end" : 3
+        },
+        "characterStartOffset" : 1143,
+        "characterEndOffset" : 1150,
+        "sentence" : 11,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ],
+      "controlled" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-1495512989",
+        "text" : "MAPK",
+        "labels" : [ "Family", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 49,
+          "end" : 50
+        },
+        "characterStartOffset" : 1410,
+        "characterEndOffset" : 1414,
+        "sentence" : 11,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "ner-family-entities"
+      } ]
+    },
+    "paths" : {
+      "controller" : {
+        "T:1135045177" : [ {
+          "source" : 3,
+          "destination" : 2,
+          "relation" : "nsubj"
+        } ]
+      },
+      "controlled" : {
+        "T:1947497812" : [ {
+          "source" : 3,
+          "destination" : 37,
+          "relation" : "nmod_to"
+        }, {
+          "source" : 37,
+          "destination" : 40,
+          "relation" : "nmod_of"
+        } ],
+        "T:-1495512989" : [ {
+          "source" : 3,
+          "destination" : 51,
+          "relation" : "nmod_to"
+        }, {
+          "source" : 51,
+          "destination" : 49,
+          "relation" : "compound"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 50
+    },
+    "characterStartOffset" : 1143,
+    "characterEndOffset" : 1414,
+    "sentence" : 11,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "Positive_activation_nested_syntax_2_verb"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:1442155089",
+    "text" : "CtBP1, and to a lesser extent CtBP2, increased basal HER3",
+    "labels" : [ "Negative_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:2084473109",
+      "text" : "increased",
+      "labels" : [ "Negative_activation", "ActivationEvent", "ComplexEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 11,
+        "end" : 12
+      },
+      "characterStartOffset" : 1849,
+      "characterEndOffset" : 1858,
+      "sentence" : 14,
+      "document" : "1955805614",
+      "keep" : true,
+      "foundBy" : "Positive_activation_syntax_1_verb"
+    },
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-1019446249",
+        "text" : "HER3",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 13,
+          "end" : 14
+        },
+        "characterStartOffset" : 1865,
+        "characterEndOffset" : 1869,
+        "sentence" : 14,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ],
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:1551548366",
+        "text" : "CtBP1",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 2,
+          "end" : 3
+        },
+        "characterStartOffset" : 1812,
+        "characterEndOffset" : 1817,
+        "sentence" : 14,
+        "document" : "1955805614",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "paths" : {
+      "controlled" : {
+        "T:-1019446249" : [ {
+          "source" : 11,
+          "destination" : 13,
+          "relation" : "dobj"
+        } ]
+      },
+      "controller" : {
+        "T:1551548366" : [ {
+          "source" : 11,
+          "destination" : 0,
+          "relation" : "nsubj"
+        }, {
+          "source" : 0,
+          "destination" : 2,
+          "relation" : "nmod_of"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 2,
+      "end" : 14
+    },
+    "characterStartOffset" : 1812,
+    "characterEndOffset" : 1869,
+    "sentence" : 14,
+    "document" : "1955805614",
+    "keep" : true,
+    "foundBy" : "Positive_activation_syntax_1_verb"
+  } ]
+}

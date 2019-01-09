@@ -1,6 +1,10 @@
-import Link from '../components/link.js';
+/**
+ * Not currently in use.
+ */
 
-module.exports = (function() {
+import Link from "../components/link.js";
+
+module.exports = (function () {
   let _svg;
   let activeObject = null;
   let string = null;
@@ -24,8 +28,8 @@ module.exports = (function() {
     constructor(svg) {
       // listeners for label handling
       _svg = svg;
-      svg.on('tag-edit', listenForEdit);
-      svg.on('link-label-edit', listenForEdit);
+      svg.on("tag-edit", listenForEdit);
+      svg.on("link-label-edit", listenForEdit);
       this.stopEditing = stopEditing;
     }
   }
@@ -41,7 +45,7 @@ module.exports = (function() {
     if (activeObject && activeObject.isEditing) {
       let text = activeObject.text();
       if (text && !(activeObject instanceof Link)) {
-        _svg.fire('label-updated', { object: text, label: text.text() });
+        _svg.fire("label-updated", {object: text, label: text.text()});
       }
       activeObject.stopEditing();
       activeObject = null;
@@ -54,48 +58,53 @@ module.exports = (function() {
     activeObject.text(string);
   }
 
-  document.addEventListener('keydown', function(e) {
+  document.addEventListener("keydown", function (e) {
     if (activeObject && activeObject.isEditing) {
-        if (KeyValues.indexOf(e.keyCode) > -1) {
-          switch (e.keyCode) {
-            case Key.delete:
-                if (string === null) { string = originalString; }
-                updateString(string.slice(0, -1));
-              break;
-            case Key.tab:
-              break;
-            case Key.enter:
-                stopEditing();
-              break;
-            case Key.escape:
-                updateString(originalString);
-                stopEditing();
-              break;
-            case Key.right:
-              if (string === null) {
-                updateString(originalString);
-              }
-              break;
-            default:
-              break;
-          }
-        };
+      if (KeyValues.indexOf(e.keyCode) > -1) {
+        switch (e.keyCode) {
+          case Key.delete:
+            if (string === null) {
+              string = originalString;
+            }
+            updateString(string.slice(0, -1));
+            break;
+          case Key.tab:
+            break;
+          case Key.enter:
+            stopEditing();
+            break;
+          case Key.escape:
+            updateString(originalString);
+            stopEditing();
+            break;
+          case Key.right:
+            if (string === null) {
+              updateString(originalString);
+            }
+            break;
+          default:
+            break;
+        }
+      }
+      ;
     }
-  })
-  document.addEventListener('keypress', function(e) {
+  });
+  document.addEventListener("keypress", function (e) {
     // console.log(String.fromCharCode(e.which), e.which, e.metaKey);
     if (activeObject && activeObject.isEditing) {
       if (e.which === 32) {
         e.preventDefault();
       }
       if (e.which > 31 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        if (string === null) { string = ''; }
+        if (string === null) {
+          string = "";
+        }
         updateString(string + String.fromCharCode(e.which));
       }
     }
   });
 
-  document.addEventListener('mousedown', stopEditing);
+  document.addEventListener("mousedown", stopEditing);
 
   return LabelManager;
 })();

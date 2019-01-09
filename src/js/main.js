@@ -1,73 +1,557 @@
-import * as SVG from 'svg.js';
-import Parser from './parse/parse.js';
-import TreeLayout from './treelayout.js';
-import * as ymljson from './ymljson.js';
-import LabelManager from './managers/labelmanager.js';
-import RowManager from './managers/rowmanager.js';
-import Taxonomy from './managers/taxonomy.js';
-import Tooltip from './managers/tooltip.js';
-import Word from './components/word.js';
-import WordCluster from './components/wordcluster.js';
-import Link from './components/link.js';
-import load from './xhr.js';
+/**
+ * Main library class
+ */
 
-const Main = (function() {
-  // classes
-  let parser, lm, rm, tm;
+import _ from "lodash";
+import $ from "jquery";
+import * as SVG from "svg.js";
 
-  // main svg element
-  let svg;
-  let css = '';
+import Parser from "./parse/parse.js";
+import RowManager from "./managers/rowmanager.js";
+import LabelManager from "./managers/labelmanager.js";
+import Taxonomy from "./managers/taxonomy.js";
 
-  // node-link objects
-  let words = [];
-  let links = [];
-  let clusters = [];
+import Config from "./config.js";
 
-  // other html elements
-  let tooltip = {};
-  let tree = {};
-  let options = {
-    showSyntax: false,
-    showLinksOnMove: false,
-    showTreeInModal: false
-  };
+import Util from "./util.js";
 
-  //--------------------------------
-  // public functions
-  //--------------------------------
+/**
+ * Take a small performance hit from `autobind` to ensure that the scope of
+ * `this` is always correct for all our API methods
+ */
+import autobind from "autobind-decorator";
+
+@autobind
+class Main {
   /**
-   * init:  set up singleton classes and create initial drawing
+   * Initialises a TAG instance with the given parameters
+   * @param {String|Element|jQuery} container - Either a string containing the
+   *     ID of the container element, or the element itself (as a
+   *     native/jQuery object)
+   * @param {Object} options - Overrides for default library options
    */
-  function init() {
-    // setup
-    let body = document.body.getBoundingClientRect();
-    svg = new SVG.Doc('main')
-      .size(body.width, window.innerHeight - body.top - 10);
-    tooltip = new Tooltip('tooltip', svg);
-    parser  = new Parser();
-    rm      = new RowManager(svg);
-    lm      = new LabelManager(svg);
-    tm      = new Taxonomy('taxonomy');
-    tree    = new TreeLayout('#tree', svg);
+  constructor(container, options = {}) {
+    // Config options
+    this.config = _.defaults(
+      options,
+      new Config()
+    );
 
-    if (document.getElementById('svgStyles')) {
-      css = document.getElementById('svgStyles').innerHTML;
+    // SVG.Doc expects either a string with the element's ID, or the element
+    // itself (not a jQuery object).
+    if (_.hasIn(container, "jquery")) {
+      container = container[0];
     }
 
-    // load and render initial dataset by default
-    changeDataset();
+    this.svg = new SVG.Doc(container);
 
-    setupSVGListeners();
-    setupUIListeners();
-  } // end init
+    // That said, we need to set the SVG Doc's size using absolute units
+    // (since they are used for calculating the widths of rows and other
+    // elements).  We use jQuery to get the parent's size.
+    this.$container = $(this.svg.node).parent();
 
+    // Managers/Components
+    this.parser = new Parser();
+    this.rowManager = new RowManager(this.svg, this.config);
+    this.labelManager = new LabelManager(this.svg);
+    this.taxonomyManager = new Taxonomy(this.config);
 
-  function setupSVGListeners() {
-    // svg event listeners
-    svg.on('row-resize', function(e) {
-      lm.stopEditing();
-      rm.resizeRow(e.detail.object.idx, e.detail.y);
+    // Tokens and links that are currently drawn on the visualisation
+    this.words = [];
+    this.links = [];
+
+    // Initialisation
+    this.resize();
+    this._setupSVGListeners();
+    this._setupUIListeners();
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Loading data into the parser
+
+  /**
+   * Loads the given annotation data onto the TAG visualisation
+   * @param {Object} data - The data to load
+   * @param {String} format - One of the supported format identifiers for
+   *     the data
+   */
+  loadData(data, format) {
+    this.parser.loadData(data, format);
+    this.redraw();
+  }
+
+  /**
+   * Reads the given data file asynchronously and loads it onto the TAG
+   * visualisation
+   * @param {Object} path - The path pointing to the data
+   * @param {String} format - One of the supported format identifiers for
+   *     the data
+   */
+  async loadUrlAsync(path, format) {
+    const data = await $.ajax(path);
+    this.parser.loadData(data, format);
+    this.redraw();
+  }
+
+  /**
+   * Reads the given annotation files and loads them onto the TAG
+   * visualisation
+   * @param {FileList} fileList - We generally expect only one file here, but
+   *     some formats (e.g., Brat) involve multiple files per dataset
+   * @param {String} format
+   */
+  async loadFilesAsync(fileList, format) {
+    // Instantiate FileReaders for all the given files, and wait until they
+    // are read
+    const readPromises = _.map(fileList, (file) => {
+      const reader = new FileReader();
+      reader.readAsText(file);
+      return new Promise((resolve) => {
+        reader.onload = () => {
+          resolve({
+            name: file.name,
+            type: file.type,
+            content: reader.result
+          });
+        };
+      });
+    });
+
+    const files = await Promise.all(readPromises);
+    this.parser.loadFiles(files, format);
+    this.redraw();
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Controlling the SVG element
+
+  /**
+   * Prepares all the Rows/Words/Links.
+   * Adds all Words/WordClusters to Rows in the visualisation, but does not draw
+   * Links or colour the various Words/WordTags
+   */
+  init() {
+    // Save a reference to the currently loaded tokens and links
+    const data = this.parser.getParsedData();
+    this.words = data.words;
+    this.links = data.links;
+
+    // Calculate the Link slots (vertical intervals to separate
+    // crossing/intervening Links).
+    // Because the order of the Links array affects the slot calculations,
+    // we sort it here first in case they aren't sorted in the original
+    // annotation data.
+    this.links = Util.sortForSlotting(this.links);
+    this.links.forEach(link => link.calculateSlot(this.words));
+
+    // Initialise the first Row; new ones will be added automatically as
+    // Words are drawn onto the visualisation
+    if (this.words.length > 0 && !this.rowManager.lastRow) {
+      this.rowManager.appendRow();
+    }
+
+    // Draw the Words onto the visualisation
+    this.words.forEach(word => {
+      // If the tag categories to show for the Word are already set (via the
+      // default config or user options), set them here so that the Word can
+      // draw them directly on init
+      word.setTopTagCategory(this.config.topTagCategory);
+      word.setBottomTagCategory(this.config.bottomTagCategory);
+      word.init(this);
+      this.rowManager.addWordToRow(word, this.rowManager.lastRow);
+    });
+
+    // We have to initialise all the Links before we draw any of them, to
+    // account for nested Links etc.
+    this.links.forEach(link => {
+      link.init(this);
+    });
+  }
+
+  /**
+   * Resizes Rows and (re-)draws Links and WordClusters, without changing
+   * the positions of Words/Link handles
+   */
+  draw() {
+    // Draw in the currently toggled Links
+    this.links.forEach(link => {
+      if ((link.top && link.category === this.config.topLinkCategory) ||
+        (!link.top && link.category === this.config.bottomLinkCategory)) {
+        link.show();
+      }
+
+      if ((link.top && this.config.showTopMainLabel) ||
+        (!link.top && this.config.showBottomMainLabel)) {
+        link.showMainLabel();
+      } else {
+        link.hideMainLabel();
+      }
+
+      if ((link.top && this.config.showTopArgLabels) ||
+        (!link.top && this.config.showBottomArgLabels)) {
+        link.showArgLabels();
+      } else {
+        link.hideArgLabels();
+      }
+    });
+
+    // Now that Links are visible, make sure that all Rows have enough space
+    this.rowManager.resizeAll();
+
+    // And change the Row resize cursor if compact mode is on
+    this.rowManager.rows.forEach(row => {
+      this.config.compactRows
+        ? row.draggable.addClass("row-drag-compact")
+        : row.draggable.removeClass("row-drag-compact");
+    });
+
+    // Change token colours based on the current taxonomy, if loaded
+    this.taxonomyManager.colour(this.words);
+  }
+
+  /**
+   * Removes all elements from the visualisation
+   */
+  clear() {
+    // Removing Rows takes care of Words and WordTags
+    while (this.rowManager.rows.length > 0) {
+      this.rowManager.removeLastRow();
+    }
+    // Links and Clusters are drawn directly on the main SVG document
+    this.links.forEach(link => link.svg && link.svg.remove());
+    this.words.forEach(word => {
+      word.clusters.forEach(cluster => cluster.remove());
+    });
+    // Reset colours
+    this.taxonomyManager.resetDefaultColours();
+  }
+
+  /**
+   * Resets and redraws the visualisation using the data currently stored by the
+   * Parser (if any)
+   */
+  redraw() {
+    this.clear();
+    this.init();
+    this.draw();
+  }
+
+  /**
+   * Fits the SVG element and its children to the size of its container
+   */
+  resize() {
+    this.svg.size(this.$container.innerWidth(), this.$container.innerHeight());
+    this.rowManager.resizeAll();
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Controlling taxonomic information and associated colours
+
+  /**
+   * Loads a new taxonomy specification (in YAML form) into the module
+   * @param {String} taxonomy - A YAML string representing the taxonomy object
+   */
+  loadTaxonomyYaml(taxonomy) {
+    return this.taxonomyManager.loadTaxonomyYaml(taxonomy);
+  }
+
+  /**
+   * Returns a YAML representation of the currently loaded taxonomy
+   */
+  getTaxonomyYaml() {
+    return this.taxonomyManager.getTaxonomyYaml();
+  }
+
+  /**
+   * Returns the currently loaded taxonomy as an Array.
+   * Simple labels are stored as Strings in Arrays, and category labels are
+   * stored as single-key objects.
+   *
+   * E.g., a YAML document like the following:
+   *
+   *  - Label A
+   *  - Category 1:
+   *    - Label B
+   *    - Label C
+   *  - Label D
+   *
+   * Parses to the following taxonomy object:
+   *
+   *  [
+   *    "Label A",
+   *    {
+   *      "Category 1": [
+   *        "Label B",
+   *        "Label C"
+   *      ]
+   *    },
+   *    "Label D"
+   *  ]
+   *
+   * @return {Array}
+   */
+  getTaxonomyTree() {
+    return this.taxonomyManager.getTaxonomyTree();
+  }
+
+  /**
+   * Given some label (either for a WordTag or WordCluster), return the
+   * colour that the taxonomy manager has assigned to it
+   * @param label
+   */
+  getColour(label) {
+    return this.taxonomyManager.getColour(label);
+  }
+
+  /**
+   * Sets the colour for some label (either for a WordTag or WordCluster)
+   * and redraws the visualisation
+   * @param label
+   * @param colour
+   */
+  setColour(label, colour) {
+    this.taxonomyManager.assignColour(label, colour);
+    this.taxonomyManager.colour(this.words);
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Higher-level API functions
+
+  /**
+   * Exports the current visualisation as an SVG file
+   */
+  exportSvg() {
+    // Get the raw SVG definition
+    let exportedSVG = this.svg.svg();
+
+    // We also need to inline a copy of the relevant SVG styles, which might
+    // have been modified/overwritten by the user
+    const svgRules = Util.getCssRules(
+      this.$container.find(".tag-element").toArray()
+    );
+
+    const i = exportedSVG.indexOf("</defs>");
+    exportedSVG = exportedSVG.slice(0, i)
+      + "<style>" + svgRules.join("\n") + "</style>"
+      + exportedSVG.slice(i);
+
+    // Create a virtual download link and simulate a click on it (using the
+    // native `.click()` method, since jQuery cannot `.trigger()` it
+    $(`<a 
+      href="data:image/svg+xml;charset=utf-8,${encodeURIComponent(exportedSVG)}"
+      download="tag.svg"></a>`)
+      .appendTo($("body"))[0]
+      .click();
+  }
+
+  /**
+   * Changes the value of the given option setting
+   * (Redraw to see changes)
+   * @param {String} option
+   * @param value
+   */
+  setOption(option, value) {
+    this.config[option] = value;
+  }
+
+  /**
+   * Gets the current value for the given option setting
+   * @param {String} option
+   */
+  getOption(option) {
+    return this.config[option];
+  }
+
+  /**
+   * Returns an Array of all the categories available for the top Links
+   * (Generally, event/relation annotations)
+   */
+  getTopLinkCategories() {
+    const categories = this.links
+      .filter(link => link.top)
+      .map(link => link.category);
+
+    return _.uniq(categories);
+  }
+
+  /**
+   * Shows the specified category of top Links, hiding the others
+   * @param category
+   */
+  setTopLinkCategory(category) {
+    this.setOption("topLinkCategory", category);
+    this.links
+      .filter(link => link.top)
+      .forEach(link => {
+        if (link.category === category) {
+          link.show();
+        } else {
+          link.hide();
+        }
+      });
+
+    // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
+  }
+
+  /**
+   * Returns an Array of all the categories available for the bottom Links
+   * (Generally, syntactic/dependency parses)
+   */
+  getBottomLinkCategories() {
+    const categories = this.links
+      .filter(link => !link.top)
+      .map(link => link.category);
+
+    return _.uniq(categories);
+  }
+
+  /**
+   * Shows the specified category of bottom Links, hiding the others
+   * @param category
+   */
+  setBottomLinkCategory(category) {
+    this.setOption("bottomLinkCategory", category);
+    this.links
+      .filter(link => !link.top)
+      .forEach(link => {
+        if (link.category === category) {
+          link.show();
+        } else {
+          link.hide();
+        }
+      });
+
+    // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
+  }
+
+  /**
+   * Returns an Array of all the categories available for top Word tags
+   * (Generally, text-bound mentions)
+   */
+  getTagCategories() {
+    const categories = this.words
+      .flatMap(word => word.getTagCategories());
+    return _.uniq(categories);
+  }
+
+  /**
+   * Shows the specified category of top Word tags
+   * @param category
+   */
+  setTopTagCategory(category) {
+    this.setOption("topTagCategory", category);
+    this.words.forEach(word => {
+      word.setTopTagCategory(category);
+      word.passingLinks.forEach(link => link.draw());
+    });
+
+    // (Re-)colour the labels
+    this.taxonomyManager.colour(this.words);
+
+    // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
+  }
+
+  /**
+   * Shows the specified category of bottom Word tags
+   * @param category
+   */
+  setBottomTagCategory(category) {
+    this.setOption("bottomTagCategory", category);
+    this.words.forEach(word => {
+      word.setBottomTagCategory(category);
+      word.passingLinks.forEach(link => link.draw());
+    });
+
+    // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
+  }
+
+  /**
+   * Shows/hides the main label on top Links
+   * @param {Boolean} visible - Show if true, hide if false
+   */
+  setTopMainLabelVisibility(visible) {
+    this.setOption("showTopMainLabel", visible);
+    if (visible) {
+      this.links
+        .filter(link => link.top)
+        .forEach(link => link.showMainLabel());
+    } else {
+      this.links
+        .filter(link => link.top)
+        .forEach(link => link.hideMainLabel());
+    }
+  }
+
+  /**
+   * Shows/hides the argument labels on top Links
+   * @param {Boolean} visible - Show if true, hide if false
+   */
+  setTopArgLabelVisibility(visible) {
+    this.setOption("showTopArgLabels", visible);
+    if (visible) {
+      this.links
+        .filter(link => link.top)
+        .forEach(link => link.showArgLabels());
+    } else {
+      this.links
+        .filter(link => link.top)
+        .forEach(link => link.hideArgLabels());
+    }
+  }
+
+  /**
+   * Shows/hides the main label on bottom Links
+   * @param {Boolean} visible - Show if true, hide if false
+   */
+  setBottomMainLabelVisibility(visible) {
+    this.setOption("showBottomMainLabel", visible);
+    if (visible) {
+      this.links
+        .filter(link => !link.top)
+        .forEach(link => link.showMainLabel());
+    } else {
+      this.links
+        .filter(link => !link.top)
+        .forEach(link => link.hideMainLabel());
+    }
+  }
+
+  /**
+   * Shows/hides the argument labels on bottom Links
+   * @param {Boolean} visible - Show if true, hide if false
+   */
+  setBottomArgLabelVisibility(visible) {
+    this.setOption("showBottomArgLabels", visible);
+    if (visible) {
+      this.links
+        .filter(link => !link.top)
+        .forEach(link => link.showArgLabels());
+    } else {
+      this.links
+        .filter(link => !link.top)
+        .forEach(link => link.hideArgLabels());
+    }
+  }
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Private helper/setup functions
+
+  /**
+   * Sets up listeners for custom SVG.js events
+   * N.B.: Event listeners will change the execution context by default, so
+   * either provide a closure to the main library instance or use arrow
+   * functions to preserve the original context
+   * cf. http://es6-features.org/#Lexicalthis
+   * @private
+   */
+  _setupSVGListeners() {
+    this.svg.on("row-resize", (event) => {
+      this.labelManager.stopEditing();
+      this.rowManager.resizeRow(event.detail.object.idx, event.detail.y);
     });
 
     // svg.on('label-updated', function(e) {
@@ -76,366 +560,82 @@ const Main = (function() {
     //   e.detail.object.node.style.fill = color;
     // });
 
-    svg.on('word-move-start', function() {
-      if (!options.showLinksOnMove && options.showSyntax) {
-        setSyntaxVisibility(false);
-      }
+    this.svg.on("word-move-start", () => {
+      this.links.forEach(link => {
+        if ((link.top && !this.config.showTopLinksOnMove) ||
+          (!link.top && !this.config.showBottomLinksOnMove)) {
+          link.hide();
+        }
+      });
     });
 
-    svg.on('word-move', function(e) {
-      tooltip.clear()
-      lm.stopEditing();
-      rm.moveWordOnRow(e.detail.object, e.detail.x);
+    this.svg.on("word-move", (event) => {
+      // tooltip.clear();
+      this.labelManager.stopEditing();
+      this.rowManager.moveWordOnRow(event.detail.object, event.detail.x);
     });
 
-    svg.on('word-move-end', function(e) {
-      if (!options.showLinksOnMove && options.showSyntax) {
-        setSyntaxVisibility(true);
-      }
+    this.svg.on("word-move-end", () => {
+      this.links.forEach(link => {
+        if ((link.top && link.category === this.config.topLinkCategory) ||
+          (!link.top && link.category === this.config.bottomLinkCategory)) {
+          link.show();
+        }
+      });
     });
 
-    // svg.on('tag-remove', function(e) {
-    //   e.detail.object.remove();
-    //   tm.remove(e.detail.object);
+    // this.svg.on("tag-remove", (event) => {
+    //   event.detail.object.remove();
+    //   this.taxonomyManager.remove(event.detail.object);
     // });
 
-    svg.on('row-recalculate-slots', function(e) {
-      links.forEach(link => {
-        link.resetSlotRecalculation();
-      });
-      links.forEach(link => {
-        link.recalculateSlots(words);
-        link.draw();
-      });
-    });
+    // this.svg.on("row-recalculate-slots", () => {
+    //   this.links.forEach(link => {
+    //     link.slot = null;
+    //   });
+    //   this.links = Util.sortForSlotting(this.links);
+    //   this.links.forEach(link => link.calculateSlot(this.words));
+    //   this.links.forEach(link => link.draw());
+    // });
 
-    svg.on('build-tree', function(e) {
-      document.body.classList.remove('tree-closed');
-      if (tree.isInModal) {
-        setActiveTab('tree');
-      }
-      else {
-        setActiveTab(null);
-      }
-      if (e.detail) {
-        tree.graph(e.detail.object);
-      }
-      else {
-        tree.resize();
-      }
-    });
-  }
-
-  function setActiveTab(pageId, modalId="modal") {
-    let m = document.getElementById(modalId);
-    if (pageId == null) {
-      m.classList.remove('open');
-    }
-    else {
-      m.classList.add('open');
-
-      m.querySelector('.tab.active').classList.remove('active');
-      m.querySelector('.page.active').classList.remove('active');
-      m.querySelector('header span[data-id="' + pageId + '"]').classList.add('active');
-      document.getElementById(pageId).classList.add('active');
-    }
-  }
-
-  function setupUIListeners() {
-    // window event listeners
-    // resize function
-    function resizeWindow() {
-      let body = document.body.getBoundingClientRect();
-      links.forEach(l => l.hide());
-      svg.width(body.width);
-      rm.width(body.width);
-      setSyntaxVisibility();
-    }
-    window.onresize = debounce(resizeWindow, 200);
-
-    document.getElementById('dataset').onchange = function(e) {
-      if (this.selectedIndex > 0) {
-        // FIXME: this can be improved by instead receiving the file name, rather than an index.
-        changeDataset(this.selectedIndex);
-      }
-    }
-
-    document.querySelectorAll('#options input').forEach(input => {
-      input.onclick = function() {
-        let option = this.getAttribute('data-option');
-        switch(option) {
-          case 'syntax':
-            options.showSyntax = this.checked;
-            setSyntaxVisibility();
-            break;
-          case 'links':
-            options.showLinksOnMove = this.checked;
-            break;
-          case 'tree':
-            options.showTreeInModal = this.checked;
-            // document.querySelector('.tab[data-id="tree"]').style.display = this.checked ? 'inline-block' : 'none';
-            break;
-          default: ;
-        }
-      };
-    });
-
-    let modalHeader = document.querySelector('#modal header');
-    let modalDrag = null;
-    let modalWindow = document.querySelector('#modal > div');
-    modalHeader.onmousedown = function(e) {
-      modalDrag = e;
-    }
-    document.addEventListener('mousemove', function(e) {
-      if (modalDrag) {
-        let dx = e.x - modalDrag.x;
-        let dy = e.y - modalDrag.y;
-        modalDrag = e;
-        let transform = modalWindow.style.transform.match(/-?\d+/g) || [0,0];
-        transform[0] = +transform[0] + dx || dx;
-        transform[1] = +transform[1] + dy || dy;
-        modalWindow.style.transform = `translate(${transform[0]}px, ${transform[1]}px)`;
-      }
-    });
-    document.addEventListener('mouseup', function() {
-      modalDrag = null;
-      let transform = modalWindow.style.transform.match(/-?\d+/g);
-      if (!transform) { return; }
-
-      let rect = modalWindow.getBoundingClientRect();
-      if (rect.left > window.innerWidth - 50) {
-        transform[0] -= (50 + rect.left - window.innerWidth);
-      }
-      else if (rect.right < 50) {
-        transform[0] -= (rect.right - 50);
-      }
-      if (rect.top < 0) {
-        transform[1] -= rect.top;
-      }
-      else if (rect.top > window.innerHeight - 50) {
-        transform[1] -= (50 + rect.top - window.innerHeight);
-      }
-      modalWindow.style.transform = `translate(${transform[0]}px, ${transform[1]}px)`;
-    });
-
-    document.querySelectorAll('.modal header .tab').forEach(tab => {
-      tab.onclick = function() {
-        setActiveTab(this.getAttribute('data-id'));
-      }
-    });
-
-    document.getElementById('custom-annotation').onclick = function() {
-      document.getElementById('input-modal').classList.add('open');
-    }
-
-    document.getElementById('options-toggle').onclick = function() {
-        setActiveTab('options');
-    }
-    document.getElementById('taxonomy-toggle').onclick = function() {
-        setActiveTab('taxonomy');
-    }
-    document.querySelectorAll('.modal').forEach(modal => {
-      modal.onclick = function(e) {
-        e.target.classList.remove('open');
-      }
-    });
-
-    // upload file
-    document.getElementById('file-input').onchange = uploadFile;
-
-    // upload file via drag and drop
-    document.body.addEventListener('dragenter', (e) => e.preventDefault());
-    document.body.addEventListener('dragover', (e) => e.preventDefault());
-    document.body.addEventListener('drop', uploadFile);
-
-
-    function exportFile() {
-
-      let exportedSVG = svg.svg();
-      let i = exportedSVG.indexOf('</defs>');
-      exportedSVG = exportedSVG.slice(0, i)
-        + '<style>' + css + '</style>'
-        + exportedSVG.slice(i);
-      let a = document.getElementById('download');
-      a.setAttribute('href', 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(exportedSVG));
-      a.setAttribute('download', 'tag.svg');
-      a.click();
-    }
-    document.getElementById('download-button').onclick = exportFile;
-    document.addEventListener('keydown', (e) => {
-      let key = e.keyCode || e.which;
-      let ctrl = e.ctrlKey || (e.metaKey && !e.ctrlKey);
-      if (key === 83 && ctrl) {
-        e.preventDefault();
-        exportFile();
-      }
-    })
-  }
-
-  /* read an externally loaded file */
-  function uploadFile(e) {
-    e.preventDefault();
-    let files = (this === document.body) ? e.dataTransfer.files : e.target.files;
-
-    // read blobs with FileReader
-    const promises = [...files].map(file => {
-      const fr = new FileReader();
-      fr.readAsText(file);
-      return new Promise((resolve, reject) => {
-        fr.onload = function() {
-          resolve({
-            name: file.name,
-            type: file.type,
-            content: fr.result
-          });
-        };
-      });
-    });
-
-    Promise.all(promises).then(files => {
-      try {
-        let message = parser.parseFiles(files);
-        redrawVisualization();
-        if (message) {
-          printMessage(message);
-        }
-      }
-      catch(err) {
-        console.log('ERROR: ', err);
-        printMessage(err);
-      }
-      document.getElementById('form').reset();
-    });
-  }
-
-  function printMessage(text) {
-    document.getElementById('message').textContent = text;
-  }
-  function clearMessage() {
-    document.getElementById('message').textContent = '';
-  }
-
-
-  /**
-   * changeDataset:  read and parse data from a json file in the /data folder
-   *   and generate visualization from it
-   */
-  function changeDataset(index = 6) {
-    let path;
-    if (index >= 6) {
-      path = `./data/example${index - 5}.ann`;
-    }
-    else {
-      path = `./data/data${index}.json`;
-    }
-
-    parser.loadFile(path)
-      .then(data => {
-        redrawVisualization();
-        clearMessage();
-      })
-      .catch(err => {
-        console.log('ERROR: ', err);
-        printMessage(err);
-      });
-  };
-
-  /**
-   * clear:  delete all elements from the visualization
-   */
-  function clear() {
-    while (rm.rows.length > 0) {
-      rm.removeRow();
-    }
-    links.forEach(link => link.svg && link.svg.remove());
-  }
-
-  function redrawVisualization() {
-    let data = parser.parsedData;
-    ymljson.convert('taxonomy.yml', function(taxonomy) {
-      clear();
-      words = data.words;
-      links = data.links;
-      clusters = data.clusters;
-      setSyntaxVisibility();
-      draw();
-
-      tm.draw(taxonomy, words);
-    });
+    // ZW: Hardcoded dependencies on full UI
+    // this.svg.on("build-tree", (event) => {
+    //   document.body.classList.remove("tree-closed");
+    //   if (tree.isInModal) {
+    //     setActiveTab("tree");
+    //   }
+    //   else {
+    //     setActiveTab(null);
+    //   }
+    //   if (e.detail) {
+    //     tree.graph(e.detail.object);
+    //   }
+    //   else {
+    //     tree.resize();
+    //   }
+    // });
   }
 
   /**
-   * draw:  draw words, links, rows, etc. onto the visualization
+   * Sets up listeners for general browser events
+   * @private
    */
-  function draw() {
-    if (words.length > 0 && !rm.lastRow) {
-      rm.appendRow();
-    }
-    words.forEach(word => {
-      word.init(svg);
-      rm.addWordToRow(word, rm.lastRow);
-    });
-    links.forEach(link => {
-      link.init(svg);
-    });
-    links.forEach(link => {
-      link.recalculateSlots(words);
-      link.draw();
-    })
-    rm.resizeAll();
+  _setupUIListeners() {
+    // Browser window resize
+    $(window).on("resize", _.throttle(() => {
+      this.resize();
+    }, 50));
   }
 
-  //--------------------------------
-  // private functions
-  //--------------------------------
-
-  // from https://davidwalsh.name/javascript-debounce-function,
-  // as taken from underscore
-
-  // Returns a function, that, as long as it continues to be invoked, will not
-  // be triggered. The function will be called after it stops being called for
-  // N milliseconds. If `immediate` is passed, trigger the function on the
-  // leading edge, instead of the trailing.
-  function debounce(func, wait, immediate) {
-  	var timeout;
-  	return function() {
-  		var context = this, args = args;
-  		var later = function() {
-  			timeout = null;
-  			if (!immediate) func.apply(context, args);
-  		};
-  		var callNow = immediate && !timeout;
-  		clearTimeout(timeout);
-  		timeout = setTimeout(later, wait);
-  		if (callNow) func.apply(context, args);
-  	};
-  };
-
-
-  /** options to set visibility of syntax tree
-   */
-  function setSyntaxVisibility(bool) {
-    bool = (bool === undefined) ? options.showSyntax : bool;
-    links.forEach(l => {
-      if (!l.top) {
-        bool ? l.show() : l.hide();
-      }
-      else {
-        l.show();
-      }
-    });
-    if (rm.rows.length > 0) {
-      rm.resizeAll();
-    }
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Debug functions
+  xLine(x) {
+    this.svg.line(x, 0, x, 1000).stroke({width: 1});
   }
 
-  // export public functions
-  return {
-    init,
-    draw,
-    changeDataset
-  };
+  yLine(y) {
+    this.svg.line(0, y, 1000, y).stroke({width: 1});
+  }
+}
 
-})();
-
-Main.init();
+export default Main;

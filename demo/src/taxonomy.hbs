@@ -1,0 +1,74 @@
+{{!-- Recursive Handlebars partial for generating nested taxonomy accordion --}}
+
+{{!-- Before rendering, the full taxonomy tree should have been flattened into
+   -- an Array of plain Object blocks:
+   --  * Consecutive leaf nodes are grouped together within a single Object
+   --  * Branches of the tree are given one Object each, with a `children`
+   --    property that can recursively contain more leaf/branch blocks
+   --}}
+
+{{!-- Colour picker --}}
+{{#*inline "colourpicker"}}
+<form class="form-inline">
+  <div id="cp-{{id}}" class="input-group input-group-sm tag-cp">
+              <span class="input-group-prepend">
+                <span class="input-group-text colorpicker-input-addon"><i></i>
+                </span>
+              </span>
+    <input type="text" class="form-control" data-label="{{label}}"
+           value="{{colour}}"/>
+  </div>
+</form>
+{{/inline}}
+
+{{!-- Taxonomy tree entries --}}
+{{#each children}}
+  {{#if leaves}}
+  {{!-- A leaf node block has the `leaves` property --}}
+
+    <ul class="list-group list-group-flush">
+      {{#each leaves}}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span class="" style="padding-left: {{../padding}}px;">
+            {{label}}
+          </span>
+
+          {{> colourpicker}}
+        </li>
+      {{/each}}
+    </ul>
+
+  {{else}}
+  {{!-- A recursive sub-tree --}}
+
+  {{!-- The sub-tree label --}}
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+      <a id="heading-{{id}}"
+         class=""
+         data-toggle="collapse"
+         href="#collapse-{{id}}"
+         role="button"
+         aria-expanded="true"
+         aria-controls="collapse-{{id}}">
+
+        {{!-- Including space for an icon/symbol --}}
+        <span style="padding-left: {{padding}}px;">
+        <i class="fas fa-fw text-muted" aria-hidden="true"></i> {{label}}
+      </span>
+      </a>
+
+      {{> colourpicker}}
+    </div>
+
+    {{!-- The sub-tree children --}}
+    <div class="collapse show"
+         id="collapse-{{id}}"
+         aria-labelledby="heading-{{id}}">
+
+      {{> taxonomySubtree }}
+
+    </div>
+
+  {{/if}}
+{{/each}}

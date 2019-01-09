@@ -1,0 +1,56 @@
+{
+  "_from": "github:braintree/jsdoc-template",
+  "_id": "jsdoc-template@3.3.0",
+  "_inBundle": false,
+  "_integrity": "sha1-JqjJUidJ+fal6B4guu4afckn7EQ=",
+  "_location": "/jsdoc-template",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "braintree/jsdoc-template",
+    "rawSpec": "braintree/jsdoc-template",
+    "saveSpec": "github:braintree/jsdoc-template",
+    "fetchSpec": null,
+    "gitCommittish": "master"
+  },
+  "_requiredBy": [
+    "#DEV:/",
+    "#USER"
+  ],
+  "_resolved": "github:braintree/jsdoc-template#ec0e3c0ec95de6b4e928af3285bbf69aac2f25b6",
+  "_spec": "braintree/jsdoc-template",
+  "_where": "H:\\Git\\TextAnnotationGraphs",
+  "author": {
+    "name": "Braintreeps",
+    "email": "code@getbraintree.com"
+  },
+  "bugs": {
+    "url": "https://github.com/braintree/jsdoc-template"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Braintree JSDoc 3 Template",
+  "devDependencies": {
+    "eslint": "^2.13.1",
+    "eslint-config-braintree": "^1.0.2",
+    "taffydb": "^2.7.3"
+  },
+  "homepage": "https://github.com/braintree/jsdoc-template",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "main": "publish.js",
+  "name": "jsdoc-template",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/braintree/jsdoc-template.git"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "npm run lint"
+  },
+  "version": "3.3.0"
+}

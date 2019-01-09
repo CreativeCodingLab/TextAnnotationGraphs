@@ -1,0 +1,19 @@
+{
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "templates": {
+    "referenceTitle": "TextAnnotationGraphs",
+    "disableSort": true,
+    "collapse": false,
+    "resources": {
+      "SVG Path Spec<br>": "https://www.w3.org/TR/SVG/paths.html#PathData",
+      "SVG Cubic Bézier Curve Generator": "https://codepen.io/explosion/pen/YGApwd"
+    }
+  },
+  "opts": {
+    "encoding": "utf8",
+    "recurse": true,
+    "template": "src/jsdoc-template"
+  }
+}

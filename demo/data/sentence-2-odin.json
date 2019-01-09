@@ -1,0 +1,662 @@
+{
+  "documents" : {
+    "-504032905" : {
+      "id" : "sentence-2-odin",
+      "text" : "The phosphorylation of Hdm2 by MK2 promotes the ubiquitination of p53.",
+      "sentences" : [ {
+        "words" : [ "The", "phosphorylation", "of", "Hdm2", "by", "MK2", "promotes", "the", "ubiquitination", "of", "p53", "." ],
+        "startOffsets" : [ 0, 4, 20, 23, 28, 31, 35, 44, 48, 63, 66, 69 ],
+        "endOffsets" : [ 3, 19, 22, 27, 30, 34, 43, 47, 62, 65, 69, 70 ],
+        "raw" : [ "The", "phosphorylation", "of", "Hdm2", "by", "MK2", "promotes", "the", "ubiquitination", "of", "p53", "." ],
+        "tags" : [ "DT", "NN", "IN", "NN", "IN", "NN", "VBZ", "DT", "NN", "IN", "NN", "." ],
+        "lemmas" : [ "the", "phosphorylation", "of", "hdm2", "by", "mk2", "promote", "the", "ubiquitination", "of", "p53", "." ],
+        "entities" : [ "O", "O", "O", "B-Gene_or_gene_product", "O", "B-Gene_or_gene_product", "O", "O", "O", "O", "B-Gene_or_gene_product", "O" ],
+        "chunks" : [ "B-NP", "I-NP", "B-PP", "B-NP", "B-PP", "B-NP", "B-VP", "B-NP", "I-NP", "B-PP", "B-NP", "O" ],
+        "graphs" : {
+          "universal-enhanced" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "det"
+            }, {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "case"
+            }, {
+              "source" : 3,
+              "destination" : 5,
+              "relation" : "nmod_by"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 6,
+              "destination" : 1,
+              "relation" : "nsubj"
+            }, {
+              "source" : 6,
+              "destination" : 8,
+              "relation" : "dobj"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "det"
+            }, {
+              "source" : 8,
+              "destination" : 10,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "case"
+            } ],
+            "roots" : [ 6 ]
+          },
+          "universal-basic" : {
+            "edges" : [ {
+              "source" : 1,
+              "destination" : 0,
+              "relation" : "det"
+            }, {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "nmod"
+            }, {
+              "source" : 3,
+              "destination" : 2,
+              "relation" : "case"
+            }, {
+              "source" : 3,
+              "destination" : 5,
+              "relation" : "nmod"
+            }, {
+              "source" : 5,
+              "destination" : 4,
+              "relation" : "case"
+            }, {
+              "source" : 6,
+              "destination" : 1,
+              "relation" : "nsubj"
+            }, {
+              "source" : 6,
+              "destination" : 8,
+              "relation" : "dobj"
+            }, {
+              "source" : 8,
+              "destination" : 7,
+              "relation" : "det"
+            }, {
+              "source" : 8,
+              "destination" : 10,
+              "relation" : "nmod"
+            }, {
+              "source" : 10,
+              "destination" : 9,
+              "relation" : "case"
+            } ],
+            "roots" : [ 6 ]
+          }
+        }
+      } ]
+    }
+  },
+  "mentions" : [ {
+    "type" : "EventMention",
+    "id" : "E:-910997552",
+    "text" : "phosphorylation of Hdm2 by MK2 promotes the ubiquitination of p53",
+    "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:1695841998",
+      "text" : "promotes",
+      "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 6,
+        "end" : 7
+      },
+      "characterStartOffset" : 35,
+      "characterEndOffset" : 43,
+      "sentence" : 0,
+      "document" : "-504032905",
+      "keep" : true,
+      "foundBy" : "Positive_regulation_syntax_1_verb"
+    },
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "EventMention",
+        "id" : "E:184326113",
+        "text" : "ubiquitination of p53",
+        "labels" : [ "Ubiquitination", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+        "trigger" : {
+          "type" : "TextBoundMention",
+          "id" : "T:1014798839",
+          "text" : "ubiquitination",
+          "labels" : [ "Ubiquitination", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+          "tokenInterval" : {
+            "start" : 8,
+            "end" : 9
+          },
+          "characterStartOffset" : 48,
+          "characterEndOffset" : 62,
+          "sentence" : 0,
+          "document" : "-504032905",
+          "keep" : true,
+          "foundBy" : "Ubiquitination_syntax_1a_noun"
+        },
+        "arguments" : {
+          "theme" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:-1963583208",
+            "text" : "p53",
+            "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+            "tokenInterval" : {
+              "start" : 10,
+              "end" : 11
+            },
+            "characterStartOffset" : 66,
+            "characterEndOffset" : 69,
+            "sentence" : 0,
+            "document" : "-504032905",
+            "keep" : true,
+            "foundBy" : "ner-gene_or_gene_product-entities"
+          } ]
+        },
+        "paths" : {
+          "theme" : {
+            "T:-1963583208" : [ {
+              "source" : 8,
+              "destination" : 10,
+              "relation" : "nmod_of"
+            } ]
+          }
+        },
+        "tokenInterval" : {
+          "start" : 8,
+          "end" : 11
+        },
+        "characterStartOffset" : 48,
+        "characterEndOffset" : 69,
+        "sentence" : 0,
+        "document" : "-504032905",
+        "keep" : true,
+        "foundBy" : "Ubiquitination_syntax_1a_noun"
+      } ],
+      "controller" : [ {
+        "type" : "RelationMention",
+        "id" : "R:-1862793440",
+        "text" : "phosphorylation of Hdm2 by MK2",
+        "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+        "arguments" : {
+          "controlled" : [ {
+            "type" : "EventMention",
+            "id" : "E:-1974354674",
+            "text" : "phosphorylation of Hdm2",
+            "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+            "trigger" : {
+              "type" : "TextBoundMention",
+              "id" : "T:-1172280856",
+              "text" : "phosphorylation",
+              "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+              "tokenInterval" : {
+                "start" : 1,
+                "end" : 2
+              },
+              "characterStartOffset" : 4,
+              "characterEndOffset" : 19,
+              "sentence" : 0,
+              "document" : "-504032905",
+              "keep" : true,
+              "foundBy" : "Phosphorylation_syntax_1a_noun"
+            },
+            "arguments" : {
+              "theme" : [ {
+                "type" : "TextBoundMention",
+                "id" : "T:1278265922",
+                "text" : "Hdm2",
+                "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+                "tokenInterval" : {
+                  "start" : 3,
+                  "end" : 4
+                },
+                "characterStartOffset" : 23,
+                "characterEndOffset" : 27,
+                "sentence" : 0,
+                "document" : "-504032905",
+                "keep" : true,
+                "foundBy" : "ner-gene_or_gene_product-entities"
+              } ]
+            },
+            "paths" : {
+              "theme" : {
+                "T:1278265922" : [ {
+                  "source" : 1,
+                  "destination" : 3,
+                  "relation" : "nmod_of"
+                } ]
+              },
+              "cause" : {
+                "T:-1407646048" : [ {
+                  "source" : 1,
+                  "destination" : 3,
+                  "relation" : "nmod_of"
+                }, {
+                  "source" : 3,
+                  "destination" : 5,
+                  "relation" : "nmod_by"
+                } ]
+              }
+            },
+            "tokenInterval" : {
+              "start" : 1,
+              "end" : 4
+            },
+            "characterStartOffset" : 4,
+            "characterEndOffset" : 27,
+            "sentence" : 0,
+            "document" : "-504032905",
+            "keep" : true,
+            "foundBy" : "Phosphorylation_syntax_1a_noun"
+          } ],
+          "controller" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:-1407646048",
+            "text" : "MK2",
+            "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+            "tokenInterval" : {
+              "start" : 5,
+              "end" : 6
+            },
+            "characterStartOffset" : 31,
+            "characterEndOffset" : 34,
+            "sentence" : 0,
+            "document" : "-504032905",
+            "keep" : true,
+            "foundBy" : "ner-gene_or_gene_product-entities"
+          } ]
+        },
+        "paths" : {
+          "theme" : {
+            "T:1278265922" : [ {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "nmod_of"
+            } ]
+          },
+          "cause" : {
+            "T:-1407646048" : [ {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 3,
+              "destination" : 5,
+              "relation" : "nmod_by"
+            } ]
+          }
+        },
+        "tokenInterval" : {
+          "start" : 1,
+          "end" : 6
+        },
+        "characterStartOffset" : 4,
+        "characterEndOffset" : 34,
+        "sentence" : 0,
+        "document" : "-504032905",
+        "keep" : true,
+        "foundBy" : "Phosphorylation_syntax_1a_noun + toRelationMention"
+      } ]
+    },
+    "paths" : {
+      "controlled" : {
+        "E:184326113" : [ {
+          "source" : 6,
+          "destination" : 8,
+          "relation" : "dobj"
+        }, {
+          "source" : 8,
+          "destination" : 10,
+          "relation" : "nmod_of"
+        } ]
+      },
+      "controller" : {
+        "E:-1974354674" : [ {
+          "source" : 6,
+          "destination" : 1,
+          "relation" : "nsubj"
+        }, {
+          "source" : 1,
+          "destination" : 3,
+          "relation" : "nmod_of"
+        } ],
+        "R:-1862793440" : [ {
+          "source" : 6,
+          "destination" : 1,
+          "relation" : "nsubj"
+        }, {
+          "source" : 1,
+          "destination" : 3,
+          "relation" : "nmod_of"
+        } ],
+        "T:1278265922" : [ {
+          "source" : 6,
+          "destination" : 1,
+          "relation" : "nsubj"
+        }, {
+          "source" : 1,
+          "destination" : 3,
+          "relation" : "nmod_of"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 1,
+      "end" : 11
+    },
+    "characterStartOffset" : 4,
+    "characterEndOffset" : 69,
+    "sentence" : 0,
+    "document" : "-504032905",
+    "keep" : true,
+    "foundBy" : "Positive_regulation_syntax_1_verb"
+  }, {
+    "type" : "RelationMention",
+    "id" : "R:-1862793440",
+    "text" : "phosphorylation of Hdm2 by MK2",
+    "labels" : [ "Positive_regulation", "Regulation", "ComplexEvent", "Event", "PossibleController" ],
+    "arguments" : {
+      "controlled" : [ {
+        "type" : "EventMention",
+        "id" : "E:-1974354674",
+        "text" : "phosphorylation of Hdm2",
+        "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+        "trigger" : {
+          "type" : "TextBoundMention",
+          "id" : "T:-1172280856",
+          "text" : "phosphorylation",
+          "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+          "tokenInterval" : {
+            "start" : 1,
+            "end" : 2
+          },
+          "characterStartOffset" : 4,
+          "characterEndOffset" : 19,
+          "sentence" : 0,
+          "document" : "-504032905",
+          "keep" : true,
+          "foundBy" : "Phosphorylation_syntax_1a_noun"
+        },
+        "arguments" : {
+          "theme" : [ {
+            "type" : "TextBoundMention",
+            "id" : "T:1278265922",
+            "text" : "Hdm2",
+            "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+            "tokenInterval" : {
+              "start" : 3,
+              "end" : 4
+            },
+            "characterStartOffset" : 23,
+            "characterEndOffset" : 27,
+            "sentence" : 0,
+            "document" : "-504032905",
+            "keep" : true,
+            "foundBy" : "ner-gene_or_gene_product-entities"
+          } ]
+        },
+        "paths" : {
+          "theme" : {
+            "T:1278265922" : [ {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "nmod_of"
+            } ]
+          },
+          "cause" : {
+            "T:-1407646048" : [ {
+              "source" : 1,
+              "destination" : 3,
+              "relation" : "nmod_of"
+            }, {
+              "source" : 3,
+              "destination" : 5,
+              "relation" : "nmod_by"
+            } ]
+          }
+        },
+        "tokenInterval" : {
+          "start" : 1,
+          "end" : 4
+        },
+        "characterStartOffset" : 4,
+        "characterEndOffset" : 27,
+        "sentence" : 0,
+        "document" : "-504032905",
+        "keep" : true,
+        "foundBy" : "Phosphorylation_syntax_1a_noun"
+      } ],
+      "controller" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-1407646048",
+        "text" : "MK2",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 5,
+          "end" : 6
+        },
+        "characterStartOffset" : 31,
+        "characterEndOffset" : 34,
+        "sentence" : 0,
+        "document" : "-504032905",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:1278265922" : [ {
+          "source" : 1,
+          "destination" : 3,
+          "relation" : "nmod_of"
+        } ]
+      },
+      "cause" : {
+        "T:-1407646048" : [ {
+          "source" : 1,
+          "destination" : 3,
+          "relation" : "nmod_of"
+        }, {
+          "source" : 3,
+          "destination" : 5,
+          "relation" : "nmod_by"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 1,
+      "end" : 6
+    },
+    "characterStartOffset" : 4,
+    "characterEndOffset" : 34,
+    "sentence" : 0,
+    "document" : "-504032905",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_1a_noun + toRelationMention"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:1278265922",
+    "text" : "Hdm2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 3,
+      "end" : 4
+    },
+    "characterStartOffset" : 23,
+    "characterEndOffset" : 27,
+    "sentence" : 0,
+    "document" : "-504032905",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1407646048",
+    "text" : "MK2",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 5,
+      "end" : 6
+    },
+    "characterStartOffset" : 31,
+    "characterEndOffset" : 34,
+    "sentence" : 0,
+    "document" : "-504032905",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "TextBoundMention",
+    "id" : "T:-1963583208",
+    "text" : "p53",
+    "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+    "tokenInterval" : {
+      "start" : 10,
+      "end" : 11
+    },
+    "characterStartOffset" : 66,
+    "characterEndOffset" : 69,
+    "sentence" : 0,
+    "document" : "-504032905",
+    "keep" : true,
+    "foundBy" : "ner-gene_or_gene_product-entities"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:-1974354674",
+    "text" : "phosphorylation of Hdm2",
+    "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:-1172280856",
+      "text" : "phosphorylation",
+      "labels" : [ "Phosphorylation", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 1,
+        "end" : 2
+      },
+      "characterStartOffset" : 4,
+      "characterEndOffset" : 19,
+      "sentence" : 0,
+      "document" : "-504032905",
+      "keep" : true,
+      "foundBy" : "Phosphorylation_syntax_1a_noun"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:1278265922",
+        "text" : "Hdm2",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 3,
+          "end" : 4
+        },
+        "characterStartOffset" : 23,
+        "characterEndOffset" : 27,
+        "sentence" : 0,
+        "document" : "-504032905",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:1278265922" : [ {
+          "source" : 1,
+          "destination" : 3,
+          "relation" : "nmod_of"
+        } ]
+      },
+      "cause" : {
+        "T:-1407646048" : [ {
+          "source" : 1,
+          "destination" : 3,
+          "relation" : "nmod_of"
+        }, {
+          "source" : 3,
+          "destination" : 5,
+          "relation" : "nmod_by"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 1,
+      "end" : 4
+    },
+    "characterStartOffset" : 4,
+    "characterEndOffset" : 27,
+    "sentence" : 0,
+    "document" : "-504032905",
+    "keep" : true,
+    "foundBy" : "Phosphorylation_syntax_1a_noun"
+  }, {
+    "type" : "EventMention",
+    "id" : "E:184326113",
+    "text" : "ubiquitination of p53",
+    "labels" : [ "Ubiquitination", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+    "trigger" : {
+      "type" : "TextBoundMention",
+      "id" : "T:1014798839",
+      "text" : "ubiquitination",
+      "labels" : [ "Ubiquitination", "AdditionEvent", "SimpleEvent", "Event", "PossibleController" ],
+      "tokenInterval" : {
+        "start" : 8,
+        "end" : 9
+      },
+      "characterStartOffset" : 48,
+      "characterEndOffset" : 62,
+      "sentence" : 0,
+      "document" : "-504032905",
+      "keep" : true,
+      "foundBy" : "Ubiquitination_syntax_1a_noun"
+    },
+    "arguments" : {
+      "theme" : [ {
+        "type" : "TextBoundMention",
+        "id" : "T:-1963583208",
+        "text" : "p53",
+        "labels" : [ "Gene_or_gene_product", "MacroMolecule", "Equivalable", "BioChemicalEntity", "BioEntity", "Entity", "PossibleController" ],
+        "tokenInterval" : {
+          "start" : 10,
+          "end" : 11
+        },
+        "characterStartOffset" : 66,
+        "characterEndOffset" : 69,
+        "sentence" : 0,
+        "document" : "-504032905",
+        "keep" : true,
+        "foundBy" : "ner-gene_or_gene_product-entities"
+      } ]
+    },
+    "paths" : {
+      "theme" : {
+        "T:-1963583208" : [ {
+          "source" : 8,
+          "destination" : 10,
+          "relation" : "nmod_of"
+        } ]
+      }
+    },
+    "tokenInterval" : {
+      "start" : 8,
+      "end" : 11
+    },
+    "characterStartOffset" : 48,
+    "characterEndOffset" : 69,
+    "sentence" : 0,
+    "document" : "-504032905",
+    "keep" : true,
+    "foundBy" : "Ubiquitination_syntax_1a_noun"
+  } ]
+}
