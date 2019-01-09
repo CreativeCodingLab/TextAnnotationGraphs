@@ -45043,7 +45043,8 @@ function () {
         if (format === "brat") {
           this.parseBrat(file.content);
         } else if (format === "odin") {
-          this.parseOdin(file.content);
+          // The Odin parser expects an Object directly, not a String
+          this.parseOdin(JSON.parse(file.content));
         } else {
           throw "Unknown annotation format: ".concat(format);
         }
