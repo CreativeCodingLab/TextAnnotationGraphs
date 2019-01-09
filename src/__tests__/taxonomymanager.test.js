@@ -1,45 +1,25 @@
 /**
-* Test taxonomy manager
-*/
+ * Test taxonomy manager
+ */
 
-//import * as fs from "fs";
-
-// JS-YAML library
-//import * as yaml from "js-yaml";
+import * as fs from "fs";
 
 import TaxonomyManager from "../js/managers/taxonomy.js";
 import Config from "../js/config.js";
 
 describe("The TaxonomyManager", () => {
- it("should load an Odin taxonomy (yaml string)", () => {
+  it("should load an Odin taxonomy (yaml string)", () => {
+    const yamlData = fs.readFileSync("./src/__tests__/data/taxonomy.yml", "utf8");
 
-   // Pull the sample taxonomy file
-   //const yamlData = fs.readFileSync("./src/__tests__/data/taxonomy.yml", "utf8");
+    const conf = new Config();
 
-   const yamlData = `
-- Alias
-- ModificationTrigger
-- Site
-- Context:
-   - Species
-   - CellLine
-   - Organ
-   - CellType
-   - Cellular_component
-   - TissueType
-   - ContextDirection
-   - ContextLocation
-   - ContextPossessive
-`
-   const conf = new Config();
+    // Initialize TaxonomyManager and load data
+    const taxman = new TaxonomyManager(conf);
 
-   // Initialize TaxonomyManager and load data
-   const taxman = new TaxonomyManager(conf);
+    taxman.loadTaxonomyYaml(yamlData);
 
-   taxman.loadTaxonomyYaml(yamlData);
+    const tree = taxman.getTaxonomyTree();
 
-   const tree = taxman.getTaxonomyTree();
-
-   expect(tree[0]).toBe("Alias");
- });
+    expect(JSON.stringify(tree)).toMatchSnapshot();
+  });
 });
