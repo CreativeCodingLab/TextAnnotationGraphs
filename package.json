@@ -8,8 +8,9 @@
     "build": "run build:all",
     "quick": "run build:quick",
     "watch": "run watch:quick",
-    "demo-build": "run demo:build:all && run demo:run",
     "demo": "run demo:run",
+    "demo-build": "run demo:build:all",
+    "demo-watch": "run demo:watch:all",
     "generate-docs": "run build:app:docs:all"
   },
   "repository": {

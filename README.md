@@ -93,15 +93,25 @@ To run the demo on a different port, set the `PORT` environmental variable. For 
 
 TAG is written in ES6, and uses [Sass](https://sass-lang.com/) for its styles.
 
-Assuming you've cloned the repository, simply run `npm install && npm run build` to install dependencies and transpile the source to ES2015.
+Assuming you've cloned the repository and installed its dependencies, run `npm run build` to transpile the source to ES2015 and generate the library bundles (`dist/tag`) and documentation (`docs`).
+
+To rebuild the sources for the demo, run `npm run demo-build`.
 
 ### Live monitoring of changes
 
-For convenience, you can monitor changes to the library's sources (css + js) with the following `npm` task: 
+For convenience, you can monitor changes to the library's sources (in the `src` folder) with the following `npm` task, which will regenerate the files in the `dist/tag` folder:
 
 ```
 npm run watch
 ```
+
+If you are experimenting with the demo and would like to monitor changes to the demo sources (in the `demo` folder), use the following `npm` task instead:
+
+```
+npm run demo-watch
+```
+
+The `demo-watch` task will also catch changes to the library sources and rebuild the demo bundles, but it will *not* directly rebuild the library bundles in `dist/tag`, so be sure to run `npm run build` separately if you intend to redistribute/repackage your changes to the library sources.
 
 ### Generating documentation
 
