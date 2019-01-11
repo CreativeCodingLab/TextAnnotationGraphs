@@ -131,8 +131,9 @@
   format: &quot;odin&quot;,
   options: {...}
 });</code></pre><h2>Development</h2><p>Tasks are managed via <a href="https://docs.npmjs.com/misc/scripts"><code>npm</code> scripts</a> and the <a href="https://github.com/pawelgalazka/runjs"><code>runjs</code> build tool</a>.  The most commonly used tasks are listed in <code>package.json</code>, and details for the various sub-tasks can be found in <code>runfile.js</code>.</p>
-<h3>Demo</h3><p>After cloning the repository and installing the project dependencies via <code>npm install</code>, you can run the interactive demo using <code>npm run demo</code> and directing your browser to <code>localhost:8080</code>.</p>
+<h3>Demo</h3><p>You can view a live version of the demo <a href="../demo/index.html">here</a>.  To run the demo locally, 1) clone the repository, 2) install the project dependencies via <code>npm install</code>, 3) launch the interactive demo using <code>npm run demo</code>, and 4) open your browser to <code>localhost:8080</code>.</p>
 <p>To run the demo on a different port, set the <code>PORT</code> environmental variable. For example, running <code>PORT=9000 npm run demo</code> will start the demo server on <code>localhost:9000</code> instead.</p>
+<h3>
 <h3>Building the source</h3><p>TAG is written in ES6, and uses <a href="https://sass-lang.com/">Sass</a> for its styles.</p>
 <p>Assuming you've cloned the repository, simply run <code>npm install &amp;&amp; npm run build</code> to install dependencies and transpile the source to ES2015.</p>
 <h3>Live monitoring of changes</h3><p>For convenience, you can monitor changes to the library's sources (in the <code>src</code> folder) with the following <code>npm</code> task, which will regenerate the files in the <code>dist/tag</code> folder.</p>
