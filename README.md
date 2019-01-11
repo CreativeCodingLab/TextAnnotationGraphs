@@ -23,7 +23,7 @@ TAG was developed by Angus Forbes (UC Santa Cruz) and Kristine Lee (University o
 
 If you use TAG in your work, please use the following citation:
 
-```
+```TeX
 @inproceedings{TAG-2018,
     author = {Angus Forbes and Kristine Lee and Gus Hahn-Powell and Marco A. Valenzuela-Escárcega and Mihai Surdeanu},
     title = {Text Annotation Graphs: Annotating Complex Natural Language Phenomena},
@@ -47,7 +47,7 @@ TAG can be built and installed using [`npm`](https://docs.npmjs.com/getting-star
 
 ### Via `npm`
 
-```
+```JavaScript
 npm install git+https://github.com/CreativeCodingLab/TextAnnotationGraphs.git
 ```
 
@@ -57,19 +57,19 @@ To use TAG with your own applications, first include the library in your script:
 
 #### Browserify (CommonJS)
 
-```
+```JavaScript
 const TAG = require("text-annotation-graphs");
 ```
 
 #### ES6
 
-```
+```JavaScript
 import TAG from "text-annotation-graphs";
 ```
 
 Then initialise the visualisation on an element, optionally specifying the initial data set to load and any overrides to the default options.  For more details, consult the [full API documentation](docs/index.html).
 
-```
+```JavaScript
 const graph = TAG.tag({
   container: $container,
   data: {...},
@@ -121,6 +121,6 @@ TAG uses [JSDoc](http://usejsdoc.org/) to generate its documentation. By default
 
 To regenerate the documentation, use the following `npm` task:
 
-```
+```javscript
 npm run generate-docs
 ``` 
