@@ -67,7 +67,7 @@ const TAG = require("text-annotation-graphs");
 import TAG from "text-annotation-graphs";
 ```
 
-Then initialise the visualisation on an element, optionally specifying the initial data set to load and any overrides to the default options.  For more details, consult the full API documentation.
+Then initialise the visualisation on an element, optionally specifying the initial data set to load and any overrides to the default options.  For more details, consult the [full API documentation](docs/index.html).
 
 ```
 const graph = TAG.tag({
@@ -83,6 +83,8 @@ const graph = TAG.tag({
 Tasks are managed via [`npm` scripts](https://docs.npmjs.com/misc/scripts) and the [`runjs` build tool](https://github.com/pawelgalazka/runjs).  The most commonly used tasks are listed in `package.json`, and details for the various sub-tasks can be found in `runfile.js`.
 
 ### Demo
+
+See the live demo [here](demo/index.html).
 
 After cloning the repository and installing the project dependencies via `npm install`, you can run the interactive demo using `npm run demo` and directing your browser to `localhost:8080`.
 
