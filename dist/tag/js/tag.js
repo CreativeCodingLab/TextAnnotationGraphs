@@ -40369,7 +40369,7 @@ function () {
 var _default = Link;
 exports.default = _default;
 
-},{"../util.js":67,"./word-cluster.js":55,"./word-tag.js":56,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"jquery":16}],54:[function(require,module,exports){
+},{"../util.js":68,"./word-cluster.js":55,"./word-tag.js":56,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"jquery":16}],54:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -43428,7 +43428,7 @@ function () {
 var _default = Main;
 exports.default = _default;
 
-},{"./config.js":58,"./managers/labelmanager.js":60,"./managers/rowmanager.js":61,"./managers/taxonomy.js":62,"./parse/parse.js":66,"./util.js":67,"@babel/runtime/helpers/asyncToGenerator":3,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/interopRequireWildcard":7,"@babel/runtime/regenerator":14,"autobind-decorator":15,"jquery":16,"lodash":47,"svg.js":52}],60:[function(require,module,exports){
+},{"./config.js":58,"./managers/labelmanager.js":60,"./managers/rowmanager.js":61,"./managers/taxonomy.js":62,"./parse/parse.js":66,"./util.js":68,"@babel/runtime/helpers/asyncToGenerator":3,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/interopRequireWildcard":7,"@babel/runtime/regenerator":14,"autobind-decorator":15,"jquery":16,"lodash":47,"svg.js":52}],60:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -45610,6 +45610,62 @@ exports.default = _default;
 },{"./brat.js":63,"./odin.js":64,"./odinson.js":65,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"lodash":47}],67:[function(require,module,exports){
 "use strict";
 
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _main = _interopRequireDefault(require("./main"));
+
+/**
+ * Instantiation and static functions
+ */
+
+/**
+ * Initialises a TAG visualisation on the given element.
+ * @param {Object} params - Initialisation parameters.
+ * @param {String|Element|jQuery} params.container - Either a string
+ *     containing the ID of the container element, or the element itself (as a
+ *     native/jQuery object).
+ * @param {Object} [params.data] - Initial data to load, if any.
+ * @param {String} [params.format] - One of the supported format identifiers for
+ *     the data.
+ * @param {Object} [params.options] - Overrides for various default
+ *     library options.
+ */
+function tag(params) {
+  // Core params
+  if (!params.container) {
+    throw "No TAG container element specified.";
+  }
+
+  if (!params.options) {
+    params.options = {};
+  }
+
+  var instance = new _main.default(params.container, params.options); // Initial data load
+
+  if (params.data && params.format) {
+    instance.loadData(params.data, params.format);
+  }
+
+  return instance;
+} // ES6 and CommonJS compatibility
+
+
+var _default = {
+  tag: tag
+};
+exports.default = _default;
+module.exports = {
+  tag: tag
+};
+
+},{"./main":59,"@babel/runtime/helpers/interopRequireDefault":6}],68:[function(require,module,exports){
+"use strict";
+
 var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -45781,4 +45837,4 @@ var _default = {
 };
 exports.default = _default;
 
-},{"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/interopRequireWildcard":7,"lodash":47,"svg.draggable.js":51,"svg.js":52}]},{},[59]);
+},{"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/interopRequireWildcard":7,"lodash":47,"svg.draggable.js":51,"svg.js":52}]},{},[67]);
