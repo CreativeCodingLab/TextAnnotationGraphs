@@ -45379,7 +45379,8 @@ function () {
     key: "_parseOdinsonMatch",
     value: function _parseOdinsonMatch(mention) {
       // determine the label based on the span
-      var label = mention.captures.length === 0 ? this.DEFAULT_LABEL : "";
+      //const label    = mention.captures.length === 0 ? this.DEFAULT_LABEL : "";
+      var label = this.DEFAULT_LABEL;
 
       var parentId = this._createOdinsonMention(mention.span.start, mention.span.end, label);
 

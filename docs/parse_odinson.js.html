@@ -357,7 +357,8 @@ class OdinsonParser {
    */
   _parseOdinsonMatch(mention) {
     // determine the label based on the span
-    const label    = mention.captures.length === 0 ? this.DEFAULT_LABEL : "";
+    //const label    = mention.captures.length === 0 ? this.DEFAULT_LABEL : "";
+    const label    = this.DEFAULT_LABEL;
     const parentId = this._createOdinsonMention(mention.span.start, mention.span.end, label);
     const parent   = this.parsedMentions[parentId];
     this._parseNamedCaptures(parent, mention.captures);
