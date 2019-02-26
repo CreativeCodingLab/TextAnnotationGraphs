@@ -41,23 +41,48 @@
       </p>
       <p>
         See the full source for this example in the "Basic example" section of
-        <code class="bg-light">src/demo.js</code>.
+        <code class="bg-light">src/demo.js</code> and the corresponding example data in <a href="data/test-odin.json"><code>data/test-odin.json</code></a>.
       </p>
 
       <pre class="mb-4">
-<code class="language-javascript">const tag = TAG.tag({
-  container: "container-id",
-  data: {...},
-  format: "odin",
-  options: {
-    showTopArgLabels: true
-  }
-});</code></pre>
+      <code class="language-javascript">const tag = TAG.tag({
+        container: "container-id",
+        data: {...}, // odin-style JSON
+        format: "odin",
+        options: {
+          showTopArgLabels: true
+        }
+      });</code></pre>
 
-      <div id="basicContainer" style="border: solid 1px lightgray"></div>
+            <div id="basicContainer" style="border: solid 1px lightgray"></div>
 
+          </div>
     </div>
+
+  <div class="row mb-5">
+    <div class="col">
+      <h4>Odinson example</h4>
+      <p>
+        See the full source for this example in the "Odinson example" section of
+        <code class="bg-light">src/demo.js</code>  and the corresponding example data in <a href="data/test-odinson.json"><code>data/test-odinson.json</code></a>.
+      </p>
+
+      <pre class="mb-4">
+      <code class="language-javascript">const tag = TAG.tag({
+      container: "odinson-result-container-id",
+      data: {...}, // odinson-style JSON
+      format: "odinson",
+      options: {
+        showTopArgLabels: false,
+        bottomLinkCategory: "universal-enhanced",
+        linkSlotInterval: 15,
+        compactRows: true
+      }
+      });</code></pre>
+
+      <div id="odinsonContainer" style="border: solid 1px lightgray"></div>
   </div>
+</div>
 
   <div class="row mb-5">
     <div class="col">

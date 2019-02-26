@@ -87,6 +87,33 @@ $(async () => {
     }
   });
 
+  // -------------
+  // Odinson example
+  // -------------
+  const $odinsonContainer = $("#odinsonContainer");
+  const odinsonTag = TAG.tag({
+    // The `container` parameter can take either the ID of the main element or
+    // the main element itself (as either a jQuery or native object)
+    container: $odinsonContainer,
+
+    // The initial data to load.
+    // Different formats might expect different types for `data`:
+    // E.g., the "odin" format expects the annotations as an
+    // (already-parsed) Object, while the "brat" format expects them as a raw
+    // String.
+    // See the full documentation for details.
+    data: require("../data/test-odinson.json"),
+    format: "odinson",
+    // Overrides for default options
+    options: {
+      showTopArgLabels: false,
+      bottomLinkCategory: "universal-enhanced",
+      linkSlotInterval: 15,
+      compactRows: true
+    }
+  });
+
+
   // -------------------
   // Advanced/UI example
   // -------------------

@@ -1,0 +1,800 @@
+{
+      "odinsonDoc": 513720,
+      "score": 16.948863983154297,
+      "documentId": "10.4103/2225-4110.119708",
+      "sentenceIndex": 186,
+      "sentence": {
+        "words": [
+          "The",
+          "FAO",
+          "boasts",
+          "that",
+          "insects",
+          "contain",
+          "significant",
+          "amounts",
+          "of",
+          "vital",
+          "nutrients",
+          "and",
+          "minerals",
+          "such",
+          "as",
+          "protein",
+          ",",
+          "fiber",
+          ",",
+          "calcium",
+          ",",
+          "copper",
+          ",",
+          "iron",
+          ",",
+          "magnesium",
+          ",",
+          "manganese",
+          ",",
+          "phosphorus",
+          ",",
+          "selenium",
+          ",",
+          "and",
+          "zinc",
+          "."
+        ],
+        "tags": [
+          "DT",
+          "NNP",
+          "VBZ",
+          "IN",
+          "NNS",
+          "VBP",
+          "JJ",
+          "NNS",
+          "IN",
+          "JJ",
+          "NNS",
+          "CC",
+          "NNS",
+          "JJ",
+          "IN",
+          "NN",
+          ",",
+          "NN",
+          ",",
+          "NN",
+          ",",
+          "NN",
+          ",",
+          "NN",
+          ",",
+          "NN",
+          ",",
+          "NN",
+          ",",
+          "NN",
+          ",",
+          "NN",
+          ",",
+          "CC",
+          "NN",
+          "."
+        ],
+        "lemmas": [
+          "the",
+          "fao",
+          "boast",
+          "that",
+          "insect",
+          "contain",
+          "significant",
+          "amount",
+          "of",
+          "vital",
+          "nutrient",
+          "and",
+          "mineral",
+          "such",
+          "as",
+          "protein",
+          ",",
+          "fiber",
+          ",",
+          "calcium",
+          ",",
+          "copper",
+          ",",
+          "iron",
+          ",",
+          "magnesium",
+          ",",
+          "manganese",
+          ",",
+          "phosphorus",
+          ",",
+          "selenium",
+          ",",
+          "and",
+          "zinc",
+          "."
+        ],
+        "entities": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "B-TissueType",
+          "O",
+          "B-Simple_chemical",
+          "O",
+          "B-Simple_chemical",
+          "O",
+          "B-Simple_chemical",
+          "O",
+          "B-Simple_chemical",
+          "O",
+          "B-Simple_chemical",
+          "O",
+          "B-Simple_chemical",
+          "O",
+          "B-Simple_chemical",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "chunks": [
+          "B-NP",
+          "I-NP",
+          "B-VP",
+          "B-SBAR",
+          "B-NP",
+          "B-VP",
+          "B-NP",
+          "I-NP",
+          "B-PP",
+          "B-NP",
+          "I-NP",
+          "O",
+          "B-NP",
+          "B-PP",
+          "I-PP",
+          "B-NP",
+          "O",
+          "B-NP",
+          "O",
+          "B-NP",
+          "O",
+          "B-NP",
+          "O",
+          "B-NP",
+          "O",
+          "B-NP",
+          "O",
+          "B-NP",
+          "O",
+          "B-NP",
+          "O",
+          "B-NP",
+          "O",
+          "O",
+          "B-NP",
+          "O"
+        ],
+        "graphs": {
+          "universal-enhanced": {
+            "edges": [
+              {
+                "source": 1,
+                "destination": 0,
+                "relation": "det"
+              },
+              {
+                "source": 2,
+                "destination": 1,
+                "relation": "nsubj"
+              },
+              {
+                "source": 2,
+                "destination": 35,
+                "relation": "punct"
+              },
+              {
+                "source": 2,
+                "destination": 5,
+                "relation": "ccomp"
+              },
+              {
+                "source": 5,
+                "destination": 4,
+                "relation": "nsubj"
+              },
+              {
+                "source": 5,
+                "destination": 3,
+                "relation": "mark"
+              },
+              {
+                "source": 5,
+                "destination": 7,
+                "relation": "dobj"
+              },
+              {
+                "source": 7,
+                "destination": 10,
+                "relation": "nmod_of"
+              },
+              {
+                "source": 7,
+                "destination": 6,
+                "relation": "amod"
+              },
+              {
+                "source": 10,
+                "destination": 9,
+                "relation": "amod"
+              },
+              {
+                "source": 10,
+                "destination": 8,
+                "relation": "case"
+              },
+              {
+                "source": 10,
+                "destination": 11,
+                "relation": "cc"
+              },
+              {
+                "source": 10,
+                "destination": 12,
+                "relation": "conj"
+              },
+              {
+                "source": 12,
+                "destination": 15,
+                "relation": "nmod_such_as"
+              },
+              {
+                "source": 13,
+                "destination": 14,
+                "relation": "mwe"
+              },
+              {
+                "source": 15,
+                "destination": 22,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 25,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 20,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 16,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 21,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 17,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 26,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 13,
+                "relation": "case"
+              },
+              {
+                "source": 15,
+                "destination": 34,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 30,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 29,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 27,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 33,
+                "relation": "cc"
+              },
+              {
+                "source": 15,
+                "destination": 32,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 19,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 18,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 28,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 24,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 23,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 31,
+                "relation": "conj"
+              }
+            ],
+            "roots": [
+              2
+            ]
+          },
+          "universal-basic": {
+            "edges": [
+              {
+                "source": 2,
+                "destination": 5,
+                "relation": "ccomp"
+              },
+              {
+                "source": 5,
+                "destination": 7,
+                "relation": "dobj"
+              },
+              {
+                "source": 7,
+                "destination": 10,
+                "relation": "nmod"
+              },
+              {
+                "source": 2,
+                "destination": 1,
+                "relation": "nsubj"
+              },
+              {
+                "source": 10,
+                "destination": 12,
+                "relation": "conj"
+              },
+              {
+                "source": 2,
+                "destination": 35,
+                "relation": "punct"
+              },
+              {
+                "source": 5,
+                "destination": 4,
+                "relation": "nsubj"
+              },
+              {
+                "source": 5,
+                "destination": 3,
+                "relation": "mark"
+              },
+              {
+                "source": 7,
+                "destination": 6,
+                "relation": "amod"
+              },
+              {
+                "source": 10,
+                "destination": 11,
+                "relation": "cc"
+              },
+              {
+                "source": 10,
+                "destination": 8,
+                "relation": "case"
+              },
+              {
+                "source": 10,
+                "destination": 9,
+                "relation": "amod"
+              },
+              {
+                "source": 1,
+                "destination": 0,
+                "relation": "det"
+              },
+              {
+                "source": 12,
+                "destination": 15,
+                "relation": "nmod"
+              },
+              {
+                "source": 15,
+                "destination": 13,
+                "relation": "case"
+              },
+              {
+                "source": 15,
+                "destination": 25,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 31,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 23,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 28,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 30,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 16,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 22,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 29,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 17,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 18,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 19,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 21,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 24,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 27,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 20,
+                "relation": "punct"
+              },
+              {
+                "source": 15,
+                "destination": 26,
+                "relation": "punct"
+              },
+              {
+                "source": 13,
+                "destination": 14,
+                "relation": "mwe"
+              },
+              {
+                "source": 15,
+                "destination": 33,
+                "relation": "cc"
+              },
+              {
+                "source": 15,
+                "destination": 34,
+                "relation": "conj"
+              },
+              {
+                "source": 15,
+                "destination": 32,
+                "relation": "punct"
+              }
+            ],
+            "roots": [
+              2
+            ]
+          }
+        }
+      },
+      "matches": [
+        {
+          "span": {
+            "start": 17,
+            "end": 18
+          },
+          "captures": [
+            {
+              "src": {
+                "start": 12,
+                "end": 13
+              }
+            },
+            {
+              "dst": {
+                "start": 15,
+                "end": 16
+              }
+            },
+            {
+              "dst": {
+                "start": 17,
+                "end": 18
+              }
+            }
+          ]
+        },
+        {
+          "span": {
+            "start": 19,
+            "end": 20
+          },
+          "captures": [
+            {
+              "src": {
+                "start": 12,
+                "end": 13
+              }
+            },
+            {
+              "dst": {
+                "start": 15,
+                "end": 16
+              }
+            },
+            {
+              "dst": {
+                "start": 19,
+                "end": 20
+              }
+            }
+          ]
+        },
+        {
+          "span": {
+            "start": 21,
+            "end": 22
+          },
+          "captures": [
+            {
+              "src": {
+                "start": 12,
+                "end": 13
+              }
+            },
+            {
+              "dst": {
+                "start": 15,
+                "end": 16
+              }
+            },
+            {
+              "dst": {
+                "start": 21,
+                "end": 22
+              }
+            }
+          ]
+        },
+        {
+          "span": {
+            "start": 23,
+            "end": 24
+          },
+          "captures": [
+            {
+              "src": {
+                "start": 12,
+                "end": 13
+              }
+            },
+            {
+              "dst": {
+                "start": 15,
+                "end": 16
+              }
+            },
+            {
+              "dst": {
+                "start": 23,
+                "end": 24
+              }
+            }
+          ]
+        },
+        {
+          "span": {
+            "start": 25,
+            "end": 26
+          },
+          "captures": [
+            {
+              "src": {
+                "start": 12,
+                "end": 13
+              }
+            },
+            {
+              "dst": {
+                "start": 15,
+                "end": 16
+              }
+            },
+            {
+              "dst": {
+                "start": 25,
+                "end": 26
+              }
+            }
+          ]
+        },
+        {
+          "span": {
+            "start": 27,
+            "end": 28
+          },
+          "captures": [
+            {
+              "src": {
+                "start": 12,
+                "end": 13
+              }
+            },
+            {
+              "dst": {
+                "start": 15,
+                "end": 16
+              }
+            },
+            {
+              "dst": {
+                "start": 27,
+                "end": 28
+              }
+            }
+          ]
+        },
+        {
+          "span": {
+            "start": 29,
+            "end": 30
+          },
+          "captures": [
+            {
+              "src": {
+                "start": 12,
+                "end": 13
+              }
+            },
+            {
+              "dst": {
+                "start": 15,
+                "end": 16
+              }
+            },
+            {
+              "dst": {
+                "start": 29,
+                "end": 30
+              }
+            }
+          ]
+        },
+        {
+          "span": {
+            "start": 31,
+            "end": 32
+          },
+          "captures": [
+            {
+              "src": {
+                "start": 12,
+                "end": 13
+              }
+            },
+            {
+              "dst": {
+                "start": 15,
+                "end": 16
+              }
+            },
+            {
+              "dst": {
+                "start": 31,
+                "end": 32
+              }
+            }
+          ]
+        },
+        {
+          "span": {
+            "start": 34,
+            "end": 35
+          },
+          "captures": [
+            {
+              "src": {
+                "start": 12,
+                "end": 13
+              }
+            },
+            {
+              "dst": {
+                "start": 15,
+                "end": 16
+              }
+            },
+            {
+              "dst": {
+                "start": 34,
+                "end": 35
+              }
+            }
+          ]
+        }
+      ]
+}

@@ -5,6 +5,18 @@ function _arrayWithHoles(arr) {
 
 module.exports = _arrayWithHoles;
 },{}],2:[function(require,module,exports){
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
+      arr2[i] = arr[i];
+    }
+
+    return arr2;
+  }
+}
+
+module.exports = _arrayWithoutHoles;
+},{}],3:[function(require,module,exports){
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
     var info = gen[key](arg);
@@ -42,7 +54,7 @@ function _asyncToGenerator(fn) {
 }
 
 module.exports = _asyncToGenerator;
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -50,7 +62,7 @@ function _classCallCheck(instance, Constructor) {
 }
 
 module.exports = _classCallCheck;
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 function _defineProperties(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
@@ -68,7 +80,7 @@ function _createClass(Constructor, protoProps, staticProps) {
 }
 
 module.exports = _createClass;
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : {
     default: obj
@@ -76,7 +88,7 @@ function _interopRequireDefault(obj) {
 }
 
 module.exports = _interopRequireDefault;
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 function _interopRequireWildcard(obj) {
   if (obj && obj.__esModule) {
     return obj;
@@ -103,7 +115,13 @@ function _interopRequireWildcard(obj) {
 }
 
 module.exports = _interopRequireWildcard;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
+function _iterableToArray(iter) {
+  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+}
+
+module.exports = _iterableToArray;
+},{}],9:[function(require,module,exports){
 function _iterableToArrayLimit(arr, i) {
   var _arr = [];
   var _n = true;
@@ -131,13 +149,19 @@ function _iterableToArrayLimit(arr, i) {
 }
 
 module.exports = _iterableToArrayLimit;
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance");
 }
 
 module.exports = _nonIterableRest;
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance");
+}
+
+module.exports = _nonIterableSpread;
+},{}],12:[function(require,module,exports){
 var arrayWithHoles = require("./arrayWithHoles");
 
 var iterableToArrayLimit = require("./iterableToArrayLimit");
@@ -149,10 +173,22 @@ function _slicedToArray(arr, i) {
 }
 
 module.exports = _slicedToArray;
-},{"./arrayWithHoles":1,"./iterableToArrayLimit":7,"./nonIterableRest":8}],10:[function(require,module,exports){
+},{"./arrayWithHoles":1,"./iterableToArrayLimit":9,"./nonIterableRest":10}],13:[function(require,module,exports){
+var arrayWithoutHoles = require("./arrayWithoutHoles");
+
+var iterableToArray = require("./iterableToArray");
+
+var nonIterableSpread = require("./nonIterableSpread");
+
+function _toConsumableArray(arr) {
+  return arrayWithoutHoles(arr) || iterableToArray(arr) || nonIterableSpread();
+}
+
+module.exports = _toConsumableArray;
+},{"./arrayWithoutHoles":2,"./iterableToArray":8,"./nonIterableSpread":11}],14:[function(require,module,exports){
 module.exports = require("regenerator-runtime");
 
-},{"regenerator-runtime":45}],11:[function(require,module,exports){
+},{"regenerator-runtime":49}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -249,7 +285,7 @@ function autobind() {
 
   return boundMethod.apply(void 0, arguments);
 }
-},{}],12:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.3.1
  * https://jquery.com/
@@ -10615,7 +10651,7 @@ if ( !noGlobal ) {
 return jQuery;
 } );
 
-},{}],13:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 
@@ -10624,7 +10660,7 @@ var yaml = require('./lib/js-yaml.js');
 
 module.exports = yaml;
 
-},{"./lib/js-yaml.js":14}],14:[function(require,module,exports){
+},{"./lib/js-yaml.js":18}],18:[function(require,module,exports){
 'use strict';
 
 
@@ -10665,7 +10701,7 @@ module.exports.parse          = deprecated('parse');
 module.exports.compose        = deprecated('compose');
 module.exports.addConstructor = deprecated('addConstructor');
 
-},{"./js-yaml/dumper":16,"./js-yaml/exception":17,"./js-yaml/loader":18,"./js-yaml/schema":20,"./js-yaml/schema/core":21,"./js-yaml/schema/default_full":22,"./js-yaml/schema/default_safe":23,"./js-yaml/schema/failsafe":24,"./js-yaml/schema/json":25,"./js-yaml/type":26}],15:[function(require,module,exports){
+},{"./js-yaml/dumper":20,"./js-yaml/exception":21,"./js-yaml/loader":22,"./js-yaml/schema":24,"./js-yaml/schema/core":25,"./js-yaml/schema/default_full":26,"./js-yaml/schema/default_safe":27,"./js-yaml/schema/failsafe":28,"./js-yaml/schema/json":29,"./js-yaml/type":30}],19:[function(require,module,exports){
 'use strict';
 
 
@@ -10726,7 +10762,7 @@ module.exports.repeat         = repeat;
 module.exports.isNegativeZero = isNegativeZero;
 module.exports.extend         = extend;
 
-},{}],16:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 /*eslint-disable no-use-before-define*/
@@ -11553,7 +11589,7 @@ function safeDump(input, options) {
 module.exports.dump     = dump;
 module.exports.safeDump = safeDump;
 
-},{"./common":15,"./exception":17,"./schema/default_full":22,"./schema/default_safe":23}],17:[function(require,module,exports){
+},{"./common":19,"./exception":21,"./schema/default_full":26,"./schema/default_safe":27}],21:[function(require,module,exports){
 // YAML error class. http://stackoverflow.com/questions/8458984
 //
 'use strict';
@@ -11598,7 +11634,7 @@ YAMLException.prototype.toString = function toString(compact) {
 
 module.exports = YAMLException;
 
-},{}],18:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 /*eslint-disable max-len,no-use-before-define*/
@@ -13198,7 +13234,7 @@ module.exports.load        = load;
 module.exports.safeLoadAll = safeLoadAll;
 module.exports.safeLoad    = safeLoad;
 
-},{"./common":15,"./exception":17,"./mark":19,"./schema/default_full":22,"./schema/default_safe":23}],19:[function(require,module,exports){
+},{"./common":19,"./exception":21,"./mark":23,"./schema/default_full":26,"./schema/default_safe":27}],23:[function(require,module,exports){
 'use strict';
 
 
@@ -13276,7 +13312,7 @@ Mark.prototype.toString = function toString(compact) {
 
 module.exports = Mark;
 
-},{"./common":15}],20:[function(require,module,exports){
+},{"./common":19}],24:[function(require,module,exports){
 'use strict';
 
 /*eslint-disable max-len*/
@@ -13386,7 +13422,7 @@ Schema.create = function createSchema() {
 
 module.exports = Schema;
 
-},{"./common":15,"./exception":17,"./type":26}],21:[function(require,module,exports){
+},{"./common":19,"./exception":21,"./type":30}],25:[function(require,module,exports){
 // Standard YAML's Core schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2804923
 //
@@ -13406,7 +13442,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":20,"./json":25}],22:[function(require,module,exports){
+},{"../schema":24,"./json":29}],26:[function(require,module,exports){
 // JS-YAML's default schema for `load` function.
 // It is not described in the YAML specification.
 //
@@ -13433,7 +13469,7 @@ module.exports = Schema.DEFAULT = new Schema({
   ]
 });
 
-},{"../schema":20,"../type/js/function":31,"../type/js/regexp":32,"../type/js/undefined":33,"./default_safe":23}],23:[function(require,module,exports){
+},{"../schema":24,"../type/js/function":35,"../type/js/regexp":36,"../type/js/undefined":37,"./default_safe":27}],27:[function(require,module,exports){
 // JS-YAML's default schema for `safeLoad` function.
 // It is not described in the YAML specification.
 //
@@ -13463,7 +13499,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":20,"../type/binary":27,"../type/merge":35,"../type/omap":37,"../type/pairs":38,"../type/set":40,"../type/timestamp":42,"./core":21}],24:[function(require,module,exports){
+},{"../schema":24,"../type/binary":31,"../type/merge":39,"../type/omap":41,"../type/pairs":42,"../type/set":44,"../type/timestamp":46,"./core":25}],28:[function(require,module,exports){
 // Standard YAML's Failsafe schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2802346
 
@@ -13482,7 +13518,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":20,"../type/map":34,"../type/seq":39,"../type/str":41}],25:[function(require,module,exports){
+},{"../schema":24,"../type/map":38,"../type/seq":43,"../type/str":45}],29:[function(require,module,exports){
 // Standard YAML's JSON schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2803231
 //
@@ -13509,7 +13545,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":20,"../type/bool":28,"../type/float":29,"../type/int":30,"../type/null":36,"./failsafe":24}],26:[function(require,module,exports){
+},{"../schema":24,"../type/bool":32,"../type/float":33,"../type/int":34,"../type/null":40,"./failsafe":28}],30:[function(require,module,exports){
 'use strict';
 
 var YAMLException = require('./exception');
@@ -13572,7 +13608,7 @@ function Type(tag, options) {
 
 module.exports = Type;
 
-},{"./exception":17}],27:[function(require,module,exports){
+},{"./exception":21}],31:[function(require,module,exports){
 'use strict';
 
 /*eslint-disable no-bitwise*/
@@ -13712,7 +13748,7 @@ module.exports = new Type('tag:yaml.org,2002:binary', {
   represent: representYamlBinary
 });
 
-},{"../type":26}],28:[function(require,module,exports){
+},{"../type":30}],32:[function(require,module,exports){
 'use strict';
 
 var Type = require('../type');
@@ -13749,7 +13785,7 @@ module.exports = new Type('tag:yaml.org,2002:bool', {
   defaultStyle: 'lowercase'
 });
 
-},{"../type":26}],29:[function(require,module,exports){
+},{"../type":30}],33:[function(require,module,exports){
 'use strict';
 
 var common = require('../common');
@@ -13867,7 +13903,7 @@ module.exports = new Type('tag:yaml.org,2002:float', {
   defaultStyle: 'lowercase'
 });
 
-},{"../common":15,"../type":26}],30:[function(require,module,exports){
+},{"../common":19,"../type":30}],34:[function(require,module,exports){
 'use strict';
 
 var common = require('../common');
@@ -14042,7 +14078,7 @@ module.exports = new Type('tag:yaml.org,2002:int', {
   }
 });
 
-},{"../common":15,"../type":26}],31:[function(require,module,exports){
+},{"../common":19,"../type":30}],35:[function(require,module,exports){
 'use strict';
 
 var esprima;
@@ -14136,7 +14172,7 @@ module.exports = new Type('tag:yaml.org,2002:js/function', {
   represent: representJavascriptFunction
 });
 
-},{"../../type":26}],32:[function(require,module,exports){
+},{"../../type":30}],36:[function(require,module,exports){
 'use strict';
 
 var Type = require('../../type');
@@ -14198,7 +14234,7 @@ module.exports = new Type('tag:yaml.org,2002:js/regexp', {
   represent: representJavascriptRegExp
 });
 
-},{"../../type":26}],33:[function(require,module,exports){
+},{"../../type":30}],37:[function(require,module,exports){
 'use strict';
 
 var Type = require('../../type');
@@ -14228,7 +14264,7 @@ module.exports = new Type('tag:yaml.org,2002:js/undefined', {
   represent: representJavascriptUndefined
 });
 
-},{"../../type":26}],34:[function(require,module,exports){
+},{"../../type":30}],38:[function(require,module,exports){
 'use strict';
 
 var Type = require('../type');
@@ -14238,7 +14274,7 @@ module.exports = new Type('tag:yaml.org,2002:map', {
   construct: function (data) { return data !== null ? data : {}; }
 });
 
-},{"../type":26}],35:[function(require,module,exports){
+},{"../type":30}],39:[function(require,module,exports){
 'use strict';
 
 var Type = require('../type');
@@ -14252,7 +14288,7 @@ module.exports = new Type('tag:yaml.org,2002:merge', {
   resolve: resolveYamlMerge
 });
 
-},{"../type":26}],36:[function(require,module,exports){
+},{"../type":30}],40:[function(require,module,exports){
 'use strict';
 
 var Type = require('../type');
@@ -14288,7 +14324,7 @@ module.exports = new Type('tag:yaml.org,2002:null', {
   defaultStyle: 'lowercase'
 });
 
-},{"../type":26}],37:[function(require,module,exports){
+},{"../type":30}],41:[function(require,module,exports){
 'use strict';
 
 var Type = require('../type');
@@ -14334,7 +14370,7 @@ module.exports = new Type('tag:yaml.org,2002:omap', {
   construct: constructYamlOmap
 });
 
-},{"../type":26}],38:[function(require,module,exports){
+},{"../type":30}],42:[function(require,module,exports){
 'use strict';
 
 var Type = require('../type');
@@ -14389,7 +14425,7 @@ module.exports = new Type('tag:yaml.org,2002:pairs', {
   construct: constructYamlPairs
 });
 
-},{"../type":26}],39:[function(require,module,exports){
+},{"../type":30}],43:[function(require,module,exports){
 'use strict';
 
 var Type = require('../type');
@@ -14399,7 +14435,7 @@ module.exports = new Type('tag:yaml.org,2002:seq', {
   construct: function (data) { return data !== null ? data : []; }
 });
 
-},{"../type":26}],40:[function(require,module,exports){
+},{"../type":30}],44:[function(require,module,exports){
 'use strict';
 
 var Type = require('../type');
@@ -14430,7 +14466,7 @@ module.exports = new Type('tag:yaml.org,2002:set', {
   construct: constructYamlSet
 });
 
-},{"../type":26}],41:[function(require,module,exports){
+},{"../type":30}],45:[function(require,module,exports){
 'use strict';
 
 var Type = require('../type');
@@ -14440,7 +14476,7 @@ module.exports = new Type('tag:yaml.org,2002:str', {
   construct: function (data) { return data !== null ? data : ''; }
 });
 
-},{"../type":26}],42:[function(require,module,exports){
+},{"../type":30}],46:[function(require,module,exports){
 'use strict';
 
 var Type = require('../type');
@@ -14530,7 +14566,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   represent: representYamlTimestamp
 });
 
-},{"../type":26}],43:[function(require,module,exports){
+},{"../type":30}],47:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -31641,7 +31677,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],44:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 // randomColor by David Merfield under the CC0 license
 // https://github.com/davidmerfield/randomColor/
 
@@ -32096,7 +32132,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   return randomColor;
 }));
 
-},{}],45:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -32135,7 +32171,7 @@ if (hadRuntime) {
   }
 }
 
-},{"./runtime":46}],46:[function(require,module,exports){
+},{"./runtime":50}],50:[function(require,module,exports){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -32858,7 +32894,7 @@ if (hadRuntime) {
   })() || Function("return this")()
 );
 
-},{}],47:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 /*! svg.draggable.js - v2.2.1 - 2016-08-25
 * https://github.com/wout/svg.draggable.js
 * Copyright (c) 2016 Wout Fierens; Licensed MIT */
@@ -33086,7 +33122,7 @@ if (hadRuntime) {
   })
 
 }).call(this);
-},{}],48:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 /*!
 * svg.js - A lightweight library for manipulating and animating SVG.
 * @version 2.7.0
@@ -38688,7 +38724,7 @@ if (typeof window.CustomEvent !== 'function') {
 return SVG
 
 }));
-},{}],49:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -40333,7 +40369,7 @@ function () {
 var _default = Link;
 exports.default = _default;
 
-},{"../util.js":62,"./word-cluster.js":51,"./word-tag.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],50:[function(require,module,exports){
+},{"../util.js":67,"./word-cluster.js":55,"./word-tag.js":56,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"jquery":16}],54:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -41172,7 +41208,7 @@ function () {
 var _default = Row;
 exports.default = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],51:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6}],55:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -41574,7 +41610,7 @@ function () {
 var _default = WordCluster;
 exports.default = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],52:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6}],56:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -41845,7 +41881,7 @@ function () {
 var _default = WordTag;
 exports.default = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],53:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6}],57:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -42441,7 +42477,7 @@ function () {
 var _default = Word;
 exports.default = _default;
 
-},{"./word-tag.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],54:[function(require,module,exports){
+},{"./word-tag.js":56,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/slicedToArray":12}],58:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -42615,7 +42651,7 @@ function Config() {
 var _default = Config;
 exports.default = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],55:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/interopRequireDefault":6}],59:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -43392,7 +43428,7 @@ function () {
 var _default = Main;
 exports.default = _default;
 
-},{"./config.js":54,"./managers/labelmanager.js":56,"./managers/rowmanager.js":57,"./managers/taxonomy.js":58,"./parse/parse.js":61,"./util.js":62,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":48}],56:[function(require,module,exports){
+},{"./config.js":58,"./managers/labelmanager.js":60,"./managers/rowmanager.js":61,"./managers/taxonomy.js":62,"./parse/parse.js":66,"./util.js":67,"@babel/runtime/helpers/asyncToGenerator":3,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/interopRequireWildcard":7,"@babel/runtime/regenerator":14,"autobind-decorator":15,"jquery":16,"lodash":47,"svg.js":52}],60:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -43523,7 +43559,7 @@ module.exports = function () {
   return LabelManager;
 }();
 
-},{"../components/link.js":49,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],57:[function(require,module,exports){
+},{"../components/link.js":53,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/interopRequireDefault":6}],61:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -43977,7 +44013,7 @@ function () {
 var _default = RowManager;
 exports.default = _default;
 
-},{"../components/row.js":50,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],58:[function(require,module,exports){
+},{"../components/row.js":54,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6}],62:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -44193,7 +44229,7 @@ function () {
 var _default = TaxonomyManager;
 exports.default = _default;
 
-},{"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"js-yaml":13,"lodash":43,"randomcolor":44}],59:[function(require,module,exports){
+},{"../components/word.js":57,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"js-yaml":17,"lodash":47,"randomcolor":48}],63:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -44540,7 +44576,7 @@ function () {
 var _default = BratParser;
 exports.default = _default;
 
-},{"../components/link.js":49,"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],60:[function(require,module,exports){
+},{"../components/link.js":53,"../components/word.js":57,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/slicedToArray":12}],64:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -44962,7 +44998,403 @@ function () {
 var _default = OdinParser;
 exports.default = _default;
 
-},{"../components/link.js":49,"../components/word-cluster.js":51,"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],61:[function(require,module,exports){
+},{"../components/link.js":53,"../components/word-cluster.js":55,"../components/word.js":57,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/slicedToArray":12}],65:[function(require,module,exports){
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var _word = _interopRequireDefault(require("../components/word.js"));
+
+var _link = _interopRequireDefault(require("../components/link.js"));
+
+var _wordCluster = _interopRequireDefault(require("../components/word-cluster.js"));
+
+/**
+ * Parser for Odinson `matches` json
+ * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
+ */
+var OdinsonParser =
+/*#__PURE__*/
+function () {
+  function OdinsonParser() {
+    (0, _classCallCheck2.default)(this, OdinsonParser);
+    // This will eventually hold the parsed data for returning to the caller
+    this.data = {
+      words: [],
+      links: [],
+      clusters: []
+    };
+    this.DEFAULT_LABEL = ""; // Previously-parsed mentions by Id.
+
+    this.parsedMentions = {};
+  }
+  /**
+   * Parses the given data, filling out `this.data` accordingly.
+   * @param {Object} data
+   */
+
+
+  (0, _createClass2.default)(OdinsonParser, [{
+    key: "parse",
+    value: function parse(data) {
+      // Clear out any old parse data
+      this.reset(); // Data structure:
+      // - `odinsonDoc` the doc ID for this sentence
+      // - `matches` includes all spans
+      // - `sentence` abridged Sentence json (tokens, their attributes, and dependency parses)
+      // store token attributes and parse
+
+      this._parseSentence(data.sentence);
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = data.matches[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var mention = _step.value;
+
+          this._parseOdinsonMatch(mention);
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return != null) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    }
+    /**
+     * Clears out all previously cached parse data (in preparation for a new
+     * parse)
+     */
+
+  }, {
+    key: "reset",
+    value: function reset() {
+      this.data = {
+        words: [],
+        links: [],
+        clusters: []
+      };
+      this.parsedMentions = {};
+      this.lastWordIdx = -1;
+    }
+    /**
+     * Parses a given sentence, appending
+     * the tokens and first set of dependency links to the final dataset.
+     * TODO: Allow user to select between different dependency graphs
+     *
+     * @param {Object} sentence
+     * @private
+     */
+
+  }, {
+    key: "_parseSentence",
+    value: function _parseSentence(sentence) {
+      /**
+       * A sentence is an object with a number of pre-defined properties;
+       * we are interested in the following.
+       * @property {String[]} words
+       * @property tags
+       * @property lemmas
+       * @property entities
+       * @property norms
+       * @property chunks
+       * @property graphs
+       */
+      // Hold on to the Words we generate even as we push them up to the
+      // main data store, so that we can create their syntax Links too
+      // (which rely on sentence-level indices, not global indices)
+      var thisSentence = []; // Read any token-level annotations
+      //let [index, value] of array.entries()
+
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = sentence.words.entries()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var _step2$value = (0, _slicedToArray2.default)(_step2.value, 2),
+              idx = _step2$value[0],
+              word = _step2$value[1];
+
+          // for (let thisIdx = 0; thisIdx < sentence.words.length; thisIdx++) {
+          var thisWord = new _word.default(word, idx); // Various token-level tags, if they are available
+
+          if (sentence.raw) {
+            thisWord.registerTag("raw", sentence.raw[idx]);
+          }
+
+          if (sentence.tags) {
+            thisWord.registerTag("POS", sentence.tags[idx]);
+          }
+
+          if (sentence.lemmas) {
+            thisWord.registerTag("lemma", sentence.lemmas[idx]);
+          }
+
+          if (sentence.entities) {
+            thisWord.registerTag("entity", sentence.entities[idx]);
+          }
+
+          if (sentence.norms) {
+            thisWord.registerTag("norm", sentence.norms[idx]);
+          }
+
+          if (sentence.chunks) {
+            thisWord.registerTag("chunk", sentence.chunks[idx]);
+          }
+
+          thisSentence.push(thisWord);
+          this.data.words.push(thisWord);
+        } // Sentences may have multiple dependency graphs available
+
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+
+      var graphTypes = Object.keys(sentence.graphs);
+
+      for (var _i = 0; _i < graphTypes.length; _i++) {
+        var graphType = graphTypes[_i];
+
+        /**
+         * @property {Object[]} edges
+         * @property roots
+         */
+        var graph = sentence.graphs[graphType];
+        /**
+         * @property {Number} source
+         * @property {Number} destination
+         * @property {String} relation
+         */
+
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
+
+        try {
+          for (var _iterator3 = graph.edges.entries()[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var _step3$value = (0, _slicedToArray2.default)(_step3.value, 2),
+                edgeId = _step3$value[0],
+                edge = _step3$value[1];
+
+            this.data.links.push(new _link.default( // eventId
+            "".concat(graphType, "-").concat(edgeId), // Trigger
+            thisSentence[edge.source], // Arguments
+            [{
+              anchor: thisSentence[edge.destination],
+              type: edge.relation
+            }], // Relation type
+            edge.relation, // Draw Link above Words?
+            false, // Category
+            graphType));
+          }
+        } catch (err) {
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+              _iterator3.return();
+            }
+          } finally {
+            if (_didIteratorError3) {
+              throw _iteratorError3;
+            }
+          }
+        }
+      }
+    }
+    /**
+     * Generates an ID for a mention span.
+     *
+     * @param {Number} start
+     * @param {Number} end
+     * @param {String} label - An optional label for the span
+     * @private
+     */
+
+  }, {
+    key: "_createId",
+    value: function _createId(start, end, label) {
+      return "".concat(start, "-").concat(end, "-").concat(label);
+    }
+    /**
+     * Creates an Odinson mention and enriches the data stores accordingly.
+     *
+     * - a single token span becomes a WordTag
+     * - a multitoken span becomes a WordCluster
+     *
+     * @param {Number} start - Token index marking beginning of mention
+     * @param {Number} end - Token index marking end of mention
+     * @param {String} label - The label for this mention.
+     * @private
+     */
+
+  }, {
+    key: "_createOdinsonMention",
+    value: function _createOdinsonMention(start, end, label) {
+      var mentionTokens = this.data.words.slice(start, end);
+
+      var mentionId = this._createId(start, end, label);
+
+      if (mentionTokens.length === 1) {
+        // Set the annotation tag for this Word
+        var tok = this.data.words.slice(start, end)[0];
+        tok.registerTag("default", label); // tokens[0].setTag(label);
+        // save to overwrite
+
+        this.parsedMentions[mentionId] = tok;
+      } else {
+        var cluster = new _wordCluster.default(mentionTokens, label); // check if cluster already exists
+
+        if (!this.parsedMentions[mentionId]) {
+          this.data.clusters.push(cluster);
+          this.parsedMentions[mentionId] = cluster;
+        }
+      }
+
+      return mentionId;
+    }
+    /**
+     * Parses named captures to create a mention
+     *
+     * @param {Object[]} captures - An array of named captures
+     * @private
+     */
+
+  }, {
+    key: "_parseNamedCaptures",
+    value: function _parseNamedCaptures(trigger, captures) {
+      var linkArgs = [];
+      console.log("\"num. captures: ".concat(captures.length, "\""));
+      console.log(captures); // used to name the relation we're creating
+
+      var argIds = [];
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
+
+      try {
+        for (var _iterator4 = captures[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var namedCapture = _step4.value;
+
+          var _arr = Object.entries(namedCapture);
+
+          for (var _i2 = 0; _i2 < _arr.length; _i2++) {
+            var _arr$_i = (0, _slicedToArray2.default)(_arr[_i2], 2),
+                argName = _arr$_i[0],
+                span = _arr$_i[1];
+
+            // create and store mention
+            var anchorId = this._createOdinsonMention(span.start, span.end, argName);
+
+            argIds.push(anchorId); // retrieve the mention
+
+            var anchor = this.parsedMentions[anchorId];
+            linkArgs.push({
+              anchor: anchor,
+              argName: argName
+            });
+          }
+        }
+      } catch (err) {
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
+            _iterator4.return();
+          }
+        } finally {
+          if (_didIteratorError4) {
+            throw _iteratorError4;
+          }
+        }
+      }
+
+      if (linkArgs.length > 0) {
+        // Done; prepare the new Link
+        var relationLabel = "".concat(this.DEFAULT_LABEL, "-relation");
+        var relationId = (0, _toConsumableArray2.default)(new Set(argIds, relationLabel)).sort().join("-");
+        var link = new _link.default( // relation ID
+        relationId, trigger, // Arguments
+        linkArgs, // Relation type
+        this.DEFAULT_LABEL, // Draw Link above Words?
+        true); // Check if the mention already exists
+        // Given the design of Odinson matches, this should never already exist
+        //this.data.links.push(link);
+
+        if (!this.parsedMentions[relationId]) {
+          this.data.links.push(link);
+          this.parsedMentions[relationId] = link;
+        }
+      }
+    }
+    /**
+     * Parses the given Odinson match and enriches the data stores accordingly.
+     *
+     * - a single token span without named captures becomes a WordTag
+     * - a multi-token span without named captures becomes a WordCluster
+     * - a span with named captures becomes a set of Links
+     *
+     * @param {Object} mention - An Odinson match which has span and optional named captures
+     * @private
+     */
+
+  }, {
+    key: "_parseOdinsonMatch",
+    value: function _parseOdinsonMatch(mention) {
+      // determine the label based on the span
+      var label = mention.captures.length === 0 ? this.DEFAULT_LABEL : "";
+
+      var parentId = this._createOdinsonMention(mention.span.start, mention.span.end, label);
+
+      var parent = this.parsedMentions[parentId];
+
+      this._parseNamedCaptures(parent, mention.captures);
+    }
+  }]);
+  return OdinsonParser;
+}();
+
+var _default = OdinsonParser;
+exports.default = _default;
+
+},{"../components/link.js":53,"../components/word-cluster.js":55,"../components/word.js":57,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/slicedToArray":12,"@babel/runtime/helpers/toConsumableArray":13}],66:[function(require,module,exports){
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -44982,6 +45414,8 @@ var _brat = _interopRequireDefault(require("./brat.js"));
 
 var _odin = _interopRequireDefault(require("./odin.js"));
 
+var _odinson = _interopRequireDefault(require("./odinson.js"));
+
 var re = /.*(?=\.(\S+))|.*/;
 
 var Parser =
@@ -45000,6 +45434,7 @@ function () {
 
     this.ann = new _brat.default();
     this.odin = new _odin.default();
+    this.odinson = new _odinson.default();
   }
   /**
    * Loads annotation data directly into the parser
@@ -45016,6 +45451,8 @@ function () {
         this.parseBrat(data);
       } else if (format === "odin") {
         this.parseOdin(data);
+      } else if (format === "odinson") {
+        this.parseOdinson(data);
       } else {
         throw "Unknown annotation format: ".concat(format);
       }
@@ -45045,6 +45482,9 @@ function () {
         } else if (format === "odin") {
           // The Odin parser expects an Object directly, not a String
           this.parseOdin(JSON.parse(file.content));
+        } else if (format === "odinson") {
+          // The Odinson parser expects an Object directly, not a String
+          this.parseOdinson(JSON.parse(file.content));
         } else {
           throw "Unknown annotation format: ".concat(format);
         }
@@ -45149,6 +45589,17 @@ function () {
       this.odin.parse(data);
       this._parsedData = this.odin.data;
     }
+    /**
+     * Parses the given Odinson-format data
+     * https://gist.github.com/myedibleenso/3f222271263016d88575d611a7eaf1b1
+     */
+
+  }, {
+    key: "parseOdinson",
+    value: function parseOdinson(data) {
+      this.odinson.parse(data);
+      this._parsedData = this.odinson.data;
+    }
   }]);
   return Parser;
 }();
@@ -45156,7 +45607,7 @@ function () {
 var _default = Parser;
 exports.default = _default;
 
-},{"./brat.js":59,"./odin.js":60,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],62:[function(require,module,exports){
+},{"./brat.js":63,"./odin.js":64,"./odinson.js":65,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"lodash":47}],67:[function(require,module,exports){
 "use strict";
 
 var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
@@ -45330,4 +45781,4 @@ var _default = {
 };
 exports.default = _default;
 
-},{"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"lodash":43,"svg.draggable.js":47,"svg.js":48}]},{},[55]);
+},{"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/interopRequireWildcard":7,"lodash":47,"svg.draggable.js":51,"svg.js":52}]},{},[59]);

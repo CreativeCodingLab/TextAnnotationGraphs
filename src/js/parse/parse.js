@@ -2,6 +2,7 @@ import _ from "lodash";
 
 import BratParser from "./brat.js";
 import OdinParser from "./odin.js";
+import OdinsonParser from "./odinson.js";
 
 const re = /.*(?=\.(\S+))|.*/;
 
@@ -17,6 +18,7 @@ class Parser {
     /* supported formats */
     this.ann = new BratParser();
     this.odin = new OdinParser();
+    this.odinson = new OdinsonParser();
   }
 
   /**
@@ -30,6 +32,8 @@ class Parser {
       this.parseBrat(data);
     } else if (format === "odin") {
       this.parseOdin(data);
+    } else if (format === "odinson") {
+      this.parseOdinson(data);
     } else {
       throw `Unknown annotation format: ${format}`;
     }
@@ -55,6 +59,9 @@ class Parser {
       } else if (format === "odin") {
         // The Odin parser expects an Object directly, not a String
         this.parseOdin(JSON.parse(file.content));
+      } else if (format === "odinson") {
+        // The Odinson parser expects an Object directly, not a String
+        this.parseOdinson(JSON.parse(file.content));
       } else {
         throw `Unknown annotation format: ${format}`;
       }
@@ -135,6 +142,15 @@ class Parser {
   parseOdin(data) {
     this.odin.parse(data);
     this._parsedData = this.odin.data;
+  }
+
+  /**
+   * Parses the given Odinson-format data
+   * https://gist.github.com/myedibleenso/3f222271263016d88575d611a7eaf1b1
+   */
+  parseOdinson(data) {
+    this.odinson.parse(data);
+    this._parsedData = this.odinson.data;
   }
 }
 
