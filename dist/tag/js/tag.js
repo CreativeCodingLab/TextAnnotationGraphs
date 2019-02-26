@@ -1,10 +1,10 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.tag = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(_dereq_,module,exports){
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
 }
 
 module.exports = _arrayWithHoles;
-},{}],2:[function(require,module,exports){
+},{}],2:[function(_dereq_,module,exports){
 function _arrayWithoutHoles(arr) {
   if (Array.isArray(arr)) {
     for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
@@ -16,7 +16,7 @@ function _arrayWithoutHoles(arr) {
 }
 
 module.exports = _arrayWithoutHoles;
-},{}],3:[function(require,module,exports){
+},{}],3:[function(_dereq_,module,exports){
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
     var info = gen[key](arg);
@@ -54,7 +54,7 @@ function _asyncToGenerator(fn) {
 }
 
 module.exports = _asyncToGenerator;
-},{}],4:[function(require,module,exports){
+},{}],4:[function(_dereq_,module,exports){
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -62,7 +62,7 @@ function _classCallCheck(instance, Constructor) {
 }
 
 module.exports = _classCallCheck;
-},{}],5:[function(require,module,exports){
+},{}],5:[function(_dereq_,module,exports){
 function _defineProperties(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
@@ -80,7 +80,7 @@ function _createClass(Constructor, protoProps, staticProps) {
 }
 
 module.exports = _createClass;
-},{}],6:[function(require,module,exports){
+},{}],6:[function(_dereq_,module,exports){
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : {
     default: obj
@@ -88,7 +88,7 @@ function _interopRequireDefault(obj) {
 }
 
 module.exports = _interopRequireDefault;
-},{}],7:[function(require,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 function _interopRequireWildcard(obj) {
   if (obj && obj.__esModule) {
     return obj;
@@ -115,13 +115,13 @@ function _interopRequireWildcard(obj) {
 }
 
 module.exports = _interopRequireWildcard;
-},{}],8:[function(require,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 function _iterableToArray(iter) {
   if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
 }
 
 module.exports = _iterableToArray;
-},{}],9:[function(require,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 function _iterableToArrayLimit(arr, i) {
   var _arr = [];
   var _n = true;
@@ -149,46 +149,46 @@ function _iterableToArrayLimit(arr, i) {
 }
 
 module.exports = _iterableToArrayLimit;
-},{}],10:[function(require,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance");
 }
 
 module.exports = _nonIterableRest;
-},{}],11:[function(require,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 function _nonIterableSpread() {
   throw new TypeError("Invalid attempt to spread non-iterable instance");
 }
 
 module.exports = _nonIterableSpread;
-},{}],12:[function(require,module,exports){
-var arrayWithHoles = require("./arrayWithHoles");
+},{}],12:[function(_dereq_,module,exports){
+var arrayWithHoles = _dereq_("./arrayWithHoles");
 
-var iterableToArrayLimit = require("./iterableToArrayLimit");
+var iterableToArrayLimit = _dereq_("./iterableToArrayLimit");
 
-var nonIterableRest = require("./nonIterableRest");
+var nonIterableRest = _dereq_("./nonIterableRest");
 
 function _slicedToArray(arr, i) {
   return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || nonIterableRest();
 }
 
 module.exports = _slicedToArray;
-},{"./arrayWithHoles":1,"./iterableToArrayLimit":9,"./nonIterableRest":10}],13:[function(require,module,exports){
-var arrayWithoutHoles = require("./arrayWithoutHoles");
+},{"./arrayWithHoles":1,"./iterableToArrayLimit":9,"./nonIterableRest":10}],13:[function(_dereq_,module,exports){
+var arrayWithoutHoles = _dereq_("./arrayWithoutHoles");
 
-var iterableToArray = require("./iterableToArray");
+var iterableToArray = _dereq_("./iterableToArray");
 
-var nonIterableSpread = require("./nonIterableSpread");
+var nonIterableSpread = _dereq_("./nonIterableSpread");
 
 function _toConsumableArray(arr) {
   return arrayWithoutHoles(arr) || iterableToArray(arr) || nonIterableSpread();
 }
 
 module.exports = _toConsumableArray;
-},{"./arrayWithoutHoles":2,"./iterableToArray":8,"./nonIterableSpread":11}],14:[function(require,module,exports){
-module.exports = require("regenerator-runtime");
+},{"./arrayWithoutHoles":2,"./iterableToArray":8,"./nonIterableSpread":11}],14:[function(_dereq_,module,exports){
+module.exports = _dereq_("regenerator-runtime");
 
-},{"regenerator-runtime":49}],15:[function(require,module,exports){
+},{"regenerator-runtime":49}],15:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -285,7 +285,7 @@ function autobind() {
 
   return boundMethod.apply(void 0, arguments);
 }
-},{}],16:[function(require,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 /*!
  * jQuery JavaScript Library v3.3.1
  * https://jquery.com/
@@ -10651,21 +10651,21 @@ if ( !noGlobal ) {
 return jQuery;
 } );
 
-},{}],17:[function(require,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 'use strict';
 
 
-var yaml = require('./lib/js-yaml.js');
+var yaml = _dereq_('./lib/js-yaml.js');
 
 
 module.exports = yaml;
 
-},{"./lib/js-yaml.js":18}],18:[function(require,module,exports){
+},{"./lib/js-yaml.js":18}],18:[function(_dereq_,module,exports){
 'use strict';
 
 
-var loader = require('./js-yaml/loader');
-var dumper = require('./js-yaml/dumper');
+var loader = _dereq_('./js-yaml/loader');
+var dumper = _dereq_('./js-yaml/dumper');
 
 
 function deprecated(name) {
@@ -10675,25 +10675,25 @@ function deprecated(name) {
 }
 
 
-module.exports.Type                = require('./js-yaml/type');
-module.exports.Schema              = require('./js-yaml/schema');
-module.exports.FAILSAFE_SCHEMA     = require('./js-yaml/schema/failsafe');
-module.exports.JSON_SCHEMA         = require('./js-yaml/schema/json');
-module.exports.CORE_SCHEMA         = require('./js-yaml/schema/core');
-module.exports.DEFAULT_SAFE_SCHEMA = require('./js-yaml/schema/default_safe');
-module.exports.DEFAULT_FULL_SCHEMA = require('./js-yaml/schema/default_full');
+module.exports.Type                = _dereq_('./js-yaml/type');
+module.exports.Schema              = _dereq_('./js-yaml/schema');
+module.exports.FAILSAFE_SCHEMA     = _dereq_('./js-yaml/schema/failsafe');
+module.exports.JSON_SCHEMA         = _dereq_('./js-yaml/schema/json');
+module.exports.CORE_SCHEMA         = _dereq_('./js-yaml/schema/core');
+module.exports.DEFAULT_SAFE_SCHEMA = _dereq_('./js-yaml/schema/default_safe');
+module.exports.DEFAULT_FULL_SCHEMA = _dereq_('./js-yaml/schema/default_full');
 module.exports.load                = loader.load;
 module.exports.loadAll             = loader.loadAll;
 module.exports.safeLoad            = loader.safeLoad;
 module.exports.safeLoadAll         = loader.safeLoadAll;
 module.exports.dump                = dumper.dump;
 module.exports.safeDump            = dumper.safeDump;
-module.exports.YAMLException       = require('./js-yaml/exception');
+module.exports.YAMLException       = _dereq_('./js-yaml/exception');
 
 // Deprecated schema names from JS-YAML 2.0.x
-module.exports.MINIMAL_SCHEMA = require('./js-yaml/schema/failsafe');
-module.exports.SAFE_SCHEMA    = require('./js-yaml/schema/default_safe');
-module.exports.DEFAULT_SCHEMA = require('./js-yaml/schema/default_full');
+module.exports.MINIMAL_SCHEMA = _dereq_('./js-yaml/schema/failsafe');
+module.exports.SAFE_SCHEMA    = _dereq_('./js-yaml/schema/default_safe');
+module.exports.DEFAULT_SCHEMA = _dereq_('./js-yaml/schema/default_full');
 
 // Deprecated functions from JS-YAML 1.x.x
 module.exports.scan           = deprecated('scan');
@@ -10701,7 +10701,7 @@ module.exports.parse          = deprecated('parse');
 module.exports.compose        = deprecated('compose');
 module.exports.addConstructor = deprecated('addConstructor');
 
-},{"./js-yaml/dumper":20,"./js-yaml/exception":21,"./js-yaml/loader":22,"./js-yaml/schema":24,"./js-yaml/schema/core":25,"./js-yaml/schema/default_full":26,"./js-yaml/schema/default_safe":27,"./js-yaml/schema/failsafe":28,"./js-yaml/schema/json":29,"./js-yaml/type":30}],19:[function(require,module,exports){
+},{"./js-yaml/dumper":20,"./js-yaml/exception":21,"./js-yaml/loader":22,"./js-yaml/schema":24,"./js-yaml/schema/core":25,"./js-yaml/schema/default_full":26,"./js-yaml/schema/default_safe":27,"./js-yaml/schema/failsafe":28,"./js-yaml/schema/json":29,"./js-yaml/type":30}],19:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -10762,15 +10762,15 @@ module.exports.repeat         = repeat;
 module.exports.isNegativeZero = isNegativeZero;
 module.exports.extend         = extend;
 
-},{}],20:[function(require,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable no-use-before-define*/
 
-var common              = require('./common');
-var YAMLException       = require('./exception');
-var DEFAULT_FULL_SCHEMA = require('./schema/default_full');
-var DEFAULT_SAFE_SCHEMA = require('./schema/default_safe');
+var common              = _dereq_('./common');
+var YAMLException       = _dereq_('./exception');
+var DEFAULT_FULL_SCHEMA = _dereq_('./schema/default_full');
+var DEFAULT_SAFE_SCHEMA = _dereq_('./schema/default_safe');
 
 var _toString       = Object.prototype.toString;
 var _hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -11589,7 +11589,7 @@ function safeDump(input, options) {
 module.exports.dump     = dump;
 module.exports.safeDump = safeDump;
 
-},{"./common":19,"./exception":21,"./schema/default_full":26,"./schema/default_safe":27}],21:[function(require,module,exports){
+},{"./common":19,"./exception":21,"./schema/default_full":26,"./schema/default_safe":27}],21:[function(_dereq_,module,exports){
 // YAML error class. http://stackoverflow.com/questions/8458984
 //
 'use strict';
@@ -11634,16 +11634,16 @@ YAMLException.prototype.toString = function toString(compact) {
 
 module.exports = YAMLException;
 
-},{}],22:[function(require,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable max-len,no-use-before-define*/
 
-var common              = require('./common');
-var YAMLException       = require('./exception');
-var Mark                = require('./mark');
-var DEFAULT_SAFE_SCHEMA = require('./schema/default_safe');
-var DEFAULT_FULL_SCHEMA = require('./schema/default_full');
+var common              = _dereq_('./common');
+var YAMLException       = _dereq_('./exception');
+var Mark                = _dereq_('./mark');
+var DEFAULT_SAFE_SCHEMA = _dereq_('./schema/default_safe');
+var DEFAULT_FULL_SCHEMA = _dereq_('./schema/default_full');
 
 
 var _hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -13234,11 +13234,11 @@ module.exports.load        = load;
 module.exports.safeLoadAll = safeLoadAll;
 module.exports.safeLoad    = safeLoad;
 
-},{"./common":19,"./exception":21,"./mark":23,"./schema/default_full":26,"./schema/default_safe":27}],23:[function(require,module,exports){
+},{"./common":19,"./exception":21,"./mark":23,"./schema/default_full":26,"./schema/default_safe":27}],23:[function(_dereq_,module,exports){
 'use strict';
 
 
-var common = require('./common');
+var common = _dereq_('./common');
 
 
 function Mark(name, buffer, position, line, column) {
@@ -13312,14 +13312,14 @@ Mark.prototype.toString = function toString(compact) {
 
 module.exports = Mark;
 
-},{"./common":19}],24:[function(require,module,exports){
+},{"./common":19}],24:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable max-len*/
 
-var common        = require('./common');
-var YAMLException = require('./exception');
-var Type          = require('./type');
+var common        = _dereq_('./common');
+var YAMLException = _dereq_('./exception');
+var Type          = _dereq_('./type');
 
 
 function compileList(schema, name, result) {
@@ -13422,7 +13422,7 @@ Schema.create = function createSchema() {
 
 module.exports = Schema;
 
-},{"./common":19,"./exception":21,"./type":30}],25:[function(require,module,exports){
+},{"./common":19,"./exception":21,"./type":30}],25:[function(_dereq_,module,exports){
 // Standard YAML's Core schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2804923
 //
@@ -13433,16 +13433,16 @@ module.exports = Schema;
 'use strict';
 
 
-var Schema = require('../schema');
+var Schema = _dereq_('../schema');
 
 
 module.exports = new Schema({
   include: [
-    require('./json')
+    _dereq_('./json')
   ]
 });
 
-},{"../schema":24,"./json":29}],26:[function(require,module,exports){
+},{"../schema":24,"./json":29}],26:[function(_dereq_,module,exports){
 // JS-YAML's default schema for `load` function.
 // It is not described in the YAML specification.
 //
@@ -13455,21 +13455,21 @@ module.exports = new Schema({
 'use strict';
 
 
-var Schema = require('../schema');
+var Schema = _dereq_('../schema');
 
 
 module.exports = Schema.DEFAULT = new Schema({
   include: [
-    require('./default_safe')
+    _dereq_('./default_safe')
   ],
   explicit: [
-    require('../type/js/undefined'),
-    require('../type/js/regexp'),
-    require('../type/js/function')
+    _dereq_('../type/js/undefined'),
+    _dereq_('../type/js/regexp'),
+    _dereq_('../type/js/function')
   ]
 });
 
-},{"../schema":24,"../type/js/function":35,"../type/js/regexp":36,"../type/js/undefined":37,"./default_safe":27}],27:[function(require,module,exports){
+},{"../schema":24,"../type/js/function":35,"../type/js/regexp":36,"../type/js/undefined":37,"./default_safe":27}],27:[function(_dereq_,module,exports){
 // JS-YAML's default schema for `safeLoad` function.
 // It is not described in the YAML specification.
 //
@@ -13480,26 +13480,26 @@ module.exports = Schema.DEFAULT = new Schema({
 'use strict';
 
 
-var Schema = require('../schema');
+var Schema = _dereq_('../schema');
 
 
 module.exports = new Schema({
   include: [
-    require('./core')
+    _dereq_('./core')
   ],
   implicit: [
-    require('../type/timestamp'),
-    require('../type/merge')
+    _dereq_('../type/timestamp'),
+    _dereq_('../type/merge')
   ],
   explicit: [
-    require('../type/binary'),
-    require('../type/omap'),
-    require('../type/pairs'),
-    require('../type/set')
+    _dereq_('../type/binary'),
+    _dereq_('../type/omap'),
+    _dereq_('../type/pairs'),
+    _dereq_('../type/set')
   ]
 });
 
-},{"../schema":24,"../type/binary":31,"../type/merge":39,"../type/omap":41,"../type/pairs":42,"../type/set":44,"../type/timestamp":46,"./core":25}],28:[function(require,module,exports){
+},{"../schema":24,"../type/binary":31,"../type/merge":39,"../type/omap":41,"../type/pairs":42,"../type/set":44,"../type/timestamp":46,"./core":25}],28:[function(_dereq_,module,exports){
 // Standard YAML's Failsafe schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2802346
 
@@ -13507,18 +13507,18 @@ module.exports = new Schema({
 'use strict';
 
 
-var Schema = require('../schema');
+var Schema = _dereq_('../schema');
 
 
 module.exports = new Schema({
   explicit: [
-    require('../type/str'),
-    require('../type/seq'),
-    require('../type/map')
+    _dereq_('../type/str'),
+    _dereq_('../type/seq'),
+    _dereq_('../type/map')
   ]
 });
 
-},{"../schema":24,"../type/map":38,"../type/seq":43,"../type/str":45}],29:[function(require,module,exports){
+},{"../schema":24,"../type/map":38,"../type/seq":43,"../type/str":45}],29:[function(_dereq_,module,exports){
 // Standard YAML's JSON schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2803231
 //
@@ -13530,25 +13530,25 @@ module.exports = new Schema({
 'use strict';
 
 
-var Schema = require('../schema');
+var Schema = _dereq_('../schema');
 
 
 module.exports = new Schema({
   include: [
-    require('./failsafe')
+    _dereq_('./failsafe')
   ],
   implicit: [
-    require('../type/null'),
-    require('../type/bool'),
-    require('../type/int'),
-    require('../type/float')
+    _dereq_('../type/null'),
+    _dereq_('../type/bool'),
+    _dereq_('../type/int'),
+    _dereq_('../type/float')
   ]
 });
 
-},{"../schema":24,"../type/bool":32,"../type/float":33,"../type/int":34,"../type/null":40,"./failsafe":28}],30:[function(require,module,exports){
+},{"../schema":24,"../type/bool":32,"../type/float":33,"../type/int":34,"../type/null":40,"./failsafe":28}],30:[function(_dereq_,module,exports){
 'use strict';
 
-var YAMLException = require('./exception');
+var YAMLException = _dereq_('./exception');
 
 var TYPE_CONSTRUCTOR_OPTIONS = [
   'kind',
@@ -13608,7 +13608,7 @@ function Type(tag, options) {
 
 module.exports = Type;
 
-},{"./exception":21}],31:[function(require,module,exports){
+},{"./exception":21}],31:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable no-bitwise*/
@@ -13617,11 +13617,11 @@ var NodeBuffer;
 
 try {
   // A trick for browserified version, to not include `Buffer` shim
-  var _require = require;
+  var _require = _dereq_;
   NodeBuffer = _require('buffer').Buffer;
 } catch (__) {}
 
-var Type       = require('../type');
+var Type       = _dereq_('../type');
 
 
 // [ 64, 65, 66 ] -> [ padding, CR, LF ]
@@ -13748,10 +13748,10 @@ module.exports = new Type('tag:yaml.org,2002:binary', {
   represent: representYamlBinary
 });
 
-},{"../type":30}],32:[function(require,module,exports){
+},{"../type":30}],32:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 function resolveYamlBoolean(data) {
   if (data === null) return false;
@@ -13785,11 +13785,11 @@ module.exports = new Type('tag:yaml.org,2002:bool', {
   defaultStyle: 'lowercase'
 });
 
-},{"../type":30}],33:[function(require,module,exports){
+},{"../type":30}],33:[function(_dereq_,module,exports){
 'use strict';
 
-var common = require('../common');
-var Type   = require('../type');
+var common = _dereq_('../common');
+var Type   = _dereq_('../type');
 
 var YAML_FLOAT_PATTERN = new RegExp(
   // 2.5e4, 2.5 and integers
@@ -13903,11 +13903,11 @@ module.exports = new Type('tag:yaml.org,2002:float', {
   defaultStyle: 'lowercase'
 });
 
-},{"../common":19,"../type":30}],34:[function(require,module,exports){
+},{"../common":19,"../type":30}],34:[function(_dereq_,module,exports){
 'use strict';
 
-var common = require('../common');
-var Type   = require('../type');
+var common = _dereq_('../common');
+var Type   = _dereq_('../type');
 
 function isHexCode(c) {
   return ((0x30/* 0 */ <= c) && (c <= 0x39/* 9 */)) ||
@@ -14078,7 +14078,7 @@ module.exports = new Type('tag:yaml.org,2002:int', {
   }
 });
 
-},{"../common":19,"../type":30}],35:[function(require,module,exports){
+},{"../common":19,"../type":30}],35:[function(_dereq_,module,exports){
 'use strict';
 
 var esprima;
@@ -14092,14 +14092,14 @@ var esprima;
 //
 try {
   // workaround to exclude package from browserify list.
-  var _require = require;
+  var _require = _dereq_;
   esprima = _require('esprima');
 } catch (_) {
   /*global window */
   if (typeof window !== 'undefined') esprima = window.esprima;
 }
 
-var Type = require('../../type');
+var Type = _dereq_('../../type');
 
 function resolveJavascriptFunction(data) {
   if (data === null) return false;
@@ -14172,10 +14172,10 @@ module.exports = new Type('tag:yaml.org,2002:js/function', {
   represent: representJavascriptFunction
 });
 
-},{"../../type":30}],36:[function(require,module,exports){
+},{"../../type":30}],36:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../../type');
+var Type = _dereq_('../../type');
 
 function resolveJavascriptRegExp(data) {
   if (data === null) return false;
@@ -14234,10 +14234,10 @@ module.exports = new Type('tag:yaml.org,2002:js/regexp', {
   represent: representJavascriptRegExp
 });
 
-},{"../../type":30}],37:[function(require,module,exports){
+},{"../../type":30}],37:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../../type');
+var Type = _dereq_('../../type');
 
 function resolveJavascriptUndefined() {
   return true;
@@ -14264,20 +14264,20 @@ module.exports = new Type('tag:yaml.org,2002:js/undefined', {
   represent: representJavascriptUndefined
 });
 
-},{"../../type":30}],38:[function(require,module,exports){
+},{"../../type":30}],38:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 module.exports = new Type('tag:yaml.org,2002:map', {
   kind: 'mapping',
   construct: function (data) { return data !== null ? data : {}; }
 });
 
-},{"../type":30}],39:[function(require,module,exports){
+},{"../type":30}],39:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 function resolveYamlMerge(data) {
   return data === '<<' || data === null;
@@ -14288,10 +14288,10 @@ module.exports = new Type('tag:yaml.org,2002:merge', {
   resolve: resolveYamlMerge
 });
 
-},{"../type":30}],40:[function(require,module,exports){
+},{"../type":30}],40:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 function resolveYamlNull(data) {
   if (data === null) return true;
@@ -14324,10 +14324,10 @@ module.exports = new Type('tag:yaml.org,2002:null', {
   defaultStyle: 'lowercase'
 });
 
-},{"../type":30}],41:[function(require,module,exports){
+},{"../type":30}],41:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 var _hasOwnProperty = Object.prototype.hasOwnProperty;
 var _toString       = Object.prototype.toString;
@@ -14370,10 +14370,10 @@ module.exports = new Type('tag:yaml.org,2002:omap', {
   construct: constructYamlOmap
 });
 
-},{"../type":30}],42:[function(require,module,exports){
+},{"../type":30}],42:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 var _toString = Object.prototype.toString;
 
@@ -14425,20 +14425,20 @@ module.exports = new Type('tag:yaml.org,2002:pairs', {
   construct: constructYamlPairs
 });
 
-},{"../type":30}],43:[function(require,module,exports){
+},{"../type":30}],43:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 module.exports = new Type('tag:yaml.org,2002:seq', {
   kind: 'sequence',
   construct: function (data) { return data !== null ? data : []; }
 });
 
-},{"../type":30}],44:[function(require,module,exports){
+},{"../type":30}],44:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 var _hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -14466,20 +14466,20 @@ module.exports = new Type('tag:yaml.org,2002:set', {
   construct: constructYamlSet
 });
 
-},{"../type":30}],45:[function(require,module,exports){
+},{"../type":30}],45:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 module.exports = new Type('tag:yaml.org,2002:str', {
   kind: 'scalar',
   construct: function (data) { return data !== null ? data : ''; }
 });
 
-},{"../type":30}],46:[function(require,module,exports){
+},{"../type":30}],46:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 var YAML_DATE_REGEXP = new RegExp(
   '^([0-9][0-9][0-9][0-9])'          + // [1] year
@@ -14566,7 +14566,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   represent: representYamlTimestamp
 });
 
-},{"../type":30}],47:[function(require,module,exports){
+},{"../type":30}],47:[function(_dereq_,module,exports){
 (function (global){
 /**
  * @license
@@ -31677,7 +31677,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],48:[function(require,module,exports){
+},{}],48:[function(_dereq_,module,exports){
 // randomColor by David Merfield under the CC0 license
 // https://github.com/davidmerfield/randomColor/
 
@@ -32132,7 +32132,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   return randomColor;
 }));
 
-},{}],49:[function(require,module,exports){
+},{}],49:[function(_dereq_,module,exports){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -32157,7 +32157,7 @@ var oldRuntime = hadRuntime && g.regeneratorRuntime;
 // Force reevalutation of runtime.js.
 g.regeneratorRuntime = undefined;
 
-module.exports = require("./runtime");
+module.exports = _dereq_("./runtime");
 
 if (hadRuntime) {
   // Restore the original runtime.
@@ -32171,7 +32171,7 @@ if (hadRuntime) {
   }
 }
 
-},{"./runtime":50}],50:[function(require,module,exports){
+},{"./runtime":50}],50:[function(_dereq_,module,exports){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -32894,7 +32894,7 @@ if (hadRuntime) {
   })() || Function("return this")()
 );
 
-},{}],51:[function(require,module,exports){
+},{}],51:[function(_dereq_,module,exports){
 /*! svg.draggable.js - v2.2.1 - 2016-08-25
 * https://github.com/wout/svg.draggable.js
 * Copyright (c) 2016 Wout Fierens; Licensed MIT */
@@ -33122,7 +33122,7 @@ if (hadRuntime) {
   })
 
 }).call(this);
-},{}],52:[function(require,module,exports){
+},{}],52:[function(_dereq_,module,exports){
 /*!
 * svg.js - A lightweight library for manipulating and animating SVG.
 * @version 2.7.0
@@ -38724,27 +38724,27 @@ if (typeof window.CustomEvent !== 'function') {
 return SVG
 
 }));
-},{}],53:[function(require,module,exports){
+},{}],53:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _jquery = _interopRequireDefault(require("jquery"));
+var _jquery = _interopRequireDefault(_dereq_("jquery"));
 
-var _wordTag = _interopRequireDefault(require("./word-tag.js"));
+var _wordTag = _interopRequireDefault(_dereq_("./word-tag.js"));
 
-var _wordCluster = _interopRequireDefault(require("./word-cluster.js"));
+var _wordCluster = _interopRequireDefault(_dereq_("./word-cluster.js"));
 
-var _util = _interopRequireDefault(require("../util.js"));
+var _util = _interopRequireDefault(_dereq_("../util.js"));
 
 var Link =
 /*#__PURE__*/
@@ -40369,19 +40369,19 @@ function () {
 var _default = Link;
 exports.default = _default;
 
-},{"../util.js":68,"./word-cluster.js":55,"./word-tag.js":56,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"jquery":16}],54:[function(require,module,exports){
+},{"../util.js":68,"./word-cluster.js":55,"./word-tag.js":56,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"jquery":16}],54:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
 var Row =
 /*#__PURE__*/
@@ -41208,19 +41208,19 @@ function () {
 var _default = Row;
 exports.default = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6}],55:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6}],55:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
 /**
  * Tags for cases where multiple words make up a single entity
@@ -41610,19 +41610,19 @@ function () {
 var _default = WordCluster;
 exports.default = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6}],56:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6}],56:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
 /**
  * Tags for single entities/tokens.
@@ -41881,23 +41881,23 @@ function () {
 var _default = WordTag;
 exports.default = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6}],57:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6}],57:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+var _slicedToArray2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/slicedToArray"));
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _wordTag = _interopRequireDefault(require("./word-tag.js"));
+var _wordTag = _interopRequireDefault(_dereq_("./word-tag.js"));
 
 /**
  * Objects representing raw entity/token strings.
@@ -42477,17 +42477,17 @@ function () {
 var _default = Word;
 exports.default = _default;
 
-},{"./word-tag.js":56,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/slicedToArray":12}],58:[function(require,module,exports){
+},{"./word-tag.js":56,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/slicedToArray":12}],58:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
 /**
  * *Configuration options for the library*
@@ -42651,45 +42651,45 @@ function Config() {
 var _default = Config;
 exports.default = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/interopRequireDefault":6}],59:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/interopRequireDefault":6}],59:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = _dereq_("@babel/runtime/helpers/interopRequireWildcard");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+var _regenerator = _interopRequireDefault(_dereq_("@babel/runtime/regenerator"));
 
-var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
+var _asyncToGenerator2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/asyncToGenerator"));
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _lodash = _interopRequireDefault(require("lodash"));
+var _lodash = _interopRequireDefault(_dereq_("lodash"));
 
-var _jquery = _interopRequireDefault(require("jquery"));
+var _jquery = _interopRequireDefault(_dereq_("jquery"));
 
-var SVG = _interopRequireWildcard(require("svg.js"));
+var SVG = _interopRequireWildcard(_dereq_("svg.js"));
 
-var _parse = _interopRequireDefault(require("./parse/parse.js"));
+var _parse = _interopRequireDefault(_dereq_("./parse/parse.js"));
 
-var _rowmanager = _interopRequireDefault(require("./managers/rowmanager.js"));
+var _rowmanager = _interopRequireDefault(_dereq_("./managers/rowmanager.js"));
 
-var _labelmanager = _interopRequireDefault(require("./managers/labelmanager.js"));
+var _labelmanager = _interopRequireDefault(_dereq_("./managers/labelmanager.js"));
 
-var _taxonomy = _interopRequireDefault(require("./managers/taxonomy.js"));
+var _taxonomy = _interopRequireDefault(_dereq_("./managers/taxonomy.js"));
 
-var _config = _interopRequireDefault(require("./config.js"));
+var _config = _interopRequireDefault(_dereq_("./config.js"));
 
-var _util = _interopRequireDefault(require("./util.js"));
+var _util = _interopRequireDefault(_dereq_("./util.js"));
 
-var _autobindDecorator = _interopRequireDefault(require("autobind-decorator"));
+var _autobindDecorator = _interopRequireDefault(_dereq_("autobind-decorator"));
 
 var _class;
 
@@ -43428,14 +43428,14 @@ function () {
 var _default = Main;
 exports.default = _default;
 
-},{"./config.js":58,"./managers/labelmanager.js":60,"./managers/rowmanager.js":61,"./managers/taxonomy.js":62,"./parse/parse.js":66,"./util.js":68,"@babel/runtime/helpers/asyncToGenerator":3,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/interopRequireWildcard":7,"@babel/runtime/regenerator":14,"autobind-decorator":15,"jquery":16,"lodash":47,"svg.js":52}],60:[function(require,module,exports){
+},{"./config.js":58,"./managers/labelmanager.js":60,"./managers/rowmanager.js":61,"./managers/taxonomy.js":62,"./parse/parse.js":66,"./util.js":68,"@babel/runtime/helpers/asyncToGenerator":3,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/interopRequireWildcard":7,"@babel/runtime/regenerator":14,"autobind-decorator":15,"jquery":16,"lodash":47,"svg.js":52}],60:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _link = _interopRequireDefault(require("../components/link.js"));
+var _link = _interopRequireDefault(_dereq_("../components/link.js"));
 
 /**
  * Not currently in use.
@@ -43559,21 +43559,21 @@ module.exports = function () {
   return LabelManager;
 }();
 
-},{"../components/link.js":53,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/interopRequireDefault":6}],61:[function(require,module,exports){
+},{"../components/link.js":53,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/interopRequireDefault":6}],61:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _row = _interopRequireDefault(require("../components/row.js"));
+var _row = _interopRequireDefault(_dereq_("../components/row.js"));
 
 var RowManager =
 /*#__PURE__*/
@@ -44013,27 +44013,27 @@ function () {
 var _default = RowManager;
 exports.default = _default;
 
-},{"../components/row.js":54,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6}],62:[function(require,module,exports){
+},{"../components/row.js":54,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6}],62:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _lodash = _interopRequireDefault(require("lodash"));
+var _lodash = _interopRequireDefault(_dereq_("lodash"));
 
-var _randomcolor = _interopRequireDefault(require("randomcolor"));
+var _randomcolor = _interopRequireDefault(_dereq_("randomcolor"));
 
-var _jsYaml = _interopRequireDefault(require("js-yaml"));
+var _jsYaml = _interopRequireDefault(_dereq_("js-yaml"));
 
-var _word = _interopRequireDefault(require("../components/word.js"));
+var _word = _interopRequireDefault(_dereq_("../components/word.js"));
 
 /**
  * Manages the user-provided taxonomy tree, and the colouring of the
@@ -44229,25 +44229,25 @@ function () {
 var _default = TaxonomyManager;
 exports.default = _default;
 
-},{"../components/word.js":57,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"js-yaml":17,"lodash":47,"randomcolor":48}],63:[function(require,module,exports){
+},{"../components/word.js":57,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"js-yaml":17,"lodash":47,"randomcolor":48}],63:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+var _slicedToArray2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/slicedToArray"));
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _word = _interopRequireDefault(require("../components/word.js"));
+var _word = _interopRequireDefault(_dereq_("../components/word.js"));
 
-var _link = _interopRequireDefault(require("../components/link.js"));
+var _link = _interopRequireDefault(_dereq_("../components/link.js"));
 
 var BratParser =
 /*#__PURE__*/
@@ -44576,27 +44576,27 @@ function () {
 var _default = BratParser;
 exports.default = _default;
 
-},{"../components/link.js":53,"../components/word.js":57,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/slicedToArray":12}],64:[function(require,module,exports){
+},{"../components/link.js":53,"../components/word.js":57,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/slicedToArray":12}],64:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+var _slicedToArray2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/slicedToArray"));
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _word = _interopRequireDefault(require("../components/word.js"));
+var _word = _interopRequireDefault(_dereq_("../components/word.js"));
 
-var _link = _interopRequireDefault(require("../components/link.js"));
+var _link = _interopRequireDefault(_dereq_("../components/link.js"));
 
-var _wordCluster = _interopRequireDefault(require("../components/word-cluster.js"));
+var _wordCluster = _interopRequireDefault(_dereq_("../components/word-cluster.js"));
 
 /**
  * Parser for Odin `mentions.json` output
@@ -44998,29 +44998,29 @@ function () {
 var _default = OdinParser;
 exports.default = _default;
 
-},{"../components/link.js":53,"../components/word-cluster.js":55,"../components/word.js":57,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/slicedToArray":12}],65:[function(require,module,exports){
+},{"../components/link.js":53,"../components/word-cluster.js":55,"../components/word.js":57,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/slicedToArray":12}],65:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+var _toConsumableArray2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/toConsumableArray"));
 
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+var _slicedToArray2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/slicedToArray"));
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _word = _interopRequireDefault(require("../components/word.js"));
+var _word = _interopRequireDefault(_dereq_("../components/word.js"));
 
-var _link = _interopRequireDefault(require("../components/link.js"));
+var _link = _interopRequireDefault(_dereq_("../components/link.js"));
 
-var _wordCluster = _interopRequireDefault(require("../components/word-cluster.js"));
+var _wordCluster = _interopRequireDefault(_dereq_("../components/word-cluster.js"));
 
 /**
  * Parser for Odinson `matches` json
@@ -45037,7 +45037,7 @@ function () {
       links: [],
       clusters: []
     };
-    this.DEFAULT_LABEL = ""; // Previously-parsed mentions by Id.
+    this.DEFAULT_LABEL = "MATCH"; // Previously-parsed mentions by Id.
 
     this.parsedMentions = {};
   }
@@ -45394,27 +45394,27 @@ function () {
 var _default = OdinsonParser;
 exports.default = _default;
 
-},{"../components/link.js":53,"../components/word-cluster.js":55,"../components/word.js":57,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/slicedToArray":12,"@babel/runtime/helpers/toConsumableArray":13}],66:[function(require,module,exports){
+},{"../components/link.js":53,"../components/word-cluster.js":55,"../components/word.js":57,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/slicedToArray":12,"@babel/runtime/helpers/toConsumableArray":13}],66:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _lodash = _interopRequireDefault(require("lodash"));
+var _lodash = _interopRequireDefault(_dereq_("lodash"));
 
-var _brat = _interopRequireDefault(require("./brat.js"));
+var _brat = _interopRequireDefault(_dereq_("./brat.js"));
 
-var _odin = _interopRequireDefault(require("./odin.js"));
+var _odin = _interopRequireDefault(_dereq_("./odin.js"));
 
-var _odinson = _interopRequireDefault(require("./odinson.js"));
+var _odinson = _interopRequireDefault(_dereq_("./odinson.js"));
 
 var re = /.*(?=\.(\S+))|.*/;
 
@@ -45607,17 +45607,17 @@ function () {
 var _default = Parser;
 exports.default = _default;
 
-},{"./brat.js":63,"./odin.js":64,"./odinson.js":65,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"lodash":47}],67:[function(require,module,exports){
+},{"./brat.js":63,"./odin.js":64,"./odinson.js":65,"@babel/runtime/helpers/classCallCheck":4,"@babel/runtime/helpers/createClass":5,"@babel/runtime/helpers/interopRequireDefault":6,"lodash":47}],67:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _main = _interopRequireDefault(require("./main"));
+var _main = _interopRequireDefault(_dereq_("./main"));
 
 /**
  * Instantiation and static functions
@@ -45663,23 +45663,23 @@ module.exports = {
   tag: tag
 };
 
-},{"./main":59,"@babel/runtime/helpers/interopRequireDefault":6}],68:[function(require,module,exports){
+},{"./main":59,"@babel/runtime/helpers/interopRequireDefault":6}],68:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = _dereq_("@babel/runtime/helpers/interopRequireWildcard");
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
 
-var _lodash = _interopRequireDefault(require("lodash"));
+var _lodash = _interopRequireDefault(_dereq_("lodash"));
 
-var SVG = _interopRequireWildcard(require("svg.js"));
+var SVG = _interopRequireWildcard(_dereq_("svg.js"));
 
-var draggable = _interopRequireWildcard(require("svg.draggable.js"));
+var draggable = _interopRequireWildcard(_dereq_("svg.draggable.js"));
 
 /**
  * Utility functions
@@ -45837,4 +45837,5 @@ var _default = {
 };
 exports.default = _default;
 
-},{"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/interopRequireWildcard":7,"lodash":47,"svg.draggable.js":51,"svg.js":52}]},{},[67]);
+},{"@babel/runtime/helpers/interopRequireDefault":6,"@babel/runtime/helpers/interopRequireWildcard":7,"lodash":47,"svg.draggable.js":51,"svg.js":52}]},{},[67])(67)
+});

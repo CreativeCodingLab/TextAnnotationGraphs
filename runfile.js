@@ -58,7 +58,7 @@ build.app.scripts = {
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
     run(`mkdirp ${config.assetsDir}/${config.scriptsDir}`);
-    return run(`browserify ${input} -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v`, {async: true});
+    return run(`browserify ${input} -p browserify-derequire -s tag -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v`, {async: true});
   },
   async quickTag() {
     const input = "src/js/tag.js";
@@ -69,7 +69,7 @@ build.app.scripts = {
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
     run(`mkdirp ${config.assetsDir}/${config.scriptsDir}`);
-    return run(`browserify ${input} -t [ babelify ] -t [ hbsfy ] -o ${output} -v`, {async: true});
+    return run(`browserify ${input} -p browserify-derequire -s tag -t [ babelify ] -t [ hbsfy ] -o ${output} -v`, {async: true});
   },
 
   // All/Quick

@@ -16,7 +16,7 @@ class OdinsonParser {
       clusters: []
     };
 
-    this.DEFAULT_LABEL = "";
+    this.DEFAULT_LABEL = "MATCH";
 
     // Previously-parsed mentions by Id.
     this.parsedMentions = {};
