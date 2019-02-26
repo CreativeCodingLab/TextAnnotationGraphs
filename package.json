@@ -2,7 +2,7 @@
   "name": "text-annotation-graphs",
   "version": "0.0.1",
   "description": "A modular annotation system that supports complex, interactive annotation graphs embedded on top of sequences of text.",
-  "main": "src/tag.js",
+  "main": "src/js/tag.js",
   "scripts": {
     "test": "jest --verbose",
     "build": "run build:all",
