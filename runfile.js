@@ -50,7 +50,7 @@ build.app.scripts = {
   // Main TAG bundle
   // -----------------
   async tag() {
-    const input = "src/js/main.js";
+    const input = "src/js/tag.js";
     const output = `${config.assetsDir}/${config.scriptsDir}/tag.min.js`;
     const type = "Build";
     const desc = "Main TAG JS bundle";
@@ -58,10 +58,10 @@ build.app.scripts = {
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
     run(`mkdirp ${config.assetsDir}/${config.scriptsDir}`);
-    return run(`browserify ${input} -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v`, {async: true});
+    return run(`browserify ${input} -p browserify-derequire -s tag -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v`, {async: true});
   },
   async quickTag() {
-    const input = "src/js/main.js";
+    const input = "src/js/tag.js";
     const output = `${config.assetsDir}/${config.scriptsDir}/tag.js`;
     const type = "Build";
     const desc = "Main TAG JS bundle (Unminified)";
@@ -69,7 +69,7 @@ build.app.scripts = {
     console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
 
     run(`mkdirp ${config.assetsDir}/${config.scriptsDir}`);
-    return run(`browserify ${input} -t [ babelify ] -t [ hbsfy ] -o ${output} -v`, {async: true});
+    return run(`browserify ${input} -p browserify-derequire -s tag -t [ babelify ] -t [ hbsfy ] -o ${output} -v`, {async: true});
   },
 
   // All/Quick
@@ -290,7 +290,7 @@ const watch = {};
 
 watch.scripts = {
   async tag() {
-    const input = "src/js/main.js";
+    const input = "src/js/tag.js";
     const output = `${config.assetsDir}/${config.scriptsDir}/tag.min.js`;
     const type = "Watch";
     const desc = "Main TAG JS bundle";
@@ -300,7 +300,7 @@ watch.scripts = {
     return run(`watchify ${input} -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v --poll=500`, {async: true});
   },
   async quickTag() {
-    const input = "src/js/main.js";
+    const input = "src/js/tag.js";
     const output = `${config.assetsDir}/${config.scriptsDir}/tag.js`;
     const type = "Watch";
     const desc = "Main TAG JS bundle (Unminified)";
