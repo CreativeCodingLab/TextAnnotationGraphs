@@ -2,7 +2,7 @@
   "name": "text-annotation-graphs",
   "version": "0.0.1",
   "description": "A modular annotation system that supports complex, interactive annotation graphs embedded on top of sequences of text.",
-  "main": "src/tag.js",
+  "main": "dist/tag/js/tag.js",
   "scripts": {
     "test": "jest --verbose",
     "build": "run build:all",
@@ -54,6 +54,7 @@
     "bootstrap-colorpicker": "^3.0.3",
     "bootstrap-slider": "^10.4.2",
     "browserify": "^14.4.0",
+    "browserify-derequire": "^1.0.0",
     "chalk": "^2.4.1",
     "chokidar-cli": "^1.2.1",
     "clean-css-cli": "^4.1.10",
