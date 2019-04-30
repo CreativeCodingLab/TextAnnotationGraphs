@@ -90,13 +90,17 @@ class Parser {
       if (format === "brat") {
         if (matchingFiles.length === 2) {
           // find text content
-          let text = matchingFiles.find(file => file.name.endsWith(".txt"));
-          let standoff = matchingFiles.find(file => !file.name.endsWith(".txt"));
+          let text = matchingFiles.find((file) => file.name.endsWith(".txt"));
+          let standoff = matchingFiles.find(
+            (file) => !file.name.endsWith(".txt")
+          );
           this.parseBrat(text.content, standoff.content);
         } else {
-          let text = matchingFiles.find(file => file.name.endsWith(".txt"));
-          let entities = matchingFiles.find(file => file.name.endsWith(".a1"));
-          let evts = matchingFiles.find(file => file.name.endsWith(".a2"));
+          let text = matchingFiles.find((file) => file.name.endsWith(".txt"));
+          let entities = matchingFiles.find((file) =>
+            file.name.endsWith(".a1")
+          );
+          let evts = matchingFiles.find((file) => file.name.endsWith(".a2"));
           if (text && evts && entities) {
             this.parseBrat(text.content, entities.content, evts.content);
           } else {

@@ -26,7 +26,7 @@ class WordTag {
 
     if (!word.svg) {
       throw "Error: Trying to initialise WordTag on Word without SVG" +
-      " element";
+        " element";
     }
 
     this.draw();
@@ -49,7 +49,8 @@ class WordTag {
     // size, and if its font size changes, the anchor point for the resizing
     // is the text's baseline (not any of the bounding box sides).
     // N.B.: Typographical baselines ignore descenders
-    this.svgText = this.svg.text(this.val)
+    this.svgText = this.svg
+      .text(this.val)
       .addClass("tag-element")
       .addClass(this.top ? "word-tag" : "word-tag syntax-tag")
       .leading(1);
@@ -58,14 +59,13 @@ class WordTag {
     let mainSvg = this.word.main.svg;
     this.svgText.node.oncontextmenu = (e) => {
       e.preventDefault();
-      mainSvg.fire("tag-right-click", {object: this, event: e});
+      mainSvg.fire("tag-right-click", { object: this, event: e });
     };
-    this.svgText.click(() => mainSvg.fire("tag-edit", {object: this}));
+    this.svgText.click(() => mainSvg.fire("tag-edit", { object: this }));
 
     // Draws a line / curly bracket between the Word and this WordTag, if
     // it's a top tag
-    this.line = this.svg.path()
-      .addClass("tag-element");
+    this.line = this.svg.path().addClass("tag-element");
     this.drawTagLine();
 
     // Centre the WordTag and its line horizontally
@@ -76,8 +76,10 @@ class WordTag {
     // (It starts with its upper-left corner on the Row's baseline)
     let newY;
     if (this.top) {
-      newY = -this.word.textHeight - this.svgText.bbox().height
-        - this.config.wordTopTagPadding;
+      newY =
+        -this.word.textHeight -
+        this.svgText.bbox().height -
+        this.config.wordTopTagPadding;
     } else {
       newY = this.config.wordBottomTagPadding;
     }
@@ -129,13 +131,14 @@ class WordTag {
       const arm = wordWidth / 2;
       this.line.plot(
         "M0,0" +
-        "c" + [0, height, arm, 0, arm, height] +
-        "M0,0" +
-        "c" + [0, height, -arm, 0, -arm, height]
+          "c" +
+          [0, height, arm, 0, arm, height] +
+          "M0,0" +
+          "c" +
+          [0, height, -arm, 0, -arm, height]
       );
     }
   }
-
 
   /**
    * Sets the text of this WordTag, or returns this WordTag's SVG text element
@@ -159,8 +162,7 @@ class WordTag {
           .x(bbox.x - 4)
           .y(bbox.y - 2);
       } else {
-        this.editingRect.width(10)
-          .x(-5);
+        this.editingRect.width(10).x(-5);
       }
     }
   }
@@ -194,10 +196,9 @@ class WordTag {
     this.isEditing = true;
     let bbox = this.svgText.bbox();
 
-    this.svg
-      .addClass("tag-element")
-      .addClass("editing");
-    this.editingRect = this.svg.rect(bbox.width + 8, bbox.height + 4)
+    this.svg.addClass("tag-element").addClass("editing");
+    this.editingRect = this.svg
+      .rect(bbox.width + 8, bbox.height + 4)
       .x(bbox.x - 4)
       .y(bbox.y - 2)
       .rx(2)
@@ -225,11 +226,16 @@ class WordTag {
    */
   drawBbox() {
     const bbox = this.svg.bbox();
-    this.svg.polyline([
-      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
-      [bbox.x, bbox.y]])
+    this.svg
+      .polyline([
+        [bbox.x, bbox.y],
+        [bbox.x2, bbox.y],
+        [bbox.x2, bbox.y2],
+        [bbox.x, bbox.y2],
+        [bbox.x, bbox.y]
+      ])
       .fill("none")
-      .stroke({width: 1});
+      .stroke({ width: 1 });
   }
 
   /**
@@ -237,11 +243,16 @@ class WordTag {
    */
   drawTextBbox() {
     const bbox = this.svgText.bbox();
-    this.svg.polyline([
-      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
-      [bbox.x, bbox.y]])
+    this.svg
+      .polyline([
+        [bbox.x, bbox.y],
+        [bbox.x2, bbox.y],
+        [bbox.x2, bbox.y2],
+        [bbox.x, bbox.y2],
+        [bbox.x, bbox.y]
+      ])
       .fill("none")
-      .stroke({width: 1});
+      .stroke({ width: 1 });
   }
 }
 

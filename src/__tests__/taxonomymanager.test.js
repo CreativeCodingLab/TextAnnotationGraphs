@@ -9,7 +9,10 @@ import Config from "../js/config.js";
 
 describe("The TaxonomyManager", () => {
   it("should load an Odin taxonomy (yaml string)", () => {
-    const yamlData = fs.readFileSync("./src/__tests__/data/taxonomy.yml", "utf8");
+    const yamlData = fs.readFileSync(
+      "./src/__tests__/data/taxonomy.yml",
+      "utf8"
+    );
 
     const conf = new Config();
 

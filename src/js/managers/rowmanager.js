@@ -72,18 +72,18 @@ class RowManager {
     this._svg.height(this.lastRow.ry2 + 20);
   }
 
-
   /**
    * Sets the width of all the Rows in the visualisation
    * @param {Number} rw - The new Row width
    */
   width(rw) {
-    this._rows.forEach(row => {
+    this._rows.forEach((row) => {
       row.width(rw);
 
       // Find any Words that no longer fit on the Row
-      let i = row.words
-        .findIndex(w => w.x + w.minWidth > rw - this.config.rowEdgePadding);
+      let i = row.words.findIndex(
+        (w) => w.x + w.minWidth > rw - this.config.rowEdgePadding
+      );
       if (i > 0) {
         while (i < row.words.length) {
           this.moveLastWordDown(row.idx);
@@ -291,8 +291,7 @@ class RowManager {
       }
 
       // Can we shift the Words on the previous Row?
-      const prevRowShift =
-        word.minWidth + leftPadding - prevRow.availableSpace;
+      const prevRowShift = word.minWidth + leftPadding - prevRow.availableSpace;
       const canMove = this.moveWordLeft({
         row: prevRow,
         wordIndex: prevRow.words.length - 1,

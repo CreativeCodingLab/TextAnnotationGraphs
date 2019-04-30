@@ -39,8 +39,11 @@ function getCssRules(elements) {
 
         // For other types of rules, check against the listed elements
         for (const el of elements) {
-          el.matches = el.matches || el.webkitMatchesSelector ||
-            el.mozMatchesSelector || el.msMatchesSelector ||
+          el.matches =
+            el.matches ||
+            el.webkitMatchesSelector ||
+            el.mozMatchesSelector ||
+            el.msMatchesSelector ||
             el.oMatchesSelector;
           if (el.matches(rule.selectorText)) {
             ret.push(rule.cssText);
@@ -83,7 +86,7 @@ function sortForSlotting(links) {
   sortingArray.sort((a, b) => b.width - a.width);
   // Sort by index of left endpoint, ascending
   sortingArray.sort((a, b) => a.leftAnchor - b.leftAnchor);
-  return sortingArray.map(link => links[link.idx]);
+  return sortingArray.map((link) => links[link.idx]);
 }
 
 export default {

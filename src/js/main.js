@@ -32,10 +32,7 @@ class Main {
    */
   constructor(container, options = {}) {
     // Config options
-    this.config = _.defaults(
-      options,
-      new Config()
-    );
+    this.config = _.defaults(options, new Config());
 
     // SVG.Doc expects either a string with the element's ID, or the element
     // itself (not a jQuery object).
@@ -142,7 +139,7 @@ class Main {
     // we sort it here first in case they aren't sorted in the original
     // annotation data.
     this.links = Util.sortForSlotting(this.links);
-    this.links.forEach(link => link.calculateSlot(this.words));
+    this.links.forEach((link) => link.calculateSlot(this.words));
 
     // Initialise the first Row; new ones will be added automatically as
     // Words are drawn onto the visualisation
@@ -151,7 +148,7 @@ class Main {
     }
 
     // Draw the Words onto the visualisation
-    this.words.forEach(word => {
+    this.words.forEach((word) => {
       // If the tag categories to show for the Word are already set (via the
       // default config or user options), set them here so that the Word can
       // draw them directly on init
@@ -163,7 +160,7 @@ class Main {
 
     // We have to initialise all the Links before we draw any of them, to
     // account for nested Links etc.
-    this.links.forEach(link => {
+    this.links.forEach((link) => {
       link.init(this);
     });
   }
@@ -174,21 +171,27 @@ class Main {
    */
   draw() {
     // Draw in the currently toggled Links
-    this.links.forEach(link => {
-      if ((link.top && link.category === this.config.topLinkCategory) ||
-        (!link.top && link.category === this.config.bottomLinkCategory)) {
+    this.links.forEach((link) => {
+      if (
+        (link.top && link.category === this.config.topLinkCategory) ||
+        (!link.top && link.category === this.config.bottomLinkCategory)
+      ) {
         link.show();
       }
 
-      if ((link.top && this.config.showTopMainLabel) ||
-        (!link.top && this.config.showBottomMainLabel)) {
+      if (
+        (link.top && this.config.showTopMainLabel) ||
+        (!link.top && this.config.showBottomMainLabel)
+      ) {
         link.showMainLabel();
       } else {
         link.hideMainLabel();
       }
 
-      if ((link.top && this.config.showTopArgLabels) ||
-        (!link.top && this.config.showBottomArgLabels)) {
+      if (
+        (link.top && this.config.showTopArgLabels) ||
+        (!link.top && this.config.showBottomArgLabels)
+      ) {
         link.showArgLabels();
       } else {
         link.hideArgLabels();
@@ -199,7 +202,7 @@ class Main {
     this.rowManager.resizeAll();
 
     // And change the Row resize cursor if compact mode is on
-    this.rowManager.rows.forEach(row => {
+    this.rowManager.rows.forEach((row) => {
       this.config.compactRows
         ? row.draggable.addClass("row-drag-compact")
         : row.draggable.removeClass("row-drag-compact");
@@ -218,9 +221,9 @@ class Main {
       this.rowManager.removeLastRow();
     }
     // Links and Clusters are drawn directly on the main SVG document
-    this.links.forEach(link => link.svg && link.svg.remove());
-    this.words.forEach(word => {
-      word.clusters.forEach(cluster => cluster.remove());
+    this.links.forEach((link) => link.svg && link.svg.remove());
+    this.words.forEach((word) => {
+      word.clusters.forEach((cluster) => cluster.remove());
     });
     // Reset colours
     this.taxonomyManager.resetDefaultColours();
@@ -331,9 +334,12 @@ class Main {
     );
 
     const i = exportedSVG.indexOf("</defs>");
-    exportedSVG = exportedSVG.slice(0, i)
-      + "<style>" + svgRules.join("\n") + "</style>"
-      + exportedSVG.slice(i);
+    exportedSVG =
+      exportedSVG.slice(0, i) +
+      "<style>" +
+      svgRules.join("\n") +
+      "</style>" +
+      exportedSVG.slice(i);
 
     // Create a virtual download link and simulate a click on it (using the
     // native `.click()` method, since jQuery cannot `.trigger()` it
@@ -368,8 +374,8 @@ class Main {
    */
   getTopLinkCategories() {
     const categories = this.links
-      .filter(link => link.top)
-      .map(link => link.category);
+      .filter((link) => link.top)
+      .map((link) => link.category);
 
     return _.uniq(categories);
   }
@@ -381,8 +387,8 @@ class Main {
   setTopLinkCategory(category) {
     this.setOption("topLinkCategory", category);
     this.links
-      .filter(link => link.top)
-      .forEach(link => {
+      .filter((link) => link.top)
+      .forEach((link) => {
         if (link.category === category) {
           link.show();
         } else {
@@ -400,8 +406,8 @@ class Main {
    */
   getBottomLinkCategories() {
     const categories = this.links
-      .filter(link => !link.top)
-      .map(link => link.category);
+      .filter((link) => !link.top)
+      .map((link) => link.category);
 
     return _.uniq(categories);
   }
@@ -413,8 +419,8 @@ class Main {
   setBottomLinkCategory(category) {
     this.setOption("bottomLinkCategory", category);
     this.links
-      .filter(link => !link.top)
-      .forEach(link => {
+      .filter((link) => !link.top)
+      .forEach((link) => {
         if (link.category === category) {
           link.show();
         } else {
@@ -431,8 +437,7 @@ class Main {
    * (Generally, text-bound mentions)
    */
   getTagCategories() {
-    const categories = this.words
-      .flatMap(word => word.getTagCategories());
+    const categories = this.words.flatMap((word) => word.getTagCategories());
     return _.uniq(categories);
   }
 
@@ -442,9 +447,9 @@ class Main {
    */
   setTopTagCategory(category) {
     this.setOption("topTagCategory", category);
-    this.words.forEach(word => {
+    this.words.forEach((word) => {
       word.setTopTagCategory(category);
-      word.passingLinks.forEach(link => link.draw());
+      word.passingLinks.forEach((link) => link.draw());
     });
 
     // (Re-)colour the labels
@@ -460,9 +465,9 @@ class Main {
    */
   setBottomTagCategory(category) {
     this.setOption("bottomTagCategory", category);
-    this.words.forEach(word => {
+    this.words.forEach((word) => {
       word.setBottomTagCategory(category);
-      word.passingLinks.forEach(link => link.draw());
+      word.passingLinks.forEach((link) => link.draw());
     });
 
     // Always resize when the set of visible Links may have changed
@@ -477,12 +482,12 @@ class Main {
     this.setOption("showTopMainLabel", visible);
     if (visible) {
       this.links
-        .filter(link => link.top)
-        .forEach(link => link.showMainLabel());
+        .filter((link) => link.top)
+        .forEach((link) => link.showMainLabel());
     } else {
       this.links
-        .filter(link => link.top)
-        .forEach(link => link.hideMainLabel());
+        .filter((link) => link.top)
+        .forEach((link) => link.hideMainLabel());
     }
   }
 
@@ -494,12 +499,12 @@ class Main {
     this.setOption("showTopArgLabels", visible);
     if (visible) {
       this.links
-        .filter(link => link.top)
-        .forEach(link => link.showArgLabels());
+        .filter((link) => link.top)
+        .forEach((link) => link.showArgLabels());
     } else {
       this.links
-        .filter(link => link.top)
-        .forEach(link => link.hideArgLabels());
+        .filter((link) => link.top)
+        .forEach((link) => link.hideArgLabels());
     }
   }
 
@@ -511,12 +516,12 @@ class Main {
     this.setOption("showBottomMainLabel", visible);
     if (visible) {
       this.links
-        .filter(link => !link.top)
-        .forEach(link => link.showMainLabel());
+        .filter((link) => !link.top)
+        .forEach((link) => link.showMainLabel());
     } else {
       this.links
-        .filter(link => !link.top)
-        .forEach(link => link.hideMainLabel());
+        .filter((link) => !link.top)
+        .forEach((link) => link.hideMainLabel());
     }
   }
 
@@ -528,12 +533,12 @@ class Main {
     this.setOption("showBottomArgLabels", visible);
     if (visible) {
       this.links
-        .filter(link => !link.top)
-        .forEach(link => link.showArgLabels());
+        .filter((link) => !link.top)
+        .forEach((link) => link.showArgLabels());
     } else {
       this.links
-        .filter(link => !link.top)
-        .forEach(link => link.hideArgLabels());
+        .filter((link) => !link.top)
+        .forEach((link) => link.hideArgLabels());
     }
   }
 
@@ -561,9 +566,11 @@ class Main {
     // });
 
     this.svg.on("word-move-start", () => {
-      this.links.forEach(link => {
-        if ((link.top && !this.config.showTopLinksOnMove) ||
-          (!link.top && !this.config.showBottomLinksOnMove)) {
+      this.links.forEach((link) => {
+        if (
+          (link.top && !this.config.showTopLinksOnMove) ||
+          (!link.top && !this.config.showBottomLinksOnMove)
+        ) {
           link.hide();
         }
       });
@@ -576,9 +583,11 @@ class Main {
     });
 
     this.svg.on("word-move-end", () => {
-      this.links.forEach(link => {
-        if ((link.top && link.category === this.config.topLinkCategory) ||
-          (!link.top && link.category === this.config.bottomLinkCategory)) {
+      this.links.forEach((link) => {
+        if (
+          (link.top && link.category === this.config.topLinkCategory) ||
+          (!link.top && link.category === this.config.bottomLinkCategory)
+        ) {
           link.show();
         }
       });
@@ -622,19 +631,22 @@ class Main {
    */
   _setupUIListeners() {
     // Browser window resize
-    $(window).on("resize", _.throttle(() => {
-      this.resize();
-    }, 50));
+    $(window).on(
+      "resize",
+      _.throttle(() => {
+        this.resize();
+      }, 50)
+    );
   }
 
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // Debug functions
   xLine(x) {
-    this.svg.line(x, 0, x, 1000).stroke({width: 1});
+    this.svg.line(x, 0, x, 1000).stroke({ width: 1 });
   }
 
   yLine(y) {
-    this.svg.line(0, y, 1000, y).stroke({width: 1});
+    this.svg.line(0, y, 1000, y).stroke({ width: 1 });
   }
 }
 

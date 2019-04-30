@@ -49,8 +49,10 @@ class OdinParser {
     // their mentions to match.
     const docIds = Object.keys(data.documents).sort();
     for (const docId of docIds) {
-      this.parsedDocuments[docId] =
-        this._parseDocument(data.documents[docId], docId);
+      this.parsedDocuments[docId] = this._parseDocument(
+        data.documents[docId],
+        docId
+      );
     }
 
     // There are a number of different types of mentions types:
@@ -162,23 +164,27 @@ class OdinParser {
          * @property {String} relation
          */
         for (const [edgeId, edge] of graph.edges.entries()) {
-          this.data.links.push(new Link(
-            // eventId
-            `${docId}-${sentenceId}-${graphType}-${edgeId}`,
-            // Trigger
-            thisSentence[edge.source],
-            // Arguments
-            [{
-              anchor: thisSentence[edge.destination],
-              type: edge.relation
-            }],
-            // Relation type
-            edge.relation,
-            // Draw Link above Words?
-            false,
-            // Category
-            graphType
-          ));
+          this.data.links.push(
+            new Link(
+              // eventId
+              `${docId}-${sentenceId}-${graphType}-${edgeId}`,
+              // Trigger
+              thisSentence[edge.source],
+              // Arguments
+              [
+                {
+                  anchor: thisSentence[edge.destination],
+                  type: edge.relation
+                }
+              ],
+              // Relation type
+              edge.relation,
+              // Draw Link above Words?
+              false,
+              // Category
+              graphType
+            )
+          );
         }
       }
 
@@ -223,9 +229,9 @@ class OdinParser {
     // TextBoundMention
     // Will become either a tag for a Word, or a WordCluster.
     if (mention.type === "TextBoundMention") {
-      const tokens = this.parsedDocuments[mention.document]
-        .sentences[mention.sentence]
-        .slice(mention.tokenInterval.start, mention.tokenInterval.end);
+      const tokens = this.parsedDocuments[mention.document].sentences[
+        mention.sentence
+      ].slice(mention.tokenInterval.start, mention.tokenInterval.end);
       const label = mention.labels[0];
 
       if (tokens.length === 1) {

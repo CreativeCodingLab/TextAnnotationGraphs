@@ -85,7 +85,7 @@ class TaxonomyManager {
    * @param {Array} words
    */
   colour(words) {
-    words.forEach(word => {
+    words.forEach((word) => {
       // Words with WordTags
       if (word.topTag) {
         if (!this.tagColours[word.topTag.val]) {
@@ -97,7 +97,7 @@ class TaxonomyManager {
 
       // Words with WordClusters
       if (word.clusters.length > 0) {
-        word.clusters.forEach(cluster => {
+        word.clusters.forEach((cluster) => {
           if (!this.tagColours[cluster.val]) {
             this.assignColour(cluster.val, this.getNewColour());
           }
@@ -160,7 +160,6 @@ class TaxonomyManager {
       return randomColor();
     }
   }
-
 
   /**
    * Resets `.defaultColours` to the Array specified in the Config object
