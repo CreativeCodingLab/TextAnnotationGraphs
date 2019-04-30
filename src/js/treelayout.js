@@ -6,11 +6,10 @@ import * as d3 from "d3";
 import Word from "./components/word.js";
 import Link from "./components/link.js";
 
-module.exports = (function () {
-
+module.exports = (function() {
   // depth of recursion
   let maxDepth;
-  const rh = 50;  // row height
+  const rh = 50; // row height
 
   // recursively build hierarchy from a root word or link
   function addNode(node, depth, source) {
@@ -25,7 +24,7 @@ module.exports = (function () {
 
     if (depth < maxDepth) {
       let children = node.links
-        .filter(parent => {
+        .filter((parent) => {
           // ignore "incoming" links
           if (parent !== source && parent instanceof Link) {
             const i = parent.words.indexOf(node);
@@ -52,7 +51,7 @@ module.exports = (function () {
             }
             return null;
           })
-          .filter(word => word);
+          .filter((word) => word);
 
         children = children.concat(anchors);
       }
@@ -63,14 +62,18 @@ module.exports = (function () {
     }
 
     return data;
-  };
+  }
 
   class TreeLayout {
     constructor(el, mainSVG, openInModal) {
       // container element
       this.isInModal = openInModal;
-      this.svg = openInModal ? d3.select(el) : d3.select(document.body).append("svg")
-        .attr("id", "tree-svg");
+      this.svg = openInModal
+        ? d3.select(el)
+        : d3
+            .select(document.body)
+            .append("svg")
+            .attr("id", "tree-svg");
       this.draggable = this.svg.append("g");
       this.g = this.draggable.append("g");
 
@@ -95,7 +98,8 @@ module.exports = (function () {
       //     }
       //     mainSVG.fire('build-tree');
       //   });
-      this.svg.append("text")
+      this.svg
+        .append("text")
         .text("Close")
         .attr("id", "tree-close")
         .attr("x", this.svg.node().getBoundingClientRect().width - 15)
@@ -106,11 +110,15 @@ module.exports = (function () {
         });
 
       // add zoom/pan events
-      this.svg.call(d3.zoom()
-        .scaleExtent([1 / 2, 4])
-        .on("zoom", () => {
-          this.draggable.attr("transform", d3.event.transform);
-        }))
+      this.svg
+        .call(
+          d3
+            .zoom()
+            .scaleExtent([1 / 2, 4])
+            .on("zoom", () => {
+              this.draggable.attr("transform", d3.event.transform);
+            })
+        )
         .on("dblclick.zoom", null);
 
       // selected words to generate graph around
@@ -121,7 +129,15 @@ module.exports = (function () {
 
     resize() {
       let bounds = this.svg.node().getBoundingClientRect();
-      this.g.attr("transform", "translate(" + [bounds.width / 2 - this.maxWidth / 2, bounds.height / 2 - (this.layers.length - 1) * rh / 2] + ")");
+      this.g.attr(
+        "transform",
+        "translate(" +
+          [
+            bounds.width / 2 - this.maxWidth / 2,
+            bounds.height / 2 - ((this.layers.length - 1) * rh) / 2
+          ] +
+          ")"
+      );
     }
 
     clear() {
@@ -146,24 +162,26 @@ module.exports = (function () {
         };
 
         if (depth < maxDepth) {
-          let links = node.links.filter(l => l.top);
+          let links = node.links.filter((l) => l.top);
           let args = [];
-          let corefs = links.filter(x => !x.trigger && (!source || x !== source.node))
-            .map(coref => {
+          let corefs = links
+            .filter((x) => !x.trigger && (!source || x !== source.node))
+            .map((coref) => {
               return {
                 type: coref.reltype,
-                args: coref.arguments.filter(x => x.anchor !== node && x.anchor !== source)
-                  .map(x => addNode(x.anchor, node, depth))
+                args: coref.arguments
+                  .filter((x) => x.anchor !== node && x.anchor !== source)
+                  .map((x) => addNode(x.anchor, node, depth))
               };
             });
 
           if (node instanceof Word) {
-            args = links.filter(x => x.trigger === node);
+            args = links.filter((x) => x.trigger === node);
           } else if (node instanceof Link) {
-            args = node.arguments.map(x => x.anchor);
+            args = node.arguments.map((x) => x.anchor);
           }
 
-          data.children = args.map(arg => addNode(arg, data, depth + 1));
+          data.children = args.map((arg) => addNode(arg, data, depth + 1));
           data.siblings = corefs;
         }
 
@@ -172,14 +190,14 @@ module.exports = (function () {
 
       let hierarchy = addNode(selected);
 
-      let [nodes, links] = (function () {
+      let [nodes, links] = (function() {
         let nodes = [];
         let links = [];
 
         function flatten(node) {
           nodes.push(node);
-          node.siblings.forEach(sibling => {
-            sibling.args.forEach(arg => {
+          node.siblings.forEach((sibling) => {
+            sibling.args.forEach((arg) => {
               flatten(arg);
               links.push({
                 type: "sibling",
@@ -189,7 +207,7 @@ module.exports = (function () {
               });
             });
           });
-          node.children.forEach(child => {
+          node.children.forEach((child) => {
             flatten(child);
             links.push({
               type: "child",
@@ -204,10 +222,9 @@ module.exports = (function () {
         return [nodes, links];
       })();
 
-
       let maxWidth = 0;
       let layers = [];
-      nodes.forEach(node => {
+      nodes.forEach((node) => {
         layers[node.depth] = layers[node.depth] || [];
         layers[node.depth].push(node);
       });
@@ -218,9 +235,9 @@ module.exports = (function () {
           maxWidth = node.offset;
         }
         if (!root) {
-          node.siblings.forEach(node => shiftSubtree(node, dx));
+          node.siblings.forEach((node) => shiftSubtree(node, dx));
         }
-        node.children.forEach(node => shiftSubtree(node, dx));
+        node.children.forEach((node) => shiftSubtree(node, dx));
       }
 
       for (let i = layers.length - 1; i >= 0; --i) {
@@ -249,9 +266,18 @@ module.exports = (function () {
           node.width = computeWidth(node.node.val, this.svg);
           if (j > 0) {
             const prev = layers[i][j - 1];
-            const separation = prev.siblings.some(sibling => sibling.args.indexOf(node) > -1) ? 50 : 20; // TODO: make more universal
+            const separation = prev.siblings.some(
+              (sibling) => sibling.args.indexOf(node) > -1
+            )
+              ? 50
+              : 20; // TODO: make more universal
 
-            let dx = prev.offset + prev.width / 2 + node.width / 2 - node.offset + separation;
+            let dx =
+              prev.offset +
+              prev.width / 2 +
+              node.width / 2 -
+              node.offset +
+              separation;
             if (dx > 0) {
               // shift subtree and right-ward trees by dx
               for (let k = j; k < layers[i].length; ++k) {
@@ -263,42 +289,53 @@ module.exports = (function () {
             maxWidth = node.offset;
           }
         });
-      }// end for
+      } // end for
 
       this.maxWidth = maxWidth;
       this.layers = layers;
 
-      let nodeSVG = this.g.selectAll(".node")
-        .data(nodes, d => d.node);
+      let nodeSVG = this.g.selectAll(".node").data(nodes, (d) => d.node);
 
-      let edgeLabel = this.g.selectAll(".edgeLabel")
-        .data(links.filter(l => l.source.node instanceof Link), d => d.source.node);
+      let edgeLabel = this.g
+        .selectAll(".edgeLabel")
+        .data(
+          links.filter((l) => l.source.node instanceof Link),
+          (d) => d.source.node
+        );
 
-      let edgeSVG = this.g.selectAll(".edge")
-        .data(links, d => d.source.node);
+      let edgeSVG = this.g.selectAll(".edge").data(links, (d) => d.source.node);
 
       nodeSVG.exit().remove();
-      nodeSVG.enter().append("text")
+      nodeSVG
+        .enter()
+        .append("text")
         .attr("class", "node")
         .attr("text-anchor", "middle")
-        .attr("transform", d => "translate(" + [d.offset, d.depth * rh] + ")")
+        .attr("transform", (d) => "translate(" + [d.offset, d.depth * rh] + ")")
         .merge(nodeSVG)
-        .text(d => d.node.val)
+        .text((d) => d.node.val)
         .transition()
-        .attr("transform", d => "translate(" + [d.offset, d.depth * rh] + ")");
+        .attr(
+          "transform",
+          (d) => "translate(" + [d.offset, d.depth * rh] + ")"
+        );
 
       // resize
       this.resize();
 
       edgeSVG.exit().remove();
-      edgeSVG.enter().append("path")
+      edgeSVG
+        .enter()
+        .append("path")
         .attr("class", "edge")
         .attr("stroke", "grey")
-        .attr("stroke-dasharray", d => d.source.node instanceof Word ? [2, 2] : null)
+        .attr("stroke-dasharray", (d) =>
+          d.source.node instanceof Word ? [2, 2] : null
+        )
         .attr("stroke-width", "1px")
         .attr("fill", "none")
         .merge(edgeSVG)
-        .attr("d", d => {
+        .attr("d", (d) => {
           if (d.type === "sibling") {
             let x1, x2;
             if (d.target.offset > d.source.offset) {
@@ -308,39 +345,62 @@ module.exports = (function () {
               x1 = d.target.offset + d.target.width / 2;
               x2 = d.source.offset - d.source.width / 2;
             }
-            return "M" + [x1 - 10, d.source.depth * rh + 5]
-              + "v7h" + (x2 - x1 + 20) + "v-7";
+            return (
+              "M" +
+              [x1 - 10, d.source.depth * rh + 5] +
+              "v7h" +
+              (x2 - x1 + 20) +
+              "v-7"
+            );
           } else if (d.type === "child") {
             let offset = 0;
             if (d.source.node.arguments) {
               offset = -7;
             }
-            return "M" + [d.source.offset, d.source.depth * rh + 5]
-              + "C" + [
-                d.source.offset, d.source.depth * rh + 25,
-                d.target.offset, d.target.depth * rh - 40,
-                d.target.offset, d.target.depth * rh - 15 + offset
-              ];
+            return (
+              "M" +
+              [d.source.offset, d.source.depth * rh + 5] +
+              "C" +
+              [
+                d.source.offset,
+                d.source.depth * rh + 25,
+                d.target.offset,
+                d.target.depth * rh - 40,
+                d.target.offset,
+                d.target.depth * rh - 15 + offset
+              ]
+            );
           }
         });
 
       edgeLabel.exit().remove();
-      edgeLabel.enter().append("text")
+      edgeLabel
+        .enter()
+        .append("text")
         .attr("text-anchor", "middle")
-        .attr("transform", d => "translate(" + [d.target.offset, d.target.depth * rh] + ")")
+        .attr(
+          "transform",
+          (d) => "translate(" + [d.target.offset, d.target.depth * rh] + ")"
+        )
         .attr("class", "edgeLabel")
         .attr("font-size", "0.65em")
         .merge(edgeLabel)
         .text((d, i) => {
-          let arg = d.source.node.arguments.find(arg => arg.anchor === d.target.node);
+          let arg = d.source.node.arguments.find(
+            (arg) => arg.anchor === d.target.node
+          );
           if (arg) {
             return arg.type;
           }
         })
         .transition()
-        .attr("transform", d => "translate(" + [d.target.offset, d.target.depth * rh - 13] + ")");
+        .attr(
+          "transform",
+          (d) =>
+            "translate(" + [d.target.offset, d.target.depth * rh - 13] + ")"
+        );
     }
-  }//end class TreeLayout
+  } //end class TreeLayout
 
   return TreeLayout;
 })();

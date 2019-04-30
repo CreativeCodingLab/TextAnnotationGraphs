@@ -80,7 +80,7 @@ const graph = TAG.tag({
 
 ## Development
 
-Tasks are managed via [`npm` scripts](https://docs.npmjs.com/misc/scripts) and the [`runjs` build tool](https://github.com/pawelgalazka/runjs).  The most commonly used tasks are listed in `package.json`, and details for the various sub-tasks can be found in `runfile.js`.
+Tasks are managed via [`npm` scripts](https://docs.npmjs.com/misc/scripts) and the [`runjs` build tool](https://github.com/pawelgalazka/runjs).  The most commonly used tasks are listed in `package.json`, and details for the various sub-tasks can be found in `tasksfile.js`.
 
 ### Demo
 

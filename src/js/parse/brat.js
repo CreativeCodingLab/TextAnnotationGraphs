@@ -4,8 +4,8 @@ import Link from "../components/link.js";
 class BratParser {
   constructor() {
     this.data = {};
-    this.re = /:+(?=[TER]\d+$)/;    // regular expression for reading in a
-                                    // mention
+    this.re = /:+(?=[TER]\d+$)/; // regular expression for reading in a
+    // mention
     this.text = "";
     this.mentions = {};
   }
@@ -28,13 +28,12 @@ class BratParser {
       this.text = textInput;
       lines = entInput.split("\n");
       if (evtInput) {
-        lines = lines.concat(
-          evtInput.split("\n"));
+        lines = lines.concat(evtInput.split("\n"));
       }
     }
 
     // filter out non-annotation lines
-    lines.forEach(line => {
+    lines.forEach((line) => {
       let tokens = line.trim().split(/\s+/);
       if (tokens[0] && tokens[0].match(/[TER]\d+/)) {
         this.mentions[tokens[0]] = {
@@ -51,11 +50,13 @@ class BratParser {
       clusters: []
     };
 
-    this.textArray = [{
-      charStart: 0,
-      charEnd: this.text.length,
-      entity: null
-    }];
+    this.textArray = [
+      {
+        charStart: 0,
+        charEnd: this.text.length,
+        entity: null
+      }
+    ];
 
     for (let id in this.mentions) {
       if (this.mentions[id] && this.mentions[id].object === null) {
@@ -74,7 +75,7 @@ class BratParser {
           return;
         }
 
-        text.split(/\s+/).forEach(token => {
+        text.split(/\s+/).forEach((token) => {
           let word = new Word(token, idx);
           graph.words.push(word);
           idx++;
@@ -182,7 +183,7 @@ class BratParser {
         entity: word
       };
 
-      let i = this.textArray.findIndex(token => token.charEnd > charStart);
+      let i = this.textArray.findIndex((token) => token.charEnd > charStart);
       if (i === -1) {
         console.log("// mistake in tokenizing string");
       } else if (this.textArray[i].charStart < charStart) {
@@ -228,7 +229,8 @@ class BratParser {
   parseEventMention(tokens, graph) {
     let successfulParse = true;
     const id = tokens[0];
-    const args = tokens.slice(1)
+    const args = tokens
+      .slice(1)
       .map((token, i) => {
         let [label, id] = token.split(this.re);
         let object = this.parseAnnotation(id, graph);
@@ -244,7 +246,7 @@ class BratParser {
           return null;
         }
       })
-      .filter(arg => arg);
+      .filter((arg) => arg);
     if (successfulParse && args.length > 1) {
       // create link
       return new Link(id, args[0].anchor, args.slice(1));
@@ -260,19 +262,18 @@ class BratParser {
     let successfulParse = true;
     const id = tokens[0];
     const reltype = tokens[1];
-    const args = tokens.slice(2, 4)
-      .map(token => {
-        let [label, id] = token.split(this.re);
-        let object = this.parseAnnotation(id, graph);
-        if (object !== null) {
-          return {
-            type: label,
-            anchor: object
-          };
-        } else {
-          successfulParse = false;
-        }
-      });
+    const args = tokens.slice(2, 4).map((token) => {
+      let [label, id] = token.split(this.re);
+      let object = this.parseAnnotation(id, graph);
+      if (object !== null) {
+        return {
+          type: label,
+          anchor: object
+        };
+      } else {
+        successfulParse = false;
+      }
+    });
 
     if (successfulParse === true) {
       return new Link(id, null, args, reltype);

@@ -27,10 +27,10 @@
  *
  * @property {Boolean} showTopLinksOnMove=true
  *   Continue to display top {@link Link}s when the user drags {@link
-  *   Word Words} around.
+ *   Word Words} around.
  * @property {Boolean} showBottomLinksOnMove=true
  *   Continue to display bottom {@link Link}s when the user drags {@link
-  *   Word Words} around.
+ *   Word Words} around.
  *
  * @property {Boolean} showTopMainLabel=true
  *   Display the main type label for top {@link Link Links}.

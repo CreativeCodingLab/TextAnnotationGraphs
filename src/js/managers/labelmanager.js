@@ -4,7 +4,7 @@
 
 import Link from "../components/link.js";
 
-module.exports = (function () {
+module.exports = (function() {
   let _svg;
   let activeObject = null;
   let string = null;
@@ -39,13 +39,13 @@ module.exports = (function () {
     activeObject.listenForEdit(e);
     originalString = e.detail.object.val;
     string = null;
-  };
+  }
 
   function stopEditing() {
     if (activeObject && activeObject.isEditing) {
       let text = activeObject.text();
       if (text && !(activeObject instanceof Link)) {
-        _svg.fire("label-updated", {object: text, label: text.text()});
+        _svg.fire("label-updated", { object: text, label: text.text() });
       }
       activeObject.stopEditing();
       activeObject = null;
@@ -58,7 +58,7 @@ module.exports = (function () {
     activeObject.text(string);
   }
 
-  document.addEventListener("keydown", function (e) {
+  document.addEventListener("keydown", function(e) {
     if (activeObject && activeObject.isEditing) {
       if (KeyValues.indexOf(e.keyCode) > -1) {
         switch (e.keyCode) {
@@ -86,10 +86,9 @@ module.exports = (function () {
             break;
         }
       }
-      ;
     }
   });
-  document.addEventListener("keypress", function (e) {
+  document.addEventListener("keypress", function(e) {
     // console.log(String.fromCharCode(e.which), e.which, e.metaKey);
     if (activeObject && activeObject.isEditing) {
       if (e.which === 32) {

@@ -103,7 +103,7 @@
  * Not currently in use.
  */
 
-module.exports = (function () {
+module.exports = (function() {
   let div = {};
   let _svg = {};
   let activeObject = null;
@@ -132,30 +132,37 @@ module.exports = (function () {
     let html = "";
     if (activeObject instanceof Word) {
       if (activeObject.tag) {
-        html += "&lt;p id=\"menu--edit-tag\">Edit tag&lt;/p>&lt;p id=\"menu--remove-tag\">Remove tag&lt;/p>";
+        html +=
+          '&lt;p id="menu--edit-tag">Edit tag&lt;/p>&lt;p id="menu--remove-tag">Remove tag&lt;/p>';
       } else {
-        html += "&lt;p id=\"menu--add-tag\">Add tag&lt;/p>";
+        html += '&lt;p id="menu--add-tag">Add tag&lt;/p>';
       }
-      html += "&lt;p id=\"menu--add-link\">Add link&lt;/p>&lt;hr>&lt;p id=\"menu--tree\">Tree visualization&lt;/p>";
-    } else if (activeObject instanceof WordTag || activeObject instanceof WordCluster) {
-      html += "&lt;p id=\"menu--remove-tag\">Remove&lt;/p>";
+      html +=
+        '&lt;p id="menu--add-link">Add link&lt;/p>&lt;hr>&lt;p id="menu--tree">Tree visualization&lt;/p>';
+    } else if (
+      activeObject instanceof WordTag ||
+      activeObject instanceof WordCluster
+    ) {
+      html += '&lt;p id="menu--remove-tag">Remove&lt;/p>';
     } else if (activeObject instanceof Link) {
       if (e.detail.type === "text") {
-        html += "&lt;p id=\"menu--edit-link-label\">Edit label&lt;/p>&lt;p id=\"menu--remove-link\">Remove link&lt;/p>";
+        html +=
+          '&lt;p id="menu--edit-link-label">Edit label&lt;/p>&lt;p id="menu--remove-link">Remove link&lt;/p>';
       } else {
-        html += "&lt;p id=\"menu--remove-link\">Remove link&lt;/p>";
+        html += '&lt;p id="menu--remove-link">Remove link&lt;/p>';
       }
-      html += "&lt;hr>&lt;p id=\"menu--tree\">Tree visualization&lt;/p>";
+      html += '&lt;hr>&lt;p id="menu--tree">Tree visualization&lt;/p>';
     }
     if (html) {
       div.innerHTML = html;
       div.style.left = Math.min(e.detail.event.x, width) + "px";
-      div.style.top = e.detail.event.y + document.body.scrollTop - yOffset + "px";
+      div.style.top =
+        e.detail.event.y + document.body.scrollTop - yOffset + "px";
       div.className = "active";
     } else {
       activeObject = null;
     }
-  };
+  }
 
   // function to hide div
   function clear() {
@@ -165,27 +172,30 @@ module.exports = (function () {
 
   // window listeners
   // function to listen for a click outside the tooltip
-  document.addEventListener("mousedown", function (e) {
+  document.addEventListener("mousedown", function(e) {
     if (e.target !== div &amp;&amp; e.target.parentNode !== div) {
       clear();
     }
   });
 
   // listen for a click inside the tooltip;
-  document.addEventListener("click", function (e) {
+  document.addEventListener("click", function(e) {
     if (e.target.parentNode === div &amp;&amp; activeObject) {
       switch (e.target.id) {
         // tag management events
         case "menu--remove-tag":
-          let tag1 = (activeObject instanceof Word &amp;&amp; activeObject.tag) ? activeObject.tag : activeObject;
-          _svg.fire("tag-remove", {object: tag1});
+          let tag1 =
+            activeObject instanceof Word &amp;&amp; activeObject.tag
+              ? activeObject.tag
+              : activeObject;
+          _svg.fire("tag-remove", { object: tag1 });
           break;
         case "menu--add-tag":
           let tag2 = activeObject.setTag("?");
-          _svg.fire("tag-edit", {object: tag2});
+          _svg.fire("tag-edit", { object: tag2 });
           break;
         case "menu--edit-tag":
-          _svg.fire("tag-edit", {object: activeObject.tag});
+          _svg.fire("tag-edit", { object: activeObject.tag });
           break;
         case "menu--edit-link-label":
           _svg.fire("link-label-edit", {
@@ -196,28 +206,27 @@ module.exports = (function () {
           break;
         case "menu--remove-link":
           activeObject.remove();
-          _svg.fire("row-recalculate-slots", {object: activeObject});
+          _svg.fire("row-recalculate-slots", { object: activeObject });
           break;
         case "menu--tree":
-          _svg.fire("build-tree", {object: activeObject});
+          _svg.fire("build-tree", { object: activeObject });
           break;
         default:
-          ;
       }
       console.log(e.target.id, activeObject &amp;&amp; activeObject.val);
       clear();
     }
   });
 
-  document.addEventListener("contextmenu", function (e) {
+  document.addEventListener("contextmenu", function(e) {
     if (tooltip.className === "active") {
       e.preventDefault();
     }
   });
 
   return Tooltip;
-
-})();</code></pre>
+})();
+</code></pre>
   </article>
 </section>
 
