@@ -4,16 +4,16 @@
 
 import _ from "lodash";
 import $ from "jquery";
-import * as SVG from "svg.js";
+import * as SVG from "@svgdotjs/svg.js";
+import "@svgdotjs/svg.draggable.js";
 
-import Parser from "./parse/parse.js";
-import RowManager from "./managers/rowmanager.js";
-import LabelManager from "./managers/labelmanager.js";
-import Taxonomy from "./managers/taxonomy.js";
+import RowManager from "./managers/rowmanager";
+import LabelManager from "./managers/labelmanager";
+import Taxonomy from "./managers/taxonomy";
 
-import Config from "./config.js";
+import Config from "./config";
 
-import Util from "./util.js";
+import Util from "./util";
 
 /**
  * Take a small performance hit from `autobind` to ensure that the scope of
@@ -29,8 +29,9 @@ class Main {
    *     ID of the container element, or the element itself (as a
    *     native/jQuery object)
    * @param {Object} options - Overrides for default library options
+   * @param {Object} parsers - Registered parsers for various annotation formats
    */
-  constructor(container, options = {}) {
+  constructor(container, options = {}, parsers = {}) {
     // Config options
     this.config = _.defaults(options, new Config());
 
@@ -48,10 +49,12 @@ class Main {
     this.$container = $(this.svg.node).parent();
 
     // Managers/Components
-    this.parser = new Parser();
     this.rowManager = new RowManager(this.svg, this.config);
     this.labelManager = new LabelManager(this.svg);
     this.taxonomyManager = new Taxonomy(this.config);
+
+    // Registered Parsers
+    this.parsers = parsers;
 
     // Tokens and links that are currently drawn on the visualisation
     this.words = [];
@@ -68,13 +71,22 @@ class Main {
 
   /**
    * Loads the given annotation data onto the TAG visualisation
-   * @param {Object} data - The data to load
+   * @param {Array} dataObjects - The raw annotation data object(s) to load
    * @param {String} format - One of the supported format identifiers for
    *     the data
    */
-  loadData(data, format) {
-    this.parser.loadData(data, format);
-    this.redraw();
+  loadData(dataObjects, format) {
+    // 1) Remove any currently-loaded data
+    // 2) Parse the new data
+    // 3) Hand-off the parsed data to the SVG initialisation procedure
+
+    if (!_.has(this.parsers, format)) {
+      throw `No parser registered for annotation format: ${format}`;
+    }
+
+    this.clear();
+    const parsedData = this.parsers[format].parse(dataObjects);
+    this.init(parsedData);
   }
 
   /**
@@ -86,8 +98,7 @@ class Main {
    */
   async loadUrlAsync(path, format) {
     const data = await $.ajax(path);
-    this.parser.loadData(data, format);
-    this.redraw();
+    this.loadData([data], format);
   }
 
   /**
@@ -115,8 +126,7 @@ class Main {
     });
 
     const files = await Promise.all(readPromises);
-    this.parser.loadFiles(files, format);
-    this.redraw();
+    this.loadData(files, format);
   }
 
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -126,12 +136,12 @@ class Main {
    * Prepares all the Rows/Words/Links.
    * Adds all Words/WordClusters to Rows in the visualisation, but does not draw
    * Links or colour the various Words/WordTags
+   * @param {Object} parsedData
    */
-  init() {
-    // Save a reference to the currently loaded tokens and links
-    const data = this.parser.getParsedData();
-    this.words = data.words;
-    this.links = data.links;
+  init(parsedData) {
+    // Store the parsed data so that we can add SVG/other metadata to it.
+    this.words = parsedData.words;
+    this.links = parsedData.links;
 
     // Calculate the Link slots (vertical intervals to separate
     // crossing/intervening Links).
@@ -227,16 +237,6 @@ class Main {
     });
     // Reset colours
     this.taxonomyManager.resetDefaultColours();
-  }
-
-  /**
-   * Resets and redraws the visualisation using the data currently stored by the
-   * Parser (if any)
-   */
-  redraw() {
-    this.clear();
-    this.init();
-    this.draw();
   }
 
   /**

@@ -32,9 +32,19 @@ class OdinParser {
 
   /**
    * Parses the given data, filling out `this.data` accordingly.
-   * @param {Object} data
+   * @param {Array} dataObjects - Array of input data objects.  We expect
+   *     there to be only one.
    */
-  parse(data) {
+  parse(dataObjects) {
+    if (dataObjects.length > 1) {
+      console.log(
+        "Warning: Odin parser received multiple data objects. Only the first" +
+          " data object will be parsed."
+      );
+    }
+
+    const data = dataObjects[0];
+
     // Clear out any old parse data
     this.reset();
 
@@ -61,6 +71,10 @@ class OdinParser {
     for (const mention of data.mentions) {
       this._parseMention(mention);
     }
+
+    // Return the parsed data (rather than expecting other modules to access
+    // it directly)
+    return this.data;
   }
 
   /**
