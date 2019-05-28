@@ -10,7 +10,8 @@ import { transform, isEqual, isObject } from "lodash";
 // from `main.js`.  This has something to do with the way ES6 imports work,
 // and the fact that `svg.draggable.js` expects the `SVG` variable to be
 // globally available.
-import * as SVG from "@svgdotjs/svg.js";
+import * as SVG from "svg.js";
+import * as draggable from "svg.draggable.js";
 
 /**
  * Get all the CSS rules that match the given elements

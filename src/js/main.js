@@ -4,8 +4,7 @@
 
 import _ from "lodash";
 import $ from "jquery";
-import * as SVG from "@svgdotjs/svg.js";
-import "@svgdotjs/svg.draggable.js";
+import * as SVG from "svg.js";
 
 import RowManager from "./managers/rowmanager";
 import LabelManager from "./managers/labelmanager";
@@ -14,6 +13,10 @@ import Taxonomy from "./managers/taxonomy";
 import Config from "./config";
 
 import Util from "./util";
+
+import Word from "./components/word";
+import WordCluster from "./components/word-cluster";
+import Link from "./components/link";
 
 /**
  * Take a small performance hit from `autobind` to ensure that the scope of
@@ -87,6 +90,7 @@ class Main {
     this.clear();
     const parsedData = this.parsers[format].parse(dataObjects);
     this.init(parsedData);
+    this.draw();
   }
 
   /**
@@ -139,9 +143,89 @@ class Main {
    * @param {Object} parsedData
    */
   init(parsedData) {
-    // Store the parsed data so that we can add SVG/other metadata to it.
-    this.words = parsedData.words;
-    this.links = parsedData.links;
+    // Convert the parsed data into visualisation objects (by adding
+    // SVG/visualisation-related data and methods)
+    // TODO: Refactor the Word/WordTag/WordCluster/Link system instead of
+    //  patching it here.
+
+    // Tokens -> Words
+    // Labels -> WordTags
+    // Records LongLabels to convert later.
+    this.words = [];
+    const longLabels = [];
+    parsedData.tokens.forEach((token) => {
+      // Basic
+      const word = new Word(token.text, token.idx);
+      this.words.push(word);
+
+      _.forOwn(token.registeredLabels, (label, category) => {
+        if (_.has(label, "token")) {
+          // Label
+          word.registerTag(category, label.val);
+        } else if (_.has(label, "tokens")) {
+          // LongLabel
+          if (longLabels.indexOf(label) < 0) {
+            longLabels.push(label);
+          }
+        }
+      });
+    });
+
+    // LongLabels -> WordClusters
+    // (via back-references)
+    // N.B.: Assumes that the `.idx` property of each Word is equal to its
+    // index in `this.words`.
+    longLabels.forEach((longLabel) => {
+      const labelWords = [];
+      for (let x = 0; x < longLabel.tokens.length; x++) {
+        const wordIdx = longLabel.tokens[x].idx;
+        labelWords.push(this.words[wordIdx]);
+      }
+      new WordCluster(labelWords, longLabel.val);
+    });
+
+    // Links
+    // Arguments might be Tokens or (Parser) Links; convert them to Words
+    // and Links.
+    // N.B.: Assumes that nested Links are parsed earlier in the array.
+    this.links = [];
+    const linksById = {};
+    parsedData.links.forEach((link) => {
+      let newTrigger = null;
+      const newArgs = [];
+
+      if (link.trigger) {
+        // Assume the trigger is a Token
+        newTrigger = this.words[link.trigger.idx];
+      }
+
+      // noinspection JSAnnotator
+      link.arguments.forEach((arg) => {
+        if (arg.anchor.type === "Token") {
+          newArgs.push({
+            anchor: this.words[arg.anchor.idx],
+            type: arg.type
+          });
+        } else if (arg.anchor.type === "Link") {
+          newArgs.push({
+            anchor: linksById[arg.anchor.eventId],
+            type: arg.type
+          });
+        }
+      });
+
+      const newLink = new Link(
+        link.eventId,
+        newTrigger,
+        newArgs,
+        link.relType,
+        link.category === "default",
+        link.category
+      );
+
+      this.links.push(newLink);
+      linksById[newLink.eventId] = newLink;
+    });
 
     // Calculate the Link slots (vertical intervals to separate
     // crossing/intervening Links).

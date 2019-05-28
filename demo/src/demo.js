@@ -41,6 +41,9 @@ require("bootstrap-slider");
 window.$ = $;
 window.jQuery = $;
 
+// For debugging
+window._ = require("lodash");
+
 // Main function
 $(async () => {
   // -----
@@ -74,17 +77,13 @@ $(async () => {
    * Words/Links/Clusters:
    *
    *   {
-   *     words: [...],
+   *     tokens: [...],
    *     links: [...],
-   *     clusters: [...]
    *   };
-   *
-   * Note that the current implementation does not access the `.clusters`
-   * property directly.  (Clusters are accessed via their related Words instead.)
-   */
 
-  const OdinParser = require("../../src/js/parsers/odin");
-  // TAG.registerParser(new OdinParser(), "odin");
+   */
+  const OdinParser = require("../../Parsers/odin");
+  TAG.registerParser(new OdinParser(), "odin");
 
   // -------------
   // Basic example
@@ -552,7 +551,6 @@ $(async () => {
   // --------------------------------------------------------------------------
 
   // Debug
-  window._ = require("lodash");
   window.basicTag = basicTag;
   window.uiTag = uiTag;
   window.editor = editor;
