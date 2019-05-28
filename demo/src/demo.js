@@ -83,7 +83,9 @@ $(async () => {
 
    */
   const OdinParser = require("../../Parsers/odin");
+  const BratParser = require("../../Parsers/brat");
   TAG.registerParser(new OdinParser(), "odin");
+  TAG.registerParser(new BratParser(), "brat");
 
   // -------------
   // Basic example

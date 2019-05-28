@@ -1,5 +1,9 @@
-import Word from "../components/word.js";
-import Link from "../components/link.js";
+/**
+ * Parser for Brat annotation format
+ */
+
+import Token from "./components/Token";
+import Link from "./components/Link";
 
 class BratParser {
   constructor() {
@@ -15,20 +19,30 @@ class BratParser {
     @param entInput  : entity annotation or input in standoff format
     @param evtInput  : event annotations or {undefined}
    */
-  parse(textInput, entInput, evtInput) {
+
+  /**
+   * Parses the given data.
+   * @param {String[]} dataObjects - If the array contains a single string, it
+   *   is taken to contain the raw text of the document on the first line,
+   *   and annotation data on all subsequent lines.
+   *   If it contains more than one string, the first is taken to be the
+   *   document text, and all subsequent ones are taken to contain
+   *   annotation lines.
+   */
+  parse(dataObjects) {
     this.mentions = {};
-    let lines;
+    let lines = [];
 
     // separate source text and annotation
-    if (!entInput) {
-      let splitLines = textInput.split("\n");
+    if (dataObjects.length === 1) {
+      let splitLines = dataObjects[0].split("\n");
       this.text = splitLines[0];
       lines = splitLines.slice(1);
     } else {
-      this.text = textInput;
-      lines = entInput.split("\n");
-      if (evtInput) {
-        lines = lines.concat(evtInput.split("\n"));
+      this.text = dataObjects[0];
+      // Start from the second dataObject
+      for (let i = 1; i < dataObjects.length; i++) {
+        lines = lines.concat(dataObjects[i].split("\n"));
       }
     }
 
@@ -45,9 +59,8 @@ class BratParser {
 
     // recursively build graph
     let graph = {
-      words: [],
-      links: [],
-      clusters: []
+      tokens: [],
+      links: []
     };
 
     this.textArray = [
@@ -64,7 +77,7 @@ class BratParser {
       }
     }
 
-    let n = graph.words.length;
+    let n = graph.tokens.length;
     let idx = 0;
     this.textArray.forEach((t, i) => {
       if (t.entity === null) {
@@ -76,8 +89,8 @@ class BratParser {
         }
 
         text.split(/\s+/).forEach((token) => {
-          let word = new Word(token, idx);
-          graph.words.push(word);
+          let thisToken = new Token(token, idx);
+          graph.tokens.push(thisToken);
           idx++;
         });
       } else {
@@ -85,9 +98,11 @@ class BratParser {
         idx++;
       }
     });
-    graph.words.sort((a, b) => a.idx - b.idx);
+    graph.tokens.sort((a, b) => a.idx - b.idx);
 
     this.data = graph;
+
+    return this.data;
   }
 
   parseAnnotation(id, graph) {
@@ -117,8 +132,8 @@ class BratParser {
           delete this.mentions[id];
           return null;
         } else {
-          // valid line; add Word
-          graph.words.push(tbm);
+          // valid line; add Token
+          graph.tokens.push(tbm);
           m.object = tbm;
           return tbm;
         }
@@ -171,16 +186,16 @@ class BratParser {
     const charEnd = Number(tokens[3]);
 
     if (charStart >= 0 && charStart < charEnd && charEnd <= this.text.length) {
-      // create Word
-      let word = new Word(this.text.slice(charStart, charEnd), Number(id));
-      word.registerTag("default", label);
-      word.addEventId(id);
+      // create Token
+      let token = new Token(this.text.slice(charStart, charEnd), Number(id));
+      token.registerLabel("default", label);
+      token.addAssociation(id);
 
       // cut textArray
       let textWord = {
         charStart,
         charEnd,
-        entity: word
+        entity: token
       };
 
       let i = this.textArray.findIndex((token) => token.charEnd > charStart);
@@ -204,14 +219,14 @@ class BratParser {
       } else {
         // textArray[i] starts at the same place or to the right of the word
         if (this.textArray[i].charEnd === charEnd) {
-          this.textArray[i].entity = word;
+          this.textArray[i].entity = token;
         } else {
           this.textArray.splice(i, 0, textWord);
           this.textArray[i + 1].charStart = charEnd;
           this.textArray[i + 1].entity = null;
         }
       }
-      return word;
+      return token;
     } else {
       return null;
     }
@@ -249,7 +264,7 @@ class BratParser {
       .filter((arg) => arg);
     if (successfulParse && args.length > 1) {
       // create link
-      return new Link(id, args[0].anchor, args.slice(1));
+      return new Link(id, args[0].anchor, args.slice(1), "");
     } else {
       return null;
     }
@@ -283,4 +298,6 @@ class BratParser {
   }
 }
 
+// ES6 and CommonJS compatibility
 export default BratParser;
+module.exports = BratParser;
