@@ -1,5 +1,5 @@
 /**
- * Tags for cases where multiple words make up a single entity
+ * Act like WordTags for cases where multiple words make up a single entity
  * E.g.: The two words "DNA damage" as a single "BioProcess"
  *
  * Act as the anchor for any incoming Links (in lieu of the Words it covers)

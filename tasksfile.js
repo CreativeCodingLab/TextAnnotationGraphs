@@ -3,9 +3,9 @@
  * See https://github.com/pawelgalazka/tasksfile
  */
 
-const {sh, cli} = require("tasksfile");
+const { sh, cli } = require("tasksfile");
 const chalk = require("chalk");
-const {performance} = require("perf_hooks");
+const { performance } = require("perf_hooks");
 
 // Coloured output/logging
 // -----------------------
@@ -55,10 +55,15 @@ build.app.scripts = {
     const type = "Build";
     const desc = "Main TAG JS bundle";
 
-    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+    console.log(
+      `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+    );
 
     sh(`mkdirp ${config.assetsDir}/${config.scriptsDir}`);
-    return sh(`browserify ${input} -p browserify-derequire -s TAG -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v`, {async: true});
+    return sh(
+      `browserify ${input} -p browserify-derequire -s TAG -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v`,
+      { async: true }
+    );
   },
   async quickTag() {
     const input = "src/js/tag.js";
@@ -66,24 +71,24 @@ build.app.scripts = {
     const type = "Build";
     const desc = "Main TAG JS bundle (Un-minified)";
 
-    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+    console.log(
+      `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+    );
 
     sh(`mkdirp ${config.assetsDir}/${config.scriptsDir}`);
-    return sh(`browserify ${input} -p browserify-derequire -s tag -t [ babelify ] -t [ hbsfy ] -o ${output} -v`, {async: true});
+    return sh(
+      `browserify ${input} -p browserify-derequire -s tag -t [ babelify ] -t [ hbsfy ] -o ${output} -v`,
+      { async: true }
+    );
   },
 
   // All/Quick
   // ---------
   all() {
-    return Promise.all([
-      build.app.scripts.tag(),
-      build.app.scripts.quickTag()
-    ]);
+    return Promise.all([build.app.scripts.tag(), build.app.scripts.quickTag()]);
   },
   quick() {
-    return Promise.all([
-      build.app.scripts.quickTag()
-    ]);
+    return Promise.all([build.app.scripts.quickTag()]);
   }
 };
 
@@ -99,13 +104,15 @@ build.app.styles = {
     const type = "Build";
     const desc = "Main TAG CSS bundle";
 
-    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+    console.log(
+      `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+    );
 
-    await sh(`sass ${input} ${output}`, {async: true});
+    await sh(`sass ${input} ${output}`, { async: true });
     // Autoprefixer
-    await sh(`postcss ${output} --use autoprefixer --replace`, {async: true});
+    await sh(`postcss ${output} --use autoprefixer --replace`, { async: true });
     // Minify
-    return sh(`cleancss ${output} -o ${output}`, {async: true});
+    return sh(`cleancss ${output} -o ${output}`, { async: true });
   },
   async quickTag() {
     const input = "src/css/tag.scss";
@@ -113,25 +120,24 @@ build.app.styles = {
     const type = "Build";
     const desc = "Main TAG CSS bundle (Un-minified)";
 
-    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+    console.log(
+      `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+    );
 
-    await sh(`sass ${input} ${output}`, {async: true});
+    await sh(`sass ${input} ${output}`, { async: true });
     // Autoprefixer
-    return sh(`postcss ${output} --use autoprefixer --replace`, {async: true});
+    return sh(`postcss ${output} --use autoprefixer --replace`, {
+      async: true
+    });
   },
 
   // All/Quick
   // ---------
   all() {
-    return Promise.all([
-      build.app.styles.tag(),
-      build.app.styles.quickTag()
-    ]);
+    return Promise.all([build.app.styles.tag(), build.app.styles.quickTag()]);
   },
   quick() {
-    return Promise.all([
-      build.app.styles.quickTag()
-    ]);
+    return Promise.all([build.app.styles.quickTag()]);
   }
 };
 
@@ -147,11 +153,15 @@ build.app.docs = {
     const type = "Build";
     const desc = "Main TAG documentation";
 
-    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+    console.log(
+      `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+    );
 
     // Clean and (re-)build docs
-    await sh(`rimraf ${output}`, {async: true});
-    await sh(`jsdoc ${input} README.md -c .jsdoc.json -d ${output} --verbose`, {async: true});
+    await sh(`rimraf ${output}`, { async: true });
+    await sh(`jsdoc ${input} README.md -c .jsdoc.json -d ${output} --verbose`, {
+      async: true
+    });
     return build.app.docs.figures();
   },
 
@@ -162,22 +172,20 @@ build.app.docs = {
     const type = "Build";
     const desc = "TAG documentation figures";
 
-    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+    console.log(
+      `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+    );
 
-    return sh(`cpy ${input} ${output}`, {async: true});
+    return sh(`cpy ${input} ${output}`, { async: true });
   },
 
   // All/Quick
   // ---------
   all() {
-    return Promise.all([
-      build.app.docs.jsdoc()
-    ]);
+    return Promise.all([build.app.docs.jsdoc()]);
   },
   quick() {
-    return Promise.all([
-      build.app.docs.jsdoc()
-    ]);
+    return Promise.all([build.app.docs.jsdoc()]);
   }
 };
 
@@ -216,23 +224,23 @@ build.vendor.styles = {
     const type = "Build (Vendor)";
     const desc = "Vendor CSS (concatenate + minify)";
 
-    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+    console.log(
+      `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+    );
 
     if (input === "") {
       console.log(`No vendor CSS to bundle.`);
     } else {
       // Cleancss chokes if the output directory is not present
       sh(`mkdirp ${config.assetsDir}/${config.stylesDir}`);
-      return sh(`cleancss ${input} -o ${output}`, {async: true});
+      return sh(`cleancss ${input} -o ${output}`, { async: true });
     }
   },
 
   // All/Quick
   // ---------
   all() {
-    return Promise.all([
-      build.vendor.styles.concat()
-    ]);
+    return Promise.all([build.vendor.styles.concat()]);
   },
   quick() {
     return build.vendor.styles.all();
@@ -242,14 +250,10 @@ build.vendor.styles = {
 // All/quick
 // ---------
 build.vendor.all = async () => {
-  return Promise.all([
-    build.vendor.styles.all()
-  ]);
+  return Promise.all([build.vendor.styles.all()]);
 };
 build.vendor.quick = async () => {
-  return Promise.all([
-    build.vendor.styles.quick()
-  ]);
+  return Promise.all([build.vendor.styles.quick()]);
 };
 
 // -------------------
@@ -258,10 +262,7 @@ build.vendor.quick = async () => {
 build.all = async () => {
   const t0 = performance.now();
 
-  await Promise.all([
-    build.app.all(),
-    build.vendor.all()
-  ]);
+  await Promise.all([build.app.all(), build.vendor.all()]);
 
   const time = (performance.now() - t0) / 1000;
   const doneString = `Done! (in ${time.toFixed(3)}s)`;
@@ -272,10 +273,7 @@ build.all = async () => {
 build.quick = async () => {
   const t0 = performance.now();
 
-  await Promise.all([
-    build.app.quick(),
-    build.vendor.quick()
-  ]);
+  await Promise.all([build.app.quick(), build.vendor.quick()]);
 
   const time = (performance.now() - t0) / 1000;
   const doneString = `Done! (in ${time.toFixed(3)}s)`;
@@ -295,9 +293,14 @@ watch.scripts = {
     const type = "Watch";
     const desc = "Main TAG JS bundle";
 
-    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+    console.log(
+      `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+    );
 
-    return sh(`watchify ${input} -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v --poll=500`, {async: true});
+    return sh(
+      `watchify ${input} -t [ babelify ] -t [ hbsfy ] -g [ babelify ] -p [ tinyify ] -o ${output} -v --poll=500`,
+      { async: true }
+    );
   },
   async quickTag() {
     const input = "src/js/tag.js";
@@ -305,21 +308,21 @@ watch.scripts = {
     const type = "Watch";
     const desc = "Main TAG JS bundle (Un-minified)";
 
-    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+    console.log(
+      `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+    );
 
-    return sh(`watchify ${input} -t [ babelify ] -t [ hbsfy ] -o ${output} -v --poll=500`, {async: true});
+    return sh(
+      `watchify ${input} -t [ babelify ] -t [ hbsfy ] -o ${output} -v --poll=500`,
+      { async: true }
+    );
   },
 
   all() {
-    return Promise.all([
-      watch.scripts.tag(),
-      watch.scripts.quickTag()
-    ]);
+    return Promise.all([watch.scripts.tag(), watch.scripts.quickTag()]);
   },
   quick() {
-    return Promise.all([
-      watch.scripts.quickTag()
-    ]);
+    return Promise.all([watch.scripts.quickTag()]);
   }
 };
 
@@ -330,9 +333,14 @@ watch.styles = {
     const type = "Watch";
     const desc = "Main TAG CSS bundle";
 
-    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+    console.log(
+      `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+    );
 
-    return sh(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && cleancss ${output} -o ${output} -d"`, {async: true});
+    return sh(
+      `chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && cleancss ${output} -o ${output} -d"`,
+      { async: true }
+    );
   },
   async quickTag() {
     const input = "src/css/tag.scss";
@@ -340,36 +348,30 @@ watch.styles = {
     const type = "Watch";
     const desc = "Main TAG CSS bundle (Un-minified)";
 
-    console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+    console.log(
+      `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+    );
 
-    return sh(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace --verbose"`, {async: true});
+    return sh(
+      `chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace --verbose"`,
+      { async: true }
+    );
   },
 
   all() {
-    return Promise.all([
-      watch.styles.tag(),
-      watch.styles.quickTag()
-    ]);
+    return Promise.all([watch.styles.tag(), watch.styles.quickTag()]);
   },
   quick() {
-    return Promise.all([
-      watch.styles.quickTag()
-    ]);
+    return Promise.all([watch.styles.quickTag()]);
   }
 };
 
 watch.all = async () => {
-  await Promise.all([
-    watch.scripts.all(),
-    watch.styles.all()
-  ]);
+  await Promise.all([watch.scripts.all(), watch.styles.all()]);
 };
 
 watch.quick = async () => {
-  await Promise.all([
-    watch.scripts.quick(),
-    watch.styles.quick()
-  ]);
+  await Promise.all([watch.scripts.quick(), watch.styles.quick()]);
 };
 
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -383,21 +385,31 @@ const demo = {
       const type = "Build";
       const desc = "TAG demo JS bundle";
 
-      console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+      console.log(
+        `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+      );
 
-      return sh(`browserify ${input} -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v`, {async: true});
+      return sh(
+        `browserify ${input} -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v`,
+        { async: true }
+      );
     },
 
     async BSColourPicker() {
-      const input = "node_modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js";
+      const input =
+        "node_modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js";
       const output = `demo/`;
       const type = "Build (Vendor)";
       const desc = "Bootstrap Colorpicker Library";
 
       // `cpy` takes a directory rather than a file as its target
-      console.log(`\n[${colourType(type)}: ${colourOutput(output + "bootstrap-colorpicker.min.js")}] ${colourInfo(desc)}`);
+      console.log(
+        `\n[${colourType(type)}: ${colourOutput(
+          output + "bootstrap-colorpicker.min.js"
+        )}] ${colourInfo(desc)}`
+      );
 
-      return sh(`cpy ${input} ${output}`, {async: true});
+      return sh(`cpy ${input} ${output}`, { async: true });
     },
 
     async styles() {
@@ -406,13 +418,17 @@ const demo = {
       const type = "Build";
       const desc = "TAG demo CSS bundle";
 
-      console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+      console.log(
+        `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+      );
 
-      await sh(`sass ${input} ${output}`, {async: true});
+      await sh(`sass ${input} ${output}`, { async: true });
       // Autoprefixer
-      await sh(`postcss ${output} --use autoprefixer --replace`, {async: true});
+      await sh(`postcss ${output} --use autoprefixer --replace`, {
+        async: true
+      });
       // Minify
-      return sh(`cleancss ${output} -o ${output}`, {async: true});
+      return sh(`cleancss ${output} -o ${output}`, { async: true });
     },
 
     async all() {
@@ -421,7 +437,7 @@ const demo = {
         demo.build.BSColourPicker(),
         demo.build.styles()
       ]);
-    },
+    }
   },
 
   // For ease of demo development; intentionally left undocumented
@@ -434,21 +450,33 @@ const demo = {
       const type = "Watch";
       const desc = "TAG demo JS bundle";
 
-      console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+      console.log(
+        `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+      );
 
-      return sh(`watchify ${input} -d -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v --poll=500`, {async: true});
+      return sh(
+        `watchify ${input} -d -t [ babelify ] -t [ hbsfy ] -p [ tinyify ] -o ${output} -v --poll=500`,
+        { async: true }
+      );
     },
 
     async BSColourPicker() {
-      const input = "node_modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js";
+      const input =
+        "node_modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js";
       const output = `demo/`;
       const type = "Build (Vendor)";
       const desc = "Bootstrap Colorpicker Library";
 
       // `cpy` takes a directory rather than a file as its target
-      console.log(`\n[${colourType(type)}: ${colourOutput(output + "bootstrap-colorpicker.min.js")}] ${colourInfo(desc)}`);
+      console.log(
+        `\n[${colourType(type)}: ${colourOutput(
+          output + "bootstrap-colorpicker.min.js"
+        )}] ${colourInfo(desc)}`
+      );
 
-      return sh(`chokidar ${input} --initial -c "cpy ${input} ${output}"`, {async: true});
+      return sh(`chokidar ${input} --initial -c "cpy ${input} ${output}"`, {
+        async: true
+      });
     },
 
     async styles() {
@@ -457,9 +485,14 @@ const demo = {
       const type = "Build";
       const desc = "TAG demo CSS bundle";
 
-      console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+      console.log(
+        `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+      );
 
-      return sh(`chokidar ${input} -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && cleancss ${output} -o ${output}"`, {async: true});
+      return sh(
+        `chokidar ${input} -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && cleancss ${output} -o ${output}"`,
+        { async: true }
+      );
     },
 
     async coreStyles() {
@@ -474,9 +507,14 @@ const demo = {
       const type = "Build";
       const desc = "Main TAG CSS bundle (Un-minified)";
 
-      console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+      console.log(
+        `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+      );
 
-      return sh(`chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && sass ${input2} ${output2} && postcss ${output2} --use autoprefixer --replace && cleancss ${output2} -o ${output2}"`, {async: true});
+      return sh(
+        `chokidar ${input} --initial -c "sass ${input} ${output} && postcss ${output} --use autoprefixer --replace && sass ${input2} ${output2} && postcss ${output2} --use autoprefixer --replace && cleancss ${output2} -o ${output2}"`,
+        { async: true }
+      );
     },
 
     async docs() {
@@ -489,9 +527,13 @@ const demo = {
       const type = "Watch";
       const desc = "Main TAG documentation";
 
-      console.log(`\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`);
+      console.log(
+        `\n[${colourType(type)}: ${colourOutput(output)}] ${colourInfo(desc)}`
+      );
 
-      return sh(`chokidar "${input}" "${input2}" "${input3}" --initial -c "npm run generate-docs"`);
+      return sh(
+        `chokidar "${input}" "${input2}" "${input3}" --initial -c "npm run generate-docs"`
+      );
     },
 
     async all() {

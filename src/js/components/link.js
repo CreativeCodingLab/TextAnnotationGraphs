@@ -15,7 +15,7 @@ class Link {
    *     this event
    * @param {Object[]} args - The arguments to this Link. An Array of
    *     Objects specifying `anchor` and `type`
-   * @param {String} reltype - For (binary) relational Links, a String
+   * @param {String} relType - For (binary) relational Links, a String
    *     identifying the relationship type
    * @param {Boolean} top - Whether or not this Link should be drawn above
    *     the text row (if false, it will be drawn below)
@@ -25,7 +25,7 @@ class Link {
     eventId,
     trigger,
     args,
-    reltype,
+    relType,
     top = true,
     category = "default"
   ) {
@@ -39,7 +39,7 @@ class Link {
     // that may not be bound to any particular part of the raw text.
     // Both types of Links have arguments, which may themselves be nested links.
     this.trigger = trigger;
-    this.reltype = reltype;
+    this.relType = relType;
     this.arguments = args;
 
     // Contains references to higher-level Links that have this Link as an
@@ -144,7 +144,7 @@ class Link {
     this.linkLabel = new Label(
       this.mainSvg,
       this.svg,
-      this.reltype,
+      this.relType,
       "link-main-label"
     );
 

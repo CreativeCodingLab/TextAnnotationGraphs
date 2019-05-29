@@ -39016,13 +39016,13 @@ function () {
    *     this event
    * @param {Object[]} args - The arguments to this Link. An Array of
    *     Objects specifying `anchor` and `type`
-   * @param {String} reltype - For (binary) relational Links, a String
+   * @param {String} relType - For (binary) relational Links, a String
    *     identifying the relationship type
    * @param {Boolean} top - Whether or not this Link should be drawn above
    *     the text row (if false, it will be drawn below)
    * @param {String} category - Links can be shown/hidden by category
    */
-  function Link(eventId, trigger, args, reltype) {
+  function Link(eventId, trigger, args, relType) {
     var _this = this;
 
     var top = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
@@ -39037,7 +39037,7 @@ function () {
     // Both types of Links have arguments, which may themselves be nested links.
 
     this.trigger = trigger;
-    this.reltype = reltype;
+    this.relType = relType;
     this.arguments = args; // Contains references to higher-level Links that have this Link as an
     // argument
 
@@ -39119,7 +39119,7 @@ function () {
         _this2.argLabels.push(text);
       }); // Main Link label
 
-      this.linkLabel = new Label(this.mainSvg, this.svg, this.reltype, "link-main-label"); // Closure for identifying dragged handles
+      this.linkLabel = new Label(this.mainSvg, this.svg, this.relType, "link-main-label"); // Closure for identifying dragged handles
 
       var draggedHandle = null;
       var dragStartX = 0; // Drag/Click events
@@ -40630,7 +40630,7 @@ function () {
 var _default = Link;
 exports["default"] = _default;
 
-},{"../util.js":62,"./word-cluster.js":50,"./word-tag.js":51,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],49:[function(_dereq_,module,exports){
+},{"../util.js":59,"./word-cluster.js":50,"./word-tag.js":51,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],49:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -41484,7 +41484,7 @@ var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/cl
 var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
 /**
- * Tags for cases where multiple words make up a single entity
+ * Act like WordTags for cases where multiple words make up a single entity
  * E.g.: The two words "DNA damage" as a single "BioProcess"
  *
  * Act as the anchor for any incoming Links (in lieu of the Words it covers)
@@ -42938,17 +42938,21 @@ var _jquery = _interopRequireDefault(_dereq_("jquery"));
 
 var SVG = _interopRequireWildcard(_dereq_("svg.js"));
 
-var _parse = _interopRequireDefault(_dereq_("./parse/parse.js"));
+var _rowmanager = _interopRequireDefault(_dereq_("./managers/rowmanager"));
 
-var _rowmanager = _interopRequireDefault(_dereq_("./managers/rowmanager.js"));
+var _labelmanager = _interopRequireDefault(_dereq_("./managers/labelmanager"));
 
-var _labelmanager = _interopRequireDefault(_dereq_("./managers/labelmanager.js"));
+var _taxonomy = _interopRequireDefault(_dereq_("./managers/taxonomy"));
 
-var _taxonomy = _interopRequireDefault(_dereq_("./managers/taxonomy.js"));
+var _config = _interopRequireDefault(_dereq_("./config"));
 
-var _config = _interopRequireDefault(_dereq_("./config.js"));
+var _util = _interopRequireDefault(_dereq_("./util"));
 
-var _util = _interopRequireDefault(_dereq_("./util.js"));
+var _word = _interopRequireDefault(_dereq_("./components/word"));
+
+var _wordCluster = _interopRequireDefault(_dereq_("./components/word-cluster"));
+
+var _link = _interopRequireDefault(_dereq_("./components/link"));
 
 var _autobindDecorator = _interopRequireDefault(_dereq_("autobind-decorator"));
 
@@ -42963,9 +42967,11 @@ function () {
    *     ID of the container element, or the element itself (as a
    *     native/jQuery object)
    * @param {Object} options - Overrides for default library options
+   * @param {Object} parsers - Registered parsers for various annotation formats
    */
   function Main(container) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var parsers = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     (0, _classCallCheck2["default"])(this, Main);
     // Config options
     this.config = _lodash["default"].defaults(options, new _config["default"]()); // SVG.Doc expects either a string with the element's ID, or the element
@@ -42981,10 +42987,11 @@ function () {
 
     this.$container = (0, _jquery["default"])(this.svg.node).parent(); // Managers/Components
 
-    this.parser = new _parse["default"]();
     this.rowManager = new _rowmanager["default"](this.svg, this.config);
     this.labelManager = new _labelmanager["default"](this.svg);
-    this.taxonomyManager = new _taxonomy["default"](this.config); // Tokens and links that are currently drawn on the visualisation
+    this.taxonomyManager = new _taxonomy["default"](this.config); // Registered Parsers
+
+    this.parsers = parsers; // Tokens and links that are currently drawn on the visualisation
 
     this.words = [];
     this.links = []; // Initialisation
@@ -42999,7 +43006,7 @@ function () {
 
   /**
    * Loads the given annotation data onto the TAG visualisation
-   * @param {Object} data - The data to load
+   * @param {Array} dataObjects - The raw annotation data object(s) to load
    * @param {String} format - One of the supported format identifiers for
    *     the data
    */
@@ -43007,9 +43014,18 @@ function () {
 
   (0, _createClass2["default"])(Main, [{
     key: "loadData",
-    value: function loadData(data, format) {
-      this.parser.loadData(data, format);
-      this.redraw();
+    value: function loadData(dataObjects, format) {
+      // 1) Remove any currently-loaded data
+      // 2) Parse the new data
+      // 3) Hand-off the parsed data to the SVG initialisation procedure
+      if (!_lodash["default"].has(this.parsers, format)) {
+        throw "No parser registered for annotation format: ".concat(format);
+      }
+
+      this.clear();
+      var parsedData = this.parsers[format].parse(dataObjects);
+      this.init(parsedData);
+      this.draw();
     }
     /**
      * Reads the given data file asynchronously and loads it onto the TAG
@@ -43035,10 +43051,9 @@ function () {
 
               case 2:
                 data = _context.sent;
-                this.parser.loadData(data, format);
-                this.redraw();
+                this.loadData([data], format);
 
-              case 5:
+              case 4:
               case "end":
                 return _context.stop();
             }
@@ -43091,10 +43106,9 @@ function () {
 
               case 3:
                 files = _context2.sent;
-                this.parser.loadFiles(files, format);
-                this.redraw();
+                this.loadData(files, format);
 
-              case 6:
+              case 5:
               case "end":
                 return _context2.stop();
             }
@@ -43114,17 +43128,90 @@ function () {
      * Prepares all the Rows/Words/Links.
      * Adds all Words/WordClusters to Rows in the visualisation, but does not draw
      * Links or colour the various Words/WordTags
+     * @param {Object} parsedData
      */
 
   }, {
     key: "init",
-    value: function init() {
+    value: function init(parsedData) {
       var _this = this;
 
-      // Save a reference to the currently loaded tokens and links
-      var data = this.parser.getParsedData();
-      this.words = data.words;
-      this.links = data.links; // Calculate the Link slots (vertical intervals to separate
+      // Convert the parsed data into visualisation objects (by adding
+      // SVG/visualisation-related data and methods)
+      // TODO: Refactor the Word/WordTag/WordCluster/Link system instead of
+      //  patching it here.
+      // Tokens -> Words
+      // Labels -> WordTags
+      // Records LongLabels to convert later.
+      this.words = [];
+      var longLabels = [];
+      parsedData.tokens.forEach(function (token) {
+        // Basic
+        var word = new _word["default"](token.text, token.idx);
+
+        _this.words.push(word);
+
+        _lodash["default"].forOwn(token.registeredLabels, function (label, category) {
+          if (_lodash["default"].has(label, "token")) {
+            // Label
+            word.registerTag(category, label.val);
+          } else if (_lodash["default"].has(label, "tokens")) {
+            // LongLabel
+            if (longLabels.indexOf(label) < 0) {
+              longLabels.push(label);
+            }
+          }
+        });
+      }); // LongLabels -> WordClusters
+      // (via back-references)
+      // N.B.: Assumes that the `.idx` property of each Word is equal to its
+      // index in `this.words`.
+
+      longLabels.forEach(function (longLabel) {
+        var labelWords = [];
+
+        for (var x = 0; x < longLabel.tokens.length; x++) {
+          var wordIdx = longLabel.tokens[x].idx;
+          labelWords.push(_this.words[wordIdx]);
+        }
+
+        new _wordCluster["default"](labelWords, longLabel.val);
+      }); // Links
+      // Arguments might be Tokens or (Parser) Links; convert them to Words
+      // and Links.
+      // N.B.: Assumes that nested Links are parsed earlier in the array.
+
+      this.links = [];
+      var linksById = {};
+      parsedData.links.forEach(function (link) {
+        var newTrigger = null;
+        var newArgs = [];
+
+        if (link.trigger) {
+          // Assume the trigger is a Token
+          newTrigger = _this.words[link.trigger.idx];
+        } // noinspection JSAnnotator
+
+
+        link.arguments.forEach(function (arg) {
+          if (arg.anchor.type === "Token") {
+            newArgs.push({
+              anchor: _this.words[arg.anchor.idx],
+              type: arg.type
+            });
+          } else if (arg.anchor.type === "Link") {
+            newArgs.push({
+              anchor: linksById[arg.anchor.eventId],
+              type: arg.type
+            });
+          }
+        });
+        var newLink = new _link["default"](link.eventId, newTrigger, newArgs, link.relType, link.category === "default", link.category);
+
+        _this.links.push(newLink);
+
+        linksById[newLink.eventId] = newLink;
+      }); // Calculate the Link slots (vertical intervals to separate
       // crossing/intervening Links).
       // Because the order of the Links array affects the slot calculations,
       // we sort it here first in case they aren't sorted in the original
@@ -43217,18 +43304,6 @@ function () {
       }); // Reset colours
 
       this.taxonomyManager.resetDefaultColours();
-    }
-    /**
-     * Resets and redraws the visualisation using the data currently stored by the
-     * Parser (if any)
-     */
-
-  }, {
-    key: "redraw",
-    value: function redraw() {
-      this.clear();
-      this.init();
-      this.draw();
     }
     /**
      * Fits the SVG element and its children to the size of its container
@@ -43693,7 +43768,7 @@ function () {
 var _default = Main;
 exports["default"] = _default;
 
-},{"./config.js":53,"./managers/labelmanager.js":55,"./managers/rowmanager.js":56,"./managers/taxonomy.js":57,"./parse/parse.js":60,"./util.js":62,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":47}],55:[function(_dereq_,module,exports){
+},{"./components/link":48,"./components/word":52,"./components/word-cluster":50,"./config":53,"./managers/labelmanager":55,"./managers/rowmanager":56,"./managers/taxonomy":57,"./util":59,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":47}],55:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -44500,973 +44575,16 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _slicedToArray2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/slicedToArray"));
-
-var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
-
-var _word = _interopRequireDefault(_dereq_("../components/word.js"));
-
-var _link = _interopRequireDefault(_dereq_("../components/link.js"));
-
-var BratParser =
-/*#__PURE__*/
-function () {
-  function BratParser() {
-    (0, _classCallCheck2["default"])(this, BratParser);
-    this.data = {};
-    this.re = /:+(?=[TER]\d+$)/; // regular expression for reading in a
-    // mention
-
-    this.text = "";
-    this.mentions = {};
-  }
-  /*
-    @param textInput : Source text     or  text + input in standoff format
-    @param entInput  : entity annotation or input in standoff format
-    @param evtInput  : event annotations or {undefined}
-   */
-
-
-  (0, _createClass2["default"])(BratParser, [{
-    key: "parse",
-    value: function parse(textInput, entInput, evtInput) {
-      var _this = this;
-
-      this.mentions = {};
-      var lines; // separate source text and annotation
-
-      if (!entInput) {
-        var splitLines = textInput.split("\n");
-        this.text = splitLines[0];
-        lines = splitLines.slice(1);
-      } else {
-        this.text = textInput;
-        lines = entInput.split("\n");
-
-        if (evtInput) {
-          lines = lines.concat(evtInput.split("\n"));
-        }
-      } // filter out non-annotation lines
-
-
-      lines.forEach(function (line) {
-        var tokens = line.trim().split(/\s+/);
-
-        if (tokens[0] && tokens[0].match(/[TER]\d+/)) {
-          _this.mentions[tokens[0]] = {
-            annotation: tokens,
-            object: null
-          };
-        }
-      }); // recursively build graph
-
-      var graph = {
-        words: [],
-        links: [],
-        clusters: []
-      };
-      this.textArray = [{
-        charStart: 0,
-        charEnd: this.text.length,
-        entity: null
-      }];
-
-      for (var id in this.mentions) {
-        if (this.mentions[id] && this.mentions[id].object === null) {
-          this.parseAnnotation(id, graph);
-        }
-      }
-
-      var n = graph.words.length;
-      var idx = 0;
-      this.textArray.forEach(function (t, i) {
-        if (t.entity === null) {
-          var text = _this.text.slice(t.charStart, t.charEnd).trim();
-
-          if (text === "") {
-            // The un-annotated span contained only whitespace; ignore it
-            return;
-          }
-
-          text.split(/\s+/).forEach(function (token) {
-            var word = new _word["default"](token, idx);
-            graph.words.push(word);
-            idx++;
-          });
-        } else {
-          t.entity.idx = idx;
-          idx++;
-        }
-      });
-      graph.words.sort(function (a, b) {
-        return a.idx - b.idx;
-      });
-      this.data = graph;
-    }
-  }, {
-    key: "parseAnnotation",
-    value: function parseAnnotation(id, graph) {
-      // check if mention exists & has been parsed already
-      var m = this.mentions[id];
-
-      if (m === undefined) {
-        return null;
-      }
-
-      if (m.object !== null) {
-        return m.object;
-      } // parse annotation
-
-
-      var tokens = m.annotation;
-
-      switch (tokens[0].charAt(0)) {
-        case "T":
-          /**
-           * Entity annotations have:
-           * - Unique ID
-           * - Type
-           * - Character span
-           * - Raw text
-           */
-          var tbm = this.parseTextMention(tokens);
-
-          if (tbm === null) {
-            // invalid line
-            delete this.mentions[id];
-            return null;
-          } else {
-            // valid line; add Word
-            graph.words.push(tbm);
-            m.object = tbm;
-            return tbm;
-          }
-
-        case "E":
-          /**
-           * Event annotations have:
-           * - Unique ID
-           * - Type:ID string representing the trigger entity
-           * - Role:ID strings representing the argument entities
-           */
-          var em = this.parseEventMention(tokens, graph);
-
-          if (em === null) {
-            // invalid event
-            delete this.mentions[id];
-            return null;
-          } else {
-            // valid event; add Link
-            graph.links.push(em);
-            m.object = em;
-            return em;
-          }
-
-        case "R":
-          /**
-           * Binary relations have:
-           * - Unique ID
-           * - Type
-           * - Role:ID strings representing the argument entities (x2)
-           */
-          var rm = this.parseRelationMention(tokens, graph);
-
-          if (rm === null) {
-            // invalid event
-            delete this.mentions[id];
-            return null;
-          } else {
-            // valid event; add Link
-            graph.links.push(rm);
-            m.object = rm;
-            return rm;
-          }
-
-        case "A":
-          break;
-      }
-
-      return null;
-    }
-  }, {
-    key: "parseTextMention",
-    value: function parseTextMention(tokens) {
-      var id = tokens[0].slice(1);
-      var label = tokens[1];
-      var charStart = Number(tokens[2]);
-      var charEnd = Number(tokens[3]);
-
-      if (charStart >= 0 && charStart < charEnd && charEnd <= this.text.length) {
-        // create Word
-        var word = new _word["default"](this.text.slice(charStart, charEnd), Number(id));
-        word.registerTag("default", label);
-        word.addEventId(id); // cut textArray
-
-        var textWord = {
-          charStart: charStart,
-          charEnd: charEnd,
-          entity: word
-        };
-        var i = this.textArray.findIndex(function (token) {
-          return token.charEnd > charStart;
-        });
-
-        if (i === -1) {
-          console.log("// mistake in tokenizing string");
-        } else if (this.textArray[i].charStart < charStart) {
-          // textArray[i] starts to the left of the word
-          var tempEnd = this.textArray[i].charEnd;
-          this.textArray[i].charEnd = charStart; // insert word into array
-
-          if (tempEnd > charEnd) {
-            this.textArray.splice(i + 1, 0, textWord, {
-              charStart: charEnd,
-              charEnd: tempEnd,
-              entity: null
-            });
-          } else {
-            this.textArray.splice(i + 1, 0, textWord);
-          }
-        } else {
-          // textArray[i] starts at the same place or to the right of the word
-          if (this.textArray[i].charEnd === charEnd) {
-            this.textArray[i].entity = word;
-          } else {
-            this.textArray.splice(i, 0, textWord);
-            this.textArray[i + 1].charStart = charEnd;
-            this.textArray[i + 1].entity = null;
-          }
-        }
-
-        return word;
-      } else {
-        return null;
-      }
-    }
-  }, {
-    key: "searchBackwards",
-    value: function searchBackwards(arr, fn) {
-      for (var i = arr.length - 1; i >= 0; --i) {
-        if (fn(arr[i])) {
-          return arr[i];
-        }
-      }
-
-      return null;
-    }
-  }, {
-    key: "parseEventMention",
-    value: function parseEventMention(tokens, graph) {
-      var _this2 = this;
-
-      var successfulParse = true;
-      var id = tokens[0];
-      var args = tokens.slice(1).map(function (token, i) {
-        var _token$split = token.split(_this2.re),
-            _token$split2 = (0, _slicedToArray2["default"])(_token$split, 2),
-            label = _token$split2[0],
-            id = _token$split2[1];
-
-        var object = _this2.parseAnnotation(id, graph);
-
-        if (object !== null) {
-          return {
-            type: label,
-            anchor: object
-          };
-        } else {
-          if (i === 0) {
-            successfulParse = false;
-          }
-
-          return null;
-        }
-      }).filter(function (arg) {
-        return arg;
-      });
-
-      if (successfulParse && args.length > 1) {
-        // create link
-        return new _link["default"](id, args[0].anchor, args.slice(1));
-      } else {
-        return null;
-      }
-    }
-  }, {
-    key: "parseRelationMention",
-    value: function parseRelationMention(tokens, graph) {
-      var _this3 = this;
-
-      if (tokens.length < 4) {
-        return null;
-      }
-
-      var successfulParse = true;
-      var id = tokens[0];
-      var reltype = tokens[1];
-      var args = tokens.slice(2, 4).map(function (token) {
-        var _token$split3 = token.split(_this3.re),
-            _token$split4 = (0, _slicedToArray2["default"])(_token$split3, 2),
-            label = _token$split4[0],
-            id = _token$split4[1];
-
-        var object = _this3.parseAnnotation(id, graph);
-
-        if (object !== null) {
-          return {
-            type: label,
-            anchor: object
-          };
-        } else {
-          successfulParse = false;
-        }
-      });
-
-      if (successfulParse === true) {
-        return new _link["default"](id, null, args, reltype);
-      } else {
-        return null;
-      }
-    }
-  }]);
-  return BratParser;
-}();
-
-var _default = BratParser;
-exports["default"] = _default;
-
-},{"../components/link.js":48,"../components/word.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],59:[function(_dereq_,module,exports){
-"use strict";
-
-var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = void 0;
-
-var _slicedToArray2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/slicedToArray"));
-
-var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
-
-var _word = _interopRequireDefault(_dereq_("../components/word.js"));
-
-var _link = _interopRequireDefault(_dereq_("../components/link.js"));
-
-var _wordCluster = _interopRequireDefault(_dereq_("../components/word-cluster.js"));
-
-/**
- * Parser for Odin `mentions.json` output
- * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
- */
-var OdinParser =
-/*#__PURE__*/
-function () {
-  function OdinParser() {
-    (0, _classCallCheck2["default"])(this, OdinParser);
-    // This will eventually hold the parsed data for returning to the caller
-    this.data = {
-      words: [],
-      links: [],
-      clusters: []
-    }; // Holds the data for individual documents
-
-    this.parsedDocuments = {}; // Previously-parsed mentions, by Id.
-    // Old TextBoundMentions return their host Word/WordCluster
-    // Old EventMentions/RelationMentions return their Link
-
-    this.parsedMentions = {}; // We record the index of the last Word from the previous sentence so
-    // that we can generate each Word's global index (if not Word indices
-    // will incorrectly restart from 0 for each new document/sentence)
-
-    this.lastWordIdx = -1;
-  }
-  /**
-   * Parses the given data, filling out `this.data` accordingly.
-   * @param {Object} data
-   */
-
-
-  (0, _createClass2["default"])(OdinParser, [{
-    key: "parse",
-    value: function parse(data) {
-      // Clear out any old parse data
-      this.reset(); // At the top level, the data has two parts: `documents` and `mentions`.
-      // - `documents` includes the tokens and dependency parses for each
-      //   document the data contains.
-      // - `mentions` includes all the events/relations that *every* document
-      //   contains, but each mention has a `document` property that specifies
-      //   which document it applies to.
-      // We will display the tokens from every document consecutively, and fill in
-      // their mentions to match.
-
-      var docIds = Object.keys(data.documents).sort();
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = docIds[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var docId = _step.value;
-          this.parsedDocuments[docId] = this._parseDocument(data.documents[docId], docId);
-        } // There are a number of different types of mentions types:
-        // - TextBoundMention
-        // - EventMention
-
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-            _iterator["return"]();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
-
-      try {
-        for (var _iterator2 = data.mentions[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var mention = _step2.value;
-
-          this._parseMention(mention);
-        }
-      } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-            _iterator2["return"]();
-          }
-        } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
-          }
-        }
-      }
-    }
-    /**
-     * Clears out all previously cached parse data (in preparation for a new
-     * parse)
-     */
-
-  }, {
-    key: "reset",
-    value: function reset() {
-      this.data = {
-        words: [],
-        links: [],
-        clusters: []
-      };
-      this.parsedDocuments = {};
-      this.parsedMentions = {};
-      this.lastWordIdx = -1;
-    }
-    /**
-     * Parses a given document (essentially an array of sentences), appending
-     * the tokens and first set of dependency links to the final dataset.
-     * TODO: Allow user to select between different dependency graphs
-     *
-     * @param document
-     * @property {Object[]} sentences
-     *
-     * @param {String} docId - Unique identifier for this document
-     * @private
-     */
-
-  }, {
-    key: "_parseDocument",
-    value: function _parseDocument(document, docId) {
-      var thisDocument = {};
-      /** @type Word[][] **/
-
-      thisDocument.sentences = [];
-      /**
-       * Each sentence is an object with a number of pre-defined properties;
-       * we are interested in the following.
-       * @property {String[]} words
-       * @property raw
-       * @property tags
-       * @property lemmas
-       * @property entities
-       * @property norms
-       * @property chunks
-       * @property graphs
-       */
-
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
-
-      try {
-        for (var _iterator3 = document.sentences.entries()[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var _step3$value = (0, _slicedToArray2["default"])(_step3.value, 2),
-              sentenceId = _step3$value[0],
-              sentence = _step3$value[1];
-
-          // Hold on to the Words we generate even as we push them up to the
-          // main data store, so that we can create their syntax Links too
-          // (which rely on sentence-level indices, not global indices)
-          var thisSentence = []; // Read any token-level annotations
-
-          for (var thisIdx = 0; thisIdx < sentence.words.length; thisIdx++) {
-            var thisWord = new _word["default"]( // Text
-            sentence.words[thisIdx], // (Global) Word index
-            thisIdx + this.lastWordIdx + 1); // Various token-level tags, if they are available
-
-            if (sentence.raw) {
-              thisWord.registerTag("raw", sentence.raw[thisIdx]);
-            }
-
-            if (sentence.tags) {
-              thisWord.registerTag("POS", sentence.tags[thisIdx]);
-            }
-
-            if (sentence.lemmas) {
-              thisWord.registerTag("lemma", sentence.lemmas[thisIdx]);
-            }
-
-            if (sentence.entities) {
-              thisWord.registerTag("entity", sentence.entities[thisIdx]);
-            }
-
-            if (sentence.norms) {
-              thisWord.registerTag("norm", sentence.norms[thisIdx]);
-            }
-
-            if (sentence.chunks) {
-              thisWord.registerTag("chunk", sentence.chunks[thisIdx]);
-            }
-
-            thisSentence.push(thisWord);
-            this.data.words.push(thisWord);
-          } // Update the global Word index offset for the next sentence
-
-
-          this.lastWordIdx += sentence.words.length; // Sentences may have multiple dependency graphs available
-
-          var graphTypes = Object.keys(sentence.graphs);
-
-          for (var _i = 0, _graphTypes = graphTypes; _i < _graphTypes.length; _i++) {
-            var graphType = _graphTypes[_i];
-
-            /**
-             * @property {Object[]} edges
-             * @property roots
-             */
-            var graph = sentence.graphs[graphType];
-            /**
-             * @property {Number} source
-             * @property {Number} destination
-             * @property {String} relation
-             */
-
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
-
-            try {
-              for (var _iterator4 = graph.edges.entries()[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                var _step4$value = (0, _slicedToArray2["default"])(_step4.value, 2),
-                    edgeId = _step4$value[0],
-                    edge = _step4$value[1];
-
-                this.data.links.push(new _link["default"]( // eventId
-                "".concat(docId, "-").concat(sentenceId, "-").concat(graphType, "-").concat(edgeId), // Trigger
-                thisSentence[edge.source], // Arguments
-                [{
-                  anchor: thisSentence[edge.destination],
-                  type: edge.relation
-                }], // Relation type
-                edge.relation, // Draw Link above Words?
-                false, // Category
-                graphType));
-              }
-            } catch (err) {
-              _didIteratorError4 = true;
-              _iteratorError4 = err;
-            } finally {
-              try {
-                if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-                  _iterator4["return"]();
-                }
-              } finally {
-                if (_didIteratorError4) {
-                  throw _iteratorError4;
-                }
-              }
-            }
-          }
-
-          thisDocument.sentences.push(thisSentence);
-        }
-      } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-            _iterator3["return"]();
-          }
-        } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
-          }
-        }
-      }
-
-      return thisDocument;
-    }
-    /**
-     * Parses the given mention and enriches the data stores accordingly.
-     *
-     * - TextBoundMentions become WordTags
-     * - EventMentions become Links
-     * - RelationMentions become Links
-     *
-     * @param mention
-     * @private
-     */
-
-  }, {
-    key: "_parseMention",
-    value: function _parseMention(mention) {
-      /**
-       * @property {String} mention.type
-       * @property {String} mention.id
-       * @property {String} mention.document - The ID of the mention's host
-       *     document
-       * @property {Number} mention.sentence - The index of the sentence in the
-       *     document that this mention comes from
-       * @property {Object} mention.tokenInterval - The start and end indices
-       *     for this mention
-       * @property {String[]} mention.labels - An Array of the labels that
-       *     this mention should have.  By convention, the first element in the
-       *     Array is the actual label, and the other elements simply reflect the
-       *     higher-levels of the label's taxonomic hierarchy.
-       * @property {Object} mention.arguments
-       */
-      // Have we seen this one before?
-      if (this.parsedMentions[mention.id]) {
-        return this.parsedMentions[mention.id];
-      } // TextBoundMention
-      // Will become either a tag for a Word, or a WordCluster.
-
-
-      if (mention.type === "TextBoundMention") {
-        var tokens = this.parsedDocuments[mention.document].sentences[mention.sentence].slice(mention.tokenInterval.start, mention.tokenInterval.end);
-        var label = mention.labels[0];
-
-        if (tokens.length === 1) {
-          // Set the annotation tag for this Word
-          tokens[0].registerTag("default", label); // tokens[0].setTag(label);
-
-          this.parsedMentions[mention.id] = tokens[0];
-          return tokens[0];
-        } else {
-          var cluster = new _wordCluster["default"](tokens, label);
-          this.data.clusters.push(cluster);
-          this.parsedMentions[mention.id] = cluster;
-          return cluster;
-        }
-      } // EventMention/RelationMention
-      // Will become a Link
-
-
-      if (mention.type === "EventMention" || mention.type === "RelationMention") {
-        // If there is a trigger, it will be a nested Mention.  Ensure it is
-        // parsed.
-        var trigger = null;
-
-        if (mention.trigger) {
-          trigger = this._parseMention(mention.trigger);
-        } // Read the relation label
-
-
-        var relType = mention.labels[0]; // Generate the arguments array
-        // `mentions.arguments` is an Object keyed by argument type.
-        // The value of each key is an array of nested Mentions as arguments
-
-        var linkArgs = [];
-
-        for (var _i2 = 0, _Object$entries = Object.entries(mention["arguments"]); _i2 < _Object$entries.length; _i2++) {
-          var _Object$entries$_i = (0, _slicedToArray2["default"])(_Object$entries[_i2], 2),
-              type = _Object$entries$_i[0],
-              args = _Object$entries$_i[1];
-
-          var _iteratorNormalCompletion5 = true;
-          var _didIteratorError5 = false;
-          var _iteratorError5 = undefined;
-
-          try {
-            for (var _iterator5 = args[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-              var arg = _step5.value;
-
-              // Ensure that the argument mention has been parsed before
-              var anchor = this._parseMention(arg);
-
-              linkArgs.push({
-                anchor: anchor,
-                type: type
-              });
-            }
-          } catch (err) {
-            _didIteratorError5 = true;
-            _iteratorError5 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
-                _iterator5["return"]();
-              }
-            } finally {
-              if (_didIteratorError5) {
-                throw _iteratorError5;
-              }
-            }
-          }
-        } // Done; prepare the new Link
-
-
-        var link = new _link["default"]( // eventId
-        mention.id, // Trigger
-        trigger, // Arguments
-        linkArgs, // Relation type
-        relType, // Draw Link above Words?
-        true);
-        this.data.links.push(link);
-        this.parsedMentions[mention.id] = link;
-        return link;
-      }
-    }
-  }]);
-  return OdinParser;
-}();
-
-var _default = OdinParser;
-exports["default"] = _default;
-
-},{"../components/link.js":48,"../components/word-cluster.js":50,"../components/word.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],60:[function(_dereq_,module,exports){
-"use strict";
-
-var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = void 0;
-
-var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
+var _main = _interopRequireDefault(_dereq_("./main"));
 
 var _lodash = _interopRequireDefault(_dereq_("lodash"));
-
-var _brat = _interopRequireDefault(_dereq_("./brat.js"));
-
-var _odin = _interopRequireDefault(_dereq_("./odin.js"));
-
-var re = /.*(?=\.(\S+))|.*/;
-
-var Parser =
-/*#__PURE__*/
-function () {
-  function Parser() {
-    (0, _classCallCheck2["default"])(this, Parser);
-
-    /* output */
-    this._parsedData = {
-      words: [],
-      links: [],
-      clusters: []
-    };
-    /* supported formats */
-
-    this.ann = new _brat["default"]();
-    this.odin = new _odin["default"]();
-  }
-  /**
-   * Loads annotation data directly into the parser
-   * @param {Object} data - The raw data expected by the parser for the
-   *     given format
-   * @param {String} format
-   */
-
-
-  (0, _createClass2["default"])(Parser, [{
-    key: "loadData",
-    value: function loadData(data, format) {
-      if (format === "brat") {
-        this.parseBrat(data);
-      } else if (format === "odin") {
-        this.parseOdin(data);
-      } else {
-        throw "Unknown annotation format: ".concat(format);
-      }
-
-      return this.getParsedData();
-    }
-    /**
-     * Loads annotation data from file objects (as read by Main.loadFilesAsync())
-     * @param {Array} files - An array of objects with the following structure:
-     *     {
-     *       name: <file name>
-     *       type: <file type>
-     *       content: <file contents as a string>
-     *     }
-     * @param {String} format
-     */
-
-  }, {
-    key: "loadFiles",
-    value: function loadFiles(files, format) {
-      if (files.length === 1) {
-        // Single file
-        var file = files[0];
-
-        if (format === "brat") {
-          this.parseBrat(file.content);
-        } else if (format === "odin") {
-          // The Odin parser expects an Object directly, not a String
-          this.parseOdin(JSON.parse(file.content));
-        } else {
-          throw "Unknown annotation format: ".concat(format);
-        }
-      } else {
-        // Multi-file format
-        // find 2 or 3 files that match in name
-        files.sort(function (a, b) {
-          return a.name.localeCompare(b.name);
-        });
-        var matchingFiles = [];
-        var i = 0;
-        var iname = files[i].name.match(re);
-
-        for (var j = 1; j < files.length; ++j) {
-          var jname = files[j].name.match(re);
-
-          if (jname[1] && jname[0] === iname[0]) {
-            matchingFiles.push(files[i], files[j]);
-            var k = j + 1;
-
-            while (k < files.length) {
-              var kname = files[k].name.match(re);
-
-              if (kname[1] && kname[0] === iname[0]) {
-                matchingFiles.push(files[k]);
-              } else {
-                break;
-              }
-
-              ++k;
-            }
-
-            break;
-          }
-        } // found matching files
-
-
-        if (format === "brat") {
-          if (matchingFiles.length === 2) {
-            // find text content
-            var text = matchingFiles.find(function (file) {
-              return file.name.endsWith(".txt");
-            });
-            var standoff = matchingFiles.find(function (file) {
-              return !file.name.endsWith(".txt");
-            });
-            this.parseBrat(text.content, standoff.content);
-          } else {
-            var _text = matchingFiles.find(function (file) {
-              return file.name.endsWith(".txt");
-            });
-
-            var entities = matchingFiles.find(function (file) {
-              return file.name.endsWith(".a1");
-            });
-            var evts = matchingFiles.find(function (file) {
-              return file.name.endsWith(".a2");
-            });
-
-            if (_text && evts && entities) {
-              this.parseBrat(_text.content, entities.content, evts.content);
-            } else {
-              throw "Wrong number/type of files for Brat format";
-            }
-          }
-        } else {
-          throw "Unknown format, or wrong number/type of files for format";
-        }
-      }
-
-      return this.getParsedData();
-    }
-    /**
-     * Returns a cloned copy of the most recently parsed data, with circular
-     * references (e.g., between Words and Links) intact
-     */
-
-  }, {
-    key: "getParsedData",
-    value: function getParsedData() {
-      return _lodash["default"].cloneDeep(this._parsedData);
-    }
-    /**
-     * Parses the given Brat-format data
-     * http://brat.nlplab.org/standoff.html
-     */
-
-  }, {
-    key: "parseBrat",
-    value: function parseBrat() {
-      this.ann.parse.apply(this.ann, arguments);
-      this._parsedData = this.ann.data;
-    }
-    /**
-     * Parses the given Odin-format data
-     * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
-     */
-
-  }, {
-    key: "parseOdin",
-    value: function parseOdin(data) {
-      this.odin.parse(data);
-      this._parsedData = this.odin.data;
-    }
-  }]);
-  return Parser;
-}();
-
-var _default = Parser;
-exports["default"] = _default;
-
-},{"./brat.js":58,"./odin.js":59,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],61:[function(_dereq_,module,exports){
-"use strict";
-
-var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = void 0;
-
-var _main = _interopRequireDefault(_dereq_("./main"));
 
 /**
  * Instantiation and static functions
  */
-
+// Parsers for the various annotation formats will be registered with the
+// main library, and will be inherited by individual TAG instances.
+var parsers = {};
 /**
  * Initialises a TAG visualisation on the given element.
  * @param {Object} params - Initialisation parameters.
@@ -45479,6 +44597,7 @@ var _main = _interopRequireDefault(_dereq_("./main"));
  * @param {Object} [params.options] - Overrides for various default
  *     library options.
  */
+
 function tag(params) {
   // Core params
   if (!params.container) {
@@ -45489,37 +44608,52 @@ function tag(params) {
     params.options = {};
   }
 
-  var instance = new _main["default"](params.container, params.options); // Initial data load
+  var instance = new _main["default"](params.container, params.options, parsers); // Initial data load
 
   if (params.data && params.format) {
-    instance.loadData(params.data, params.format);
+    instance.loadData([params.data], params.format);
   }
 
   return instance;
+}
+/**
+ * Registers the parser for a new annotation format.
+ * @param {Object} parser - Parser object.
+ * @param {String} format - Identifier for the annotation format
+ *     associated with this parser.
+ */
+
+
+function registerParser(parser, format) {
+  if (_lodash["default"].has(parsers, format)) {
+    throw "There is already a Parser registered for the given format.";
+  }
+
+  parsers[format] = parser;
 } // ES6 and CommonJS compatibility
 
 
 var _default = {
-  tag: tag
+  tag: tag,
+  registerParser: registerParser
 };
 exports["default"] = _default;
 module.exports = {
-  tag: tag
+  tag: tag,
+  registerParser: registerParser
 };
 
-},{"./main":54,"@babel/runtime/helpers/interopRequireDefault":5}],62:[function(_dereq_,module,exports){
+},{"./main":54,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],59:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireWildcard = _dereq_("@babel/runtime/helpers/interopRequireWildcard");
-
-var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports["default"] = void 0;
 
-var _lodash = _interopRequireDefault(_dereq_("lodash"));
+var _lodash = _interopRequireWildcard(_dereq_("lodash"));
 
 var SVG = _interopRequireWildcard(_dereq_("svg.js"));
 
@@ -45674,12 +44808,28 @@ function sortForSlotting(links) {
     return links[link.idx];
   });
 }
+/**
+ * Deep diff between two object, using lodash
+ * @param  {Object} object Object compared
+ * @param  {Object} base   Object to compare with
+ * @return {Object}        Return a new object who represent the diff
+ */
+
+
+function difference(object, base) {
+  return (0, _lodash.transform)(object, function (result, value, key) {
+    if (!(0, _lodash.isEqual)(value, base[key])) {
+      result[key] = (0, _lodash.isObject)(value) && (0, _lodash.isObject)(base[key]) ? difference(value, base[key]) : value;
+    }
+  });
+}
 
 var _default = {
   getCssRules: getCssRules,
-  sortForSlotting: sortForSlotting
+  sortForSlotting: sortForSlotting,
+  difference: difference
 };
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"lodash":43,"svg.draggable.js":46,"svg.js":47}]},{},[61])(61)
+},{"@babel/runtime/helpers/interopRequireWildcard":6,"lodash":43,"svg.draggable.js":46,"svg.js":47}]},{},[58])(58)
 });

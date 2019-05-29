@@ -3,17 +3,16 @@
  * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
  */
 
-import Word from "../components/word.js";
-import Link from "../components/link.js";
-import WordCluster from "../components/word-cluster.js";
+import Token from "./components/Token";
+import Link from "./components/Link";
+import LongLabel from "./components/LongLabel";
 
 class OdinParser {
   constructor() {
     // This will eventually hold the parsed data for returning to the caller
     this.data = {
-      words: [],
-      links: [],
-      clusters: []
+      tokens: [],
+      links: []
     };
 
     // Holds the data for individual documents
@@ -24,17 +23,27 @@ class OdinParser {
     // Old EventMentions/RelationMentions return their Link
     this.parsedMentions = {};
 
-    // We record the index of the last Word from the previous sentence so
-    // that we can generate each Word's global index (if not Word indices
+    // We record the index of the last Token from the previous sentence so
+    // that we can generate each Word's global index (if not Token indices
     // will incorrectly restart from 0 for each new document/sentence)
-    this.lastWordIdx = -1;
+    this.lastTokenIdx = -1;
   }
 
   /**
    * Parses the given data, filling out `this.data` accordingly.
-   * @param {Object} data
+   * @param {Array} dataObjects - Array of input data objects.  We expect
+   *     there to be only one.
    */
-  parse(data) {
+  parse(dataObjects) {
+    if (dataObjects.length > 1) {
+      console.log(
+        "Warning: Odin parser received multiple data objects. Only the first" +
+          " data object will be parsed."
+      );
+    }
+
+    const data = dataObjects[0];
+
     // Clear out any old parse data
     this.reset();
 
@@ -61,6 +70,10 @@ class OdinParser {
     for (const mention of data.mentions) {
       this._parseMention(mention);
     }
+
+    // Return the parsed data (rather than expecting other modules to access
+    // it directly)
+    return this.data;
   }
 
   /**
@@ -69,13 +82,12 @@ class OdinParser {
    */
   reset() {
     this.data = {
-      words: [],
-      links: [],
-      clusters: []
+      tokens: [],
+      links: []
     };
     this.parsedDocuments = {};
     this.parsedMentions = {};
-    this.lastWordIdx = -1;
+    this.lastTokenIdx = -1;
   }
 
   /**
@@ -91,7 +103,7 @@ class OdinParser {
    */
   _parseDocument(document, docId) {
     const thisDocument = {};
-    /** @type Word[][] **/
+    /** @type Token[][] **/
     thisDocument.sentences = [];
 
     /**
@@ -114,39 +126,39 @@ class OdinParser {
 
       // Read any token-level annotations
       for (let thisIdx = 0; thisIdx < sentence.words.length; thisIdx++) {
-        const thisWord = new Word(
+        const thisToken = new Token(
           // Text
           sentence.words[thisIdx],
-          // (Global) Word index
-          thisIdx + this.lastWordIdx + 1
+          // (Global) Token index
+          thisIdx + this.lastTokenIdx + 1
         );
 
         // Various token-level tags, if they are available
         if (sentence.raw) {
-          thisWord.registerTag("raw", sentence.raw[thisIdx]);
+          thisToken.registerLabel("raw", sentence.raw[thisIdx]);
         }
         if (sentence.tags) {
-          thisWord.registerTag("POS", sentence.tags[thisIdx]);
+          thisToken.registerLabel("POS", sentence.tags[thisIdx]);
         }
         if (sentence.lemmas) {
-          thisWord.registerTag("lemma", sentence.lemmas[thisIdx]);
+          thisToken.registerLabel("lemma", sentence.lemmas[thisIdx]);
         }
         if (sentence.entities) {
-          thisWord.registerTag("entity", sentence.entities[thisIdx]);
+          thisToken.registerLabel("entity", sentence.entities[thisIdx]);
         }
         if (sentence.norms) {
-          thisWord.registerTag("norm", sentence.norms[thisIdx]);
+          thisToken.registerLabel("norm", sentence.norms[thisIdx]);
         }
         if (sentence.chunks) {
-          thisWord.registerTag("chunk", sentence.chunks[thisIdx]);
+          thisToken.registerLabel("chunk", sentence.chunks[thisIdx]);
         }
 
-        thisSentence.push(thisWord);
-        this.data.words.push(thisWord);
+        thisSentence.push(thisToken);
+        this.data.tokens.push(thisToken);
       }
 
       // Update the global Word index offset for the next sentence
-      this.lastWordIdx += sentence.words.length;
+      this.lastTokenIdx += sentence.words.length;
 
       // Sentences may have multiple dependency graphs available
       const graphTypes = Object.keys(sentence.graphs);
@@ -179,8 +191,6 @@ class OdinParser {
               ],
               // Relation type
               edge.relation,
-              // Draw Link above Words?
-              false,
               // Category
               graphType
             )
@@ -197,7 +207,7 @@ class OdinParser {
   /**
    * Parses the given mention and enriches the data stores accordingly.
    *
-   * - TextBoundMentions become WordTags
+   * - TextBoundMentions become Labels
    * - EventMentions become Links
    * - RelationMentions become Links
    *
@@ -235,18 +245,15 @@ class OdinParser {
       const label = mention.labels[0];
 
       if (tokens.length === 1) {
-        // Set the annotation tag for this Word
-        tokens[0].registerTag("default", label);
-
-        // tokens[0].setTag(label);
-
+        // Set the annotation Label for this Token
+        tokens[0].registerLabel("default", label);
         this.parsedMentions[mention.id] = tokens[0];
         return tokens[0];
       } else {
-        const cluster = new WordCluster(tokens, label);
-        this.data.clusters.push(cluster);
-        this.parsedMentions[mention.id] = cluster;
-        return cluster;
+        // Set the LongLabel for these tokens
+        const longLabel = LongLabel.registerLongLabel("default", label, tokens);
+        this.parsedMentions[mention.id] = longLabel;
+        return longLabel;
       }
     }
 
@@ -287,9 +294,7 @@ class OdinParser {
         // Arguments
         linkArgs,
         // Relation type
-        relType,
-        // Draw Link above Words?
-        true
+        relType
       );
       this.data.links.push(link);
       this.parsedMentions[mention.id] = link;
@@ -298,4 +303,6 @@ class OdinParser {
   }
 }
 
+// ES6 and CommonJS compatibility
 export default OdinParser;
+module.exports = OdinParser;

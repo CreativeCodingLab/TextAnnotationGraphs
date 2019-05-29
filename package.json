@@ -11,7 +11,7 @@
   "bugs": {
     "url": "https://github.com/CreativeCodingLab/TextAnnotationGraphs/issues"
   },
-  "version": "0.0.1",
+  "version": "1.0.1",
   "main": "dist/tag/js/tag.js",
   "scripts": {
     "build": "npm run task -- build:all",
@@ -24,7 +24,6 @@
     "test": "jest --verbose",
     "watch": "npm run task -- watch:quick"
   },
-  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.1.5",
     "@babel/plugin-proposal-decorators": "^7.1.2",
@@ -53,7 +52,7 @@
     "hbs": "^4.0.4",
     "hbsfy": "^2.8.1",
     "jest": "^24.7.1",
-    "jquery": "^3.4.0",
+    "jquery": ">=3.4.0",
     "js-yaml": "^3.13.1",
     "jsdoc": "^3.5.5",
     "lodash": "^4.17.11",

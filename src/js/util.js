@@ -4,6 +4,7 @@
  */
 
 import _ from "lodash";
+import { transform, isEqual, isObject } from "lodash";
 
 // For some reason, the `draggable` import has to be in a different file
 // from `main.js`.  This has something to do with the way ES6 imports work,
@@ -89,7 +90,25 @@ function sortForSlotting(links) {
   return sortingArray.map((link) => links[link.idx]);
 }
 
+/**
+ * Deep diff between two object, using lodash
+ * @param  {Object} object Object compared
+ * @param  {Object} base   Object to compare with
+ * @return {Object}        Return a new object who represent the diff
+ */
+function difference(object, base) {
+  return transform(object, (result, value, key) => {
+    if (!isEqual(value, base[key])) {
+      result[key] =
+        isObject(value) && isObject(base[key])
+          ? difference(value, base[key])
+          : value;
+    }
+  });
+}
+
 export default {
   getCssRules,
-  sortForSlotting
+  sortForSlotting,
+  difference
 };
