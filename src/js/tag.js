@@ -5,9 +5,15 @@
 import Main from "./main";
 import _ from "lodash";
 
+import Odin from "../../Parsers/odin";
+import Brat from "../../Parsers/brat";
+
 // Parsers for the various annotation formats will be registered with the
 // main library, and will be inherited by individual TAG instances.
-const parsers = {};
+const parsers = {
+  odin: Odin,
+  brat: Brat
+};
 
 /**
  * Initialises a TAG visualisation on the given element.

@@ -1,10 +1,1071 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.tag = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(_dereq_,module,exports){
+"use strict";
+
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _slicedToArray2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/slicedToArray"));
+
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
+
+var _Token = _interopRequireDefault(_dereq_("./components/Token"));
+
+var _Link = _interopRequireDefault(_dereq_("./components/Link"));
+
+/**
+ * Parser for Brat annotation format
+ */
+var BratParser =
+/*#__PURE__*/
+function () {
+  function BratParser() {
+    (0, _classCallCheck2["default"])(this, BratParser);
+    this.data = {};
+    this.re = /:+(?=[TER]\d+$)/; // regular expression for reading in a
+    // mention
+
+    this.text = "";
+    this.mentions = {};
+  }
+  /*
+    @param textInput : Source text     or  text + input in standoff format
+    @param entInput  : entity annotation or input in standoff format
+    @param evtInput  : event annotations or {undefined}
+   */
+
+  /**
+   * Parses the given data.
+   * @param {String[]} dataObjects - If the array contains a single string, it
+   *   is taken to contain the raw text of the document on the first line,
+   *   and annotation data on all subsequent lines.
+   *   If it contains more than one string, the first is taken to be the
+   *   document text, and all subsequent ones are taken to contain
+   *   annotation lines.
+   */
+
+
+  (0, _createClass2["default"])(BratParser, [{
+    key: "parse",
+    value: function parse(dataObjects) {
+      var _this = this;
+
+      this.mentions = {};
+      var lines = []; // separate source text and annotation
+
+      if (dataObjects.length === 1) {
+        var splitLines = dataObjects[0].split("\n");
+        this.text = splitLines[0];
+        lines = splitLines.slice(1);
+      } else {
+        this.text = dataObjects[0]; // Start from the second dataObject
+
+        for (var i = 1; i < dataObjects.length; i++) {
+          lines = lines.concat(dataObjects[i].split("\n"));
+        }
+      } // filter out non-annotation lines
+
+
+      lines.forEach(function (line) {
+        var tokens = line.trim().split(/\s+/);
+
+        if (tokens[0] && tokens[0].match(/[TER]\d+/)) {
+          _this.mentions[tokens[0]] = {
+            annotation: tokens,
+            object: null
+          };
+        }
+      }); // recursively build graph
+
+      var graph = {
+        tokens: [],
+        links: []
+      };
+      this.textArray = [{
+        charStart: 0,
+        charEnd: this.text.length,
+        entity: null
+      }];
+
+      for (var id in this.mentions) {
+        if (this.mentions[id] && this.mentions[id].object === null) {
+          this.parseAnnotation(id, graph);
+        }
+      }
+
+      var n = graph.tokens.length;
+      var idx = 0;
+      this.textArray.forEach(function (t, i) {
+        if (t.entity === null) {
+          var text = _this.text.slice(t.charStart, t.charEnd).trim();
+
+          if (text === "") {
+            // The un-annotated span contained only whitespace; ignore it
+            return;
+          }
+
+          text.split(/\s+/).forEach(function (token) {
+            var thisToken = new _Token["default"](token, idx);
+            graph.tokens.push(thisToken);
+            idx++;
+          });
+        } else {
+          t.entity.idx = idx;
+          idx++;
+        }
+      });
+      graph.tokens.sort(function (a, b) {
+        return a.idx - b.idx;
+      });
+      this.data = graph;
+      return this.data;
+    }
+  }, {
+    key: "parseAnnotation",
+    value: function parseAnnotation(id, graph) {
+      // check if mention exists & has been parsed already
+      var m = this.mentions[id];
+
+      if (m === undefined) {
+        return null;
+      }
+
+      if (m.object !== null) {
+        return m.object;
+      } // parse annotation
+
+
+      var tokens = m.annotation;
+
+      switch (tokens[0].charAt(0)) {
+        case "T":
+          /**
+           * Entity annotations have:
+           * - Unique ID
+           * - Type
+           * - Character span
+           * - Raw text
+           */
+          var tbm = this.parseTextMention(tokens);
+
+          if (tbm === null) {
+            // invalid line
+            delete this.mentions[id];
+            return null;
+          } else {
+            // valid line; add Token
+            graph.tokens.push(tbm);
+            m.object = tbm;
+            return tbm;
+          }
+
+        case "E":
+          /**
+           * Event annotations have:
+           * - Unique ID
+           * - Type:ID string representing the trigger entity
+           * - Role:ID strings representing the argument entities
+           */
+          var em = this.parseEventMention(tokens, graph);
+
+          if (em === null) {
+            // invalid event
+            delete this.mentions[id];
+            return null;
+          } else {
+            // valid event; add Link
+            graph.links.push(em);
+            m.object = em;
+            return em;
+          }
+
+        case "R":
+          /**
+           * Binary relations have:
+           * - Unique ID
+           * - Type
+           * - Role:ID strings representing the argument entities (x2)
+           */
+          var rm = this.parseRelationMention(tokens, graph);
+
+          if (rm === null) {
+            // invalid event
+            delete this.mentions[id];
+            return null;
+          } else {
+            // valid event; add Link
+            graph.links.push(rm);
+            m.object = rm;
+            return rm;
+          }
+
+        case "A":
+          break;
+      }
+
+      return null;
+    }
+  }, {
+    key: "parseTextMention",
+    value: function parseTextMention(tokens) {
+      var id = tokens[0].slice(1);
+      var label = tokens[1];
+      var charStart = Number(tokens[2]);
+      var charEnd = Number(tokens[3]);
+
+      if (charStart >= 0 && charStart < charEnd && charEnd <= this.text.length) {
+        // create Token
+        var token = new _Token["default"](this.text.slice(charStart, charEnd), Number(id));
+        token.registerLabel("default", label);
+        token.addAssociation(id); // cut textArray
+
+        var textWord = {
+          charStart: charStart,
+          charEnd: charEnd,
+          entity: token
+        };
+        var i = this.textArray.findIndex(function (token) {
+          return token.charEnd > charStart;
+        });
+
+        if (i === -1) {
+          console.log("// mistake in tokenizing string");
+        } else if (this.textArray[i].charStart < charStart) {
+          // textArray[i] starts to the left of the word
+          var tempEnd = this.textArray[i].charEnd;
+          this.textArray[i].charEnd = charStart; // insert word into array
+
+          if (tempEnd > charEnd) {
+            this.textArray.splice(i + 1, 0, textWord, {
+              charStart: charEnd,
+              charEnd: tempEnd,
+              entity: null
+            });
+          } else {
+            this.textArray.splice(i + 1, 0, textWord);
+          }
+        } else {
+          // textArray[i] starts at the same place or to the right of the word
+          if (this.textArray[i].charEnd === charEnd) {
+            this.textArray[i].entity = token;
+          } else {
+            this.textArray.splice(i, 0, textWord);
+            this.textArray[i + 1].charStart = charEnd;
+            this.textArray[i + 1].entity = null;
+          }
+        }
+
+        return token;
+      } else {
+        return null;
+      }
+    }
+  }, {
+    key: "searchBackwards",
+    value: function searchBackwards(arr, fn) {
+      for (var i = arr.length - 1; i >= 0; --i) {
+        if (fn(arr[i])) {
+          return arr[i];
+        }
+      }
+
+      return null;
+    }
+  }, {
+    key: "parseEventMention",
+    value: function parseEventMention(tokens, graph) {
+      var _this2 = this;
+
+      var successfulParse = true;
+      var id = tokens[0];
+      var args = tokens.slice(1).map(function (token, i) {
+        var _token$split = token.split(_this2.re),
+            _token$split2 = (0, _slicedToArray2["default"])(_token$split, 2),
+            label = _token$split2[0],
+            id = _token$split2[1];
+
+        var object = _this2.parseAnnotation(id, graph);
+
+        if (object !== null) {
+          return {
+            type: label,
+            anchor: object
+          };
+        } else {
+          if (i === 0) {
+            successfulParse = false;
+          }
+
+          return null;
+        }
+      }).filter(function (arg) {
+        return arg;
+      });
+
+      if (successfulParse && args.length > 1) {
+        // create link
+        return new _Link["default"](id, args[0].anchor, args.slice(1), "");
+      } else {
+        return null;
+      }
+    }
+  }, {
+    key: "parseRelationMention",
+    value: function parseRelationMention(tokens, graph) {
+      var _this3 = this;
+
+      if (tokens.length < 4) {
+        return null;
+      }
+
+      var successfulParse = true;
+      var id = tokens[0];
+      var reltype = tokens[1];
+      var args = tokens.slice(2, 4).map(function (token) {
+        var _token$split3 = token.split(_this3.re),
+            _token$split4 = (0, _slicedToArray2["default"])(_token$split3, 2),
+            label = _token$split4[0],
+            id = _token$split4[1];
+
+        var object = _this3.parseAnnotation(id, graph);
+
+        if (object !== null) {
+          return {
+            type: label,
+            anchor: object
+          };
+        } else {
+          successfulParse = false;
+        }
+      });
+
+      if (successfulParse === true) {
+        return new _Link["default"](id, null, args, reltype);
+      } else {
+        return null;
+      }
+    }
+  }]);
+  return BratParser;
+}(); // ES6 and CommonJS compatibility
+
+
+var _default = BratParser;
+exports["default"] = _default;
+module.exports = BratParser;
+
+},{"./components/Link":3,"./components/Token":5,"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/createClass":10,"@babel/runtime/helpers/interopRequireDefault":11,"@babel/runtime/helpers/slicedToArray":15}],2:[function(_dereq_,module,exports){
+"use strict";
+
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
+
+/**
+ * Annotations labels for single Tokens.
+ *
+ * Labels are added to a Token via the `.registerLabel()` method. Parsers
+ * should not instantiate Labels directly.
+ */
+var Label =
+/**
+ * Creates a new Label.
+ * @param {String} val - The raw text for the Label
+ * @param {Token} token - The parent Token for the Label
+ */
+function Label(val, token) {
+  (0, _classCallCheck2["default"])(this, Label);
+  this.type = "Label";
+  this.val = val;
+  this.token = token;
+};
+
+var _default = Label;
+exports["default"] = _default;
+
+},{"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/interopRequireDefault":11}],3:[function(_dereq_,module,exports){
+"use strict";
+
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
+
+/**
+ * Annotated events and other relationships between Tokens.
+ */
+var Link =
+/**
+ * Instantiates a Link.
+ * Links can have Words or other Links as argument anchors.
+ *
+ * @param {String} eventId - Unique ID
+ * @param {Word} trigger - Text-bound entity that indicates the presence of
+ *     this event
+ * @param {Object[]} args - The arguments to this Link. An Array of
+ *     Objects specifying `anchor` and `type`
+ * @param {String} relType - For (binary) relational Links, a String
+ *     identifying the relationship type
+ * @param {String} category - Links can be shown/hidden by category
+ */
+function Link(eventId, trigger, args, relType) {
+  var _this = this;
+
+  var category = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "default";
+  (0, _classCallCheck2["default"])(this, Link);
+  this.type = "Link"; // ---------------
+  // Core properties
+
+  this.eventId = eventId; // Links can be either Event or Relation annotations, to borrow the BRAT
+  // terminology.  Event annotations have a `trigger` entity from the text
+  // that specifies the event, whereas Relation annotations have a `type`
+  // that may not be bound to any particular part of the raw text.
+  // Both types of Links have arguments, which may themselves be nested links.
+
+  this.trigger = trigger;
+  this.relType = relType;
+  this.arguments = args; // Contains references to higher-level Links that have this Link as an
+  // argument
+
+  this.links = [];
+  this.category = category; // Fill in references in this Link's trigger/argument Tokens
+
+  if (this.trigger) {
+    this.trigger.links.push(this);
+  }
+
+  this.arguments.forEach(function (arg) {
+    arg.anchor.links.push(_this);
+  });
+};
+
+var _default = Link;
+exports["default"] = _default;
+
+},{"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/interopRequireDefault":11}],4:[function(_dereq_,module,exports){
+"use strict";
+
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
+
+/**
+ * Annotations labels that span multiple Tokens.
+ *
+ * Parsers should not instantiate LongLabels directly.
+ *
+ * Because LongLabels span multiple words, they cannot simply be added via
+ * Token methods; rather, use the static `LongLabel.registerLongLabel()` method
+ * to register a LongLabel to a group of Tokens.
+ */
+var LongLabel =
+/*#__PURE__*/
+function () {
+  /**
+   * Instantiates a LongLabel.
+   * Parsers should be calling `LongLabel.registerLongLabel()` instead.
+   * @param {String} val - The raw text for the Label
+   * @param {Token[]} tokens - The parent Tokens for the LongLabel
+   */
+  function LongLabel(val, tokens) {
+    (0, _classCallCheck2["default"])(this, LongLabel);
+    this.type = "LongLabel";
+    this.val = val;
+    this.tokens = tokens;
+  }
+  /**
+   * Registers a new LongLabel for a group of Tokens.
+   * @param {String} category - The category to register this LongLabel under
+   * @param {String} val - The raw text for the Label
+   * @param {Token[]} tokens - The parent Tokens for the LongLabel
+   */
+
+
+  (0, _createClass2["default"])(LongLabel, null, [{
+    key: "registerLongLabel",
+    value: function registerLongLabel(category, val, tokens) {
+      var longLabel = new LongLabel(val, tokens);
+      tokens.forEach(function (token) {
+        token.registerLongLabel(category, longLabel);
+      });
+      return longLabel;
+    }
+  }]);
+  return LongLabel;
+}();
+
+var _default = LongLabel;
+exports["default"] = _default;
+
+},{"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/createClass":10,"@babel/runtime/helpers/interopRequireDefault":11}],5:[function(_dereq_,module,exports){
+"use strict";
+
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
+
+var _Label = _interopRequireDefault(_dereq_("./Label"));
+
+/**
+ * Objects representing raw entity/token strings within the document being
+ * parsed.  Represents only the document's annotations, in structured form;
+ * does not include drawing data or other metadata that might be added for
+ * the visualisation.
+ *
+ * Tokens may be associated with one or more Label annotations.
+ * Labels that span multiple Tokens are instantiated as LongLabels instead.
+ */
+var Token =
+/*#__PURE__*/
+function () {
+  /**
+   * Creates a new Token.
+   * @param {String} text - The raw text for this Token
+   * @param {Number} idx - The index of this Token within the
+   *     currently-parsed document
+   */
+  function Token(text, idx) {
+    (0, _classCallCheck2["default"])(this, Token);
+    this.type = "Token";
+    this.text = text;
+    this.idx = idx; // Optional properties that may be set later
+    // -----------------------------------------
+    // Arbitrary values that this Token is associated with -- For
+    // convenience when parsing.
+
+    this.associations = []; // Back-references that will be set when this Token is used in
+    // other structures
+    // ---------------------------------------------------------
+    // Labels/LongLabels by category
+
+    this.registeredLabels = {}; // Links
+
+    this.links = [];
+  }
+  /**
+   * Any data (essentially arbitrary labels) that this Token is
+   * associated with
+   * @param data
+   */
+
+
+  (0, _createClass2["default"])(Token, [{
+    key: "addAssociation",
+    value: function addAssociation(data) {
+      if (this.associations.indexOf(data) < 0) {
+        this.associations.push(data);
+      }
+    }
+    /**
+     * Register this Token's Label for the given category of labels (e.g., POS
+     * tags, lemmas, etc.)
+     *
+     * At run-time, one category of Labels can be shown above this Token and
+     * another can be shown below it.
+     * @param {String} category
+     * @param {String} text
+     */
+
+  }, {
+    key: "registerLabel",
+    value: function registerLabel() {
+      var category = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "default";
+      var text = arguments.length > 1 ? arguments[1] : undefined;
+      this.registeredLabels[category] = new _Label["default"](text, this);
+    }
+    /**
+     * Returns all the categories for which a Label/LongLabel is currently
+     * registered for this Token.
+     */
+
+  }, {
+    key: "getLabelCategories",
+    value: function getLabelCategories() {
+      return Object.keys(this.registeredLabels);
+    }
+    /**
+     * Registers a LongLabel for this Token under the given category.
+     * Called when a new LongLabel is created; Parsers should not call this
+     * method directly.
+     * @param category
+     * @param longLabel
+     */
+
+  }, {
+    key: "registerLongLabel",
+    value: function registerLongLabel(category, longLabel) {
+      this.registeredLabels[category] = longLabel;
+    }
+  }]);
+  return Token;
+}();
+
+var _default = Token;
+exports["default"] = _default;
+
+},{"./Label":2,"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/createClass":10,"@babel/runtime/helpers/interopRequireDefault":11}],6:[function(_dereq_,module,exports){
+"use strict";
+
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _slicedToArray2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/slicedToArray"));
+
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
+
+var _Token = _interopRequireDefault(_dereq_("./components/Token"));
+
+var _Link = _interopRequireDefault(_dereq_("./components/Link"));
+
+var _LongLabel = _interopRequireDefault(_dereq_("./components/LongLabel"));
+
+/**
+ * Parser for Odin `mentions.json` output
+ * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
+ */
+var OdinParser =
+/*#__PURE__*/
+function () {
+  function OdinParser() {
+    (0, _classCallCheck2["default"])(this, OdinParser);
+    // This will eventually hold the parsed data for returning to the caller
+    this.data = {
+      tokens: [],
+      links: []
+    }; // Holds the data for individual documents
+
+    this.parsedDocuments = {}; // Previously-parsed mentions, by Id.
+    // Old TextBoundMentions return their host Word/WordCluster
+    // Old EventMentions/RelationMentions return their Link
+
+    this.parsedMentions = {}; // We record the index of the last Token from the previous sentence so
+    // that we can generate each Word's global index (if not Token indices
+    // will incorrectly restart from 0 for each new document/sentence)
+
+    this.lastTokenIdx = -1;
+  }
+  /**
+   * Parses the given data, filling out `this.data` accordingly.
+   * @param {Array} dataObjects - Array of input data objects.  We expect
+   *     there to be only one.
+   */
+
+
+  (0, _createClass2["default"])(OdinParser, [{
+    key: "parse",
+    value: function parse(dataObjects) {
+      if (dataObjects.length > 1) {
+        console.log("Warning: Odin parser received multiple data objects. Only the first" + " data object will be parsed.");
+      }
+
+      var data = dataObjects[0]; // Clear out any old parse data
+
+      this.reset(); // At the top level, the data has two parts: `documents` and `mentions`.
+      // - `documents` includes the tokens and dependency parses for each
+      //   document the data contains.
+      // - `mentions` includes all the events/relations that *every* document
+      //   contains, but each mention has a `document` property that specifies
+      //   which document it applies to.
+      // We will display the tokens from every document consecutively, and fill in
+      // their mentions to match.
+
+      var docIds = Object.keys(data.documents).sort();
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = docIds[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var docId = _step.value;
+          this.parsedDocuments[docId] = this._parseDocument(data.documents[docId], docId);
+        } // There are a number of different types of mentions types:
+        // - TextBoundMention
+        // - EventMention
+
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+            _iterator["return"]();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = data.mentions[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var mention = _step2.value;
+
+          this._parseMention(mention);
+        } // Return the parsed data (rather than expecting other modules to access
+        // it directly)
+
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+            _iterator2["return"]();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+
+      return this.data;
+    }
+    /**
+     * Clears out all previously cached parse data (in preparation for a new
+     * parse)
+     */
+
+  }, {
+    key: "reset",
+    value: function reset() {
+      this.data = {
+        tokens: [],
+        links: []
+      };
+      this.parsedDocuments = {};
+      this.parsedMentions = {};
+      this.lastTokenIdx = -1;
+    }
+    /**
+     * Parses a given document (essentially an array of sentences), appending
+     * the tokens and first set of dependency links to the final dataset.
+     * TODO: Allow user to select between different dependency graphs
+     *
+     * @param document
+     * @property {Object[]} sentences
+     *
+     * @param {String} docId - Unique identifier for this document
+     * @private
+     */
+
+  }, {
+    key: "_parseDocument",
+    value: function _parseDocument(document, docId) {
+      var thisDocument = {};
+      /** @type Token[][] **/
+
+      thisDocument.sentences = [];
+      /**
+       * Each sentence is an object with a number of pre-defined properties;
+       * we are interested in the following.
+       * @property {String[]} words
+       * @property raw
+       * @property tags
+       * @property lemmas
+       * @property entities
+       * @property norms
+       * @property chunks
+       * @property graphs
+       */
+
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = document.sentences.entries()[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var _step3$value = (0, _slicedToArray2["default"])(_step3.value, 2),
+              sentenceId = _step3$value[0],
+              sentence = _step3$value[1];
+
+          // Hold on to the Words we generate even as we push them up to the
+          // main data store, so that we can create their syntax Links too
+          // (which rely on sentence-level indices, not global indices)
+          var thisSentence = []; // Read any token-level annotations
+
+          for (var thisIdx = 0; thisIdx < sentence.words.length; thisIdx++) {
+            var thisToken = new _Token["default"]( // Text
+            sentence.words[thisIdx], // (Global) Token index
+            thisIdx + this.lastTokenIdx + 1); // Various token-level tags, if they are available
+
+            if (sentence.raw) {
+              thisToken.registerLabel("raw", sentence.raw[thisIdx]);
+            }
+
+            if (sentence.tags) {
+              thisToken.registerLabel("POS", sentence.tags[thisIdx]);
+            }
+
+            if (sentence.lemmas) {
+              thisToken.registerLabel("lemma", sentence.lemmas[thisIdx]);
+            }
+
+            if (sentence.entities) {
+              thisToken.registerLabel("entity", sentence.entities[thisIdx]);
+            }
+
+            if (sentence.norms) {
+              thisToken.registerLabel("norm", sentence.norms[thisIdx]);
+            }
+
+            if (sentence.chunks) {
+              thisToken.registerLabel("chunk", sentence.chunks[thisIdx]);
+            }
+
+            thisSentence.push(thisToken);
+            this.data.tokens.push(thisToken);
+          } // Update the global Word index offset for the next sentence
+
+
+          this.lastTokenIdx += sentence.words.length; // Sentences may have multiple dependency graphs available
+
+          var graphTypes = Object.keys(sentence.graphs);
+
+          for (var _i = 0, _graphTypes = graphTypes; _i < _graphTypes.length; _i++) {
+            var graphType = _graphTypes[_i];
+
+            /**
+             * @property {Object[]} edges
+             * @property roots
+             */
+            var graph = sentence.graphs[graphType];
+            /**
+             * @property {Number} source
+             * @property {Number} destination
+             * @property {String} relation
+             */
+
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
+
+            try {
+              for (var _iterator4 = graph.edges.entries()[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                var _step4$value = (0, _slicedToArray2["default"])(_step4.value, 2),
+                    edgeId = _step4$value[0],
+                    edge = _step4$value[1];
+
+                this.data.links.push(new _Link["default"]( // eventId
+                "".concat(docId, "-").concat(sentenceId, "-").concat(graphType, "-").concat(edgeId), // Trigger
+                thisSentence[edge.source], // Arguments
+                [{
+                  anchor: thisSentence[edge.destination],
+                  type: edge.relation
+                }], // Relation type
+                edge.relation, // Category
+                graphType));
+              }
+            } catch (err) {
+              _didIteratorError4 = true;
+              _iteratorError4 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+                  _iterator4["return"]();
+                }
+              } finally {
+                if (_didIteratorError4) {
+                  throw _iteratorError4;
+                }
+              }
+            }
+          }
+
+          thisDocument.sentences.push(thisSentence);
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+            _iterator3["return"]();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+
+      return thisDocument;
+    }
+    /**
+     * Parses the given mention and enriches the data stores accordingly.
+     *
+     * - TextBoundMentions become Labels
+     * - EventMentions become Links
+     * - RelationMentions become Links
+     *
+     * @param mention
+     * @private
+     */
+
+  }, {
+    key: "_parseMention",
+    value: function _parseMention(mention) {
+      /**
+       * @property {String} mention.type
+       * @property {String} mention.id
+       * @property {String} mention.document - The ID of the mention's host
+       *     document
+       * @property {Number} mention.sentence - The index of the sentence in the
+       *     document that this mention comes from
+       * @property {Object} mention.tokenInterval - The start and end indices
+       *     for this mention
+       * @property {String[]} mention.labels - An Array of the labels that
+       *     this mention should have.  By convention, the first element in the
+       *     Array is the actual label, and the other elements simply reflect the
+       *     higher-levels of the label's taxonomic hierarchy.
+       * @property {Object} mention.arguments
+       */
+      // Have we seen this one before?
+      if (this.parsedMentions[mention.id]) {
+        return this.parsedMentions[mention.id];
+      } // TextBoundMention
+      // Will become either a tag for a Word, or a WordCluster.
+
+
+      if (mention.type === "TextBoundMention") {
+        var tokens = this.parsedDocuments[mention.document].sentences[mention.sentence].slice(mention.tokenInterval.start, mention.tokenInterval.end);
+        var label = mention.labels[0];
+
+        if (tokens.length === 1) {
+          // Set the annotation Label for this Token
+          tokens[0].registerLabel("default", label);
+          this.parsedMentions[mention.id] = tokens[0];
+          return tokens[0];
+        } else {
+          // Set the LongLabel for these tokens
+          var longLabel = _LongLabel["default"].registerLongLabel("default", label, tokens);
+
+          this.parsedMentions[mention.id] = longLabel;
+          return longLabel;
+        }
+      } // EventMention/RelationMention
+      // Will become a Link
+
+
+      if (mention.type === "EventMention" || mention.type === "RelationMention") {
+        // If there is a trigger, it will be a nested Mention.  Ensure it is
+        // parsed.
+        var trigger = null;
+
+        if (mention.trigger) {
+          trigger = this._parseMention(mention.trigger);
+        } // Read the relation label
+
+
+        var relType = mention.labels[0]; // Generate the arguments array
+        // `mentions.arguments` is an Object keyed by argument type.
+        // The value of each key is an array of nested Mentions as arguments
+
+        var linkArgs = [];
+
+        for (var _i2 = 0, _Object$entries = Object.entries(mention["arguments"]); _i2 < _Object$entries.length; _i2++) {
+          var _Object$entries$_i = (0, _slicedToArray2["default"])(_Object$entries[_i2], 2),
+              type = _Object$entries$_i[0],
+              args = _Object$entries$_i[1];
+
+          var _iteratorNormalCompletion5 = true;
+          var _didIteratorError5 = false;
+          var _iteratorError5 = undefined;
+
+          try {
+            for (var _iterator5 = args[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              var arg = _step5.value;
+
+              // Ensure that the argument mention has been parsed before
+              var anchor = this._parseMention(arg);
+
+              linkArgs.push({
+                anchor: anchor,
+                type: type
+              });
+            }
+          } catch (err) {
+            _didIteratorError5 = true;
+            _iteratorError5 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+                _iterator5["return"]();
+              }
+            } finally {
+              if (_didIteratorError5) {
+                throw _iteratorError5;
+              }
+            }
+          }
+        } // Done; prepare the new Link
+
+
+        var link = new _Link["default"]( // eventId
+        mention.id, // Trigger
+        trigger, // Arguments
+        linkArgs, // Relation type
+        relType);
+        this.data.links.push(link);
+        this.parsedMentions[mention.id] = link;
+        return link;
+      }
+    }
+  }]);
+  return OdinParser;
+}(); // ES6 and CommonJS compatibility
+
+
+var _default = OdinParser;
+exports["default"] = _default;
+module.exports = OdinParser;
+
+},{"./components/Link":3,"./components/LongLabel":4,"./components/Token":5,"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/createClass":10,"@babel/runtime/helpers/interopRequireDefault":11,"@babel/runtime/helpers/slicedToArray":15}],7:[function(_dereq_,module,exports){
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
 }
 
 module.exports = _arrayWithHoles;
-},{}],2:[function(_dereq_,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
     var info = gen[key](arg);
@@ -42,7 +1103,7 @@ function _asyncToGenerator(fn) {
 }
 
 module.exports = _asyncToGenerator;
-},{}],3:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -50,7 +1111,7 @@ function _classCallCheck(instance, Constructor) {
 }
 
 module.exports = _classCallCheck;
-},{}],4:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 function _defineProperties(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
@@ -68,7 +1129,7 @@ function _createClass(Constructor, protoProps, staticProps) {
 }
 
 module.exports = _createClass;
-},{}],5:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : {
     "default": obj
@@ -76,35 +1137,68 @@ function _interopRequireDefault(obj) {
 }
 
 module.exports = _interopRequireDefault;
-},{}],6:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
+var _typeof = _dereq_("../helpers/typeof");
+
+function _getRequireWildcardCache() {
+  if (typeof WeakMap !== "function") return null;
+  var cache = new WeakMap();
+
+  _getRequireWildcardCache = function _getRequireWildcardCache() {
+    return cache;
+  };
+
+  return cache;
+}
+
 function _interopRequireWildcard(obj) {
   if (obj && obj.__esModule) {
     return obj;
-  } else {
-    var newObj = {};
+  }
 
-    if (obj != null) {
-      for (var key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {};
+  if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+    return {
+      "default": obj
+    };
+  }
 
-          if (desc.get || desc.set) {
-            Object.defineProperty(newObj, key, desc);
-          } else {
-            newObj[key] = obj[key];
-          }
-        }
+  var cache = _getRequireWildcardCache();
+
+  if (cache && cache.has(obj)) {
+    return cache.get(obj);
+  }
+
+  var newObj = {};
+  var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+
+  for (var key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+
+      if (desc && (desc.get || desc.set)) {
+        Object.defineProperty(newObj, key, desc);
+      } else {
+        newObj[key] = obj[key];
       }
     }
-
-    newObj["default"] = obj;
-    return newObj;
   }
+
+  newObj["default"] = obj;
+
+  if (cache) {
+    cache.set(obj, newObj);
+  }
+
+  return newObj;
 }
 
 module.exports = _interopRequireWildcard;
-},{}],7:[function(_dereq_,module,exports){
+},{"../helpers/typeof":16}],13:[function(_dereq_,module,exports){
 function _iterableToArrayLimit(arr, i) {
+  if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+    return;
+  }
+
   var _arr = [];
   var _n = true;
   var _d = false;
@@ -131,13 +1225,13 @@ function _iterableToArrayLimit(arr, i) {
 }
 
 module.exports = _iterableToArrayLimit;
-},{}],8:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance");
 }
 
 module.exports = _nonIterableRest;
-},{}],9:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 var arrayWithHoles = _dereq_("./arrayWithHoles");
 
 var iterableToArrayLimit = _dereq_("./iterableToArrayLimit");
@@ -149,10 +1243,28 @@ function _slicedToArray(arr, i) {
 }
 
 module.exports = _slicedToArray;
-},{"./arrayWithHoles":1,"./iterableToArrayLimit":7,"./nonIterableRest":8}],10:[function(_dereq_,module,exports){
+},{"./arrayWithHoles":7,"./iterableToArrayLimit":13,"./nonIterableRest":14}],16:[function(_dereq_,module,exports){
+function _typeof(obj) {
+  "@babel/helpers - typeof";
+
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    module.exports = _typeof = function _typeof(obj) {
+      return typeof obj;
+    };
+  } else {
+    module.exports = _typeof = function _typeof(obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+  }
+
+  return _typeof(obj);
+}
+
+module.exports = _typeof;
+},{}],17:[function(_dereq_,module,exports){
 module.exports = _dereq_("regenerator-runtime");
 
-},{"regenerator-runtime":45}],11:[function(_dereq_,module,exports){
+},{"regenerator-runtime":52}],18:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -249,7 +1361,7 @@ function autobind() {
 
   return boundMethod.apply(void 0, arguments);
 }
-},{}],12:[function(_dereq_,module,exports){
+},{}],19:[function(_dereq_,module,exports){
 /*!
  * jQuery JavaScript Library v3.4.1
  * https://jquery.com/
@@ -10849,7 +11961,7 @@ if ( !noGlobal ) {
 return jQuery;
 } );
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -10858,7 +11970,7 @@ var yaml = _dereq_('./lib/js-yaml.js');
 
 module.exports = yaml;
 
-},{"./lib/js-yaml.js":14}],14:[function(_dereq_,module,exports){
+},{"./lib/js-yaml.js":21}],21:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -10899,7 +12011,7 @@ module.exports.parse          = deprecated('parse');
 module.exports.compose        = deprecated('compose');
 module.exports.addConstructor = deprecated('addConstructor');
 
-},{"./js-yaml/dumper":16,"./js-yaml/exception":17,"./js-yaml/loader":18,"./js-yaml/schema":20,"./js-yaml/schema/core":21,"./js-yaml/schema/default_full":22,"./js-yaml/schema/default_safe":23,"./js-yaml/schema/failsafe":24,"./js-yaml/schema/json":25,"./js-yaml/type":26}],15:[function(_dereq_,module,exports){
+},{"./js-yaml/dumper":23,"./js-yaml/exception":24,"./js-yaml/loader":25,"./js-yaml/schema":27,"./js-yaml/schema/core":28,"./js-yaml/schema/default_full":29,"./js-yaml/schema/default_safe":30,"./js-yaml/schema/failsafe":31,"./js-yaml/schema/json":32,"./js-yaml/type":33}],22:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -10960,7 +12072,7 @@ module.exports.repeat         = repeat;
 module.exports.isNegativeZero = isNegativeZero;
 module.exports.extend         = extend;
 
-},{}],16:[function(_dereq_,module,exports){
+},{}],23:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable no-use-before-define*/
@@ -11789,7 +12901,7 @@ function safeDump(input, options) {
 module.exports.dump     = dump;
 module.exports.safeDump = safeDump;
 
-},{"./common":15,"./exception":17,"./schema/default_full":22,"./schema/default_safe":23}],17:[function(_dereq_,module,exports){
+},{"./common":22,"./exception":24,"./schema/default_full":29,"./schema/default_safe":30}],24:[function(_dereq_,module,exports){
 // YAML error class. http://stackoverflow.com/questions/8458984
 //
 'use strict';
@@ -11834,7 +12946,7 @@ YAMLException.prototype.toString = function toString(compact) {
 
 module.exports = YAMLException;
 
-},{}],18:[function(_dereq_,module,exports){
+},{}],25:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable max-len,no-use-before-define*/
@@ -13461,7 +14573,7 @@ module.exports.load        = load;
 module.exports.safeLoadAll = safeLoadAll;
 module.exports.safeLoad    = safeLoad;
 
-},{"./common":15,"./exception":17,"./mark":19,"./schema/default_full":22,"./schema/default_safe":23}],19:[function(_dereq_,module,exports){
+},{"./common":22,"./exception":24,"./mark":26,"./schema/default_full":29,"./schema/default_safe":30}],26:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -13539,7 +14651,7 @@ Mark.prototype.toString = function toString(compact) {
 
 module.exports = Mark;
 
-},{"./common":15}],20:[function(_dereq_,module,exports){
+},{"./common":22}],27:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable max-len*/
@@ -13649,7 +14761,7 @@ Schema.create = function createSchema() {
 
 module.exports = Schema;
 
-},{"./common":15,"./exception":17,"./type":26}],21:[function(_dereq_,module,exports){
+},{"./common":22,"./exception":24,"./type":33}],28:[function(_dereq_,module,exports){
 // Standard YAML's Core schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2804923
 //
@@ -13669,7 +14781,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":20,"./json":25}],22:[function(_dereq_,module,exports){
+},{"../schema":27,"./json":32}],29:[function(_dereq_,module,exports){
 // JS-YAML's default schema for `load` function.
 // It is not described in the YAML specification.
 //
@@ -13696,7 +14808,7 @@ module.exports = Schema.DEFAULT = new Schema({
   ]
 });
 
-},{"../schema":20,"../type/js/function":31,"../type/js/regexp":32,"../type/js/undefined":33,"./default_safe":23}],23:[function(_dereq_,module,exports){
+},{"../schema":27,"../type/js/function":38,"../type/js/regexp":39,"../type/js/undefined":40,"./default_safe":30}],30:[function(_dereq_,module,exports){
 // JS-YAML's default schema for `safeLoad` function.
 // It is not described in the YAML specification.
 //
@@ -13726,7 +14838,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":20,"../type/binary":27,"../type/merge":35,"../type/omap":37,"../type/pairs":38,"../type/set":40,"../type/timestamp":42,"./core":21}],24:[function(_dereq_,module,exports){
+},{"../schema":27,"../type/binary":34,"../type/merge":42,"../type/omap":44,"../type/pairs":45,"../type/set":47,"../type/timestamp":49,"./core":28}],31:[function(_dereq_,module,exports){
 // Standard YAML's Failsafe schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2802346
 
@@ -13745,7 +14857,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":20,"../type/map":34,"../type/seq":39,"../type/str":41}],25:[function(_dereq_,module,exports){
+},{"../schema":27,"../type/map":41,"../type/seq":46,"../type/str":48}],32:[function(_dereq_,module,exports){
 // Standard YAML's JSON schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2803231
 //
@@ -13772,7 +14884,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":20,"../type/bool":28,"../type/float":29,"../type/int":30,"../type/null":36,"./failsafe":24}],26:[function(_dereq_,module,exports){
+},{"../schema":27,"../type/bool":35,"../type/float":36,"../type/int":37,"../type/null":43,"./failsafe":31}],33:[function(_dereq_,module,exports){
 'use strict';
 
 var YAMLException = _dereq_('./exception');
@@ -13835,7 +14947,7 @@ function Type(tag, options) {
 
 module.exports = Type;
 
-},{"./exception":17}],27:[function(_dereq_,module,exports){
+},{"./exception":24}],34:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable no-bitwise*/
@@ -13975,7 +15087,7 @@ module.exports = new Type('tag:yaml.org,2002:binary', {
   represent: representYamlBinary
 });
 
-},{"../type":26}],28:[function(_dereq_,module,exports){
+},{"../type":33}],35:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -14012,7 +15124,7 @@ module.exports = new Type('tag:yaml.org,2002:bool', {
   defaultStyle: 'lowercase'
 });
 
-},{"../type":26}],29:[function(_dereq_,module,exports){
+},{"../type":33}],36:[function(_dereq_,module,exports){
 'use strict';
 
 var common = _dereq_('../common');
@@ -14130,7 +15242,7 @@ module.exports = new Type('tag:yaml.org,2002:float', {
   defaultStyle: 'lowercase'
 });
 
-},{"../common":15,"../type":26}],30:[function(_dereq_,module,exports){
+},{"../common":22,"../type":33}],37:[function(_dereq_,module,exports){
 'use strict';
 
 var common = _dereq_('../common');
@@ -14305,7 +15417,7 @@ module.exports = new Type('tag:yaml.org,2002:int', {
   }
 });
 
-},{"../common":15,"../type":26}],31:[function(_dereq_,module,exports){
+},{"../common":22,"../type":33}],38:[function(_dereq_,module,exports){
 'use strict';
 
 var esprima;
@@ -14399,7 +15511,7 @@ module.exports = new Type('tag:yaml.org,2002:js/function', {
   represent: representJavascriptFunction
 });
 
-},{"../../type":26}],32:[function(_dereq_,module,exports){
+},{"../../type":33}],39:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../../type');
@@ -14461,7 +15573,7 @@ module.exports = new Type('tag:yaml.org,2002:js/regexp', {
   represent: representJavascriptRegExp
 });
 
-},{"../../type":26}],33:[function(_dereq_,module,exports){
+},{"../../type":33}],40:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../../type');
@@ -14491,7 +15603,7 @@ module.exports = new Type('tag:yaml.org,2002:js/undefined', {
   represent: representJavascriptUndefined
 });
 
-},{"../../type":26}],34:[function(_dereq_,module,exports){
+},{"../../type":33}],41:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -14501,7 +15613,7 @@ module.exports = new Type('tag:yaml.org,2002:map', {
   construct: function (data) { return data !== null ? data : {}; }
 });
 
-},{"../type":26}],35:[function(_dereq_,module,exports){
+},{"../type":33}],42:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -14515,7 +15627,7 @@ module.exports = new Type('tag:yaml.org,2002:merge', {
   resolve: resolveYamlMerge
 });
 
-},{"../type":26}],36:[function(_dereq_,module,exports){
+},{"../type":33}],43:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -14551,7 +15663,7 @@ module.exports = new Type('tag:yaml.org,2002:null', {
   defaultStyle: 'lowercase'
 });
 
-},{"../type":26}],37:[function(_dereq_,module,exports){
+},{"../type":33}],44:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -14597,7 +15709,7 @@ module.exports = new Type('tag:yaml.org,2002:omap', {
   construct: constructYamlOmap
 });
 
-},{"../type":26}],38:[function(_dereq_,module,exports){
+},{"../type":33}],45:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -14652,7 +15764,7 @@ module.exports = new Type('tag:yaml.org,2002:pairs', {
   construct: constructYamlPairs
 });
 
-},{"../type":26}],39:[function(_dereq_,module,exports){
+},{"../type":33}],46:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -14662,7 +15774,7 @@ module.exports = new Type('tag:yaml.org,2002:seq', {
   construct: function (data) { return data !== null ? data : []; }
 });
 
-},{"../type":26}],40:[function(_dereq_,module,exports){
+},{"../type":33}],47:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -14693,7 +15805,7 @@ module.exports = new Type('tag:yaml.org,2002:set', {
   construct: constructYamlSet
 });
 
-},{"../type":26}],41:[function(_dereq_,module,exports){
+},{"../type":33}],48:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -14703,7 +15815,7 @@ module.exports = new Type('tag:yaml.org,2002:str', {
   construct: function (data) { return data !== null ? data : ''; }
 });
 
-},{"../type":26}],42:[function(_dereq_,module,exports){
+},{"../type":33}],49:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -14793,12 +15905,12 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   represent: representYamlTimestamp
 });
 
-},{"../type":26}],43:[function(_dereq_,module,exports){
+},{"../type":33}],50:[function(_dereq_,module,exports){
 (function (global){
 /**
  * @license
  * Lodash <https://lodash.com/>
- * Copyright JS Foundation and other contributors <https://js.foundation/>
+ * Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
  * Released under MIT license <https://lodash.com/license>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
  * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -14809,7 +15921,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.11';
+  var VERSION = '4.17.15';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -17468,16 +18580,10 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
         value.forEach(function(subValue) {
           result.add(baseClone(subValue, bitmask, customizer, subValue, value, stack));
         });
-
-        return result;
-      }
-
-      if (isMap(value)) {
+      } else if (isMap(value)) {
         value.forEach(function(subValue, key) {
           result.set(key, baseClone(subValue, bitmask, customizer, key, value, stack));
         });
-
-        return result;
       }
 
       var keysFunc = isFull
@@ -18401,8 +19507,8 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
         return;
       }
       baseFor(source, function(srcValue, key) {
+        stack || (stack = new Stack);
         if (isObject(srcValue)) {
-          stack || (stack = new Stack);
           baseMergeDeep(object, source, key, srcIndex, baseMerge, customizer, stack);
         }
         else {
@@ -20219,7 +21325,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
       return function(number, precision) {
         number = toNumber(number);
         precision = precision == null ? 0 : nativeMin(toInteger(precision), 292);
-        if (precision) {
+        if (precision && nativeIsFinite(number)) {
           // Shift with exponential notation to avoid floating-point issues.
           // See [MDN](https://mdn.io/round#Examples) for more details.
           var pair = (toString(number) + 'e').split('e'),
@@ -21402,7 +22508,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
     }
 
     /**
-     * Gets the value at `key`, unless `key` is "__proto__".
+     * Gets the value at `key`, unless `key` is "__proto__" or "constructor".
      *
      * @private
      * @param {Object} object The object to query.
@@ -21410,6 +22516,10 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      * @returns {*} Returns the property value.
      */
     function safeGet(object, key) {
+      if (key === 'constructor' && typeof object[key] === 'function') {
+        return;
+      }
+
       if (key == '__proto__') {
         return;
       }
@@ -25210,6 +26320,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
           }
           if (maxing) {
             // Handle invocations in a tight loop.
+            clearTimeout(timerId);
             timerId = setTimeout(timerExpired, wait);
             return invokeFunc(lastCallTime);
           }
@@ -29596,9 +30707,12 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
       , 'g');
 
       // Use a sourceURL for easier debugging.
+      // The sourceURL gets injected into the source that's eval-ed, so be careful
+      // with lookup (in case of e.g. prototype pollution), and strip newlines if any.
+      // A newline wouldn't be a valid sourceURL anyway, and it'd enable code injection.
       var sourceURL = '//# sourceURL=' +
-        ('sourceURL' in options
-          ? options.sourceURL
+        (hasOwnProperty.call(options, 'sourceURL')
+          ? (options.sourceURL + '').replace(/[\r\n]/g, ' ')
           : ('lodash.templateSources[' + (++templateCounter) + ']')
         ) + '\n';
 
@@ -29631,7 +30745,9 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
 
       // If `variable` is not specified wrap a with-statement around the generated
       // code to add the data object to the top of the scope chain.
-      var variable = options.variable;
+      // Like with sourceURL, we take care to not check the option's prototype,
+      // as this configuration is a code injection vector.
+      var variable = hasOwnProperty.call(options, 'variable') && options.variable;
       if (!variable) {
         source = 'with (obj) {\n' + source + '\n}\n';
       }
@@ -31836,10 +32952,11 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
     baseForOwn(LazyWrapper.prototype, function(func, methodName) {
       var lodashFunc = lodash[methodName];
       if (lodashFunc) {
-        var key = (lodashFunc.name + ''),
-            names = realNames[key] || (realNames[key] = []);
-
-        names.push({ 'name': methodName, 'func': lodashFunc });
+        var key = lodashFunc.name + '';
+        if (!hasOwnProperty.call(realNames, key)) {
+          realNames[key] = [];
+        }
+        realNames[key].push({ 'name': methodName, 'func': lodashFunc });
       }
     });
 
@@ -31904,7 +33021,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],44:[function(_dereq_,module,exports){
+},{}],51:[function(_dereq_,module,exports){
 // randomColor by David Merfield under the CC0 license
 // https://github.com/davidmerfield/randomColor/
 
@@ -32425,7 +33542,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   return randomColor;
 }));
 
-},{}],45:[function(_dereq_,module,exports){
+},{}],52:[function(_dereq_,module,exports){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -33153,7 +34270,7 @@ try {
   Function("r", "regeneratorRuntime = r")(runtime);
 }
 
-},{}],46:[function(_dereq_,module,exports){
+},{}],53:[function(_dereq_,module,exports){
 /*! svg.draggable.js - v2.2.2 - 2019-01-08
 * https://github.com/svgdotjs/svg.draggable.js
 * Copyright (c) 2019 Wout Fierens; Licensed MIT */
@@ -33390,7 +34507,7 @@ try {
 
 }).call(this);
 
-},{}],47:[function(_dereq_,module,exports){
+},{}],54:[function(_dereq_,module,exports){
 /*!
 * svg.js - A lightweight library for manipulating and animating SVG.
 * @version 2.7.1
@@ -38992,7 +40109,7 @@ if (typeof window.CustomEvent !== 'function') {
 return SVG
 
 }));
-},{}],48:[function(_dereq_,module,exports){
+},{}],55:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -40640,7 +41757,7 @@ function () {
 var _default = Link;
 exports["default"] = _default;
 
-},{"../util.js":59,"./word-cluster.js":50,"./word-tag.js":51,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],49:[function(_dereq_,module,exports){
+},{"../util.js":66,"./word-cluster.js":57,"./word-tag.js":58,"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/createClass":10,"@babel/runtime/helpers/interopRequireDefault":11,"jquery":19}],56:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -41479,7 +42596,7 @@ function () {
 var _default = Row;
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],50:[function(_dereq_,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/createClass":10,"@babel/runtime/helpers/interopRequireDefault":11}],57:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -41881,7 +42998,7 @@ function () {
 var _default = WordCluster;
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],51:[function(_dereq_,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/createClass":10,"@babel/runtime/helpers/interopRequireDefault":11}],58:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -42152,7 +43269,7 @@ function () {
 var _default = WordTag;
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],52:[function(_dereq_,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/createClass":10,"@babel/runtime/helpers/interopRequireDefault":11}],59:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -42748,7 +43865,7 @@ function () {
 var _default = Word;
 exports["default"] = _default;
 
-},{"./word-tag.js":51,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],53:[function(_dereq_,module,exports){
+},{"./word-tag.js":58,"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/createClass":10,"@babel/runtime/helpers/interopRequireDefault":11,"@babel/runtime/helpers/slicedToArray":15}],60:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -42922,7 +44039,7 @@ function Config() {
 var _default = Config;
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],54:[function(_dereq_,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/interopRequireDefault":11}],61:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -43778,7 +44895,7 @@ function () {
 var _default = Main;
 exports["default"] = _default;
 
-},{"./components/link":48,"./components/word":52,"./components/word-cluster":50,"./config":53,"./managers/labelmanager":55,"./managers/rowmanager":56,"./managers/taxonomy":57,"./util":59,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":47}],55:[function(_dereq_,module,exports){
+},{"./components/link":55,"./components/word":59,"./components/word-cluster":57,"./config":60,"./managers/labelmanager":62,"./managers/rowmanager":63,"./managers/taxonomy":64,"./util":66,"@babel/runtime/helpers/asyncToGenerator":8,"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/createClass":10,"@babel/runtime/helpers/interopRequireDefault":11,"@babel/runtime/helpers/interopRequireWildcard":12,"@babel/runtime/regenerator":17,"autobind-decorator":18,"jquery":19,"lodash":50,"svg.js":54}],62:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -43905,7 +45022,7 @@ module.exports = function () {
   return LabelManager;
 }();
 
-},{"../components/link.js":48,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],56:[function(_dereq_,module,exports){
+},{"../components/link.js":55,"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/interopRequireDefault":11}],63:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -44359,7 +45476,7 @@ function () {
 var _default = RowManager;
 exports["default"] = _default;
 
-},{"../components/row.js":49,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],57:[function(_dereq_,module,exports){
+},{"../components/row.js":56,"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/createClass":10,"@babel/runtime/helpers/interopRequireDefault":11}],64:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -44575,7 +45692,7 @@ function () {
 var _default = TaxonomyManager;
 exports["default"] = _default;
 
-},{"../components/word.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"js-yaml":13,"lodash":43,"randomcolor":44}],58:[function(_dereq_,module,exports){
+},{"../components/word.js":59,"@babel/runtime/helpers/classCallCheck":9,"@babel/runtime/helpers/createClass":10,"@babel/runtime/helpers/interopRequireDefault":11,"js-yaml":20,"lodash":50,"randomcolor":51}],65:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -44589,12 +45706,19 @@ var _main = _interopRequireDefault(_dereq_("./main"));
 
 var _lodash = _interopRequireDefault(_dereq_("lodash"));
 
+var _odin = _interopRequireDefault(_dereq_("../../Parsers/odin"));
+
+var _brat = _interopRequireDefault(_dereq_("../../Parsers/brat"));
+
 /**
  * Instantiation and static functions
  */
 // Parsers for the various annotation formats will be registered with the
 // main library, and will be inherited by individual TAG instances.
-var parsers = {};
+var parsers = {
+  odin: _odin["default"],
+  brat: _brat["default"]
+};
 /**
  * Initialises a TAG visualisation on the given element.
  * @param {Object} params - Initialisation parameters.
@@ -44653,7 +45777,7 @@ module.exports = {
   registerParser: registerParser
 };
 
-},{"./main":54,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],59:[function(_dereq_,module,exports){
+},{"../../Parsers/brat":1,"../../Parsers/odin":6,"./main":61,"@babel/runtime/helpers/interopRequireDefault":11,"lodash":50}],66:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireWildcard = _dereq_("@babel/runtime/helpers/interopRequireWildcard");
@@ -44841,5 +45965,5 @@ var _default = {
 };
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/interopRequireWildcard":6,"lodash":43,"svg.draggable.js":46,"svg.js":47}]},{},[58])(58)
+},{"@babel/runtime/helpers/interopRequireWildcard":12,"lodash":50,"svg.draggable.js":53,"svg.js":54}]},{},[65])(65)
 });
