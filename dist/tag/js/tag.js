@@ -45716,8 +45716,8 @@ var _brat = _interopRequireDefault(_dereq_("../../Parsers/brat"));
 // Parsers for the various annotation formats will be registered with the
 // main library, and will be inherited by individual TAG instances.
 var parsers = {
-  odin: _odin["default"],
-  brat: _brat["default"]
+  odin: new _odin["default"](),
+  brat: new _brat["default"]()
 };
 /**
  * Initialises a TAG visualisation on the given element.
