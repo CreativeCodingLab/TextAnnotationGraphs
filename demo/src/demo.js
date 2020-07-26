@@ -8,7 +8,6 @@
  * If you have made any changes to this file, execute `npm run demo-build`
  * from the main folder to see your changes reflected.
  */
-
 // For your own projects, use `require("text-annotation-graphs")` instead
 const TAG = require("../../src/js/tag.js");
 
@@ -42,6 +41,9 @@ require("bootstrap-slider");
 window.$ = $;
 window.jQuery = $;
 
+// For debugging
+window._ = require("lodash");
+
 // Main function
 $(async () => {
   // -----
@@ -62,6 +64,28 @@ $(async () => {
   });
 
   await fontLoadPromise;
+
+  // ------------
+  // Load Parsers
+  // ------------
+  // Annotation formats need to have a corresponding Parser registered
+  // before they can be used.
+
+  /**
+   * Parser classes should, at the very least, implement a `.parse()` method
+   * that accepts an array of input data objects and returns the parsed
+   * Words/Links/Clusters:
+   *
+   *   {
+   *     tokens: [...],
+   *     links: [...],
+   *   };
+
+   */
+  const OdinParser = require("../../Parsers/odin");
+  const BratParser = require("../../Parsers/brat");
+  TAG.registerParser(new OdinParser(), "odin");
+  TAG.registerParser(new BratParser(), "brat");
 
   // -------------
   // Basic example
@@ -118,9 +142,7 @@ $(async () => {
   // displayed asynchronously.
   $("#tag-upload-input").on("change", (event) => {
     // Show the names of the selected files
-    const names =
-      _.map(event.target.files, file => file.name)
-        .join(", ");
+    const names = _.map(event.target.files, (file) => file.name).join(", ");
     $("#tag-upload-label").text(names);
   });
   // Upload them when the user confirms the selection
@@ -137,7 +159,11 @@ $(async () => {
 
       const $modal = $("#tag-upload");
 
-      $modal.wrap("<form>").closest("form").get(0).reset();
+      $modal
+        .wrap("<form>")
+        .closest("form")
+        .get(0)
+        .reset();
       $modal.unwrap();
       $("#tag-upload-label").text("Choose file(s)");
 
@@ -151,7 +177,6 @@ $(async () => {
   // various advanced options.
   // There are also some direct functions available that directly modify the
   // visualisation, like `.setTopLinkCategory()` and `.setBottomLinkCategory()`
-
 
   /**
    * The categories available for the top and bottom Links/tags depends on the
@@ -253,10 +278,7 @@ $(async () => {
   $optionCompact
     .prop("checked", uiTag.getOption("compactRows"))
     .on("change", () => {
-      uiTag.setOption(
-        "compactRows",
-        $optionCompact[0].checked
-      );
+      uiTag.setOption("compactRows", $optionCompact[0].checked);
       uiTag.draw();
     });
 
@@ -264,10 +286,7 @@ $(async () => {
   $optionTopLinksOnMove
     .prop("checked", uiTag.getOption("showTopLinksOnMove"))
     .on("change", () => {
-      uiTag.setOption(
-        "showTopLinksOnMove",
-        $optionTopLinksOnMove[0].checked
-      );
+      uiTag.setOption("showTopLinksOnMove", $optionTopLinksOnMove[0].checked);
     });
   const $optionBottomLinksOnMove = $("#tag-option-bottom-links-on-move");
   $optionBottomLinksOnMove
@@ -329,7 +348,6 @@ $(async () => {
     uiTag.setOption("linkSlotInterval", newValue);
     uiTag.draw();
   });
-
 
   // --------------------------------------------------------------------------
 
@@ -456,54 +474,54 @@ $(async () => {
   // us to tweak the taxonomy on the fly
 
   // A simple editor allowing the user to edit the taxonomy directly
-  const editor = new CodeFlask("#tag-taxonomy-editor", {language: "yaml"});
+  const editor = new CodeFlask("#tag-taxonomy-editor", { language: "yaml" });
 
   // Copying the Prism YAML syntax definition here for syntax highlighting,
   // since CodeFlask can't load it automatically
   editor.addLanguage("yaml", {
-    "scalar": {
+    scalar: {
       pattern: /([\-:]\s*(?:![^\s]+)?[ \t]*[|>])[ \t]*(?:((?:\r?\n|\r)[ \t]+)[^\r\n]+(?:\2[^\r\n]+)*)/,
       lookbehind: true,
       alias: "string"
     },
-    "comment": /#.*/,
-    "key": {
+    comment: /#.*/,
+    key: {
       pattern: /(\s*(?:^|[:\-,[{\r\n?])[ \t]*(?:![^\s]+)?[ \t]*)[^\r\n{[\]},#\s]+?(?=\s*:\s)/,
       lookbehind: true,
       alias: "atrule"
     },
-    "directive": {
+    directive: {
       pattern: /(^[ \t]*)%.+/m,
       lookbehind: true,
       alias: "important"
     },
-    "datetime": {
+    datetime: {
       pattern: /([:\-,[{]\s*(?:![^\s]+)?[ \t]*)(?:\d{4}-\d\d?-\d\d?(?:[tT]|[ \t]+)\d\d?:\d{2}:\d{2}(?:\.\d*)?[ \t]*(?:Z|[-+]\d\d?(?::\d{2})?)?|\d{4}-\d{2}-\d{2}|\d\d?:\d{2}(?::\d{2}(?:\.\d*)?)?)(?=[ \t]*(?:$|,|]|}))/m,
       lookbehind: true,
       alias: "number"
     },
-    "boolean": {
+    boolean: {
       pattern: /([:\-,[{]\s*(?:![^\s]+)?[ \t]*)(?:true|false)[ \t]*(?=$|,|]|})/im,
       lookbehind: true,
       alias: "important"
     },
-    "null": {
+    null: {
       pattern: /([:\-,[{]\s*(?:![^\s]+)?[ \t]*)(?:null|~)[ \t]*(?=$|,|]|})/im,
       lookbehind: true,
       alias: "important"
     },
-    "string": {
+    string: {
       pattern: /([:\-,[{]\s*(?:![^\s]+)?[ \t]*)("|')(?:(?!\2)[^\\\r\n]|\\.)*\2(?=[ \t]*(?:$|,|]|}))/m,
       lookbehind: true,
       greedy: true
     },
-    "number": {
+    number: {
       pattern: /([:\-,[{]\s*(?:![^\s]+)?[ \t]*)[+-]?(?:0x[\da-f]+|0o[0-7]+|(?:\d+\.?\d*|\.?\d+)(?:e[+-]?\d+)?|\.inf|\.nan)[ \t]*(?=$|,|]|})/im,
       lookbehind: true
     },
-    "tag": /![^\s]+/,
-    "important": /[&*][\w]+/,
-    "punctuation": /---|[:[\]{}\-,|>?]|\.\.\./
+    tag: /![^\s]+/,
+    important: /[&*][\w]+/,
+    punctuation: /---|[:[\]{}\-,|>?]|\.\.\./
   });
 
   $("#tag-taxonomy-stop-edit").on("click", () => {
@@ -535,7 +553,6 @@ $(async () => {
   // --------------------------------------------------------------------------
 
   // Debug
-  window._ = require("lodash");
   window.basicTag = basicTag;
   window.uiTag = uiTag;
   window.editor = editor;

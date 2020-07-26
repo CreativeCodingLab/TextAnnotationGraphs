@@ -6,14 +6,17 @@ import _ from "lodash";
 import $ from "jquery";
 import * as SVG from "svg.js";
 
-import Parser from "./parse/parse.js";
-import RowManager from "./managers/rowmanager.js";
-import LabelManager from "./managers/labelmanager.js";
-import Taxonomy from "./managers/taxonomy.js";
+import RowManager from "./managers/rowmanager";
+import LabelManager from "./managers/labelmanager";
+import Taxonomy from "./managers/taxonomy";
 
-import Config from "./config.js";
+import Config from "./config";
 
-import Util from "./util.js";
+import Util from "./util";
+
+import Word from "./components/word";
+import WordCluster from "./components/word-cluster";
+import Link from "./components/link";
 
 /**
  * Take a small performance hit from `autobind` to ensure that the scope of
@@ -29,13 +32,11 @@ class Main {
    *     ID of the container element, or the element itself (as a
    *     native/jQuery object)
    * @param {Object} options - Overrides for default library options
+   * @param {Object} parsers - Registered parsers for various annotation formats
    */
-  constructor(container, options = {}) {
+  constructor(container, options = {}, parsers = {}) {
     // Config options
-    this.config = _.defaults(
-      options,
-      new Config()
-    );
+    this.config = _.defaults(options, new Config());
 
     // SVG.Doc expects either a string with the element's ID, or the element
     // itself (not a jQuery object).
@@ -51,10 +52,12 @@ class Main {
     this.$container = $(this.svg.node).parent();
 
     // Managers/Components
-    this.parser = new Parser();
     this.rowManager = new RowManager(this.svg, this.config);
     this.labelManager = new LabelManager(this.svg);
     this.taxonomyManager = new Taxonomy(this.config);
+
+    // Registered Parsers
+    this.parsers = parsers;
 
     // Tokens and links that are currently drawn on the visualisation
     this.words = [];
@@ -71,13 +74,23 @@ class Main {
 
   /**
    * Loads the given annotation data onto the TAG visualisation
-   * @param {Object} data - The data to load
+   * @param {Array} dataObjects - The raw annotation data object(s) to load
    * @param {String} format - One of the supported format identifiers for
    *     the data
    */
-  loadData(data, format) {
-    this.parser.loadData(data, format);
-    this.redraw();
+  loadData(dataObjects, format) {
+    // 1) Remove any currently-loaded data
+    // 2) Parse the new data
+    // 3) Hand-off the parsed data to the SVG initialisation procedure
+
+    if (!_.has(this.parsers, format)) {
+      throw `No parser registered for annotation format: ${format}`;
+    }
+
+    this.clear();
+    const parsedData = this.parsers[format].parse(dataObjects);
+    this.init(parsedData);
+    this.draw();
   }
 
   /**
@@ -89,8 +102,7 @@ class Main {
    */
   async loadUrlAsync(path, format) {
     const data = await $.ajax(path);
-    this.parser.loadData(data, format);
-    this.redraw();
+    this.loadData([data], format);
   }
 
   /**
@@ -118,8 +130,7 @@ class Main {
     });
 
     const files = await Promise.all(readPromises);
-    this.parser.loadFiles(files, format);
-    this.redraw();
+    this.loadData(files, format);
   }
 
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -129,12 +140,92 @@ class Main {
    * Prepares all the Rows/Words/Links.
    * Adds all Words/WordClusters to Rows in the visualisation, but does not draw
    * Links or colour the various Words/WordTags
+   * @param {Object} parsedData
    */
-  init() {
-    // Save a reference to the currently loaded tokens and links
-    const data = this.parser.getParsedData();
-    this.words = data.words;
-    this.links = data.links;
+  init(parsedData) {
+    // Convert the parsed data into visualisation objects (by adding
+    // SVG/visualisation-related data and methods)
+    // TODO: Refactor the Word/WordTag/WordCluster/Link system instead of
+    //  patching it here.
+
+    // Tokens -> Words
+    // Labels -> WordTags
+    // Records LongLabels to convert later.
+    this.words = [];
+    const longLabels = [];
+    parsedData.tokens.forEach((token) => {
+      // Basic
+      const word = new Word(token.text, token.idx);
+      this.words.push(word);
+
+      _.forOwn(token.registeredLabels, (label, category) => {
+        if (_.has(label, "token")) {
+          // Label
+          word.registerTag(category, label.val);
+        } else if (_.has(label, "tokens")) {
+          // LongLabel
+          if (longLabels.indexOf(label) < 0) {
+            longLabels.push(label);
+          }
+        }
+      });
+    });
+
+    // LongLabels -> WordClusters
+    // (via back-references)
+    // N.B.: Assumes that the `.idx` property of each Word is equal to its
+    // index in `this.words`.
+    longLabels.forEach((longLabel) => {
+      const labelWords = [];
+      for (let x = 0; x < longLabel.tokens.length; x++) {
+        const wordIdx = longLabel.tokens[x].idx;
+        labelWords.push(this.words[wordIdx]);
+      }
+      new WordCluster(labelWords, longLabel.val);
+    });
+
+    // Links
+    // Arguments might be Tokens or (Parser) Links; convert them to Words
+    // and Links.
+    // N.B.: Assumes that nested Links are parsed earlier in the array.
+    this.links = [];
+    const linksById = {};
+    parsedData.links.forEach((link) => {
+      let newTrigger = null;
+      const newArgs = [];
+
+      if (link.trigger) {
+        // Assume the trigger is a Token
+        newTrigger = this.words[link.trigger.idx];
+      }
+
+      // noinspection JSAnnotator
+      link.arguments.forEach((arg) => {
+        if (arg.anchor.type === "Token") {
+          newArgs.push({
+            anchor: this.words[arg.anchor.idx],
+            type: arg.type
+          });
+        } else if (arg.anchor.type === "Link") {
+          newArgs.push({
+            anchor: linksById[arg.anchor.eventId],
+            type: arg.type
+          });
+        }
+      });
+
+      const newLink = new Link(
+        link.eventId,
+        newTrigger,
+        newArgs,
+        link.relType,
+        link.category === "default",
+        link.category
+      );
+
+      this.links.push(newLink);
+      linksById[newLink.eventId] = newLink;
+    });
 
     // Calculate the Link slots (vertical intervals to separate
     // crossing/intervening Links).
@@ -142,7 +233,7 @@ class Main {
     // we sort it here first in case they aren't sorted in the original
     // annotation data.
     this.links = Util.sortForSlotting(this.links);
-    this.links.forEach(link => link.calculateSlot(this.words));
+    this.links.forEach((link) => link.calculateSlot(this.words));
 
     // Initialise the first Row; new ones will be added automatically as
     // Words are drawn onto the visualisation
@@ -151,7 +242,7 @@ class Main {
     }
 
     // Draw the Words onto the visualisation
-    this.words.forEach(word => {
+    this.words.forEach((word) => {
       // If the tag categories to show for the Word are already set (via the
       // default config or user options), set them here so that the Word can
       // draw them directly on init
@@ -163,7 +254,7 @@ class Main {
 
     // We have to initialise all the Links before we draw any of them, to
     // account for nested Links etc.
-    this.links.forEach(link => {
+    this.links.forEach((link) => {
       link.init(this);
     });
   }
@@ -174,21 +265,27 @@ class Main {
    */
   draw() {
     // Draw in the currently toggled Links
-    this.links.forEach(link => {
-      if ((link.top && link.category === this.config.topLinkCategory) ||
-        (!link.top && link.category === this.config.bottomLinkCategory)) {
+    this.links.forEach((link) => {
+      if (
+        (link.top && link.category === this.config.topLinkCategory) ||
+        (!link.top && link.category === this.config.bottomLinkCategory)
+      ) {
         link.show();
       }
 
-      if ((link.top && this.config.showTopMainLabel) ||
-        (!link.top && this.config.showBottomMainLabel)) {
+      if (
+        (link.top && this.config.showTopMainLabel) ||
+        (!link.top && this.config.showBottomMainLabel)
+      ) {
         link.showMainLabel();
       } else {
         link.hideMainLabel();
       }
 
-      if ((link.top && this.config.showTopArgLabels) ||
-        (!link.top && this.config.showBottomArgLabels)) {
+      if (
+        (link.top && this.config.showTopArgLabels) ||
+        (!link.top && this.config.showBottomArgLabels)
+      ) {
         link.showArgLabels();
       } else {
         link.hideArgLabels();
@@ -199,7 +296,7 @@ class Main {
     this.rowManager.resizeAll();
 
     // And change the Row resize cursor if compact mode is on
-    this.rowManager.rows.forEach(row => {
+    this.rowManager.rows.forEach((row) => {
       this.config.compactRows
         ? row.draggable.addClass("row-drag-compact")
         : row.draggable.removeClass("row-drag-compact");
@@ -218,22 +315,12 @@ class Main {
       this.rowManager.removeLastRow();
     }
     // Links and Clusters are drawn directly on the main SVG document
-    this.links.forEach(link => link.svg && link.svg.remove());
-    this.words.forEach(word => {
-      word.clusters.forEach(cluster => cluster.remove());
+    this.links.forEach((link) => link.svg && link.svg.remove());
+    this.words.forEach((word) => {
+      word.clusters.forEach((cluster) => cluster.remove());
     });
     // Reset colours
     this.taxonomyManager.resetDefaultColours();
-  }
-
-  /**
-   * Resets and redraws the visualisation using the data currently stored by the
-   * Parser (if any)
-   */
-  redraw() {
-    this.clear();
-    this.init();
-    this.draw();
   }
 
   /**
@@ -331,9 +418,12 @@ class Main {
     );
 
     const i = exportedSVG.indexOf("</defs>");
-    exportedSVG = exportedSVG.slice(0, i)
-      + "<style>" + svgRules.join("\n") + "</style>"
-      + exportedSVG.slice(i);
+    exportedSVG =
+      exportedSVG.slice(0, i) +
+      "<style>" +
+      svgRules.join("\n") +
+      "</style>" +
+      exportedSVG.slice(i);
 
     // Create a virtual download link and simulate a click on it (using the
     // native `.click()` method, since jQuery cannot `.trigger()` it
@@ -368,8 +458,8 @@ class Main {
    */
   getTopLinkCategories() {
     const categories = this.links
-      .filter(link => link.top)
-      .map(link => link.category);
+      .filter((link) => link.top)
+      .map((link) => link.category);
 
     return _.uniq(categories);
   }
@@ -381,8 +471,8 @@ class Main {
   setTopLinkCategory(category) {
     this.setOption("topLinkCategory", category);
     this.links
-      .filter(link => link.top)
-      .forEach(link => {
+      .filter((link) => link.top)
+      .forEach((link) => {
         if (link.category === category) {
           link.show();
         } else {
@@ -400,8 +490,8 @@ class Main {
    */
   getBottomLinkCategories() {
     const categories = this.links
-      .filter(link => !link.top)
-      .map(link => link.category);
+      .filter((link) => !link.top)
+      .map((link) => link.category);
 
     return _.uniq(categories);
   }
@@ -413,8 +503,8 @@ class Main {
   setBottomLinkCategory(category) {
     this.setOption("bottomLinkCategory", category);
     this.links
-      .filter(link => !link.top)
-      .forEach(link => {
+      .filter((link) => !link.top)
+      .forEach((link) => {
         if (link.category === category) {
           link.show();
         } else {
@@ -431,8 +521,7 @@ class Main {
    * (Generally, text-bound mentions)
    */
   getTagCategories() {
-    const categories = this.words
-      .flatMap(word => word.getTagCategories());
+    const categories = this.words.flatMap((word) => word.getTagCategories());
     return _.uniq(categories);
   }
 
@@ -442,9 +531,9 @@ class Main {
    */
   setTopTagCategory(category) {
     this.setOption("topTagCategory", category);
-    this.words.forEach(word => {
+    this.words.forEach((word) => {
       word.setTopTagCategory(category);
-      word.passingLinks.forEach(link => link.draw());
+      word.passingLinks.forEach((link) => link.draw());
     });
 
     // (Re-)colour the labels
@@ -460,9 +549,9 @@ class Main {
    */
   setBottomTagCategory(category) {
     this.setOption("bottomTagCategory", category);
-    this.words.forEach(word => {
+    this.words.forEach((word) => {
       word.setBottomTagCategory(category);
-      word.passingLinks.forEach(link => link.draw());
+      word.passingLinks.forEach((link) => link.draw());
     });
 
     // Always resize when the set of visible Links may have changed
@@ -477,12 +566,12 @@ class Main {
     this.setOption("showTopMainLabel", visible);
     if (visible) {
       this.links
-        .filter(link => link.top)
-        .forEach(link => link.showMainLabel());
+        .filter((link) => link.top)
+        .forEach((link) => link.showMainLabel());
     } else {
       this.links
-        .filter(link => link.top)
-        .forEach(link => link.hideMainLabel());
+        .filter((link) => link.top)
+        .forEach((link) => link.hideMainLabel());
     }
   }
 
@@ -494,12 +583,12 @@ class Main {
     this.setOption("showTopArgLabels", visible);
     if (visible) {
       this.links
-        .filter(link => link.top)
-        .forEach(link => link.showArgLabels());
+        .filter((link) => link.top)
+        .forEach((link) => link.showArgLabels());
     } else {
       this.links
-        .filter(link => link.top)
-        .forEach(link => link.hideArgLabels());
+        .filter((link) => link.top)
+        .forEach((link) => link.hideArgLabels());
     }
   }
 
@@ -511,12 +600,12 @@ class Main {
     this.setOption("showBottomMainLabel", visible);
     if (visible) {
       this.links
-        .filter(link => !link.top)
-        .forEach(link => link.showMainLabel());
+        .filter((link) => !link.top)
+        .forEach((link) => link.showMainLabel());
     } else {
       this.links
-        .filter(link => !link.top)
-        .forEach(link => link.hideMainLabel());
+        .filter((link) => !link.top)
+        .forEach((link) => link.hideMainLabel());
     }
   }
 
@@ -528,12 +617,12 @@ class Main {
     this.setOption("showBottomArgLabels", visible);
     if (visible) {
       this.links
-        .filter(link => !link.top)
-        .forEach(link => link.showArgLabels());
+        .filter((link) => !link.top)
+        .forEach((link) => link.showArgLabels());
     } else {
       this.links
-        .filter(link => !link.top)
-        .forEach(link => link.hideArgLabels());
+        .filter((link) => !link.top)
+        .forEach((link) => link.hideArgLabels());
     }
   }
 
@@ -561,9 +650,11 @@ class Main {
     // });
 
     this.svg.on("word-move-start", () => {
-      this.links.forEach(link => {
-        if ((link.top && !this.config.showTopLinksOnMove) ||
-          (!link.top && !this.config.showBottomLinksOnMove)) {
+      this.links.forEach((link) => {
+        if (
+          (link.top && !this.config.showTopLinksOnMove) ||
+          (!link.top && !this.config.showBottomLinksOnMove)
+        ) {
           link.hide();
         }
       });
@@ -576,9 +667,11 @@ class Main {
     });
 
     this.svg.on("word-move-end", () => {
-      this.links.forEach(link => {
-        if ((link.top && link.category === this.config.topLinkCategory) ||
-          (!link.top && link.category === this.config.bottomLinkCategory)) {
+      this.links.forEach((link) => {
+        if (
+          (link.top && link.category === this.config.topLinkCategory) ||
+          (!link.top && link.category === this.config.bottomLinkCategory)
+        ) {
           link.show();
         }
       });
@@ -622,19 +715,22 @@ class Main {
    */
   _setupUIListeners() {
     // Browser window resize
-    $(window).on("resize", _.throttle(() => {
-      this.resize();
-    }, 50));
+    $(window).on(
+      "resize",
+      _.throttle(() => {
+        this.resize();
+      }, 50)
+    );
   }
 
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // Debug functions
   xLine(x) {
-    this.svg.line(x, 0, x, 1000).stroke({width: 1});
+    this.svg.line(x, 0, x, 1000).stroke({ width: 1 });
   }
 
   yLine(y) {
-    this.svg.line(0, y, 1000, y).stroke({width: 1});
+    this.svg.line(0, y, 1000, y).stroke({ width: 1 });
   }
 }
 

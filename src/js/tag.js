@@ -3,6 +3,11 @@
  */
 
 import Main from "./main";
+import _ from "lodash";
+
+// Parsers for the various annotation formats will be registered with the
+// main library, and will be inherited by individual TAG instances.
+const parsers = {};
 
 /**
  * Initialises a TAG visualisation on the given element.
@@ -26,19 +31,35 @@ function tag(params) {
     params.options = {};
   }
 
-  const instance = new Main(params.container, params.options);
+  const instance = new Main(params.container, params.options, parsers);
 
   // Initial data load
   if (params.data && params.format) {
-    instance.loadData(params.data, params.format);
+    instance.loadData([params.data], params.format);
   }
   return instance;
 }
 
+/**
+ * Registers the parser for a new annotation format.
+ * @param {Object} parser - Parser object.
+ * @param {String} format - Identifier for the annotation format
+ *     associated with this parser.
+ */
+function registerParser(parser, format) {
+  if (_.has(parsers, format)) {
+    throw "There is already a Parser registered for the given format.";
+  }
+
+  parsers[format] = parser;
+}
+
 // ES6 and CommonJS compatibility
 export default {
-  tag
+  tag,
+  registerParser
 };
 module.exports = {
-  tag
+  tag,
+  registerParser
 };

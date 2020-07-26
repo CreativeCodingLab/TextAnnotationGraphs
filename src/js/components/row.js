@@ -13,15 +13,15 @@ class Row {
     this.config = config;
 
     this.idx = idx;
-    this.ry = ry;     // row position from top
-    this.rh = rh;     // row height
+    this.ry = ry; // row position from top
+    this.rh = rh; // row height
     this.rw = 0;
     this.words = [];
 
     // svg elements
-    this.svg = null;    // group
-    this.draggable = null;  // row resizer
-    this.wordGroup = null;  // child group element
+    this.svg = null; // group
+    this.draggable = null; // row resizer
+    this.wordGroup = null; // child group element
 
     // The last Word we removed, if any.
     // In case we have a Row with no Words left but which still has Links
@@ -40,8 +40,9 @@ class Row {
    */
   svgInit(mainSvg) {
     // All positions will be relative to the baseline for this Row
-    this.svg = mainSvg.group()
-      .transform({y: this.baseline})
+    this.svg = mainSvg
+      .group()
+      .transform({ y: this.baseline })
       .addClass("tag-element")
       .addClass("row");
 
@@ -52,21 +53,22 @@ class Row {
     this.rw = mainSvg.width();
 
     // Add draggable resize line
-    this.draggable = this.svg.line(0, 0, this.rw, 0)
+    this.draggable = this.svg
+      .line(0, 0, this.rw, 0)
       .addClass("tag-element")
       .addClass("row-drag")
       .draggable();
 
     let y = 0;
     this.draggable
-      .on("dragstart", function (e) {
+      .on("dragstart", function(e) {
         y = e.detail.p.y;
       })
       .on("dragmove", (e) => {
         e.preventDefault();
         let dy = e.detail.p.y - y;
         y = e.detail.p.y;
-        mainSvg.fire("row-resize", {object: this, y: dy});
+        mainSvg.fire("row-resize", { object: this, y: dy });
       });
   }
 
@@ -84,7 +86,7 @@ class Row {
    */
   dy(y) {
     this.ry += y;
-    this.svg.transform({y: this.baseline});
+    this.svg.transform({ y: this.baseline });
   }
 
   /**
@@ -93,7 +95,7 @@ class Row {
    */
   move(y) {
     this.ry = y;
-    this.svg.transform({y: this.baseline});
+    this.svg.transform({ y: this.baseline });
   }
 
   /**
@@ -102,7 +104,7 @@ class Row {
    */
   height(rh) {
     this.rh = rh;
-    this.svg.transform({y: this.baseline});
+    this.svg.transform({ y: this.baseline });
   }
 
   /**
@@ -155,7 +157,6 @@ class Row {
     }
 
     return this.positionWord(word, newX);
-
   }
 
   /**
@@ -259,7 +260,7 @@ class Row {
         }
       }
     }
-    elements.forEach(element => element.draw());
+    elements.forEach((element) => element.draw());
   }
 
   /**
@@ -382,10 +383,7 @@ class Row {
     for (const word of checkWords) {
       for (const link of word.links.concat(word.passingLinks)) {
         if (link.top && link.visible) {
-          maxVisibleSlot = Math.max(
-            maxVisibleSlot,
-            link.slot
-          );
+          maxVisibleSlot = Math.max(maxVisibleSlot, link.slot);
         }
       }
     }
@@ -393,9 +391,11 @@ class Row {
     // Because top Link labels are above the Link lines, we need to add
     // their height if any of the Words on this Row is an endpoint for a Link
     if (maxVisibleSlot > 0) {
-      return height +
+      return (
+        height +
         maxVisibleSlot * this.config.linkSlotInterval +
-        this.config.rowExtraTopPadding;
+        this.config.rowExtraTopPadding
+      );
     }
 
     // Still here?  No visible top Links on this row.
@@ -424,10 +424,7 @@ class Row {
     for (const word of checkWords) {
       for (const link of word.links.concat(word.passingLinks)) {
         if (!link.top && link.visible) {
-          minVisibleSlot = Math.min(
-            minVisibleSlot,
-            link.slot
-          );
+          minVisibleSlot = Math.min(minVisibleSlot, link.slot);
         }
       }
     }
@@ -453,7 +450,9 @@ class Row {
     }
 
     const lastWord = this.words[this.words.length - 1];
-    return this.rw - this.config.rowEdgePadding - lastWord.x - lastWord.minWidth;
+    return (
+      this.rw - this.config.rowEdgePadding - lastWord.x - lastWord.minWidth
+    );
   }
 
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -463,11 +462,16 @@ class Row {
    */
   drawBbox() {
     const bbox = this.svg.bbox();
-    this.svg.polyline([
-      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
-      [bbox.x, bbox.y]])
+    this.svg
+      .polyline([
+        [bbox.x, bbox.y],
+        [bbox.x2, bbox.y],
+        [bbox.x2, bbox.y2],
+        [bbox.x, bbox.y2],
+        [bbox.x, bbox.y]
+      ])
       .fill("none")
-      .stroke({width: 1});
+      .stroke({ width: 1 });
   }
 }
 

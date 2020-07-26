@@ -177,14 +177,16 @@ class Word {
 
     const mainSvg = main.svg;
 
-    this.svg = mainSvg.group()
+    this.svg = mainSvg
+      .group()
       .addClass("tag-element")
       .addClass("word");
 
     // Draw main word text.  We remove the default additional leading
     // (basically vertical line-height padding) so that we can position it
     // more precisely.
-    this.svgText = this.svg.text(this.text)
+    this.svgText = this.svg
+      .text(this.text)
       .addClass("tag-element")
       .addClass("word-text")
       .leading(1);
@@ -233,8 +235,9 @@ class Word {
     // Attach drag listeners
     let x = 0;
     let mousemove = false;
-    this.svgText.draggable()
-      .on("dragstart", function (e) {
+    this.svgText
+      .draggable()
+      .on("dragstart", function(e) {
         mousemove = false;
         x = e.detail.p.x;
         mainSvg.fire("word-move-start");
@@ -243,7 +246,7 @@ class Word {
         e.preventDefault();
         let dx = e.detail.p.x - x;
         x = e.detail.p.x;
-        mainSvg.fire("word-move", {object: this, x: dx});
+        mainSvg.fire("word-move", { object: this, x: dx });
         if (dx !== 0) {
           mousemove = true;
         }
@@ -255,13 +258,15 @@ class Word {
         });
       });
     // attach right click listener
-    this.svgText.dblclick((e) => mainSvg.fire("build-tree", {
-      object: this,
-      event: e
-    }));
+    this.svgText.dblclick((e) =>
+      mainSvg.fire("build-tree", {
+        object: this,
+        event: e
+      })
+    );
     this.svgText.node.oncontextmenu = (e) => {
       e.preventDefault();
-      mainSvg.fire("word-right-click", {object: this, event: e});
+      mainSvg.fire("word-right-click", { object: this, event: e });
     };
 
     this.initialised = true;
@@ -271,7 +276,7 @@ class Word {
    * Redraw Links
    */
   redrawLinks() {
-    this.links.forEach(l => l.draw(this));
+    this.links.forEach((l) => l.draw(this));
     this.redrawClusters();
   }
 
@@ -279,7 +284,7 @@ class Word {
    * Redraw all clusters (they should always be visible)
    */
   redrawClusters() {
-    this.clusters.forEach(cluster => {
+    this.clusters.forEach((cluster) => {
       if (cluster.endpoints.indexOf(this) > -1) {
         cluster.draw();
       }
@@ -293,7 +298,7 @@ class Word {
    */
   move(x) {
     this.x = x;
-    this.svg.transform({x: this.x});
+    this.svg.transform({ x: this.x });
     this.redrawLinks();
   }
 
@@ -315,7 +320,7 @@ class Word {
     // We begin by resetting the position of the Text elements of this Word
     // and any WordTags, so that consecutive calls to `.alignBox()` don't
     // push them further and further away from their starting point
-    this.svgText.attr({x: 0, y: 0});
+    this.svgText.attr({ x: 0, y: 0 });
     const currentBox = this.svgText.bbox();
     this.svgText.move(-currentBox.x, -currentBox.height);
     this._textBbox = this.svgText.bbox();
@@ -383,8 +388,9 @@ class Word {
       }
 
       const wordWidth =
-        cluster.endpoints[1].x + cluster.endpoints[1].boxWidth
-        - cluster.endpoints[0].x;
+        cluster.endpoints[1].x +
+        cluster.endpoints[1].boxWidth -
+        cluster.endpoints[0].x;
 
       const labelWidth = cluster.svgText.bbox().width;
 
@@ -393,7 +399,6 @@ class Word {
         // a bit of extra width to this Word
         minWidth = Math.max(minWidth, labelWidth / cluster.words.length);
       }
-
     }
     return minWidth;
   }
@@ -423,9 +428,7 @@ class Word {
    * @return {Number}
    */
   get absoluteY() {
-    return this.row
-      ? this.row.baseline - this.boxHeight
-      : this.boxHeight;
+    return this.row ? this.row.baseline - this.boxHeight : this.boxHeight;
   }
 
   /**
@@ -478,7 +481,7 @@ class Word {
    * @return {Boolean}
    */
   get isPunct() {
-    return (this.text.length === 1 && this.text.charCodeAt(0) < 65);
+    return this.text.length === 1 && this.text.charCodeAt(0) < 65;
   }
 
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -488,11 +491,16 @@ class Word {
    */
   drawBbox() {
     const bbox = this.svg.bbox();
-    this.svg.polyline([
-      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
-      [bbox.x, bbox.y]])
+    this.svg
+      .polyline([
+        [bbox.x, bbox.y],
+        [bbox.x2, bbox.y],
+        [bbox.x2, bbox.y2],
+        [bbox.x, bbox.y2],
+        [bbox.x, bbox.y]
+      ])
       .fill("none")
-      .stroke({width: 1});
+      .stroke({ width: 1 });
   }
 
   /**
@@ -500,11 +508,16 @@ class Word {
    */
   drawTextBbox() {
     const bbox = this.svgText.bbox();
-    this.svg.polyline([
-      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
-      [bbox.x, bbox.y]])
+    this.svg
+      .polyline([
+        [bbox.x, bbox.y],
+        [bbox.x2, bbox.y],
+        [bbox.x2, bbox.y2],
+        [bbox.x, bbox.y2],
+        [bbox.x, bbox.y]
+      ])
       .fill("none")
-      .stroke({width: 1});
+      .stroke({ width: 1 });
   }
 }
 

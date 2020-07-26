@@ -2,60 +2,92 @@
   font-family: "Avenir Next W01";
   font-style: normal;
   font-weight: 600;
-  src: url("https://fast.fonts.net/dv2/14/14c73713-e4df-4dba-933b-057feeac8dd1.woff2?d44f19a684109620e484167ba790e8180fd9e29df91d80ce3d096f014db863074e1ea706cf5ed4e1c042492e76df291ce1d24ec684d3d9da9684f55406b9f22bce02f0f30f556681593dafea074d7bd44e28a680d083ccfd44ed4f8a3087a20c56147c11f917ed1dbd85c4a18cf38da25e6ac78f008f472262304d50e7e0cb7541ef1642c676db6e4bde4924846f5daf486fbde9335e98f6a20f6664bc4525253d1d4fca42cf1c490483c8daf0237f6a0fd292563417ad80ca3e69321417747bdc6f0969f34b2a0401b5e2b9a4dfd5b06d9710850900c66b34870aef&projectId=f750d5c7-baa2-4767-afd7-45484f47fe17") format('woff2');
+  src: url("https://fast.fonts.net/dv2/14/14c73713-e4df-4dba-933b-057feeac8dd1.woff2?d44f19a684109620e484167ba790e8180fd9e29df91d80ce3d096f014db863074e1ea706cf5ed4e1c042492e76df291ce1d24ec684d3d9da9684f55406b9f22bce02f0f30f556681593dafea074d7bd44e28a680d083ccfd44ed4f8a3087a20c56147c11f917ed1dbd85c4a18cf38da25e6ac78f008f472262304d50e7e0cb7541ef1642c676db6e4bde4924846f5daf486fbde9335e98f6a20f6664bc4525253d1d4fca42cf1c490483c8daf0237f6a0fd292563417ad80ca3e69321417747bdc6f0969f34b2a0401b5e2b9a4dfd5b06d9710850900c66b34870aef&projectId=f750d5c7-baa2-4767-afd7-45484f47fe17")
+    format("woff2");
 }
 
 @font-face {
   font-family: "Avenir Next W01";
   font-style: normal;
   font-weight: 500;
-  src: url("https://fast.fonts.net/dv2/14/627fbb5a-3bae-4cd9-b617-2f923e29d55e.woff2?d44f19a684109620e484167ba790e8180fd9e29df91d80ce3d096f014db863074e1ea706cf5ed4e1c042492e76df291ce1d24ec684d3d9da9684f55406b9f22bce02f0f30f556681593dafea074d7bd44e28a680d083ccfd44ed4f8a3087a20c56147c11f917ed1dbd85c4a18cf38da25e6ac78f008f472262304d50e7e0cb7541ef1642c676db6e4bde4924846f5daf486fbde9335e98f6a20f6664bc4525253d1d4fca42cf1c490483c8daf0237f6a0fd292563417ad80ca3e69321417747bdc6f0969f34b2a0401b5e2b9a4dfd5b06d9710850900c66b34870aef&projectId=f750d5c7-baa2-4767-afd7-45484f47fe17") format('woff2');
+  src: url("https://fast.fonts.net/dv2/14/627fbb5a-3bae-4cd9-b617-2f923e29d55e.woff2?d44f19a684109620e484167ba790e8180fd9e29df91d80ce3d096f014db863074e1ea706cf5ed4e1c042492e76df291ce1d24ec684d3d9da9684f55406b9f22bce02f0f30f556681593dafea074d7bd44e28a680d083ccfd44ed4f8a3087a20c56147c11f917ed1dbd85c4a18cf38da25e6ac78f008f472262304d50e7e0cb7541ef1642c676db6e4bde4924846f5daf486fbde9335e98f6a20f6664bc4525253d1d4fca42cf1c490483c8daf0237f6a0fd292563417ad80ca3e69321417747bdc6f0969f34b2a0401b5e2b9a4dfd5b06d9710850900c66b34870aef&projectId=f750d5c7-baa2-4767-afd7-45484f47fe17")
+    format("woff2");
 }
 
 @font-face {
   font-family: "Avenir Next W01";
   font-style: normal;
   font-weight: 400;
-  src: url("https://fast.fonts.net/dv2/14/2cd55546-ec00-4af9-aeca-4a3cd186da53.woff2?d44f19a684109620e484167ba790e8180fd9e29df91d80ce3d096f014db863074e1ea706cf5ed4e1c042492e76df291ce1d24ec684d3d9da9684f55406b9f22bce02f0f30f556681593dafea074d7bd44e28a680d083ccfd44ed4f8a3087a20c56147c11f917ed1dbd85c4a18cf38da25e6ac78f008f472262304d50e7e0cb7541ef1642c676db6e4bde4924846f5daf486fbde9335e98f6a20f6664bc4525253d1d4fca42cf1c490483c8daf0237f6a0fd292563417ad80ca3e69321417747bdc6f0969f34b2a0401b5e2b9a4dfd5b06d9710850900c66b34870aef&projectId=f750d5c7-baa2-4767-afd7-45484f47fe17") format('woff2');
+  src: url("https://fast.fonts.net/dv2/14/2cd55546-ec00-4af9-aeca-4a3cd186da53.woff2?d44f19a684109620e484167ba790e8180fd9e29df91d80ce3d096f014db863074e1ea706cf5ed4e1c042492e76df291ce1d24ec684d3d9da9684f55406b9f22bce02f0f30f556681593dafea074d7bd44e28a680d083ccfd44ed4f8a3087a20c56147c11f917ed1dbd85c4a18cf38da25e6ac78f008f472262304d50e7e0cb7541ef1642c676db6e4bde4924846f5daf486fbde9335e98f6a20f6664bc4525253d1d4fca42cf1c490483c8daf0237f6a0fd292563417ad80ca3e69321417747bdc6f0969f34b2a0401b5e2b9a4dfd5b06d9710850900c66b34870aef&projectId=f750d5c7-baa2-4767-afd7-45484f47fe17")
+    format("woff2");
 }
 
 @font-face {
-  font-family: 'bt_mono';
+  font-family: "bt_mono";
   font-style: normal;
   font-weight: 400;
-  src: url('https://assets.braintreegateway.com/fonts/bt_mono_regular-webfont.eot');
-  src: url('https://assets.braintreegateway.com/fonts/bt_mono_regular-webfont.woff2') format('woff2'), url('https://assets.braintreegateway.com/fonts/bt_mono_regular-webfont.woff') format('woff'), url('https://assets.braintreegateway.com/fonts/bt_mono_regular-webfont.ttf') format('truetype'), url('https://assets.braintreegateway.com/fonts/bt_mono_regular-webfont.svg#bt_mono_reqular-webfont') format('svg');
+  src: url("https://assets.braintreegateway.com/fonts/bt_mono_regular-webfont.eot");
+  src: url("https://assets.braintreegateway.com/fonts/bt_mono_regular-webfont.woff2")
+      format("woff2"),
+    url("https://assets.braintreegateway.com/fonts/bt_mono_regular-webfont.woff")
+      format("woff"),
+    url("https://assets.braintreegateway.com/fonts/bt_mono_regular-webfont.ttf")
+      format("truetype"),
+    url("https://assets.braintreegateway.com/fonts/bt_mono_regular-webfont.svg#bt_mono_reqular-webfont")
+      format("svg");
 }
 
 @font-face {
-  font-family: 'bt_mono';
+  font-family: "bt_mono";
   font-style: normal;
   font-weight: 500;
-  src: url('https://assets.braintreegateway.com/fonts/bt_mono_medium-webfont.eot');
-  src: url('https://assets.braintreegateway.com/fonts/bt_mono_medium-webfont.woff2') format('woff2'), url('https://assets.braintreegateway.com/fonts/bt_mono_medium-webfont.woff') format('woff'), url('https://assets.braintreegateway.com/fonts/bt_mono_medium-webfont.ttf') format('truetype'), url('https://assets.braintreegateway.com/fonts/bt_mono_medium-webfont.svg#bt_mono_medium-webfont') format('svg');
+  src: url("https://assets.braintreegateway.com/fonts/bt_mono_medium-webfont.eot");
+  src: url("https://assets.braintreegateway.com/fonts/bt_mono_medium-webfont.woff2")
+      format("woff2"),
+    url("https://assets.braintreegateway.com/fonts/bt_mono_medium-webfont.woff")
+      format("woff"),
+    url("https://assets.braintreegateway.com/fonts/bt_mono_medium-webfont.ttf")
+      format("truetype"),
+    url("https://assets.braintreegateway.com/fonts/bt_mono_medium-webfont.svg#bt_mono_medium-webfont")
+      format("svg");
 }
 
 @font-face {
-  font-family: 'bt_mono';
+  font-family: "bt_mono";
   font-style: normal;
   font-weight: 600;
-  src: url('https://assets.braintreegateway.com/fonts/bt_mono_bold-webfont.eot');
-  src: url('https://assets.braintreegateway.com/fonts/bt_mono_bold-webfont.woff2') format('woff2'), url('https://assets.braintreegateway.com/fonts/bt_mono_bold-webfont.woff') format('woff'), url('https://assets.braintreegateway.com/fonts/bt_mono_bold-webfont.ttf') format('truetype'), url('https://assets.braintreegateway.com/fonts/bt_mono_bold-webfont.svg#bt_mono_bold-webfont') format('svg');
+  src: url("https://assets.braintreegateway.com/fonts/bt_mono_bold-webfont.eot");
+  src: url("https://assets.braintreegateway.com/fonts/bt_mono_bold-webfont.woff2")
+      format("woff2"),
+    url("https://assets.braintreegateway.com/fonts/bt_mono_bold-webfont.woff")
+      format("woff"),
+    url("https://assets.braintreegateway.com/fonts/bt_mono_bold-webfont.ttf")
+      format("truetype"),
+    url("https://assets.braintreegateway.com/fonts/bt_mono_bold-webfont.svg#bt_mono_bold-webfont")
+      format("svg");
 }
 
 @font-face {
-  font-family: 'bt_mono';
+  font-family: "bt_mono";
   font-style: normal;
   font-weight: 900;
-  src: url('https://assets.braintreegateway.com/fonts/bt_mono_heavy-webfont.eot');
-  src: url('https://assets.braintreegateway.com/fonts/bt_mono_heavy-webfont.woff2') format('woff2'), url('https://assets.braintreegateway.com/fonts/bt_mono_heavy-webfont.woff') format('woff'), url('https://assets.braintreegateway.com/fonts/bt_mono_heavy-webfont.ttf') format('truetype'), url('https://assets.braintreegateway.com/fonts/bt_mono_heavy-webfont.svg#bt_mono_heavy-webfont') format('svg');
+  src: url("https://assets.braintreegateway.com/fonts/bt_mono_heavy-webfont.eot");
+  src: url("https://assets.braintreegateway.com/fonts/bt_mono_heavy-webfont.woff2")
+      format("woff2"),
+    url("https://assets.braintreegateway.com/fonts/bt_mono_heavy-webfont.woff")
+      format("woff"),
+    url("https://assets.braintreegateway.com/fonts/bt_mono_heavy-webfont.ttf")
+      format("truetype"),
+    url("https://assets.braintreegateway.com/fonts/bt_mono_heavy-webfont.svg#bt_mono_heavy-webfont")
+      format("svg");
 }
 
 * {
-  box-sizing: border-box
+  box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   width: 100%;
   -webkit-font-smoothing: antialiased;
@@ -69,21 +101,26 @@ body {
   color: #3e3c42;
   background-color: #f3f3f3;
   width: 100%;
-  font: 16px/1.875 "Avenir Next W01", "Avenir Next", "Helvetica Neue", Helvetica, sans-serif;
+  font: 16px/1.875 "Avenir Next W01", "Avenir Next", "Helvetica Neue", Helvetica,
+    sans-serif;
   font-size: 16px;
   line-height: 160%;
 }
 
-a, a:active {
+a,
+a:active {
   color: #0095dd;
   text-decoration: none;
 }
 
 a:hover {
-  text-decoration: underline
+  text-decoration: underline;
 }
 
-p, ul, ol, blockquote {
+p,
+ul,
+ol,
+blockquote {
   margin-bottom: 1em;
 }
 
@@ -91,7 +128,12 @@ p {
   max-width: 800px;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: #706d77;
   font-weight: 500;
   margin: 0;
@@ -174,7 +216,7 @@ h5 {
   text-transform: uppercase;
   margin: 8px 0 15px 0;
   font-weight: bold;
-  color: #4D4E53;
+  color: #4d4e53;
   padding-top: 10px;
 }
 
@@ -187,7 +229,10 @@ h6 {
   font-weight: 500;
 }
 
-tt, code, kbd, samp {
+tt,
+code,
+kbd,
+samp {
   font-family: "Source Code Pro", monospace;
   background: #f4f4f4;
   padding: 1px 5px;
@@ -202,7 +247,7 @@ tt, code, kbd, samp {
 }
 
 .class-description:empty {
-  margin: 0
+  margin: 0;
 }
 
 #main {
@@ -226,7 +271,7 @@ section {
 }
 
 .variation {
-  display: none
+  display: none;
 }
 
 .signature-attributes {
@@ -313,11 +358,13 @@ nav ul a {
   font-size: 16px;
 }
 
-nav ul a, nav ul a:active {
+nav ul a,
+nav ul a:active {
   display: block;
 }
 
-nav ul a:hover, nav ul a:active {
+nav ul a:hover,
+nav ul a:active {
   color: hsl(200, 100%, 43%);
   text-decoration: none;
 }
@@ -367,8 +414,9 @@ nav ul ul a {
   color: #5f5c63;
 }
 
-nav ul ul a, nav ul ul a:active {
-  font-family: 'bt_mono', monospace;
+nav ul ul a,
+nav ul ul a:active {
+  font-family: "bt_mono", monospace;
   font-size: 14px;
   padding-left: 20px;
   padding-top: 3px;
@@ -418,7 +466,7 @@ footer {
 
 .important {
   font-weight: bold;
-  color: #950B02;
+  color: #950b02;
 }
 
 .yes-def {
@@ -429,8 +477,9 @@ footer {
   color: #aaa;
 }
 
-.name, .signature {
-  font-family: 'bt_mono', monospace;
+.name,
+.signature {
+  font-family: "bt_mono", monospace;
   word-wrap: break-word;
 }
 
@@ -471,11 +520,11 @@ footer {
 }
 
 .details pre.prettyprint {
-  margin: 0
+  margin: 0;
 }
 
 .details .object-value {
-  padding-top: 0
+  padding-top: 0;
 }
 
 .description {
@@ -508,7 +557,7 @@ footer {
   display: block;
   margin: 0 30px;
   background-color: #fbfbfb;
-  color: #4D4E53;
+  color: #4d4e53;
 }
 
 .prettyprint > code {
@@ -535,15 +584,16 @@ footer {
 }
 
 .prettyprint.linenums ol {
-  padding-left: 0
+  padding-left: 0;
 }
 
 .prettyprint.linenums li {
-  border-left: 3px #ddd solid
+  border-left: 3px #ddd solid;
 }
 
-.prettyprint.linenums li.selected, .prettyprint.linenums li.selected * {
-  background-color: lightyellow
+.prettyprint.linenums li.selected,
+.prettyprint.linenums li.selected * {
+  background-color: lightyellow;
 }
 
 .prettyprint.linenums li * {
@@ -557,7 +607,8 @@ footer {
   max-width: 800px;
 }
 
-.params, .props {
+.params,
+.props {
   border-spacing: 0;
   border: 1px solid #ddd;
   border-radius: 3px;
@@ -565,13 +616,18 @@ footer {
   font-size: 14px;
 }
 
-.params .name, .props .name, .name code {
-  color: #4D4E53;
-  font-family: 'bt_mono', monospace;
+.params .name,
+.props .name,
+.name code {
+  color: #4d4e53;
+  font-family: "bt_mono", monospace;
   font-size: 100%;
 }
 
-.params td, .params th, .props td, .props th {
+.params td,
+.params th,
+.props td,
+.props th {
   margin: 0px;
   text-align: left;
   vertical-align: top;
@@ -583,22 +639,26 @@ footer {
   border-top: 1px solid #eee;
 }
 
-.params thead tr, .props thead tr {
+.params thead tr,
+.props thead tr {
   background-color: #fff;
   font-weight: bold;
 }
 
-.params .params thead tr, .props .props thead tr {
+.params .params thead tr,
+.props .props thead tr {
   background-color: #fff;
   font-weight: bold;
 }
 
-.params td.description > p:first-child, .props td.description > p:first-child {
+.params td.description > p:first-child,
+.props td.description > p:first-child {
   margin-top: 0;
   padding-top: 0;
 }
 
-.params td.description > p:last-child, .props td.description > p:last-child {
+.params td.description > p:last-child,
+.props td.description > p:last-child {
   margin-bottom: 0;
   padding-bottom: 0;
 }
@@ -607,18 +667,18 @@ dl.param-type {
   margin-top: 5px;
 }
 
-.param-type dt, .param-type dd {
-  display: inline-block
+.param-type dt,
+.param-type dd {
+  display: inline-block;
 }
 
 .param-type dd {
-  font-family: Consolas, Monaco, 'Andale Mono', monospace
+  font-family: Consolas, Monaco, "Andale Mono", monospace;
 }
 
 .disabled {
-  color: #454545
+  color: #454545;
 }
-
 
 /* tag source style */
 
@@ -634,7 +694,6 @@ dl.param-type {
   border-bottom: 1px solid rgba(28, 160, 224, 1);
 }
 
-
 /* navicon button */
 
 .navicon-button {
@@ -642,7 +701,7 @@ dl.param-type {
   transition: 0.25s;
   cursor: pointer;
   user-select: none;
-  opacity: .8;
+  opacity: 0.8;
   background-color: white;
   border-radius: 100%;
   width: 50px;
@@ -652,7 +711,8 @@ dl.param-type {
   box-shadow: 0px 2px 9px 0px rgba(0, 0, 0, 0.31);
 }
 
-.navicon-button .navicon:before, .navicon-button .navicon:after {
+.navicon-button .navicon:before,
+.navicon-button .navicon:after {
   transition: 0.25s;
 }
 
@@ -661,36 +721,37 @@ dl.param-type {
   opacity: 1;
 }
 
-.navicon-button:hover .navicon:before, .navicon-button:hover .navicon:after {
+.navicon-button:hover .navicon:before,
+.navicon-button:hover .navicon:after {
   transition: 0.25s;
 }
 
 .navicon-button:hover .navicon:before {
-  top: .425rem;
+  top: 0.425rem;
 }
 
 .navicon-button:hover .navicon:after {
-  top: -.425rem;
+  top: -0.425rem;
 }
-
 
 /* navicon */
 
 .navicon {
   position: relative;
   width: 1.5em;
-  height: .195rem;
+  height: 0.195rem;
   background: #000;
-  top: calc(50% - .09rem);
-  left: calc(50% - .75rem);
+  top: calc(50% - 0.09rem);
+  left: calc(50% - 0.75rem);
   transition: 0.3s;
   border-radius: 5px;
 }
 
-.navicon:before, .navicon:after {
+.navicon:before,
+.navicon:after {
   display: block;
   content: "";
-  height: .195rem;
+  height: 0.195rem;
   width: 1.5rem;
   background: #000;
   position: absolute;
@@ -700,7 +761,7 @@ dl.param-type {
 
 .navicon:before {
   top: 0.425rem;
-  height: .195rem;
+  height: 0.195rem;
   border-radius: 5px;
 }
 
@@ -709,17 +770,17 @@ dl.param-type {
   border-radius: 5px;
 }
 
-
 /* open */
 
-.nav-trigger:checked + label:not(.steps) .navicon:before, .nav-trigger:checked + label:not(.steps) .navicon:after {
+.nav-trigger:checked + label:not(.steps) .navicon:before,
+.nav-trigger:checked + label:not(.steps) .navicon:after {
   top: 0 !important;
 }
 
-.nav-trigger:checked + label .navicon:before, .nav-trigger:checked + label .navicon:after {
+.nav-trigger:checked + label .navicon:before,
+.nav-trigger:checked + label .navicon:after {
   transition: 0.5s;
 }
-
 
 /* Minus */
 
@@ -727,19 +788,21 @@ dl.param-type {
   transform: scale(0.75);
 }
 
-
 /* × and + */
 
-.nav-trigger:checked + label.plus .navicon, .nav-trigger:checked + label.x .navicon {
+.nav-trigger:checked + label.plus .navicon,
+.nav-trigger:checked + label.x .navicon {
   background: transparent;
 }
 
-.nav-trigger:checked + label.plus .navicon:before, .nav-trigger:checked + label.x .navicon:before {
+.nav-trigger:checked + label.plus .navicon:before,
+.nav-trigger:checked + label.x .navicon:before {
   transform: rotate(-45deg);
   background: #000;
 }
 
-.nav-trigger:checked + label.plus .navicon:after, .nav-trigger:checked + label.x .navicon:after {
+.nav-trigger:checked + label.plus .navicon:after,
+.nav-trigger:checked + label.x .navicon:after {
   transform: rotate(45deg);
   background: #000;
 }
@@ -776,7 +839,7 @@ dl.param-type {
 }
 
 table {
-  border-collapse: separate;;
+  border-collapse: separate;
   display: block;
   overflow-x: auto;
   /*table-layout:fixed;*/
@@ -789,7 +852,8 @@ table tbody td {
   /*word-wrap: break-word;*/
 }
 
-td table.params, td table.props {
+td table.params,
+td table.props {
   border: 0;
 }
 
@@ -805,7 +869,7 @@ td table.params, td table.props {
   }
 
   nav {
-    background: #FFF;
+    background: #fff;
     width: 300px;
     height: 100%;
     position: fixed;
@@ -884,7 +948,6 @@ input.search-input {
   margin: 0 auto;
 }
 
-
 /* Smooth outline with box-shadow: */
 
 input.search-input:focus {
@@ -892,31 +955,51 @@ input.search-input:focus {
   outline: none;
 }
 
-
 /* Hightlight JS Paradiso Light Theme */
 
-.hljs-comment, .hljs-quote {
-  color: #776e71
+.hljs-comment,
+.hljs-quote {
+  color: #776e71;
 }
 
-.hljs-variable, .hljs-template-variable, .hljs-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class, .hljs-regexp, .hljs-link, .hljs-meta {
-  color: #ef6155
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-link,
+.hljs-meta {
+  color: #ef6155;
 }
 
-.hljs-number, .hljs-built_in, .hljs-builtin-name, .hljs-literal, .hljs-type, .hljs-params, .hljs-deletion {
-  color: #f99b15
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-deletion {
+  color: #f99b15;
 }
 
-.hljs-title, .hljs-section, .hljs-attribute {
-  color: #fec418
+.hljs-title,
+.hljs-section,
+.hljs-attribute {
+  color: #fec418;
 }
 
-.hljs-string, .hljs-symbol, .hljs-bullet, .hljs-addition {
-  color: #48b685
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+  color: #48b685;
 }
 
-.hljs-keyword, .hljs-selector-tag {
-  color: #815ba4
+.hljs-keyword,
+.hljs-selector-tag {
+  color: #815ba4;
 }
 
 .hljs {
@@ -924,15 +1007,15 @@ input.search-input:focus {
   overflow-x: auto;
   background: #e7e9db;
   color: #4f424c;
-  padding: 0.5em
+  padding: 0.5em;
 }
 
 .hljs-emphasis {
-  font-style: italic
+  font-style: italic;
 }
 
 .hljs-strong {
-  font-weight: bold
+  font-weight: bold;
 }
 
 .link-icon {
@@ -949,7 +1032,7 @@ input.search-input:focus {
 
 .example-container:hover .link-icon,
 .name-container:hover .link-icon {
-  opacity: .5;
+  opacity: 0.5;
 }
 
 .name-container {

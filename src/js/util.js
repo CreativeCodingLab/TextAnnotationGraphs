@@ -4,6 +4,7 @@
  */
 
 import _ from "lodash";
+import { transform, isEqual, isObject } from "lodash";
 
 // For some reason, the `draggable` import has to be in a different file
 // from `main.js`.  This has something to do with the way ES6 imports work,
@@ -39,8 +40,11 @@ function getCssRules(elements) {
 
         // For other types of rules, check against the listed elements
         for (const el of elements) {
-          el.matches = el.matches || el.webkitMatchesSelector ||
-            el.mozMatchesSelector || el.msMatchesSelector ||
+          el.matches =
+            el.matches ||
+            el.webkitMatchesSelector ||
+            el.mozMatchesSelector ||
+            el.msMatchesSelector ||
             el.oMatchesSelector;
           if (el.matches(rule.selectorText)) {
             ret.push(rule.cssText);
@@ -83,10 +87,28 @@ function sortForSlotting(links) {
   sortingArray.sort((a, b) => b.width - a.width);
   // Sort by index of left endpoint, ascending
   sortingArray.sort((a, b) => a.leftAnchor - b.leftAnchor);
-  return sortingArray.map(link => links[link.idx]);
+  return sortingArray.map((link) => links[link.idx]);
+}
+
+/**
+ * Deep diff between two object, using lodash
+ * @param  {Object} object Object compared
+ * @param  {Object} base   Object to compare with
+ * @return {Object}        Return a new object who represent the diff
+ */
+function difference(object, base) {
+  return transform(object, (result, value, key) => {
+    if (!isEqual(value, base[key])) {
+      result[key] =
+        isObject(value) && isObject(base[key])
+          ? difference(value, base[key])
+          : value;
+    }
+  });
 }
 
 export default {
   getCssRules,
-  sortForSlotting
+  sortForSlotting,
+  difference
 };

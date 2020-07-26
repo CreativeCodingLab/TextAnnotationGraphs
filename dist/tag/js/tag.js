@@ -1,10 +1,10 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.tag = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(_dereq_,module,exports){
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
 }
 
 module.exports = _arrayWithHoles;
-},{}],2:[function(require,module,exports){
+},{}],2:[function(_dereq_,module,exports){
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
     var info = gen[key](arg);
@@ -42,7 +42,7 @@ function _asyncToGenerator(fn) {
 }
 
 module.exports = _asyncToGenerator;
-},{}],3:[function(require,module,exports){
+},{}],3:[function(_dereq_,module,exports){
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -50,7 +50,7 @@ function _classCallCheck(instance, Constructor) {
 }
 
 module.exports = _classCallCheck;
-},{}],4:[function(require,module,exports){
+},{}],4:[function(_dereq_,module,exports){
 function _defineProperties(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
@@ -68,15 +68,15 @@ function _createClass(Constructor, protoProps, staticProps) {
 }
 
 module.exports = _createClass;
-},{}],5:[function(require,module,exports){
+},{}],5:[function(_dereq_,module,exports){
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : {
-    default: obj
+    "default": obj
   };
 }
 
 module.exports = _interopRequireDefault;
-},{}],6:[function(require,module,exports){
+},{}],6:[function(_dereq_,module,exports){
 function _interopRequireWildcard(obj) {
   if (obj && obj.__esModule) {
     return obj;
@@ -97,13 +97,13 @@ function _interopRequireWildcard(obj) {
       }
     }
 
-    newObj.default = obj;
+    newObj["default"] = obj;
     return newObj;
   }
 }
 
 module.exports = _interopRequireWildcard;
-},{}],7:[function(require,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 function _iterableToArrayLimit(arr, i) {
   var _arr = [];
   var _n = true;
@@ -131,28 +131,28 @@ function _iterableToArrayLimit(arr, i) {
 }
 
 module.exports = _iterableToArrayLimit;
-},{}],8:[function(require,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance");
 }
 
 module.exports = _nonIterableRest;
-},{}],9:[function(require,module,exports){
-var arrayWithHoles = require("./arrayWithHoles");
+},{}],9:[function(_dereq_,module,exports){
+var arrayWithHoles = _dereq_("./arrayWithHoles");
 
-var iterableToArrayLimit = require("./iterableToArrayLimit");
+var iterableToArrayLimit = _dereq_("./iterableToArrayLimit");
 
-var nonIterableRest = require("./nonIterableRest");
+var nonIterableRest = _dereq_("./nonIterableRest");
 
 function _slicedToArray(arr, i) {
   return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || nonIterableRest();
 }
 
 module.exports = _slicedToArray;
-},{"./arrayWithHoles":1,"./iterableToArrayLimit":7,"./nonIterableRest":8}],10:[function(require,module,exports){
-module.exports = require("regenerator-runtime");
+},{"./arrayWithHoles":1,"./iterableToArrayLimit":7,"./nonIterableRest":8}],10:[function(_dereq_,module,exports){
+module.exports = _dereq_("regenerator-runtime");
 
-},{"regenerator-runtime":45}],11:[function(require,module,exports){
+},{"regenerator-runtime":45}],11:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -249,9 +249,9 @@ function autobind() {
 
   return boundMethod.apply(void 0, arguments);
 }
-},{}],12:[function(require,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 /*!
- * jQuery JavaScript Library v3.3.1
+ * jQuery JavaScript Library v3.4.1
  * https://jquery.com/
  *
  * Includes Sizzle.js
@@ -261,7 +261,7 @@ function autobind() {
  * Released under the MIT license
  * https://jquery.org/license
  *
- * Date: 2018-01-20T17:24Z
+ * Date: 2019-05-01T21:04Z
  */
 ( function( global, factory ) {
 
@@ -343,20 +343,33 @@ var isWindow = function isWindow( obj ) {
 	var preservedScriptAttributes = {
 		type: true,
 		src: true,
+		nonce: true,
 		noModule: true
 	};
 
-	function DOMEval( code, doc, node ) {
+	function DOMEval( code, node, doc ) {
 		doc = doc || document;
 
-		var i,
+		var i, val,
 			script = doc.createElement( "script" );
 
 		script.text = code;
 		if ( node ) {
 			for ( i in preservedScriptAttributes ) {
-				if ( node[ i ] ) {
-					script[ i ] = node[ i ];
+
+				// Support: Firefox 64+, Edge 18+
+				// Some browsers don't support the "nonce" property on scripts.
+				// On the other hand, just using `getAttribute` is not enough as
+				// the `nonce` attribute is reset to an empty string whenever it
+				// becomes browsing-context connected.
+				// See https://github.com/whatwg/html/issues/2369
+				// See https://html.spec.whatwg.org/#nonce-attributes
+				// The `node.getAttribute` check was added for the sake of
+				// `jQuery.globalEval` so that it can fake a nonce-containing node
+				// via an object.
+				val = node[ i ] || node.getAttribute && node.getAttribute( i );
+				if ( val ) {
+					script.setAttribute( i, val );
 				}
 			}
 		}
@@ -381,7 +394,7 @@ function toType( obj ) {
 
 
 var
-	version = "3.3.1",
+	version = "3.4.1",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -510,25 +523,28 @@ jQuery.extend = jQuery.fn.extend = function() {
 
 			// Extend the base object
 			for ( name in options ) {
-				src = target[ name ];
 				copy = options[ name ];
 
+				// Prevent Object.prototype pollution
 				// Prevent never-ending loop
-				if ( target === copy ) {
+				if ( name === "__proto__" || target === copy ) {
 					continue;
 				}
 
 				// Recurse if we're merging plain objects or arrays
 				if ( deep && copy && ( jQuery.isPlainObject( copy ) ||
 					( copyIsArray = Array.isArray( copy ) ) ) ) {
+					src = target[ name ];
 
-					if ( copyIsArray ) {
-						copyIsArray = false;
-						clone = src && Array.isArray( src ) ? src : [];
-
+					// Ensure proper type for the source value
+					if ( copyIsArray && !Array.isArray( src ) ) {
+						clone = [];
+					} else if ( !copyIsArray && !jQuery.isPlainObject( src ) ) {
+						clone = {};
 					} else {
-						clone = src && jQuery.isPlainObject( src ) ? src : {};
+						clone = src;
 					}
+					copyIsArray = false;
 
 					// Never move original objects, clone them
 					target[ name ] = jQuery.extend( deep, clone, copy );
@@ -581,9 +597,6 @@ jQuery.extend( {
 	},
 
 	isEmptyObject: function( obj ) {
-
-		/* eslint-disable no-unused-vars */
-		// See https://github.com/eslint/eslint/issues/6125
 		var name;
 
 		for ( name in obj ) {
@@ -593,8 +606,8 @@ jQuery.extend( {
 	},
 
 	// Evaluates a script in a global context
-	globalEval: function( code ) {
-		DOMEval( code );
+	globalEval: function( code, options ) {
+		DOMEval( code, { nonce: options && options.nonce } );
 	},
 
 	each: function( obj, callback ) {
@@ -750,14 +763,14 @@ function isArrayLike( obj ) {
 }
 var Sizzle =
 /*!
- * Sizzle CSS Selector Engine v2.3.3
+ * Sizzle CSS Selector Engine v2.3.4
  * https://sizzlejs.com/
  *
- * Copyright jQuery Foundation and other contributors
+ * Copyright JS Foundation and other contributors
  * Released under the MIT license
- * http://jquery.org/license
+ * https://js.foundation/
  *
- * Date: 2016-08-08
+ * Date: 2019-04-08
  */
 (function( window ) {
 
@@ -791,6 +804,7 @@ var i,
 	classCache = createCache(),
 	tokenCache = createCache(),
 	compilerCache = createCache(),
+	nonnativeSelectorCache = createCache(),
 	sortOrder = function( a, b ) {
 		if ( a === b ) {
 			hasDuplicate = true;
@@ -852,8 +866,7 @@ var i,
 
 	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
 	rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*" ),
-
-	rattributeQuotes = new RegExp( "=" + whitespace + "*([^\\]'\"]*?)" + whitespace + "*\\]", "g" ),
+	rdescend = new RegExp( whitespace + "|>" ),
 
 	rpseudo = new RegExp( pseudos ),
 	ridentifier = new RegExp( "^" + identifier + "$" ),
@@ -874,6 +887,7 @@ var i,
 			whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
 	},
 
+	rhtml = /HTML$/i,
 	rinputs = /^(?:input|select|textarea|button)$/i,
 	rheader = /^h\d$/i,
 
@@ -928,9 +942,9 @@ var i,
 		setDocument();
 	},
 
-	disabledAncestor = addCombinator(
+	inDisabledFieldset = addCombinator(
 		function( elem ) {
-			return elem.disabled === true && ("form" in elem || "label" in elem);
+			return elem.disabled === true && elem.nodeName.toLowerCase() === "fieldset";
 		},
 		{ dir: "parentNode", next: "legend" }
 	);
@@ -1043,18 +1057,22 @@ function Sizzle( selector, context, results, seed ) {
 
 			// Take advantage of querySelectorAll
 			if ( support.qsa &&
-				!compilerCache[ selector + " " ] &&
-				(!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
+				!nonnativeSelectorCache[ selector + " " ] &&
+				(!rbuggyQSA || !rbuggyQSA.test( selector )) &&
 
-				if ( nodeType !== 1 ) {
-					newContext = context;
-					newSelector = selector;
-
-				// qSA looks outside Element context, which is not what we want
-				// Thanks to Andrew Dupont for this workaround technique
-				// Support: IE <=8
+				// Support: IE 8 only
 				// Exclude object elements
-				} else if ( context.nodeName.toLowerCase() !== "object" ) {
+				(nodeType !== 1 || context.nodeName.toLowerCase() !== "object") ) {
+
+				newSelector = selector;
+				newContext = context;
+
+				// qSA considers elements outside a scoping root when evaluating child or
+				// descendant combinators, which is not what we want.
+				// In such cases, we work around the behavior by prefixing every selector in the
+				// list with an ID selector referencing the scope context.
+				// Thanks to Andrew Dupont for this technique.
+				if ( nodeType === 1 && rdescend.test( selector ) ) {
 
 					// Capture the context ID, setting it first if necessary
 					if ( (nid = context.getAttribute( "id" )) ) {
@@ -1076,17 +1094,16 @@ function Sizzle( selector, context, results, seed ) {
 						context;
 				}
 
-				if ( newSelector ) {
-					try {
-						push.apply( results,
-							newContext.querySelectorAll( newSelector )
-						);
-						return results;
-					} catch ( qsaError ) {
-					} finally {
-						if ( nid === expando ) {
-							context.removeAttribute( "id" );
-						}
+				try {
+					push.apply( results,
+						newContext.querySelectorAll( newSelector )
+					);
+					return results;
+				} catch ( qsaError ) {
+					nonnativeSelectorCache( selector, true );
+				} finally {
+					if ( nid === expando ) {
+						context.removeAttribute( "id" );
 					}
 				}
 			}
@@ -1250,7 +1267,7 @@ function createDisabledPseudo( disabled ) {
 					// Where there is no isDisabled, check manually
 					/* jshint -W018 */
 					elem.isDisabled !== !disabled &&
-						disabledAncestor( elem ) === disabled;
+						inDisabledFieldset( elem ) === disabled;
 			}
 
 			return elem.disabled === disabled;
@@ -1307,10 +1324,13 @@ support = Sizzle.support = {};
  * @returns {Boolean} True iff elem is a non-HTML XML node
  */
 isXML = Sizzle.isXML = function( elem ) {
-	// documentElement is verified for cases where it doesn't yet exist
-	// (such as loading iframes in IE - #4833)
-	var documentElement = elem && (elem.ownerDocument || elem).documentElement;
-	return documentElement ? documentElement.nodeName !== "HTML" : false;
+	var namespace = elem.namespaceURI,
+		docElem = (elem.ownerDocument || elem).documentElement;
+
+	// Support: IE <=8
+	// Assume HTML when documentElement doesn't yet exist, such as inside loading iframes
+	// https://bugs.jquery.com/ticket/4833
+	return !rhtml.test( namespace || docElem && docElem.nodeName || "HTML" );
 };
 
 /**
@@ -1732,11 +1752,8 @@ Sizzle.matchesSelector = function( elem, expr ) {
 		setDocument( elem );
 	}
 
-	// Make sure that attribute selectors are quoted
-	expr = expr.replace( rattributeQuotes, "='$1']" );
-
 	if ( support.matchesSelector && documentIsHTML &&
-		!compilerCache[ expr + " " ] &&
+		!nonnativeSelectorCache[ expr + " " ] &&
 		( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
 		( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
 
@@ -1750,7 +1767,9 @@ Sizzle.matchesSelector = function( elem, expr ) {
 					elem.document && elem.document.nodeType !== 11 ) {
 				return ret;
 			}
-		} catch (e) {}
+		} catch (e) {
+			nonnativeSelectorCache( expr, true );
+		}
 	}
 
 	return Sizzle( expr, document, null, [ elem ] ).length > 0;
@@ -2209,7 +2228,7 @@ Expr = Sizzle.selectors = {
 		"contains": markFunction(function( text ) {
 			text = text.replace( runescape, funescape );
 			return function( elem ) {
-				return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( text ) > -1;
+				return ( elem.textContent || getText( elem ) ).indexOf( text ) > -1;
 			};
 		}),
 
@@ -2348,7 +2367,11 @@ Expr = Sizzle.selectors = {
 		}),
 
 		"lt": createPositionalPseudo(function( matchIndexes, length, argument ) {
-			var i = argument < 0 ? argument + length : argument;
+			var i = argument < 0 ?
+				argument + length :
+				argument > length ?
+					length :
+					argument;
 			for ( ; --i >= 0; ) {
 				matchIndexes.push( i );
 			}
@@ -3398,18 +3421,18 @@ jQuery.each( {
 		return siblings( elem.firstChild );
 	},
 	contents: function( elem ) {
-        if ( nodeName( elem, "iframe" ) ) {
-            return elem.contentDocument;
-        }
+		if ( typeof elem.contentDocument !== "undefined" ) {
+			return elem.contentDocument;
+		}
 
-        // Support: IE 9 - 11 only, iOS 7 only, Android Browser <=4.3 only
-        // Treat the template element as a regular one in browsers that
-        // don't support it.
-        if ( nodeName( elem, "template" ) ) {
-            elem = elem.content || elem;
-        }
+		// Support: IE 9 - 11 only, iOS 7 only, Android Browser <=4.3 only
+		// Treat the template element as a regular one in browsers that
+		// don't support it.
+		if ( nodeName( elem, "template" ) ) {
+			elem = elem.content || elem;
+		}
 
-        return jQuery.merge( [], elem.childNodes );
+		return jQuery.merge( [], elem.childNodes );
 	}
 }, function( name, fn ) {
 	jQuery.fn[ name ] = function( until, selector ) {
@@ -4718,6 +4741,26 @@ var rcssNum = new RegExp( "^(?:([+-])=|)(" + pnum + ")([a-z%]*)$", "i" );
 
 var cssExpand = [ "Top", "Right", "Bottom", "Left" ];
 
+var documentElement = document.documentElement;
+
+
+
+	var isAttached = function( elem ) {
+			return jQuery.contains( elem.ownerDocument, elem );
+		},
+		composed = { composed: true };
+
+	// Support: IE 9 - 11+, Edge 12 - 18+, iOS 10.0 - 10.2 only
+	// Check attachment across shadow DOM boundaries when possible (gh-3504)
+	// Support: iOS 10.0-10.2 only
+	// Early iOS 10 versions support `attachShadow` but not `getRootNode`,
+	// leading to errors. We need to check for `getRootNode`.
+	if ( documentElement.getRootNode ) {
+		isAttached = function( elem ) {
+			return jQuery.contains( elem.ownerDocument, elem ) ||
+				elem.getRootNode( composed ) === elem.ownerDocument;
+		};
+	}
 var isHiddenWithinTree = function( elem, el ) {
 
 		// isHiddenWithinTree might be called from jQuery#filter function;
@@ -4732,7 +4775,7 @@ var isHiddenWithinTree = function( elem, el ) {
 			// Support: Firefox <=43 - 45
 			// Disconnected elements can have computed display: none, so first confirm that elem is
 			// in the document.
-			jQuery.contains( elem.ownerDocument, elem ) &&
+			isAttached( elem ) &&
 
 			jQuery.css( elem, "display" ) === "none";
 	};
@@ -4774,7 +4817,8 @@ function adjustCSS( elem, prop, valueParts, tween ) {
 		unit = valueParts && valueParts[ 3 ] || ( jQuery.cssNumber[ prop ] ? "" : "px" ),
 
 		// Starting value computation is required for potential unit mismatches
-		initialInUnit = ( jQuery.cssNumber[ prop ] || unit !== "px" && +initial ) &&
+		initialInUnit = elem.nodeType &&
+			( jQuery.cssNumber[ prop ] || unit !== "px" && +initial ) &&
 			rcssNum.exec( jQuery.css( elem, prop ) );
 
 	if ( initialInUnit && initialInUnit[ 3 ] !== unit ) {
@@ -4921,7 +4965,7 @@ jQuery.fn.extend( {
 } );
 var rcheckableType = ( /^(?:checkbox|radio)$/i );
 
-var rtagName = ( /<([a-z][^\/\0>\x20\t\r\n\f]+)/i );
+var rtagName = ( /<([a-z][^\/\0>\x20\t\r\n\f]*)/i );
 
 var rscriptType = ( /^$|^module$|\/(?:java|ecma)script/i );
 
@@ -4993,7 +5037,7 @@ function setGlobalEval( elems, refElements ) {
 var rhtml = /<|&#?\w+;/;
 
 function buildFragment( elems, context, scripts, selection, ignored ) {
-	var elem, tmp, tag, wrap, contains, j,
+	var elem, tmp, tag, wrap, attached, j,
 		fragment = context.createDocumentFragment(),
 		nodes = [],
 		i = 0,
@@ -5057,13 +5101,13 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 			continue;
 		}
 
-		contains = jQuery.contains( elem.ownerDocument, elem );
+		attached = isAttached( elem );
 
 		// Append to fragment
 		tmp = getAll( fragment.appendChild( elem ), "script" );
 
 		// Preserve script evaluation history
-		if ( contains ) {
+		if ( attached ) {
 			setGlobalEval( tmp );
 		}
 
@@ -5106,8 +5150,6 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 	div.innerHTML = "<textarea>x</textarea>";
 	support.noCloneChecked = !!div.cloneNode( true ).lastChild.defaultValue;
 } )();
-var documentElement = document.documentElement;
-
 
 
 var
@@ -5123,8 +5165,19 @@ function returnFalse() {
 	return false;
 }
 
+// Support: IE <=9 - 11+
+// focus() and blur() are asynchronous, except when they are no-op.
+// So expect focus to be synchronous when the element is already active,
+// and blur to be synchronous when the element is not already active.
+// (focus and blur are always synchronous in other supported browsers,
+// this just defines when we can count on it).
+function expectSync( elem, type ) {
+	return ( elem === safeActiveElement() ) === ( type === "focus" );
+}
+
 // Support: IE <=9 only
-// See #13393 for more info
+// Accessing document.activeElement can throw unexpectedly
+// https://bugs.jquery.com/ticket/13393
 function safeActiveElement() {
 	try {
 		return document.activeElement;
@@ -5424,9 +5477,10 @@ jQuery.event = {
 			while ( ( handleObj = matched.handlers[ j++ ] ) &&
 				!event.isImmediatePropagationStopped() ) {
 
-				// Triggered event must either 1) have no namespace, or 2) have namespace(s)
-				// a subset or equal to those in the bound event (both can have no namespace).
-				if ( !event.rnamespace || event.rnamespace.test( handleObj.namespace ) ) {
+				// If the event is namespaced, then each handler is only invoked if it is
+				// specially universal or its namespaces are a superset of the event's.
+				if ( !event.rnamespace || handleObj.namespace === false ||
+					event.rnamespace.test( handleObj.namespace ) ) {
 
 					event.handleObj = handleObj;
 					event.data = handleObj.data;
@@ -5550,39 +5604,51 @@ jQuery.event = {
 			// Prevent triggered image.load events from bubbling to window.load
 			noBubble: true
 		},
-		focus: {
-
-			// Fire native event if possible so blur/focus sequence is correct
-			trigger: function() {
-				if ( this !== safeActiveElement() && this.focus ) {
-					this.focus();
-					return false;
-				}
-			},
-			delegateType: "focusin"
-		},
-		blur: {
-			trigger: function() {
-				if ( this === safeActiveElement() && this.blur ) {
-					this.blur();
-					return false;
-				}
-			},
-			delegateType: "focusout"
-		},
 		click: {
 
-			// For checkbox, fire native event so checked state will be right
-			trigger: function() {
-				if ( this.type === "checkbox" && this.click && nodeName( this, "input" ) ) {
-					this.click();
-					return false;
+			// Utilize native event to ensure correct state for checkable inputs
+			setup: function( data ) {
+
+				// For mutual compressibility with _default, replace `this` access with a local var.
+				// `|| data` is dead code meant only to preserve the variable through minification.
+				var el = this || data;
+
+				// Claim the first handler
+				if ( rcheckableType.test( el.type ) &&
+					el.click && nodeName( el, "input" ) ) {
+
+					// dataPriv.set( el, "click", ... )
+					leverageNative( el, "click", returnTrue );
 				}
+
+				// Return false to allow normal processing in the caller
+				return false;
+			},
+			trigger: function( data ) {
+
+				// For mutual compressibility with _default, replace `this` access with a local var.
+				// `|| data` is dead code meant only to preserve the variable through minification.
+				var el = this || data;
+
+				// Force setup before triggering a click
+				if ( rcheckableType.test( el.type ) &&
+					el.click && nodeName( el, "input" ) ) {
+
+					leverageNative( el, "click" );
+				}
+
+				// Return non-false to allow normal event-path propagation
+				return true;
 			},
 
-			// For cross-browser consistency, don't fire native .click() on links
+			// For cross-browser consistency, suppress native .click() on links
+			// Also prevent it if we're currently inside a leveraged native-event stack
 			_default: function( event ) {
-				return nodeName( event.target, "a" );
+				var target = event.target;
+				return rcheckableType.test( target.type ) &&
+					target.click && nodeName( target, "input" ) &&
+					dataPriv.get( target, "click" ) ||
+					nodeName( target, "a" );
 			}
 		},
 
@@ -5598,6 +5664,93 @@ jQuery.event = {
 		}
 	}
 };
+
+// Ensure the presence of an event listener that handles manually-triggered
+// synthetic events by interrupting progress until reinvoked in response to
+// *native* events that it fires directly, ensuring that state changes have
+// already occurred before other listeners are invoked.
+function leverageNative( el, type, expectSync ) {
+
+	// Missing expectSync indicates a trigger call, which must force setup through jQuery.event.add
+	if ( !expectSync ) {
+		if ( dataPriv.get( el, type ) === undefined ) {
+			jQuery.event.add( el, type, returnTrue );
+		}
+		return;
+	}
+
+	// Register the controller as a special universal handler for all event namespaces
+	dataPriv.set( el, type, false );
+	jQuery.event.add( el, type, {
+		namespace: false,
+		handler: function( event ) {
+			var notAsync, result,
+				saved = dataPriv.get( this, type );
+
+			if ( ( event.isTrigger & 1 ) && this[ type ] ) {
+
+				// Interrupt processing of the outer synthetic .trigger()ed event
+				// Saved data should be false in such cases, but might be a leftover capture object
+				// from an async native handler (gh-4350)
+				if ( !saved.length ) {
+
+					// Store arguments for use when handling the inner native event
+					// There will always be at least one argument (an event object), so this array
+					// will not be confused with a leftover capture object.
+					saved = slice.call( arguments );
+					dataPriv.set( this, type, saved );
+
+					// Trigger the native event and capture its result
+					// Support: IE <=9 - 11+
+					// focus() and blur() are asynchronous
+					notAsync = expectSync( this, type );
+					this[ type ]();
+					result = dataPriv.get( this, type );
+					if ( saved !== result || notAsync ) {
+						dataPriv.set( this, type, false );
+					} else {
+						result = {};
+					}
+					if ( saved !== result ) {
+
+						// Cancel the outer synthetic event
+						event.stopImmediatePropagation();
+						event.preventDefault();
+						return result.value;
+					}
+
+				// If this is an inner synthetic event for an event with a bubbling surrogate
+				// (focus or blur), assume that the surrogate already propagated from triggering the
+				// native event and prevent that from happening again here.
+				// This technically gets the ordering wrong w.r.t. to `.trigger()` (in which the
+				// bubbling surrogate propagates *after* the non-bubbling base), but that seems
+				// less bad than duplication.
+				} else if ( ( jQuery.event.special[ type ] || {} ).delegateType ) {
+					event.stopPropagation();
+				}
+
+			// If this is a native event triggered above, everything is now in order
+			// Fire an inner synthetic event with the original arguments
+			} else if ( saved.length ) {
+
+				// ...and capture the result
+				dataPriv.set( this, type, {
+					value: jQuery.event.trigger(
+
+						// Support: IE <=9 - 11+
+						// Extend with the prototype to reset the above stopImmediatePropagation()
+						jQuery.extend( saved[ 0 ], jQuery.Event.prototype ),
+						saved.slice( 1 ),
+						this
+					)
+				} );
+
+				// Abort handling of the native event
+				event.stopImmediatePropagation();
+			}
+		}
+	} );
+}
 
 jQuery.removeEvent = function( elem, type, handle ) {
 
@@ -5711,6 +5864,7 @@ jQuery.each( {
 	shiftKey: true,
 	view: true,
 	"char": true,
+	code: true,
 	charCode: true,
 	key: true,
 	keyCode: true,
@@ -5756,6 +5910,33 @@ jQuery.each( {
 		return event.which;
 	}
 }, jQuery.event.addProp );
+
+jQuery.each( { focus: "focusin", blur: "focusout" }, function( type, delegateType ) {
+	jQuery.event.special[ type ] = {
+
+		// Utilize native event if possible so blur/focus sequence is correct
+		setup: function() {
+
+			// Claim the first handler
+			// dataPriv.set( this, "focus", ... )
+			// dataPriv.set( this, "blur", ... )
+			leverageNative( this, type, expectSync );
+
+			// Return false to allow normal processing in the caller
+			return false;
+		},
+		trigger: function() {
+
+			// Force setup before trigger
+			leverageNative( this, type );
+
+			// Return non-false to allow normal event-path propagation
+			return true;
+		},
+
+		delegateType: delegateType
+	};
+} );
 
 // Create mouseenter/leave events using mouseover/out and event-time checks
 // so that event delegation works in jQuery.
@@ -6007,11 +6188,13 @@ function domManip( collection, args, callback, ignored ) {
 						if ( node.src && ( node.type || "" ).toLowerCase()  !== "module" ) {
 
 							// Optional AJAX dependency, but won't run scripts if not present
-							if ( jQuery._evalUrl ) {
-								jQuery._evalUrl( node.src );
+							if ( jQuery._evalUrl && !node.noModule ) {
+								jQuery._evalUrl( node.src, {
+									nonce: node.nonce || node.getAttribute( "nonce" )
+								} );
 							}
 						} else {
-							DOMEval( node.textContent.replace( rcleanScript, "" ), doc, node );
+							DOMEval( node.textContent.replace( rcleanScript, "" ), node, doc );
 						}
 					}
 				}
@@ -6033,7 +6216,7 @@ function remove( elem, selector, keepData ) {
 		}
 
 		if ( node.parentNode ) {
-			if ( keepData && jQuery.contains( node.ownerDocument, node ) ) {
+			if ( keepData && isAttached( node ) ) {
 				setGlobalEval( getAll( node, "script" ) );
 			}
 			node.parentNode.removeChild( node );
@@ -6051,7 +6234,7 @@ jQuery.extend( {
 	clone: function( elem, dataAndEvents, deepDataAndEvents ) {
 		var i, l, srcElements, destElements,
 			clone = elem.cloneNode( true ),
-			inPage = jQuery.contains( elem.ownerDocument, elem );
+			inPage = isAttached( elem );
 
 		// Fix IE cloning issues
 		if ( !support.noCloneChecked && ( elem.nodeType === 1 || elem.nodeType === 11 ) &&
@@ -6347,8 +6530,10 @@ var rboxStyle = new RegExp( cssExpand.join( "|" ), "i" );
 
 		// Support: IE 9 only
 		// Detect overflow:scroll screwiness (gh-3699)
+		// Support: Chrome <=64
+		// Don't get tricked when zoom affects offsetWidth (gh-4029)
 		div.style.position = "absolute";
-		scrollboxSizeVal = div.offsetWidth === 36 || "absolute";
+		scrollboxSizeVal = roundPixelMeasures( div.offsetWidth / 3 ) === 12;
 
 		documentElement.removeChild( container );
 
@@ -6419,7 +6604,7 @@ function curCSS( elem, name, computed ) {
 	if ( computed ) {
 		ret = computed.getPropertyValue( name ) || computed[ name ];
 
-		if ( ret === "" && !jQuery.contains( elem.ownerDocument, elem ) ) {
+		if ( ret === "" && !isAttached( elem ) ) {
 			ret = jQuery.style( elem, name );
 		}
 
@@ -6475,29 +6660,12 @@ function addGetHookIf( conditionFn, hookFn ) {
 }
 
 
-var
+var cssPrefixes = [ "Webkit", "Moz", "ms" ],
+	emptyStyle = document.createElement( "div" ).style,
+	vendorProps = {};
 
-	// Swappable if display is none or starts with table
-	// except "table", "table-cell", or "table-caption"
-	// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
-	rdisplayswap = /^(none|table(?!-c[ea]).+)/,
-	rcustomProp = /^--/,
-	cssShow = { position: "absolute", visibility: "hidden", display: "block" },
-	cssNormalTransform = {
-		letterSpacing: "0",
-		fontWeight: "400"
-	},
-
-	cssPrefixes = [ "Webkit", "Moz", "ms" ],
-	emptyStyle = document.createElement( "div" ).style;
-
-// Return a css property mapped to a potentially vendor prefixed property
+// Return a vendor-prefixed property or undefined
 function vendorPropName( name ) {
-
-	// Shortcut for names that are not vendor prefixed
-	if ( name in emptyStyle ) {
-		return name;
-	}
 
 	// Check for vendor prefixed names
 	var capName = name[ 0 ].toUpperCase() + name.slice( 1 ),
@@ -6511,15 +6679,32 @@ function vendorPropName( name ) {
 	}
 }
 
-// Return a property mapped along what jQuery.cssProps suggests or to
-// a vendor prefixed property.
+// Return a potentially-mapped jQuery.cssProps or vendor prefixed property
 function finalPropName( name ) {
-	var ret = jQuery.cssProps[ name ];
-	if ( !ret ) {
-		ret = jQuery.cssProps[ name ] = vendorPropName( name ) || name;
+	var final = jQuery.cssProps[ name ] || vendorProps[ name ];
+
+	if ( final ) {
+		return final;
 	}
-	return ret;
+	if ( name in emptyStyle ) {
+		return name;
+	}
+	return vendorProps[ name ] = vendorPropName( name ) || name;
 }
+
+
+var
+
+	// Swappable if display is none or starts with table
+	// except "table", "table-cell", or "table-caption"
+	// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
+	rdisplayswap = /^(none|table(?!-c[ea]).+)/,
+	rcustomProp = /^--/,
+	cssShow = { position: "absolute", visibility: "hidden", display: "block" },
+	cssNormalTransform = {
+		letterSpacing: "0",
+		fontWeight: "400"
+	};
 
 function setPositiveNumber( elem, value, subtract ) {
 
@@ -6592,7 +6777,10 @@ function boxModelAdjustment( elem, dimension, box, isBorderBox, styles, computed
 			delta -
 			extra -
 			0.5
-		) );
+
+		// If offsetWidth/offsetHeight is unknown, then we can't determine content-box scroll gutter
+		// Use an explicit zero to avoid NaN (gh-3964)
+		) ) || 0;
 	}
 
 	return delta;
@@ -6602,9 +6790,16 @@ function getWidthOrHeight( elem, dimension, extra ) {
 
 	// Start with computed style
 	var styles = getStyles( elem ),
+
+		// To avoid forcing a reflow, only fetch boxSizing if we need it (gh-4322).
+		// Fake content-box until we know it's needed to know the true value.
+		boxSizingNeeded = !support.boxSizingReliable() || extra,
+		isBorderBox = boxSizingNeeded &&
+			jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
+		valueIsBorderBox = isBorderBox,
+
 		val = curCSS( elem, dimension, styles ),
-		isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
-		valueIsBorderBox = isBorderBox;
+		offsetProp = "offset" + dimension[ 0 ].toUpperCase() + dimension.slice( 1 );
 
 	// Support: Firefox <=54
 	// Return a confounding non-pixel value or feign ignorance, as appropriate.
@@ -6615,22 +6810,29 @@ function getWidthOrHeight( elem, dimension, extra ) {
 		val = "auto";
 	}
 
-	// Check for style in case a browser which returns unreliable values
-	// for getComputedStyle silently falls back to the reliable elem.style
-	valueIsBorderBox = valueIsBorderBox &&
-		( support.boxSizingReliable() || val === elem.style[ dimension ] );
 
 	// Fall back to offsetWidth/offsetHeight when value is "auto"
 	// This happens for inline elements with no explicit setting (gh-3571)
 	// Support: Android <=4.1 - 4.3 only
 	// Also use offsetWidth/offsetHeight for misreported inline dimensions (gh-3602)
-	if ( val === "auto" ||
-		!parseFloat( val ) && jQuery.css( elem, "display", false, styles ) === "inline" ) {
+	// Support: IE 9-11 only
+	// Also use offsetWidth/offsetHeight for when box sizing is unreliable
+	// We use getClientRects() to check for hidden/disconnected.
+	// In those cases, the computed value can be trusted to be border-box
+	if ( ( !support.boxSizingReliable() && isBorderBox ||
+		val === "auto" ||
+		!parseFloat( val ) && jQuery.css( elem, "display", false, styles ) === "inline" ) &&
+		elem.getClientRects().length ) {
 
-		val = elem[ "offset" + dimension[ 0 ].toUpperCase() + dimension.slice( 1 ) ];
+		isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
 
-		// offsetWidth/offsetHeight provide border-box values
-		valueIsBorderBox = true;
+		// Where available, offsetWidth/offsetHeight approximate border box dimensions.
+		// Where not available (e.g., SVG), assume unreliable box-sizing and interpret the
+		// retrieved value as a content box dimension.
+		valueIsBorderBox = offsetProp in elem;
+		if ( valueIsBorderBox ) {
+			val = elem[ offsetProp ];
+		}
 	}
 
 	// Normalize "" and auto
@@ -6676,6 +6878,13 @@ jQuery.extend( {
 		"flexGrow": true,
 		"flexShrink": true,
 		"fontWeight": true,
+		"gridArea": true,
+		"gridColumn": true,
+		"gridColumnEnd": true,
+		"gridColumnStart": true,
+		"gridRow": true,
+		"gridRowEnd": true,
+		"gridRowStart": true,
 		"lineHeight": true,
 		"opacity": true,
 		"order": true,
@@ -6731,7 +6940,9 @@ jQuery.extend( {
 			}
 
 			// If a number was passed in, add the unit (except for certain CSS properties)
-			if ( type === "number" ) {
+			// The isCustomProp check can be removed in jQuery 4.0 when we only auto-append
+			// "px" to a few hardcoded values.
+			if ( type === "number" && !isCustomProp ) {
 				value += ret && ret[ 3 ] || ( jQuery.cssNumber[ origName ] ? "" : "px" );
 			}
 
@@ -6831,18 +7042,29 @@ jQuery.each( [ "height", "width" ], function( i, dimension ) {
 		set: function( elem, value, extra ) {
 			var matches,
 				styles = getStyles( elem ),
-				isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
-				subtract = extra && boxModelAdjustment(
-					elem,
-					dimension,
-					extra,
-					isBorderBox,
-					styles
-				);
+
+				// Only read styles.position if the test has a chance to fail
+				// to avoid forcing a reflow.
+				scrollboxSizeBuggy = !support.scrollboxSize() &&
+					styles.position === "absolute",
+
+				// To avoid forcing a reflow, only fetch boxSizing if we need it (gh-3991)
+				boxSizingNeeded = scrollboxSizeBuggy || extra,
+				isBorderBox = boxSizingNeeded &&
+					jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
+				subtract = extra ?
+					boxModelAdjustment(
+						elem,
+						dimension,
+						extra,
+						isBorderBox,
+						styles
+					) :
+					0;
 
 			// Account for unreliable border-box dimensions by comparing offset* to computed and
 			// faking a content-box to get border and padding (gh-3699)
-			if ( isBorderBox && support.scrollboxSize() === styles.position ) {
+			if ( isBorderBox && scrollboxSizeBuggy ) {
 				subtract -= Math.ceil(
 					elem[ "offset" + dimension[ 0 ].toUpperCase() + dimension.slice( 1 ) ] -
 					parseFloat( styles[ dimension ] ) -
@@ -7010,9 +7232,9 @@ Tween.propHooks = {
 			// Use .style if available and use plain properties where available.
 			if ( jQuery.fx.step[ tween.prop ] ) {
 				jQuery.fx.step[ tween.prop ]( tween );
-			} else if ( tween.elem.nodeType === 1 &&
-				( tween.elem.style[ jQuery.cssProps[ tween.prop ] ] != null ||
-					jQuery.cssHooks[ tween.prop ] ) ) {
+			} else if ( tween.elem.nodeType === 1 && (
+					jQuery.cssHooks[ tween.prop ] ||
+					tween.elem.style[ finalPropName( tween.prop ) ] != null ) ) {
 				jQuery.style( tween.elem, tween.prop, tween.now + tween.unit );
 			} else {
 				tween.elem[ tween.prop ] = tween.now;
@@ -8719,6 +8941,10 @@ jQuery.param = function( a, traditional ) {
 				encodeURIComponent( value == null ? "" : value );
 		};
 
+	if ( a == null ) {
+		return "";
+	}
+
 	// If an array was passed in, assume that it is an array of form elements.
 	if ( Array.isArray( a ) || ( a.jquery && !jQuery.isPlainObject( a ) ) ) {
 
@@ -9221,12 +9447,14 @@ jQuery.extend( {
 						if ( !responseHeaders ) {
 							responseHeaders = {};
 							while ( ( match = rheaders.exec( responseHeadersString ) ) ) {
-								responseHeaders[ match[ 1 ].toLowerCase() ] = match[ 2 ];
+								responseHeaders[ match[ 1 ].toLowerCase() + " " ] =
+									( responseHeaders[ match[ 1 ].toLowerCase() + " " ] || [] )
+										.concat( match[ 2 ] );
 							}
 						}
-						match = responseHeaders[ key.toLowerCase() ];
+						match = responseHeaders[ key.toLowerCase() + " " ];
 					}
-					return match == null ? null : match;
+					return match == null ? null : match.join( ", " );
 				},
 
 				// Raw string
@@ -9615,7 +9843,7 @@ jQuery.each( [ "get", "post" ], function( i, method ) {
 } );
 
 
-jQuery._evalUrl = function( url ) {
+jQuery._evalUrl = function( url, options ) {
 	return jQuery.ajax( {
 		url: url,
 
@@ -9625,7 +9853,16 @@ jQuery._evalUrl = function( url ) {
 		cache: true,
 		async: false,
 		global: false,
-		"throws": true
+
+		// Only evaluate the response if it is successful (gh-4126)
+		// dataFilter is not invoked for failure responses, so using it instead
+		// of the default converter is kludgy but it works.
+		converters: {
+			"text script": function() {}
+		},
+		dataFilter: function( response ) {
+			jQuery.globalEval( response, options );
+		}
 	} );
 };
 
@@ -9908,24 +10145,21 @@ jQuery.ajaxPrefilter( "script", function( s ) {
 // Bind script tag hack transport
 jQuery.ajaxTransport( "script", function( s ) {
 
-	// This transport only deals with cross domain requests
-	if ( s.crossDomain ) {
+	// This transport only deals with cross domain or forced-by-attrs requests
+	if ( s.crossDomain || s.scriptAttrs ) {
 		var script, callback;
 		return {
 			send: function( _, complete ) {
-				script = jQuery( "<script>" ).prop( {
-					charset: s.scriptCharset,
-					src: s.url
-				} ).on(
-					"load error",
-					callback = function( evt ) {
+				script = jQuery( "<script>" )
+					.attr( s.scriptAttrs || {} )
+					.prop( { charset: s.scriptCharset, src: s.url } )
+					.on( "load error", callback = function( evt ) {
 						script.remove();
 						callback = null;
 						if ( evt ) {
 							complete( evt.type === "error" ? 404 : 200, evt.type );
 						}
-					}
-				);
+					} );
 
 				// Use native DOM manipulation to avoid our domManip AJAX trickery
 				document.head.appendChild( script[ 0 ] );
@@ -10615,21 +10849,21 @@ if ( !noGlobal ) {
 return jQuery;
 } );
 
-},{}],13:[function(require,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 'use strict';
 
 
-var yaml = require('./lib/js-yaml.js');
+var yaml = _dereq_('./lib/js-yaml.js');
 
 
 module.exports = yaml;
 
-},{"./lib/js-yaml.js":14}],14:[function(require,module,exports){
+},{"./lib/js-yaml.js":14}],14:[function(_dereq_,module,exports){
 'use strict';
 
 
-var loader = require('./js-yaml/loader');
-var dumper = require('./js-yaml/dumper');
+var loader = _dereq_('./js-yaml/loader');
+var dumper = _dereq_('./js-yaml/dumper');
 
 
 function deprecated(name) {
@@ -10639,25 +10873,25 @@ function deprecated(name) {
 }
 
 
-module.exports.Type                = require('./js-yaml/type');
-module.exports.Schema              = require('./js-yaml/schema');
-module.exports.FAILSAFE_SCHEMA     = require('./js-yaml/schema/failsafe');
-module.exports.JSON_SCHEMA         = require('./js-yaml/schema/json');
-module.exports.CORE_SCHEMA         = require('./js-yaml/schema/core');
-module.exports.DEFAULT_SAFE_SCHEMA = require('./js-yaml/schema/default_safe');
-module.exports.DEFAULT_FULL_SCHEMA = require('./js-yaml/schema/default_full');
+module.exports.Type                = _dereq_('./js-yaml/type');
+module.exports.Schema              = _dereq_('./js-yaml/schema');
+module.exports.FAILSAFE_SCHEMA     = _dereq_('./js-yaml/schema/failsafe');
+module.exports.JSON_SCHEMA         = _dereq_('./js-yaml/schema/json');
+module.exports.CORE_SCHEMA         = _dereq_('./js-yaml/schema/core');
+module.exports.DEFAULT_SAFE_SCHEMA = _dereq_('./js-yaml/schema/default_safe');
+module.exports.DEFAULT_FULL_SCHEMA = _dereq_('./js-yaml/schema/default_full');
 module.exports.load                = loader.load;
 module.exports.loadAll             = loader.loadAll;
 module.exports.safeLoad            = loader.safeLoad;
 module.exports.safeLoadAll         = loader.safeLoadAll;
 module.exports.dump                = dumper.dump;
 module.exports.safeDump            = dumper.safeDump;
-module.exports.YAMLException       = require('./js-yaml/exception');
+module.exports.YAMLException       = _dereq_('./js-yaml/exception');
 
 // Deprecated schema names from JS-YAML 2.0.x
-module.exports.MINIMAL_SCHEMA = require('./js-yaml/schema/failsafe');
-module.exports.SAFE_SCHEMA    = require('./js-yaml/schema/default_safe');
-module.exports.DEFAULT_SCHEMA = require('./js-yaml/schema/default_full');
+module.exports.MINIMAL_SCHEMA = _dereq_('./js-yaml/schema/failsafe');
+module.exports.SAFE_SCHEMA    = _dereq_('./js-yaml/schema/default_safe');
+module.exports.DEFAULT_SCHEMA = _dereq_('./js-yaml/schema/default_full');
 
 // Deprecated functions from JS-YAML 1.x.x
 module.exports.scan           = deprecated('scan');
@@ -10665,7 +10899,7 @@ module.exports.parse          = deprecated('parse');
 module.exports.compose        = deprecated('compose');
 module.exports.addConstructor = deprecated('addConstructor');
 
-},{"./js-yaml/dumper":16,"./js-yaml/exception":17,"./js-yaml/loader":18,"./js-yaml/schema":20,"./js-yaml/schema/core":21,"./js-yaml/schema/default_full":22,"./js-yaml/schema/default_safe":23,"./js-yaml/schema/failsafe":24,"./js-yaml/schema/json":25,"./js-yaml/type":26}],15:[function(require,module,exports){
+},{"./js-yaml/dumper":16,"./js-yaml/exception":17,"./js-yaml/loader":18,"./js-yaml/schema":20,"./js-yaml/schema/core":21,"./js-yaml/schema/default_full":22,"./js-yaml/schema/default_safe":23,"./js-yaml/schema/failsafe":24,"./js-yaml/schema/json":25,"./js-yaml/type":26}],15:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -10726,15 +10960,15 @@ module.exports.repeat         = repeat;
 module.exports.isNegativeZero = isNegativeZero;
 module.exports.extend         = extend;
 
-},{}],16:[function(require,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable no-use-before-define*/
 
-var common              = require('./common');
-var YAMLException       = require('./exception');
-var DEFAULT_FULL_SCHEMA = require('./schema/default_full');
-var DEFAULT_SAFE_SCHEMA = require('./schema/default_safe');
+var common              = _dereq_('./common');
+var YAMLException       = _dereq_('./exception');
+var DEFAULT_FULL_SCHEMA = _dereq_('./schema/default_full');
+var DEFAULT_SAFE_SCHEMA = _dereq_('./schema/default_safe');
 
 var _toString       = Object.prototype.toString;
 var _hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -10834,16 +11068,17 @@ function encodeHex(character) {
 }
 
 function State(options) {
-  this.schema       = options['schema'] || DEFAULT_FULL_SCHEMA;
-  this.indent       = Math.max(1, (options['indent'] || 2));
-  this.skipInvalid  = options['skipInvalid'] || false;
-  this.flowLevel    = (common.isNothing(options['flowLevel']) ? -1 : options['flowLevel']);
-  this.styleMap     = compileStyleMap(this.schema, options['styles'] || null);
-  this.sortKeys     = options['sortKeys'] || false;
-  this.lineWidth    = options['lineWidth'] || 80;
-  this.noRefs       = options['noRefs'] || false;
-  this.noCompatMode = options['noCompatMode'] || false;
-  this.condenseFlow = options['condenseFlow'] || false;
+  this.schema        = options['schema'] || DEFAULT_FULL_SCHEMA;
+  this.indent        = Math.max(1, (options['indent'] || 2));
+  this.noArrayIndent = options['noArrayIndent'] || false;
+  this.skipInvalid   = options['skipInvalid'] || false;
+  this.flowLevel     = (common.isNothing(options['flowLevel']) ? -1 : options['flowLevel']);
+  this.styleMap      = compileStyleMap(this.schema, options['styles'] || null);
+  this.sortKeys      = options['sortKeys'] || false;
+  this.lineWidth     = options['lineWidth'] || 80;
+  this.noRefs        = options['noRefs'] || false;
+  this.noCompatMode  = options['noCompatMode'] || false;
+  this.condenseFlow  = options['condenseFlow'] || false;
 
   this.implicitTypes = this.schema.compiledImplicit;
   this.explicitTypes = this.schema.compiledExplicit;
@@ -11463,13 +11698,14 @@ function writeNode(state, level, object, block, compact, iskey) {
         }
       }
     } else if (type === '[object Array]') {
+      var arrayLevel = (state.noArrayIndent && (level > 0)) ? level - 1 : level;
       if (block && (state.dump.length !== 0)) {
-        writeBlockSequence(state, level, state.dump, compact);
+        writeBlockSequence(state, arrayLevel, state.dump, compact);
         if (duplicate) {
           state.dump = '&ref_' + duplicateIndex + state.dump;
         }
       } else {
-        writeFlowSequence(state, level, state.dump);
+        writeFlowSequence(state, arrayLevel, state.dump);
         if (duplicate) {
           state.dump = '&ref_' + duplicateIndex + ' ' + state.dump;
         }
@@ -11553,7 +11789,7 @@ function safeDump(input, options) {
 module.exports.dump     = dump;
 module.exports.safeDump = safeDump;
 
-},{"./common":15,"./exception":17,"./schema/default_full":22,"./schema/default_safe":23}],17:[function(require,module,exports){
+},{"./common":15,"./exception":17,"./schema/default_full":22,"./schema/default_safe":23}],17:[function(_dereq_,module,exports){
 // YAML error class. http://stackoverflow.com/questions/8458984
 //
 'use strict';
@@ -11598,16 +11834,16 @@ YAMLException.prototype.toString = function toString(compact) {
 
 module.exports = YAMLException;
 
-},{}],18:[function(require,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable max-len,no-use-before-define*/
 
-var common              = require('./common');
-var YAMLException       = require('./exception');
-var Mark                = require('./mark');
-var DEFAULT_SAFE_SCHEMA = require('./schema/default_safe');
-var DEFAULT_FULL_SCHEMA = require('./schema/default_full');
+var common              = _dereq_('./common');
+var YAMLException       = _dereq_('./exception');
+var Mark                = _dereq_('./mark');
+var DEFAULT_SAFE_SCHEMA = _dereq_('./schema/default_safe');
+var DEFAULT_FULL_SCHEMA = _dereq_('./schema/default_full');
 
 
 var _hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -11630,6 +11866,8 @@ var PATTERN_FLOW_INDICATORS       = /[,\[\]\{\}]/;
 var PATTERN_TAG_HANDLE            = /^(?:!|!!|![a-z\-]+!)$/i;
 var PATTERN_TAG_URI               = /^(?:!|[^,\[\]\{\}])(?:%[0-9a-f]{2}|[0-9a-z\-#;\/\?:@&=\+\$,_\.!~\*'\(\)\[\]])*$/i;
 
+
+function _class(obj) { return Object.prototype.toString.call(obj); }
 
 function is_EOL(c) {
   return (c === 0x0A/* LF */) || (c === 0x0D/* CR */);
@@ -11885,6 +12123,31 @@ function mergeMappings(state, destination, source, overridableKeys) {
 
 function storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valueNode, startLine, startPos) {
   var index, quantity;
+
+  // The output is a plain object here, so keys can only be strings.
+  // We need to convert keyNode to a string, but doing so can hang the process
+  // (deeply nested arrays that explode exponentially using aliases).
+  if (Array.isArray(keyNode)) {
+    keyNode = Array.prototype.slice.call(keyNode);
+
+    for (index = 0, quantity = keyNode.length; index < quantity; index += 1) {
+      if (Array.isArray(keyNode[index])) {
+        throwError(state, 'nested arrays are not supported inside keys');
+      }
+
+      if (typeof keyNode === 'object' && _class(keyNode[index]) === '[object Object]') {
+        keyNode[index] = '[object Object]';
+      }
+    }
+  }
+
+  // Avoid code execution in load() via toString property
+  // (still use its own toString for arrays, timestamps,
+  // and whatever user schema extensions happen to have @@toStringTag)
+  if (typeof keyNode === 'object' && _class(keyNode) === '[object Object]') {
+    keyNode = '[object Object]';
+  }
+
 
   keyNode = String(keyNode);
 
@@ -13198,11 +13461,11 @@ module.exports.load        = load;
 module.exports.safeLoadAll = safeLoadAll;
 module.exports.safeLoad    = safeLoad;
 
-},{"./common":15,"./exception":17,"./mark":19,"./schema/default_full":22,"./schema/default_safe":23}],19:[function(require,module,exports){
+},{"./common":15,"./exception":17,"./mark":19,"./schema/default_full":22,"./schema/default_safe":23}],19:[function(_dereq_,module,exports){
 'use strict';
 
 
-var common = require('./common');
+var common = _dereq_('./common');
 
 
 function Mark(name, buffer, position, line, column) {
@@ -13276,14 +13539,14 @@ Mark.prototype.toString = function toString(compact) {
 
 module.exports = Mark;
 
-},{"./common":15}],20:[function(require,module,exports){
+},{"./common":15}],20:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable max-len*/
 
-var common        = require('./common');
-var YAMLException = require('./exception');
-var Type          = require('./type');
+var common        = _dereq_('./common');
+var YAMLException = _dereq_('./exception');
+var Type          = _dereq_('./type');
 
 
 function compileList(schema, name, result) {
@@ -13386,7 +13649,7 @@ Schema.create = function createSchema() {
 
 module.exports = Schema;
 
-},{"./common":15,"./exception":17,"./type":26}],21:[function(require,module,exports){
+},{"./common":15,"./exception":17,"./type":26}],21:[function(_dereq_,module,exports){
 // Standard YAML's Core schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2804923
 //
@@ -13397,16 +13660,16 @@ module.exports = Schema;
 'use strict';
 
 
-var Schema = require('../schema');
+var Schema = _dereq_('../schema');
 
 
 module.exports = new Schema({
   include: [
-    require('./json')
+    _dereq_('./json')
   ]
 });
 
-},{"../schema":20,"./json":25}],22:[function(require,module,exports){
+},{"../schema":20,"./json":25}],22:[function(_dereq_,module,exports){
 // JS-YAML's default schema for `load` function.
 // It is not described in the YAML specification.
 //
@@ -13419,21 +13682,21 @@ module.exports = new Schema({
 'use strict';
 
 
-var Schema = require('../schema');
+var Schema = _dereq_('../schema');
 
 
 module.exports = Schema.DEFAULT = new Schema({
   include: [
-    require('./default_safe')
+    _dereq_('./default_safe')
   ],
   explicit: [
-    require('../type/js/undefined'),
-    require('../type/js/regexp'),
-    require('../type/js/function')
+    _dereq_('../type/js/undefined'),
+    _dereq_('../type/js/regexp'),
+    _dereq_('../type/js/function')
   ]
 });
 
-},{"../schema":20,"../type/js/function":31,"../type/js/regexp":32,"../type/js/undefined":33,"./default_safe":23}],23:[function(require,module,exports){
+},{"../schema":20,"../type/js/function":31,"../type/js/regexp":32,"../type/js/undefined":33,"./default_safe":23}],23:[function(_dereq_,module,exports){
 // JS-YAML's default schema for `safeLoad` function.
 // It is not described in the YAML specification.
 //
@@ -13444,26 +13707,26 @@ module.exports = Schema.DEFAULT = new Schema({
 'use strict';
 
 
-var Schema = require('../schema');
+var Schema = _dereq_('../schema');
 
 
 module.exports = new Schema({
   include: [
-    require('./core')
+    _dereq_('./core')
   ],
   implicit: [
-    require('../type/timestamp'),
-    require('../type/merge')
+    _dereq_('../type/timestamp'),
+    _dereq_('../type/merge')
   ],
   explicit: [
-    require('../type/binary'),
-    require('../type/omap'),
-    require('../type/pairs'),
-    require('../type/set')
+    _dereq_('../type/binary'),
+    _dereq_('../type/omap'),
+    _dereq_('../type/pairs'),
+    _dereq_('../type/set')
   ]
 });
 
-},{"../schema":20,"../type/binary":27,"../type/merge":35,"../type/omap":37,"../type/pairs":38,"../type/set":40,"../type/timestamp":42,"./core":21}],24:[function(require,module,exports){
+},{"../schema":20,"../type/binary":27,"../type/merge":35,"../type/omap":37,"../type/pairs":38,"../type/set":40,"../type/timestamp":42,"./core":21}],24:[function(_dereq_,module,exports){
 // Standard YAML's Failsafe schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2802346
 
@@ -13471,18 +13734,18 @@ module.exports = new Schema({
 'use strict';
 
 
-var Schema = require('../schema');
+var Schema = _dereq_('../schema');
 
 
 module.exports = new Schema({
   explicit: [
-    require('../type/str'),
-    require('../type/seq'),
-    require('../type/map')
+    _dereq_('../type/str'),
+    _dereq_('../type/seq'),
+    _dereq_('../type/map')
   ]
 });
 
-},{"../schema":20,"../type/map":34,"../type/seq":39,"../type/str":41}],25:[function(require,module,exports){
+},{"../schema":20,"../type/map":34,"../type/seq":39,"../type/str":41}],25:[function(_dereq_,module,exports){
 // Standard YAML's JSON schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2803231
 //
@@ -13494,25 +13757,25 @@ module.exports = new Schema({
 'use strict';
 
 
-var Schema = require('../schema');
+var Schema = _dereq_('../schema');
 
 
 module.exports = new Schema({
   include: [
-    require('./failsafe')
+    _dereq_('./failsafe')
   ],
   implicit: [
-    require('../type/null'),
-    require('../type/bool'),
-    require('../type/int'),
-    require('../type/float')
+    _dereq_('../type/null'),
+    _dereq_('../type/bool'),
+    _dereq_('../type/int'),
+    _dereq_('../type/float')
   ]
 });
 
-},{"../schema":20,"../type/bool":28,"../type/float":29,"../type/int":30,"../type/null":36,"./failsafe":24}],26:[function(require,module,exports){
+},{"../schema":20,"../type/bool":28,"../type/float":29,"../type/int":30,"../type/null":36,"./failsafe":24}],26:[function(_dereq_,module,exports){
 'use strict';
 
-var YAMLException = require('./exception');
+var YAMLException = _dereq_('./exception');
 
 var TYPE_CONSTRUCTOR_OPTIONS = [
   'kind',
@@ -13572,7 +13835,7 @@ function Type(tag, options) {
 
 module.exports = Type;
 
-},{"./exception":17}],27:[function(require,module,exports){
+},{"./exception":17}],27:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable no-bitwise*/
@@ -13581,11 +13844,11 @@ var NodeBuffer;
 
 try {
   // A trick for browserified version, to not include `Buffer` shim
-  var _require = require;
+  var _require = _dereq_;
   NodeBuffer = _require('buffer').Buffer;
 } catch (__) {}
 
-var Type       = require('../type');
+var Type       = _dereq_('../type');
 
 
 // [ 64, 65, 66 ] -> [ padding, CR, LF ]
@@ -13712,10 +13975,10 @@ module.exports = new Type('tag:yaml.org,2002:binary', {
   represent: representYamlBinary
 });
 
-},{"../type":26}],28:[function(require,module,exports){
+},{"../type":26}],28:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 function resolveYamlBoolean(data) {
   if (data === null) return false;
@@ -13749,11 +14012,11 @@ module.exports = new Type('tag:yaml.org,2002:bool', {
   defaultStyle: 'lowercase'
 });
 
-},{"../type":26}],29:[function(require,module,exports){
+},{"../type":26}],29:[function(_dereq_,module,exports){
 'use strict';
 
-var common = require('../common');
-var Type   = require('../type');
+var common = _dereq_('../common');
+var Type   = _dereq_('../type');
 
 var YAML_FLOAT_PATTERN = new RegExp(
   // 2.5e4, 2.5 and integers
@@ -13867,11 +14130,11 @@ module.exports = new Type('tag:yaml.org,2002:float', {
   defaultStyle: 'lowercase'
 });
 
-},{"../common":15,"../type":26}],30:[function(require,module,exports){
+},{"../common":15,"../type":26}],30:[function(_dereq_,module,exports){
 'use strict';
 
-var common = require('../common');
-var Type   = require('../type');
+var common = _dereq_('../common');
+var Type   = _dereq_('../type');
 
 function isHexCode(c) {
   return ((0x30/* 0 */ <= c) && (c <= 0x39/* 9 */)) ||
@@ -14042,7 +14305,7 @@ module.exports = new Type('tag:yaml.org,2002:int', {
   }
 });
 
-},{"../common":15,"../type":26}],31:[function(require,module,exports){
+},{"../common":15,"../type":26}],31:[function(_dereq_,module,exports){
 'use strict';
 
 var esprima;
@@ -14056,14 +14319,14 @@ var esprima;
 //
 try {
   // workaround to exclude package from browserify list.
-  var _require = require;
+  var _require = _dereq_;
   esprima = _require('esprima');
 } catch (_) {
   /*global window */
   if (typeof window !== 'undefined') esprima = window.esprima;
 }
 
-var Type = require('../../type');
+var Type = _dereq_('../../type');
 
 function resolveJavascriptFunction(data) {
   if (data === null) return false;
@@ -14136,10 +14399,10 @@ module.exports = new Type('tag:yaml.org,2002:js/function', {
   represent: representJavascriptFunction
 });
 
-},{"../../type":26}],32:[function(require,module,exports){
+},{"../../type":26}],32:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../../type');
+var Type = _dereq_('../../type');
 
 function resolveJavascriptRegExp(data) {
   if (data === null) return false;
@@ -14198,10 +14461,10 @@ module.exports = new Type('tag:yaml.org,2002:js/regexp', {
   represent: representJavascriptRegExp
 });
 
-},{"../../type":26}],33:[function(require,module,exports){
+},{"../../type":26}],33:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../../type');
+var Type = _dereq_('../../type');
 
 function resolveJavascriptUndefined() {
   return true;
@@ -14228,20 +14491,20 @@ module.exports = new Type('tag:yaml.org,2002:js/undefined', {
   represent: representJavascriptUndefined
 });
 
-},{"../../type":26}],34:[function(require,module,exports){
+},{"../../type":26}],34:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 module.exports = new Type('tag:yaml.org,2002:map', {
   kind: 'mapping',
   construct: function (data) { return data !== null ? data : {}; }
 });
 
-},{"../type":26}],35:[function(require,module,exports){
+},{"../type":26}],35:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 function resolveYamlMerge(data) {
   return data === '<<' || data === null;
@@ -14252,10 +14515,10 @@ module.exports = new Type('tag:yaml.org,2002:merge', {
   resolve: resolveYamlMerge
 });
 
-},{"../type":26}],36:[function(require,module,exports){
+},{"../type":26}],36:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 function resolveYamlNull(data) {
   if (data === null) return true;
@@ -14288,10 +14551,10 @@ module.exports = new Type('tag:yaml.org,2002:null', {
   defaultStyle: 'lowercase'
 });
 
-},{"../type":26}],37:[function(require,module,exports){
+},{"../type":26}],37:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 var _hasOwnProperty = Object.prototype.hasOwnProperty;
 var _toString       = Object.prototype.toString;
@@ -14334,10 +14597,10 @@ module.exports = new Type('tag:yaml.org,2002:omap', {
   construct: constructYamlOmap
 });
 
-},{"../type":26}],38:[function(require,module,exports){
+},{"../type":26}],38:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 var _toString = Object.prototype.toString;
 
@@ -14389,20 +14652,20 @@ module.exports = new Type('tag:yaml.org,2002:pairs', {
   construct: constructYamlPairs
 });
 
-},{"../type":26}],39:[function(require,module,exports){
+},{"../type":26}],39:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 module.exports = new Type('tag:yaml.org,2002:seq', {
   kind: 'sequence',
   construct: function (data) { return data !== null ? data : []; }
 });
 
-},{"../type":26}],40:[function(require,module,exports){
+},{"../type":26}],40:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 var _hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -14430,20 +14693,20 @@ module.exports = new Type('tag:yaml.org,2002:set', {
   construct: constructYamlSet
 });
 
-},{"../type":26}],41:[function(require,module,exports){
+},{"../type":26}],41:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 module.exports = new Type('tag:yaml.org,2002:str', {
   kind: 'scalar',
   construct: function (data) { return data !== null ? data : ''; }
 });
 
-},{"../type":26}],42:[function(require,module,exports){
+},{"../type":26}],42:[function(_dereq_,module,exports){
 'use strict';
 
-var Type = require('../type');
+var Type = _dereq_('../type');
 
 var YAML_DATE_REGEXP = new RegExp(
   '^([0-9][0-9][0-9][0-9])'          + // [1] year
@@ -14530,7 +14793,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   represent: representYamlTimestamp
 });
 
-},{"../type":26}],43:[function(require,module,exports){
+},{"../type":26}],43:[function(_dereq_,module,exports){
 (function (global){
 /**
  * @license
@@ -31641,7 +31904,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],44:[function(require,module,exports){
+},{}],44:[function(_dereq_,module,exports){
 // randomColor by David Merfield under the CC0 license
 // https://github.com/davidmerfield/randomColor/
 
@@ -31679,6 +31942,9 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   // Populate the color dictionary
   loadColorBounds();
 
+  // check if a range is taken
+  var colorRanges = [];
+
   var randomColor = function (options) {
 
     options = options || {};
@@ -31708,7 +31974,10 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
 
       var totalColors = options.count,
           colors = [];
-
+      // Value false at index i means the range i is not taken yet.
+      for (var i = 0; i < options.count; i++) {
+        colorRanges.push(false)
+        }
       options.count = null;
 
       while (totalColors > colors.length) {
@@ -31739,17 +32008,47 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
     return setFormat([H,S,B], options);
   };
 
-  function pickHue (options) {
+  function pickHue(options) {
+    if (colorRanges.length > 0) {
+      var hueRange = getRealHueRange(options.hue)
 
-    var hueRange = getHueRange(options.hue),
-        hue = randomWithin(hueRange);
+      var hue = randomWithin(hueRange)
 
-    // Instead of storing red as two seperate ranges,
-    // we group them, using negative numbers
-    if (hue < 0) {hue = 360 + hue;}
+      //Each of colorRanges.length ranges has a length equal approximatelly one step
+      var step = (hueRange[1] - hueRange[0]) / colorRanges.length
 
-    return hue;
+      var j = parseInt((hue - hueRange[0]) / step)
 
+      //Check if the range j is taken
+      if (colorRanges[j] === true) {
+        j = (j + 2) % colorRanges.length
+      }
+      else {
+        colorRanges[j] = true
+           }
+
+      var min = (hueRange[0] + j * step) % 359,
+          max = (hueRange[0] + (j + 1) * step) % 359;
+
+      hueRange = [min, max]
+
+      hue = randomWithin(hueRange)
+
+      if (hue < 0) {hue = 360 + hue;}
+      return hue
+    }
+    else {
+      var hueRange = getHueRange(options.hue)
+
+      hue = randomWithin(hueRange);
+      // Instead of storing red as two seperate ranges,
+      // we group them, using negative numbers
+      if (hue < 0) {
+        hue = 360 + hue;
+      }
+
+      return hue;
+    }
   }
 
   function pickSaturation (hue, options) {
@@ -31922,7 +32221,12 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
 
   function randomWithin (range) {
     if (seed === null) {
-      return Math.floor(range[0] + Math.random()*(range[1] + 1 - range[0]));
+      //generate random evenly destinct number from : https://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
+      var golden_ratio = 0.618033988749895
+      var r=Math.random()
+      r += golden_ratio
+      r %= 1
+      return Math.floor(range[0] + r*(range[1] + 1 - range[0]));
     } else {
       //Seeded random algorithm from http://indiegamr.com/generate-repeatable-random-numbers-in-js/
       var max = range[1] || 1;
@@ -31930,7 +32234,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
       seed = (seed * 9301 + 49297) % 233280;
       var rnd = seed / 233280.0;
       return Math.floor(min + rnd * (max - min));
-    }
+}
   }
 
   function HSVtoHex (hsv){
@@ -32093,10 +32397,35 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
     return total
   }
 
+  // get The range of given hue when options.count!=0
+  function getRealHueRange(colorHue)
+  { if (!isNaN(colorHue)) {
+    var number = parseInt(colorHue);
+
+    if (number < 360 && number > 0) {
+      return getColorInfo(colorHue).hueRange
+    }
+  }
+    else if (typeof colorHue === 'string') {
+
+      if (colorDictionary[colorHue]) {
+        var color = colorDictionary[colorHue];
+
+        if (color.hueRange) {
+          return color.hueRange
+       }
+    } else if (colorHue.match(/^#?([0-9A-F]{3}|[0-9A-F]{6})$/i)) {
+        var hue = HexToHSB(colorHue)[0]
+        return getColorInfo(hue).hueRange
+    }
+  }
+
+    return [0,360]
+}
   return randomColor;
 }));
 
-},{}],45:[function(require,module,exports){
+},{}],45:[function(_dereq_,module,exports){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -32104,46 +32433,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
  * LICENSE file in the root directory of this source tree.
  */
 
-// This method of obtaining a reference to the global object needs to be
-// kept identical to the way it is obtained in runtime.js
-var g = (function() {
-  return this || (typeof self === "object" && self);
-})() || Function("return this")();
-
-// Use `getOwnPropertyNames` because not all browsers support calling
-// `hasOwnProperty` on the global `self` object in a worker. See #183.
-var hadRuntime = g.regeneratorRuntime &&
-  Object.getOwnPropertyNames(g).indexOf("regeneratorRuntime") >= 0;
-
-// Save the old regeneratorRuntime in case it needs to be restored later.
-var oldRuntime = hadRuntime && g.regeneratorRuntime;
-
-// Force reevalutation of runtime.js.
-g.regeneratorRuntime = undefined;
-
-module.exports = require("./runtime");
-
-if (hadRuntime) {
-  // Restore the original runtime.
-  g.regeneratorRuntime = oldRuntime;
-} else {
-  // Remove the global property added by runtime.js.
-  try {
-    delete g.regeneratorRuntime;
-  } catch(e) {
-    g.regeneratorRuntime = undefined;
-  }
-}
-
-},{"./runtime":46}],46:[function(require,module,exports){
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-!(function(global) {
+var runtime = (function (exports) {
   "use strict";
 
   var Op = Object.prototype;
@@ -32153,23 +32443,6 @@ if (hadRuntime) {
   var iteratorSymbol = $Symbol.iterator || "@@iterator";
   var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
   var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-
-  var inModule = typeof module === "object";
-  var runtime = global.regeneratorRuntime;
-  if (runtime) {
-    if (inModule) {
-      // If regeneratorRuntime is defined globally and we're in a module,
-      // make the exports object identical to regeneratorRuntime.
-      module.exports = runtime;
-    }
-    // Don't bother evaluating the rest of this file if the runtime was
-    // already defined globally.
-    return;
-  }
-
-  // Define the runtime globally (as expected by generated code) as either
-  // module.exports (if we're in a module) or a new, empty object.
-  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
 
   function wrap(innerFn, outerFn, self, tryLocsList) {
     // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
@@ -32183,7 +32456,7 @@ if (hadRuntime) {
 
     return generator;
   }
-  runtime.wrap = wrap;
+  exports.wrap = wrap;
 
   // Try/catch helper to minimize deoptimizations. Returns a completion
   // record like context.tryEntries[i].completion. This interface could
@@ -32254,7 +32527,7 @@ if (hadRuntime) {
     });
   }
 
-  runtime.isGeneratorFunction = function(genFun) {
+  exports.isGeneratorFunction = function(genFun) {
     var ctor = typeof genFun === "function" && genFun.constructor;
     return ctor
       ? ctor === GeneratorFunction ||
@@ -32264,7 +32537,7 @@ if (hadRuntime) {
       : false;
   };
 
-  runtime.mark = function(genFun) {
+  exports.mark = function(genFun) {
     if (Object.setPrototypeOf) {
       Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
     } else {
@@ -32281,7 +32554,7 @@ if (hadRuntime) {
   // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
   // `hasOwn.call(value, "__await")` to determine if the yielded value is
   // meant to be awaited.
-  runtime.awrap = function(arg) {
+  exports.awrap = function(arg) {
     return { __await: arg };
   };
 
@@ -32356,17 +32629,17 @@ if (hadRuntime) {
   AsyncIterator.prototype[asyncIteratorSymbol] = function () {
     return this;
   };
-  runtime.AsyncIterator = AsyncIterator;
+  exports.AsyncIterator = AsyncIterator;
 
   // Note that simple async functions are implemented on top of
   // AsyncIterator objects; they just return a Promise for the value of
   // the final result produced by the iterator.
-  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+  exports.async = function(innerFn, outerFn, self, tryLocsList) {
     var iter = new AsyncIterator(
       wrap(innerFn, outerFn, self, tryLocsList)
     );
 
-    return runtime.isGeneratorFunction(outerFn)
+    return exports.isGeneratorFunction(outerFn)
       ? iter // If outerFn is a generator, return the full iterator.
       : iter.next().then(function(result) {
           return result.done ? result.value : iter.next();
@@ -32463,7 +32736,8 @@ if (hadRuntime) {
       context.delegate = null;
 
       if (context.method === "throw") {
-        if (delegate.iterator.return) {
+        // Note: ["return"] must be used for ES3 parsing compatibility.
+        if (delegate.iterator["return"]) {
           // If the delegate iterator has a return method, give it a
           // chance to clean up.
           context.method = "return";
@@ -32583,7 +32857,7 @@ if (hadRuntime) {
     this.reset(true);
   }
 
-  runtime.keys = function(object) {
+  exports.keys = function(object) {
     var keys = [];
     for (var key in object) {
       keys.push(key);
@@ -32644,7 +32918,7 @@ if (hadRuntime) {
     // Return an iterator with no values.
     return { next: doneResult };
   }
-  runtime.values = values;
+  exports.values = values;
 
   function doneResult() {
     return { value: undefined, done: true };
@@ -32849,19 +33123,40 @@ if (hadRuntime) {
       return ContinueSentinel;
     }
   };
-})(
-  // In sloppy mode, unbound `this` refers to the global object, fallback to
-  // Function constructor if we're in global strict mode. That is sadly a form
-  // of indirect eval which violates Content Security Policy.
-  (function() {
-    return this || (typeof self === "object" && self);
-  })() || Function("return this")()
-);
 
-},{}],47:[function(require,module,exports){
-/*! svg.draggable.js - v2.2.1 - 2016-08-25
-* https://github.com/wout/svg.draggable.js
-* Copyright (c) 2016 Wout Fierens; Licensed MIT */
+  // Regardless of whether this script is executing as a CommonJS module
+  // or not, return the runtime object so that we can declare the variable
+  // regeneratorRuntime in the outer scope, which allows this module to be
+  // injected easily by `bin/regenerator --include-runtime script.js`.
+  return exports;
+
+}(
+  // If this script is executing as a CommonJS module, use module.exports
+  // as the regeneratorRuntime namespace. Otherwise create a new empty
+  // object. Either way, the resulting object will be used to initialize
+  // the regeneratorRuntime variable at the top of this file.
+  typeof module === "object" ? module.exports : {}
+));
+
+try {
+  regeneratorRuntime = runtime;
+} catch (accidentalStrictMode) {
+  // This module should not be running in strict mode, so the above
+  // assignment should always work unless something is misconfigured. Just
+  // in case runtime.js accidentally runs in strict mode, we can escape
+  // strict mode using a global Function call. This could conceivably fail
+  // if a Content Security Policy forbids using Function, but in that case
+  // the proper solution is to fix the accidental strict mode problem. If
+  // you've misconfigured your bundler to force strict mode and applied a
+  // CSP to forbid Function, and you're not willing to fix either of those
+  // problems, please detail your unique predicament in a GitHub issue.
+  Function("r", "regeneratorRuntime = r")(runtime);
+}
+
+},{}],46:[function(_dereq_,module,exports){
+/*! svg.draggable.js - v2.2.2 - 2019-01-08
+* https://github.com/svgdotjs/svg.draggable.js
+* Copyright (c) 2019 Wout Fierens; Licensed MIT */
 ;(function() {
 
   // creates handler, saves it
@@ -32884,18 +33179,18 @@ if (hadRuntime) {
   DragHandler.prototype.transformPoint = function(event, offset){
       event = event || window.event
       var touches = event.changedTouches && event.changedTouches[0] || event
-      this.p.x = touches.pageX - (offset || 0)
-      this.p.y = touches.pageY
+      this.p.x = touches.clientX - (offset || 0)
+      this.p.y = touches.clientY
       return this.p.matrixTransform(this.m)
   }
-  
+
   // gets elements bounding box with special handling of groups, nested and use
   DragHandler.prototype.getBBox = function(){
 
     var box = this.el.bbox()
 
     if(this.el instanceof SVG.Nested) box = this.el.rbox()
-    
+
     if (this.el instanceof SVG.G || this.el instanceof SVG.Use || this.el instanceof SVG.Nested) {
       box.x = this.el.x()
       box.y = this.el.y()
@@ -32913,11 +33208,18 @@ if (hadRuntime) {
           return
       }
     }
-  
+
     var _this = this
 
     // fire beforedrag event
     this.el.fire('beforedrag', { event: e, handler: this })
+    if(this.el.event().defaultPrevented) return;
+
+    // prevent browser drag behavior as soon as possible
+    e.preventDefault();
+
+    // prevent propagation to a parent that might also have dragging enabled
+    e.stopPropagation();
 
     // search for parent on the fly to make sure we can call
     // draggable() even when element is not in the dom currently
@@ -32928,13 +33230,13 @@ if (hadRuntime) {
     this.m = this.el.node.getScreenCTM().inverse()
 
     var box = this.getBBox()
-    
+
     var anchorOffset;
-    
+
     // fix text-anchor in text-element (#37)
     if(this.el instanceof SVG.Text){
       anchorOffset = this.el.node.getComputedTextLength();
-        
+
       switch(this.el.attr('text-anchor')){
         case 'middle':
           anchorOffset /= 2;
@@ -32944,14 +33246,14 @@ if (hadRuntime) {
           break;
       }
     }
-    
+
     this.startPoints = {
       // We take absolute coordinates since we are just using a delta here
       point: this.transformPoint(e, anchorOffset),
       box:   box,
       transform: this.el.transform()
     }
-    
+
     // add drag and end events to window
     SVG.on(window, 'mousemove.drag', function(e){ _this.drag(e) })
     SVG.on(window, 'touchmove.drag', function(e){ _this.drag(e) })
@@ -32960,12 +33262,6 @@ if (hadRuntime) {
 
     // fire dragstart event
     this.el.fire('dragstart', {event: e, p: this.startPoints.point, m: this.m, handler: this})
-
-    // prevent browser drag behavior
-    e.preventDefault()
-
-    // prevent propagation to a parent that might also have dragging enabled
-    e.stopPropagation();
   }
 
   // while dragging
@@ -32978,20 +33274,15 @@ if (hadRuntime) {
       , c   = this.constraint
       , gx  = p.x - this.startPoints.point.x
       , gy  = p.y - this.startPoints.point.y
-      
-    var event = new CustomEvent('dragmove', {
-        detail: {
-            event: e
-          , p: p
-          , m: this.m
-          , handler: this
-        }
-      , cancelable: true
+
+    this.el.fire('dragmove', {
+        event: e
+      , p: p
+      , m: this.m
+      , handler: this
     })
-      
-    this.el.fire(event)
-    
-    if(event.defaultPrevented) return p
+
+    if(this.el.event().defaultPrevented) return p
 
     // move the element to its new position, if possible by constraint
     if (typeof c == 'function') {
@@ -33022,21 +33313,33 @@ if (hadRuntime) {
     } else if (typeof c == 'object') {
 
       // keep element within constrained box
-      if (c.minX != null && x < c.minX)
+      if (c.minX != null && x < c.minX) {
         x = c.minX
-      else if (c.maxX != null && x > c.maxX - box.width){
+        gx = x - this.startPoints.box.x
+      } else if (c.maxX != null && x > c.maxX - box.width) {
         x = c.maxX - box.width
-      }if (c.minY != null && y < c.minY)
+        gx = x - this.startPoints.box.x
+      } if (c.minY != null && y < c.minY) {
         y = c.minY
-      else if (c.maxY != null && y > c.maxY - box.height)
+        gy = y - this.startPoints.box.y
+      } else if (c.maxY != null && y > c.maxY - box.height) {
         y = c.maxY - box.height
-        
+        gy = y - this.startPoints.box.y
+      }
+
+      if (c.snapToGrid != null) {
+        x = x - (x % c.snapToGrid)
+        y = y - (y % c.snapToGrid)
+        gx = gx - (gx % c.snapToGrid)
+        gy = gy - (gy % c.snapToGrid)
+      }
+
       if(this.el instanceof SVG.G)
         this.el.matrix(this.startPoints.transform).transform({x:gx, y: gy}, true)
       else
         this.el.move(x, y)
     }
-    
+
     // so we can use it in the end-method, too
     return p
   }
@@ -33086,16 +33389,17 @@ if (hadRuntime) {
   })
 
 }).call(this);
-},{}],48:[function(require,module,exports){
+
+},{}],47:[function(_dereq_,module,exports){
 /*!
 * svg.js - A lightweight library for manipulating and animating SVG.
-* @version 2.7.0
+* @version 2.7.1
 * https://svgdotjs.github.io/
 *
 * @copyright Wout Fierens <wout@mick-wout.com>
 * @license MIT
 *
-* BUILT: Tue Nov 13 2018 21:10:01 GMT+0100 (GMT+01:00)
+* BUILT: Fri Nov 30 2018 10:01:55 GMT+0100 (GMT+01:00)
 */;
 (function(root, factory) {
   /* istanbul ignore next */
@@ -36621,7 +36925,7 @@ SVG.extend(SVG.Element, {
     if (event instanceof window.Event) {
       this.node.dispatchEvent(event)
     } else {
-      this.node.dispatchEvent(event = new window.CustomEvent(event, {detail: data, cancelable: true}))
+      this.node.dispatchEvent(event = new SVG.CustomEvent(event, {detail: data, cancelable: true}))
     }
     this._event = event
     return this
@@ -38688,27 +38992,27 @@ if (typeof window.CustomEvent !== 'function') {
 return SVG
 
 }));
-},{}],49:[function(require,module,exports){
+},{}],48:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _jquery = _interopRequireDefault(require("jquery"));
+var _jquery = _interopRequireDefault(_dereq_("jquery"));
 
-var _wordTag = _interopRequireDefault(require("./word-tag.js"));
+var _wordTag = _interopRequireDefault(_dereq_("./word-tag.js"));
 
-var _wordCluster = _interopRequireDefault(require("./word-cluster.js"));
+var _wordCluster = _interopRequireDefault(_dereq_("./word-cluster.js"));
 
-var _util = _interopRequireDefault(require("../util.js"));
+var _util = _interopRequireDefault(_dereq_("../util.js"));
 
 var Link =
 /*#__PURE__*/
@@ -38722,18 +39026,18 @@ function () {
    *     this event
    * @param {Object[]} args - The arguments to this Link. An Array of
    *     Objects specifying `anchor` and `type`
-   * @param {String} reltype - For (binary) relational Links, a String
+   * @param {String} relType - For (binary) relational Links, a String
    *     identifying the relationship type
    * @param {Boolean} top - Whether or not this Link should be drawn above
    *     the text row (if false, it will be drawn below)
    * @param {String} category - Links can be shown/hidden by category
    */
-  function Link(eventId, trigger, args, reltype) {
+  function Link(eventId, trigger, args, relType) {
     var _this = this;
 
     var top = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
     var category = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : "default";
-    (0, _classCallCheck2.default)(this, Link);
+    (0, _classCallCheck2["default"])(this, Link);
     // ---------------
     // Core properties
     this.eventId = eventId; // Links can be either Event or Relation annotations, to borrow the BRAT
@@ -38743,7 +39047,7 @@ function () {
     // Both types of Links have arguments, which may themselves be nested links.
 
     this.trigger = trigger;
-    this.reltype = reltype;
+    this.relType = relType;
     this.arguments = args; // Contains references to higher-level Links that have this Link as an
     // argument
 
@@ -38796,7 +39100,7 @@ function () {
    */
 
 
-  (0, _createClass2.default)(Link, [{
+  (0, _createClass2["default"])(Link, [{
     key: "init",
     value: function init(main) {
       var _this2 = this;
@@ -38825,7 +39129,7 @@ function () {
         _this2.argLabels.push(text);
       }); // Main Link label
 
-      this.linkLabel = new Label(this.mainSvg, this.svg, this.reltype, "link-main-label"); // Closure for identifying dragged handles
+      this.linkLabel = new Label(this.mainSvg, this.svg, this.relType, "link-main-label"); // Closure for identifying dragged handles
 
       var draggedHandle = null;
       var dragStartX = 0; // Drag/Click events
@@ -38836,8 +39140,11 @@ function () {
         // just in the middle of the Link's line.
         var dragX = e.detail.p.x; // `dragY` is adjusted for the document's scroll position, but we
         // want to compare it against our internal container coordinates
+        // (ZW: As of svg.draggable.js 2.2.2, `dragY` correctly reflects the
+        // internal coordinates of the drag)
+        // const dragY = e.detail.p.y - $(window).scrollTop();
 
-        var dragY = e.detail.p.y - (0, _jquery.default)(window).scrollTop();
+        var dragY = e.detail.p.y;
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
         var _iteratorError = undefined;
@@ -38879,8 +39186,8 @@ function () {
           _iteratorError = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
             }
           } finally {
             if (_didIteratorError) {
@@ -38913,11 +39220,11 @@ function () {
           // centre of the tag
           var halfWidth;
 
-          if (_this2.top && anchor.topTag instanceof _wordTag.default) {
+          if (_this2.top && anchor.topTag instanceof _wordTag["default"]) {
             halfWidth = anchor.topTag.textWidth / 2;
-          } else if (!_this2.top && anchor.bottomTag instanceof _wordTag.default) {
+          } else if (!_this2.top && anchor.bottomTag instanceof _wordTag["default"]) {
             halfWidth = anchor.bottomTag.textWidth / 2;
-          } else if (_this2.top && anchor instanceof _wordCluster.default) {
+          } else if (_this2.top && anchor instanceof _wordCluster["default"]) {
             halfWidth = anchor.textWidth / 2;
           } else {
             // Shouldn't happen, but maybe this is pointed directly at a Word?
@@ -39090,8 +39397,8 @@ function () {
         _iteratorError2 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-            _iterator2.return();
+          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+            _iterator2["return"]();
           }
         } finally {
           if (_didIteratorError2) {
@@ -39164,8 +39471,8 @@ function () {
         _iteratorError3 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-            _iterator3.return();
+          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+            _iterator3["return"]();
           }
         } finally {
           if (_didIteratorError3) {
@@ -39201,8 +39508,8 @@ function () {
             _iteratorError4 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-                _iterator4.return();
+              if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+                _iterator4["return"]();
               }
             } finally {
               if (_didIteratorError4) {
@@ -39261,8 +39568,8 @@ function () {
   }, {
     key: "getLineY",
     value: function getLineY(row) {
-      return this.top ? row.ry + row.rh - row.wordHeight - this.config.linkSlotInterval * this.slot // Bottom Links have negative slot numbers
-      : row.ry + row.rh + row.wordDescent - this.config.linkSlotInterval * this.slot;
+      return this.top ? row.ry + row.rh - row.wordHeight - this.config.linkSlotInterval * this.slot : // Bottom Links have negative slot numbers
+      row.ry + row.rh + row.wordDescent - this.config.linkSlotInterval * this.slot;
     }
     /**
      * Given the full array of Words in the document, calculates this Link's
@@ -39337,8 +39644,8 @@ function () {
             _iteratorError7 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
-                _iterator7.return();
+              if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
+                _iterator7["return"]();
               }
             } finally {
               if (_didIteratorError7) {
@@ -39371,8 +39678,8 @@ function () {
                 _iteratorError9 = err;
               } finally {
                 try {
-                  if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-                    _iterator9.return();
+                  if (!_iteratorNormalCompletion9 && _iterator9["return"] != null) {
+                    _iterator9["return"]();
                   }
                 } finally {
                   if (_didIteratorError9) {
@@ -39386,8 +39693,8 @@ function () {
             _iteratorError8 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
-                _iterator8.return();
+              if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
+                _iterator8["return"]();
               }
             } finally {
               if (_didIteratorError8) {
@@ -39402,8 +39709,8 @@ function () {
         _iteratorError5 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-            _iterator5.return();
+          if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+            _iterator5["return"]();
           }
         } finally {
           if (_didIteratorError5) {
@@ -39429,8 +39736,8 @@ function () {
         _iteratorError6 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-            _iterator6.return();
+          if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
+            _iterator6["return"]();
           }
         } finally {
           if (_didIteratorError6) {
@@ -39439,7 +39746,7 @@ function () {
         }
       }
 
-      intervening = _util.default.sortForSlotting(intervening); // Map to slots, reduce to the highest number seen so far (or 0 if there
+      intervening = _util["default"].sortForSlotting(intervening); // Map to slots, reduce to the highest number seen so far (or 0 if there
       // are none)
 
       var maxSlot = intervening.map(function (link) {
@@ -39544,8 +39851,8 @@ function () {
         _iteratorError10 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
-            _iterator10.return();
+          if (!_iteratorNormalCompletion10 && _iterator10["return"] != null) {
+            _iterator10["return"]();
           }
         } finally {
           if (_didIteratorError10) {
@@ -39571,8 +39878,8 @@ function () {
 
       pReference = null;
 
-      for (var _i = 0; _i < lHandles.length; _i++) {
-        var _handle2 = lHandles[_i];
+      for (var _i = 0, _lHandles = lHandles; _i < _lHandles.length; _i++) {
+        var _handle2 = _lHandles[_i];
         // Handle
         // ------
         var pHandle = {
@@ -39666,8 +39973,8 @@ function () {
 
       pReference = null;
 
-      for (var _i2 = 0; _i2 < rHandles.length; _i2++) {
-        var _handle3 = rHandles[_i2];
+      for (var _i2 = 0, _rHandles = rHandles; _i2 < _rHandles.length; _i2++) {
+        var _handle3 = _rHandles[_i2];
         // Handle
         // ------
         var _pHandle = {
@@ -40069,7 +40376,7 @@ var Handle =
 /*#__PURE__*/
 function () {
   function Handle(anchor, parent) {
-    (0, _classCallCheck2.default)(this, Handle);
+    (0, _classCallCheck2["default"])(this, Handle);
     this.anchor = anchor;
     this.parent = parent;
     this.x = 0;
@@ -40125,8 +40432,8 @@ function () {
           _iteratorError11 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion11 && _iterator11.return != null) {
-              _iterator11.return();
+            if (!_iteratorNormalCompletion11 && _iterator11["return"] != null) {
+              _iterator11["return"]();
             }
           } finally {
             if (_didIteratorError11) {
@@ -40162,7 +40469,7 @@ function () {
    */
 
 
-  (0, _createClass2.default)(Handle, [{
+  (0, _createClass2["default"])(Handle, [{
     key: "precedes",
     value: function precedes(handle) {
       if (!this.row || !handle.row) {
@@ -40195,7 +40502,7 @@ function () {
   function Label(mainSvg, svg, text, addClass) {
     var _this5 = this;
 
-    (0, _classCallCheck2.default)(this, Label);
+    (0, _classCallCheck2["default"])(this, Label);
     this.mainSvg = mainSvg;
     this.svg = svg.group(); // Main label
 
@@ -40256,7 +40563,7 @@ function () {
    */
 
 
-  (0, _createClass2.default)(Label, [{
+  (0, _createClass2["default"])(Label, [{
     key: "show",
     value: function show() {
       this.svgBackground.show();
@@ -40331,21 +40638,21 @@ function () {
 }();
 
 var _default = Link;
-exports.default = _default;
+exports["default"] = _default;
 
-},{"../util.js":62,"./word-cluster.js":51,"./word-tag.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],50:[function(require,module,exports){
+},{"../util.js":59,"./word-cluster.js":50,"./word-tag.js":51,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"jquery":12}],49:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
 var Row =
 /*#__PURE__*/
@@ -40364,7 +40671,7 @@ function () {
     var idx = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
     var ry = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
     var rh = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 100;
-    (0, _classCallCheck2.default)(this, Row);
+    (0, _classCallCheck2["default"])(this, Row);
     this.config = config;
     this.idx = idx;
     this.ry = ry; // row position from top
@@ -40396,7 +40703,7 @@ function () {
    */
 
 
-  (0, _createClass2.default)(Row, [{
+  (0, _createClass2["default"])(Row, [{
     key: "svgInit",
     value: function svgInit(mainSvg) {
       var _this = this;
@@ -40643,8 +40950,8 @@ function () {
             _iteratorError2 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-                _iterator2.return();
+              if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+                _iterator2["return"]();
               }
             } finally {
               if (_didIteratorError2) {
@@ -40670,8 +40977,8 @@ function () {
             _iteratorError3 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-                _iterator3.return();
+              if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+                _iterator3["return"]();
               }
             } finally {
               if (_didIteratorError3) {
@@ -40685,8 +40992,8 @@ function () {
         _iteratorError = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion && _iterator.return != null) {
-            _iterator.return();
+          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+            _iterator["return"]();
           }
         } finally {
           if (_didIteratorError) {
@@ -40770,8 +41077,8 @@ function () {
             _iteratorError5 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-                _iterator5.return();
+              if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+                _iterator5["return"]();
               }
             } finally {
               if (_didIteratorError5) {
@@ -40785,8 +41092,8 @@ function () {
         _iteratorError4 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-            _iterator4.return();
+          if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+            _iterator4["return"]();
           }
         } finally {
           if (_didIteratorError4) {
@@ -40834,8 +41141,8 @@ function () {
             _iteratorError7 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
-                _iterator7.return();
+              if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
+                _iterator7["return"]();
               }
             } finally {
               if (_didIteratorError7) {
@@ -40849,8 +41156,8 @@ function () {
         _iteratorError6 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-            _iterator6.return();
+          if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
+            _iterator6["return"]();
           }
         } finally {
           if (_didIteratorError6) {
@@ -40895,8 +41202,8 @@ function () {
               _iteratorError10 = err;
             } finally {
               try {
-                if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
-                  _iterator10.return();
+                if (!_iteratorNormalCompletion10 && _iterator10["return"] != null) {
+                  _iterator10["return"]();
                 }
               } finally {
                 if (_didIteratorError10) {
@@ -40911,8 +41218,8 @@ function () {
         _iteratorError8 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
-            _iterator8.return();
+          if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
+            _iterator8["return"]();
           }
         } finally {
           if (_didIteratorError8) {
@@ -40942,8 +41249,8 @@ function () {
             _iteratorError9 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-                _iterator9.return();
+              if (!_iteratorNormalCompletion9 && _iterator9["return"] != null) {
+                _iterator9["return"]();
               }
             } finally {
               if (_didIteratorError9) {
@@ -40979,8 +41286,8 @@ function () {
         _iteratorError11 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion11 && _iterator11.return != null) {
-            _iterator11.return();
+          if (!_iteratorNormalCompletion11 && _iterator11["return"] != null) {
+            _iterator11["return"]();
           }
         } finally {
           if (_didIteratorError11) {
@@ -41036,8 +41343,8 @@ function () {
             _iteratorError13 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion13 && _iterator13.return != null) {
-                _iterator13.return();
+              if (!_iteratorNormalCompletion13 && _iterator13["return"] != null) {
+                _iterator13["return"]();
               }
             } finally {
               if (_didIteratorError13) {
@@ -41053,8 +41360,8 @@ function () {
         _iteratorError12 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion12 && _iterator12.return != null) {
-            _iterator12.return();
+          if (!_iteratorNormalCompletion12 && _iterator12["return"] != null) {
+            _iterator12["return"]();
           }
         } finally {
           if (_didIteratorError12) {
@@ -41115,8 +41422,8 @@ function () {
             _iteratorError15 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion15 && _iterator15.return != null) {
-                _iterator15.return();
+              if (!_iteratorNormalCompletion15 && _iterator15["return"] != null) {
+                _iterator15["return"]();
               }
             } finally {
               if (_didIteratorError15) {
@@ -41133,8 +41440,8 @@ function () {
         _iteratorError14 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion14 && _iterator14.return != null) {
-            _iterator14.return();
+          if (!_iteratorNormalCompletion14 && _iterator14["return"] != null) {
+            _iterator14["return"]();
           }
         } finally {
           if (_didIteratorError14) {
@@ -41170,24 +41477,24 @@ function () {
 }();
 
 var _default = Row;
-exports.default = _default;
+exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],51:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],50:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
 /**
- * Tags for cases where multiple words make up a single entity
+ * Act like WordTags for cases where multiple words make up a single entity
  * E.g.: The two words "DNA damage" as a single "BioProcess"
  *
  * Act as the anchor for any incoming Links (in lieu of the Words it covers)
@@ -41209,7 +41516,7 @@ function () {
 
     var words = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
     var val = arguments.length > 1 ? arguments[1] : undefined;
-    (0, _classCallCheck2.default)(this, WordCluster);
+    (0, _classCallCheck2["default"])(this, WordCluster);
     this.eventIds = [];
     this.val = val;
     this.words = words;
@@ -41241,7 +41548,7 @@ function () {
    */
 
 
-  (0, _createClass2.default)(WordCluster, [{
+  (0, _createClass2["default"])(WordCluster, [{
     key: "addEventId",
     value: function addEventId(id) {
       if (this.eventIds.indexOf(id) < 0) {
@@ -41572,21 +41879,21 @@ function () {
 }();
 
 var _default = WordCluster;
-exports.default = _default;
+exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],52:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],51:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
 /**
  * Tags for single entities/tokens.
@@ -41611,7 +41918,7 @@ function () {
    */
   function WordTag(val, word, config) {
     var top = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
-    (0, _classCallCheck2.default)(this, WordTag);
+    (0, _classCallCheck2["default"])(this, WordTag);
     this.val = val;
     this.word = word;
     this.config = config;
@@ -41628,7 +41935,7 @@ function () {
    */
 
 
-  (0, _createClass2.default)(WordTag, [{
+  (0, _createClass2["default"])(WordTag, [{
     key: "draw",
     value: function draw() {
       var _this = this;
@@ -41843,25 +42150,25 @@ function () {
 }();
 
 var _default = WordTag;
-exports.default = _default;
+exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],53:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],52:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+var _slicedToArray2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/slicedToArray"));
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _wordTag = _interopRequireDefault(require("./word-tag.js"));
+var _wordTag = _interopRequireDefault(_dereq_("./word-tag.js"));
 
 /**
  * Objects representing raw entity/token strings.
@@ -41887,7 +42194,7 @@ function () {
    *     currently-parsed document
    */
   function Word(text, idx) {
-    (0, _classCallCheck2.default)(this, Word);
+    (0, _classCallCheck2["default"])(this, Word);
     this.text = text;
     this.idx = idx; // Optional properties that may be set later
     // -----------------------------------------
@@ -41933,7 +42240,7 @@ function () {
    */
 
 
-  (0, _createClass2.default)(Word, [{
+  (0, _createClass2["default"])(Word, [{
     key: "addEventId",
     value: function addEventId(id) {
       if (this.eventIds.indexOf(id) < 0) {
@@ -41985,7 +42292,7 @@ function () {
       this.topTagCategory = category;
 
       if (this.initialised) {
-        this.topTag = new _wordTag.default(this.registeredTags[category], this, this.config); // Since one of the Word's tags has changed, recalculate/realign its
+        this.topTag = new _wordTag["default"](this.registeredTags[category], this, this.config); // Since one of the Word's tags has changed, recalculate/realign its
         // bounding box
 
         this.alignBox();
@@ -42013,7 +42320,7 @@ function () {
       this.bottomTagCategory = category;
 
       if (this.initialised) {
-        this.bottomTag = new _wordTag.default(this.registeredTags[category], this, this.config, false); // Since one of the Word's tags has changed, recalculate/realign its
+        this.bottomTag = new _wordTag["default"](this.registeredTags[category], this, this.config, false); // Since one of the Word's tags has changed, recalculate/realign its
         // bounding box
 
         this.alignBox();
@@ -42054,11 +42361,11 @@ function () {
       // Draw in this Word's tags
 
       if (this.topTagCategory) {
-        this.topTag = new _wordTag.default(this.registeredTags[this.topTagCategory], this, this.config);
+        this.topTag = new _wordTag["default"](this.registeredTags[this.topTagCategory], this, this.config);
       }
 
       if (this.bottomTagCategory) {
-        this.bottomTag = new _wordTag.default(this.registeredTags[this.bottomTagCategory], this, this.config, false);
+        this.bottomTag = new _wordTag["default"](this.registeredTags[this.bottomTagCategory], this, this.config, false);
       } // Draw cluster info
 
 
@@ -42230,8 +42537,8 @@ function () {
           _iteratorError = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
             }
           } finally {
             if (_didIteratorError) {
@@ -42301,7 +42608,7 @@ function () {
         for (var _iterator2 = this.clusters[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
           var cluster = _step2.value;
 
-          var _cluster$endpoints = (0, _slicedToArray2.default)(cluster.endpoints, 2),
+          var _cluster$endpoints = (0, _slicedToArray2["default"])(cluster.endpoints, 2),
               clusterLeft = _cluster$endpoints[0],
               clusterRight = _cluster$endpoints[1];
 
@@ -42325,8 +42632,8 @@ function () {
         _iteratorError2 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-            _iterator2.return();
+          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+            _iterator2["return"]();
           }
         } finally {
           if (_didIteratorError2) {
@@ -42439,19 +42746,19 @@ function () {
 }();
 
 var _default = Word;
-exports.default = _default;
+exports["default"] = _default;
 
-},{"./word-tag.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],54:[function(require,module,exports){
+},{"./word-tag.js":51,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],53:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
 /**
  * *Configuration options for the library*
@@ -42482,10 +42789,10 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
  *
  * @property {Boolean} showTopLinksOnMove=true
  *   Continue to display top {@link Link}s when the user drags {@link
-  *   Word Words} around.
+ *   Word Words} around.
  * @property {Boolean} showBottomLinksOnMove=true
  *   Continue to display bottom {@link Link}s when the user drags {@link
-  *   Word Words} around.
+ *   Word Words} around.
  *
  * @property {Boolean} showTopMainLabel=true
  *   Display the main type label for top {@link Link Links}.
@@ -42547,7 +42854,7 @@ var Config =
  * @returns {Config~Config}
  */
 function Config() {
-  (0, _classCallCheck2.default)(this, Config);
+  (0, _classCallCheck2["default"])(this, Config);
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // User options
   // Category of top/bottom Links to show
@@ -42613,51 +42920,55 @@ function Config() {
 };
 
 var _default = Config;
-exports.default = _default;
+exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],55:[function(require,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],54:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = _dereq_("@babel/runtime/helpers/interopRequireWildcard");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
-var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+var _regenerator = _interopRequireDefault(_dereq_("@babel/runtime/regenerator"));
 
-var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
+var _asyncToGenerator2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/asyncToGenerator"));
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _lodash = _interopRequireDefault(require("lodash"));
+var _lodash = _interopRequireDefault(_dereq_("lodash"));
 
-var _jquery = _interopRequireDefault(require("jquery"));
+var _jquery = _interopRequireDefault(_dereq_("jquery"));
 
-var SVG = _interopRequireWildcard(require("svg.js"));
+var SVG = _interopRequireWildcard(_dereq_("svg.js"));
 
-var _parse = _interopRequireDefault(require("./parse/parse.js"));
+var _rowmanager = _interopRequireDefault(_dereq_("./managers/rowmanager"));
 
-var _rowmanager = _interopRequireDefault(require("./managers/rowmanager.js"));
+var _labelmanager = _interopRequireDefault(_dereq_("./managers/labelmanager"));
 
-var _labelmanager = _interopRequireDefault(require("./managers/labelmanager.js"));
+var _taxonomy = _interopRequireDefault(_dereq_("./managers/taxonomy"));
 
-var _taxonomy = _interopRequireDefault(require("./managers/taxonomy.js"));
+var _config = _interopRequireDefault(_dereq_("./config"));
 
-var _config = _interopRequireDefault(require("./config.js"));
+var _util = _interopRequireDefault(_dereq_("./util"));
 
-var _util = _interopRequireDefault(require("./util.js"));
+var _word = _interopRequireDefault(_dereq_("./components/word"));
 
-var _autobindDecorator = _interopRequireDefault(require("autobind-decorator"));
+var _wordCluster = _interopRequireDefault(_dereq_("./components/word-cluster"));
+
+var _link = _interopRequireDefault(_dereq_("./components/link"));
+
+var _autobindDecorator = _interopRequireDefault(_dereq_("autobind-decorator"));
 
 var _class;
 
-var Main = (0, _autobindDecorator.default)(_class =
+var Main = (0, _autobindDecorator["default"])(_class =
 /*#__PURE__*/
 function () {
   /**
@@ -42666,15 +42977,17 @@ function () {
    *     ID of the container element, or the element itself (as a
    *     native/jQuery object)
    * @param {Object} options - Overrides for default library options
+   * @param {Object} parsers - Registered parsers for various annotation formats
    */
   function Main(container) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    (0, _classCallCheck2.default)(this, Main);
+    var parsers = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    (0, _classCallCheck2["default"])(this, Main);
     // Config options
-    this.config = _lodash.default.defaults(options, new _config.default()); // SVG.Doc expects either a string with the element's ID, or the element
+    this.config = _lodash["default"].defaults(options, new _config["default"]()); // SVG.Doc expects either a string with the element's ID, or the element
     // itself (not a jQuery object).
 
-    if (_lodash.default.hasIn(container, "jquery")) {
+    if (_lodash["default"].hasIn(container, "jquery")) {
       container = container[0];
     }
 
@@ -42682,12 +42995,13 @@ function () {
     // (since they are used for calculating the widths of rows and other
     // elements).  We use jQuery to get the parent's size.
 
-    this.$container = (0, _jquery.default)(this.svg.node).parent(); // Managers/Components
+    this.$container = (0, _jquery["default"])(this.svg.node).parent(); // Managers/Components
 
-    this.parser = new _parse.default();
-    this.rowManager = new _rowmanager.default(this.svg, this.config);
-    this.labelManager = new _labelmanager.default(this.svg);
-    this.taxonomyManager = new _taxonomy.default(this.config); // Tokens and links that are currently drawn on the visualisation
+    this.rowManager = new _rowmanager["default"](this.svg, this.config);
+    this.labelManager = new _labelmanager["default"](this.svg);
+    this.taxonomyManager = new _taxonomy["default"](this.config); // Registered Parsers
+
+    this.parsers = parsers; // Tokens and links that are currently drawn on the visualisation
 
     this.words = [];
     this.links = []; // Initialisation
@@ -42702,17 +43016,26 @@ function () {
 
   /**
    * Loads the given annotation data onto the TAG visualisation
-   * @param {Object} data - The data to load
+   * @param {Array} dataObjects - The raw annotation data object(s) to load
    * @param {String} format - One of the supported format identifiers for
    *     the data
    */
 
 
-  (0, _createClass2.default)(Main, [{
+  (0, _createClass2["default"])(Main, [{
     key: "loadData",
-    value: function loadData(data, format) {
-      this.parser.loadData(data, format);
-      this.redraw();
+    value: function loadData(dataObjects, format) {
+      // 1) Remove any currently-loaded data
+      // 2) Parse the new data
+      // 3) Hand-off the parsed data to the SVG initialisation procedure
+      if (!_lodash["default"].has(this.parsers, format)) {
+        throw "No parser registered for annotation format: ".concat(format);
+      }
+
+      this.clear();
+      var parsedData = this.parsers[format].parse(dataObjects);
+      this.init(parsedData);
+      this.draw();
     }
     /**
      * Reads the given data file asynchronously and loads it onto the TAG
@@ -42725,23 +43048,22 @@ function () {
   }, {
     key: "loadUrlAsync",
     value: function () {
-      var _loadUrlAsync = (0, _asyncToGenerator2.default)(
+      var _loadUrlAsync = (0, _asyncToGenerator2["default"])(
       /*#__PURE__*/
-      _regenerator.default.mark(function _callee(path, format) {
+      _regenerator["default"].mark(function _callee(path, format) {
         var data;
-        return _regenerator.default.wrap(function _callee$(_context) {
+        return _regenerator["default"].wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return _jquery.default.ajax(path);
+                return _jquery["default"].ajax(path);
 
               case 2:
                 data = _context.sent;
-                this.parser.loadData(data, format);
-                this.redraw();
+                this.loadData([data], format);
 
-              case 5:
+              case 4:
               case "end":
                 return _context.stop();
             }
@@ -42749,9 +43071,11 @@ function () {
         }, _callee, this);
       }));
 
-      return function loadUrlAsync(_x, _x2) {
+      function loadUrlAsync(_x, _x2) {
         return _loadUrlAsync.apply(this, arguments);
-      };
+      }
+
+      return loadUrlAsync;
     }()
     /**
      * Reads the given annotation files and loads them onto the TAG
@@ -42764,17 +43088,17 @@ function () {
   }, {
     key: "loadFilesAsync",
     value: function () {
-      var _loadFilesAsync = (0, _asyncToGenerator2.default)(
+      var _loadFilesAsync = (0, _asyncToGenerator2["default"])(
       /*#__PURE__*/
-      _regenerator.default.mark(function _callee2(fileList, format) {
+      _regenerator["default"].mark(function _callee2(fileList, format) {
         var readPromises, files;
-        return _regenerator.default.wrap(function _callee2$(_context2) {
+        return _regenerator["default"].wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 // Instantiate FileReaders for all the given files, and wait until they
                 // are read
-                readPromises = _lodash.default.map(fileList, function (file) {
+                readPromises = _lodash["default"].map(fileList, function (file) {
                   var reader = new FileReader();
                   reader.readAsText(file);
                   return new Promise(function (resolve) {
@@ -42792,10 +43116,9 @@ function () {
 
               case 3:
                 files = _context2.sent;
-                this.parser.loadFiles(files, format);
-                this.redraw();
+                this.loadData(files, format);
 
-              case 6:
+              case 5:
               case "end":
                 return _context2.stop();
             }
@@ -42803,9 +43126,11 @@ function () {
         }, _callee2, this);
       }));
 
-      return function loadFilesAsync(_x3, _x4) {
+      function loadFilesAsync(_x3, _x4) {
         return _loadFilesAsync.apply(this, arguments);
-      };
+      }
+
+      return loadFilesAsync;
     }() // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Controlling the SVG element
 
@@ -42813,23 +43138,96 @@ function () {
      * Prepares all the Rows/Words/Links.
      * Adds all Words/WordClusters to Rows in the visualisation, but does not draw
      * Links or colour the various Words/WordTags
+     * @param {Object} parsedData
      */
 
   }, {
     key: "init",
-    value: function init() {
+    value: function init(parsedData) {
       var _this = this;
 
-      // Save a reference to the currently loaded tokens and links
-      var data = this.parser.getParsedData();
-      this.words = data.words;
-      this.links = data.links; // Calculate the Link slots (vertical intervals to separate
+      // Convert the parsed data into visualisation objects (by adding
+      // SVG/visualisation-related data and methods)
+      // TODO: Refactor the Word/WordTag/WordCluster/Link system instead of
+      //  patching it here.
+      // Tokens -> Words
+      // Labels -> WordTags
+      // Records LongLabels to convert later.
+      this.words = [];
+      var longLabels = [];
+      parsedData.tokens.forEach(function (token) {
+        // Basic
+        var word = new _word["default"](token.text, token.idx);
+
+        _this.words.push(word);
+
+        _lodash["default"].forOwn(token.registeredLabels, function (label, category) {
+          if (_lodash["default"].has(label, "token")) {
+            // Label
+            word.registerTag(category, label.val);
+          } else if (_lodash["default"].has(label, "tokens")) {
+            // LongLabel
+            if (longLabels.indexOf(label) < 0) {
+              longLabels.push(label);
+            }
+          }
+        });
+      }); // LongLabels -> WordClusters
+      // (via back-references)
+      // N.B.: Assumes that the `.idx` property of each Word is equal to its
+      // index in `this.words`.
+
+      longLabels.forEach(function (longLabel) {
+        var labelWords = [];
+
+        for (var x = 0; x < longLabel.tokens.length; x++) {
+          var wordIdx = longLabel.tokens[x].idx;
+          labelWords.push(_this.words[wordIdx]);
+        }
+
+        new _wordCluster["default"](labelWords, longLabel.val);
+      }); // Links
+      // Arguments might be Tokens or (Parser) Links; convert them to Words
+      // and Links.
+      // N.B.: Assumes that nested Links are parsed earlier in the array.
+
+      this.links = [];
+      var linksById = {};
+      parsedData.links.forEach(function (link) {
+        var newTrigger = null;
+        var newArgs = [];
+
+        if (link.trigger) {
+          // Assume the trigger is a Token
+          newTrigger = _this.words[link.trigger.idx];
+        } // noinspection JSAnnotator
+
+
+        link.arguments.forEach(function (arg) {
+          if (arg.anchor.type === "Token") {
+            newArgs.push({
+              anchor: _this.words[arg.anchor.idx],
+              type: arg.type
+            });
+          } else if (arg.anchor.type === "Link") {
+            newArgs.push({
+              anchor: linksById[arg.anchor.eventId],
+              type: arg.type
+            });
+          }
+        });
+        var newLink = new _link["default"](link.eventId, newTrigger, newArgs, link.relType, link.category === "default", link.category);
+
+        _this.links.push(newLink);
+
+        linksById[newLink.eventId] = newLink;
+      }); // Calculate the Link slots (vertical intervals to separate
       // crossing/intervening Links).
       // Because the order of the Links array affects the slot calculations,
       // we sort it here first in case they aren't sorted in the original
       // annotation data.
 
-      this.links = _util.default.sortForSlotting(this.links);
+      this.links = _util["default"].sortForSlotting(this.links);
       this.links.forEach(function (link) {
         return link.calculateSlot(_this.words);
       }); // Initialise the first Row; new ones will be added automatically as
@@ -42916,18 +43314,6 @@ function () {
       }); // Reset colours
 
       this.taxonomyManager.resetDefaultColours();
-    }
-    /**
-     * Resets and redraws the visualisation using the data currently stored by the
-     * Parser (if any)
-     */
-
-  }, {
-    key: "redraw",
-    value: function redraw() {
-      this.clear();
-      this.init();
-      this.draw();
     }
     /**
      * Fits the SVG element and its children to the size of its container
@@ -43031,13 +43417,13 @@ function () {
       var exportedSVG = this.svg.svg(); // We also need to inline a copy of the relevant SVG styles, which might
       // have been modified/overwritten by the user
 
-      var svgRules = _util.default.getCssRules(this.$container.find(".tag-element").toArray());
+      var svgRules = _util["default"].getCssRules(this.$container.find(".tag-element").toArray());
 
       var i = exportedSVG.indexOf("</defs>");
       exportedSVG = exportedSVG.slice(0, i) + "<style>" + svgRules.join("\n") + "</style>" + exportedSVG.slice(i); // Create a virtual download link and simulate a click on it (using the
       // native `.click()` method, since jQuery cannot `.trigger()` it
 
-      (0, _jquery.default)("<a \n      href=\"data:image/svg+xml;charset=utf-8,".concat(encodeURIComponent(exportedSVG), "\"\n      download=\"tag.svg\"></a>")).appendTo((0, _jquery.default)("body"))[0].click();
+      (0, _jquery["default"])("<a \n      href=\"data:image/svg+xml;charset=utf-8,".concat(encodeURIComponent(exportedSVG), "\"\n      download=\"tag.svg\"></a>")).appendTo((0, _jquery["default"])("body"))[0].click();
     }
     /**
      * Changes the value of the given option setting
@@ -43074,7 +43460,7 @@ function () {
       }).map(function (link) {
         return link.category;
       });
-      return _lodash.default.uniq(categories);
+      return _lodash["default"].uniq(categories);
     }
     /**
      * Shows the specified category of top Links, hiding the others
@@ -43110,7 +43496,7 @@ function () {
       }).map(function (link) {
         return link.category;
       });
-      return _lodash.default.uniq(categories);
+      return _lodash["default"].uniq(categories);
     }
     /**
      * Shows the specified category of bottom Links, hiding the others
@@ -43144,7 +43530,7 @@ function () {
       var categories = this.words.flatMap(function (word) {
         return word.getTagCategories();
       });
-      return _lodash.default.uniq(categories);
+      return _lodash["default"].uniq(categories);
     }
     /**
      * Shows the specified category of top Word tags
@@ -43365,7 +43751,7 @@ function () {
       var _this4 = this;
 
       // Browser window resize
-      (0, _jquery.default)(window).on("resize", _lodash.default.throttle(function () {
+      (0, _jquery["default"])(window).on("resize", _lodash["default"].throttle(function () {
         _this4.resize();
       }, 50));
     } // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -43390,16 +43776,16 @@ function () {
 }()) || _class;
 
 var _default = Main;
-exports.default = _default;
+exports["default"] = _default;
 
-},{"./config.js":54,"./managers/labelmanager.js":56,"./managers/rowmanager.js":57,"./managers/taxonomy.js":58,"./parse/parse.js":61,"./util.js":62,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":48}],56:[function(require,module,exports){
+},{"./components/link":48,"./components/word":52,"./components/word-cluster":50,"./config":53,"./managers/labelmanager":55,"./managers/rowmanager":56,"./managers/taxonomy":57,"./util":59,"@babel/runtime/helpers/asyncToGenerator":2,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"@babel/runtime/regenerator":10,"autobind-decorator":11,"jquery":12,"lodash":43,"svg.js":47}],55:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _link = _interopRequireDefault(require("../components/link.js"));
+var _link = _interopRequireDefault(_dereq_("../components/link.js"));
 
 /**
  * Not currently in use.
@@ -43413,7 +43799,7 @@ module.exports = function () {
   var MAX_WIDTH = 22; // special keys
 
   var Key = {
-    delete: 8,
+    "delete": 8,
     tab: 9,
     enter: 13,
     escape: 27,
@@ -43425,7 +43811,7 @@ module.exports = function () {
   var KeyValues = Object.values(Key);
 
   var LabelManager = function LabelManager(svg) {
-    (0, _classCallCheck2.default)(this, LabelManager);
+    (0, _classCallCheck2["default"])(this, LabelManager);
     // listeners for label handling
     _svg = svg;
     svg.on("tag-edit", listenForEdit);
@@ -43440,13 +43826,11 @@ module.exports = function () {
     string = null;
   }
 
-  ;
-
   function stopEditing() {
     if (activeObject && activeObject.isEditing) {
       var text = activeObject.text();
 
-      if (text && !(activeObject instanceof _link.default)) {
+      if (text && !(activeObject instanceof _link["default"])) {
         _svg.fire("label-updated", {
           object: text,
           label: text.text()
@@ -43468,7 +43852,7 @@ module.exports = function () {
     if (activeObject && activeObject.isEditing) {
       if (KeyValues.indexOf(e.keyCode) > -1) {
         switch (e.keyCode) {
-          case Key.delete:
+          case Key["delete"]:
             if (string === null) {
               string = originalString;
             }
@@ -43499,8 +43883,6 @@ module.exports = function () {
             break;
         }
       }
-
-      ;
     }
   });
   document.addEventListener("keypress", function (e) {
@@ -43523,21 +43905,21 @@ module.exports = function () {
   return LabelManager;
 }();
 
-},{"../components/link.js":49,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],57:[function(require,module,exports){
+},{"../components/link.js":48,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/interopRequireDefault":5}],56:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _row = _interopRequireDefault(require("../components/row.js"));
+var _row = _interopRequireDefault(_dereq_("../components/row.js"));
 
 var RowManager =
 /*#__PURE__*/
@@ -43548,7 +43930,7 @@ function () {
    * @param config - The Config object for the instance
    */
   function RowManager(svg, config) {
-    (0, _classCallCheck2.default)(this, RowManager);
+    (0, _classCallCheck2["default"])(this, RowManager);
     this.config = config;
     this._svg = svg;
     this._rows = [];
@@ -43559,7 +43941,7 @@ function () {
    */
 
 
-  (0, _createClass2.default)(RowManager, [{
+  (0, _createClass2["default"])(RowManager, [{
     key: "resizeAll",
     value: function resizeAll() {
       this.width(this._svg.width());
@@ -43681,8 +44063,8 @@ function () {
         _iteratorError = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion && _iterator.return != null) {
-            _iterator.return();
+          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+            _iterator["return"]();
           }
         } finally {
           if (_didIteratorError) {
@@ -43700,7 +44082,7 @@ function () {
     key: "appendRow",
     value: function appendRow() {
       var lr = this.lastRow;
-      var row = !lr ? new _row.default(this._svg, this.config) : new _row.default(this._svg, this.config, lr.idx + 1, lr.ry2);
+      var row = !lr ? new _row["default"](this._svg, this.config) : new _row["default"](this._svg, this.config, lr.idx + 1, lr.ry2);
 
       this._rows.push(row);
 
@@ -43975,29 +44357,29 @@ function () {
 }();
 
 var _default = RowManager;
-exports.default = _default;
+exports["default"] = _default;
 
-},{"../components/row.js":50,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],58:[function(require,module,exports){
+},{"../components/row.js":49,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5}],57:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
 
-var _lodash = _interopRequireDefault(require("lodash"));
+var _lodash = _interopRequireDefault(_dereq_("lodash"));
 
-var _randomcolor = _interopRequireDefault(require("randomcolor"));
+var _randomcolor = _interopRequireDefault(_dereq_("randomcolor"));
 
-var _jsYaml = _interopRequireDefault(require("js-yaml"));
+var _jsYaml = _interopRequireDefault(_dereq_("js-yaml"));
 
-var _word = _interopRequireDefault(require("../components/word.js"));
+var _word = _interopRequireDefault(_dereq_("../components/word.js"));
 
 /**
  * Manages the user-provided taxonomy tree, and the colouring of the
@@ -44007,7 +44389,7 @@ var TaxonomyManager =
 /*#__PURE__*/
 function () {
   function TaxonomyManager(config) {
-    (0, _classCallCheck2.default)(this, TaxonomyManager);
+    (0, _classCallCheck2["default"])(this, TaxonomyManager);
     // The global Config object
     this.config = config; // The currently loaded taxonomy (as a JS Array representing the tree)
 
@@ -44018,7 +44400,7 @@ function () {
     this.tagColours = {}; // An array containing the first n default colours to use (as a queue).
     // When this array is exhausted, we will switch to using randomColor.
 
-    this.defaultColours = _lodash.default.cloneDeep(config.tagDefaultColours);
+    this.defaultColours = _lodash["default"].cloneDeep(config.tagDefaultColours);
   }
   /**
    * Loads a new taxonomy specification (in YAML form) into the module
@@ -44027,10 +44409,10 @@ function () {
    */
 
 
-  (0, _createClass2.default)(TaxonomyManager, [{
+  (0, _createClass2["default"])(TaxonomyManager, [{
     key: "loadTaxonomyYaml",
     value: function loadTaxonomyYaml(taxonomyYaml) {
-      this.taxonomy = _jsYaml.default.safeLoad(taxonomyYaml);
+      this.taxonomy = _jsYaml["default"].safeLoad(taxonomyYaml);
       this.taxonomyYaml = taxonomyYaml;
     }
     /**
@@ -44162,7 +44544,7 @@ function () {
       if (this.defaultColours.length > 0) {
         return this.defaultColours.shift();
       } else {
-        return (0, _randomcolor.default)();
+        return (0, _randomcolor["default"])();
       }
     }
     /**
@@ -44173,12 +44555,12 @@ function () {
   }, {
     key: "resetDefaultColours",
     value: function resetDefaultColours() {
-      this.defaultColours = _lodash.default.cloneDeep(this.config.tagDefaultColours);
+      this.defaultColours = _lodash["default"].cloneDeep(this.config.tagDefaultColours);
     }
   }], [{
     key: "setColour",
     value: function setColour(element, colour) {
-      if (element instanceof _word.default) {
+      if (element instanceof _word["default"]) {
         // Set the colour of the tag
         element.topTag.svgText.node.style.fill = colour;
       } else {
@@ -44191,988 +44573,101 @@ function () {
 }();
 
 var _default = TaxonomyManager;
-exports.default = _default;
+exports["default"] = _default;
 
-},{"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"js-yaml":13,"lodash":43,"randomcolor":44}],59:[function(require,module,exports){
+},{"../components/word.js":52,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"js-yaml":13,"lodash":43,"randomcolor":44}],58:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+var _main = _interopRequireDefault(_dereq_("./main"));
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-
-var _word = _interopRequireDefault(require("../components/word.js"));
-
-var _link = _interopRequireDefault(require("../components/link.js"));
-
-var BratParser =
-/*#__PURE__*/
-function () {
-  function BratParser() {
-    (0, _classCallCheck2.default)(this, BratParser);
-    this.data = {};
-    this.re = /:+(?=[TER]\d+$)/; // regular expression for reading in a
-    // mention
-
-    this.text = "";
-    this.mentions = {};
-  }
-  /*
-    @param textInput : Source text     or  text + input in standoff format
-    @param entInput  : entity annotation or input in standoff format
-    @param evtInput  : event annotations or {undefined}
-   */
-
-
-  (0, _createClass2.default)(BratParser, [{
-    key: "parse",
-    value: function parse(textInput, entInput, evtInput) {
-      var _this = this;
-
-      this.mentions = {};
-      var lines; // separate source text and annotation
-
-      if (!entInput) {
-        var splitLines = textInput.split("\n");
-        this.text = splitLines[0];
-        lines = splitLines.slice(1);
-      } else {
-        this.text = textInput;
-        lines = entInput.split("\n");
-
-        if (evtInput) {
-          lines = lines.concat(evtInput.split("\n"));
-        }
-      } // filter out non-annotation lines
-
-
-      lines.forEach(function (line) {
-        var tokens = line.trim().split(/\s+/);
-
-        if (tokens[0] && tokens[0].match(/[TER]\d+/)) {
-          _this.mentions[tokens[0]] = {
-            annotation: tokens,
-            object: null
-          };
-        }
-      }); // recursively build graph
-
-      var graph = {
-        words: [],
-        links: [],
-        clusters: []
-      };
-      this.textArray = [{
-        charStart: 0,
-        charEnd: this.text.length,
-        entity: null
-      }];
-
-      for (var id in this.mentions) {
-        if (this.mentions[id] && this.mentions[id].object === null) {
-          this.parseAnnotation(id, graph);
-        }
-      }
-
-      var n = graph.words.length;
-      var idx = 0;
-      this.textArray.forEach(function (t, i) {
-        if (t.entity === null) {
-          var text = _this.text.slice(t.charStart, t.charEnd).trim();
-
-          if (text === "") {
-            // The un-annotated span contained only whitespace; ignore it
-            return;
-          }
-
-          text.split(/\s+/).forEach(function (token) {
-            var word = new _word.default(token, idx);
-            graph.words.push(word);
-            idx++;
-          });
-        } else {
-          t.entity.idx = idx;
-          idx++;
-        }
-      });
-      graph.words.sort(function (a, b) {
-        return a.idx - b.idx;
-      });
-      this.data = graph;
-    }
-  }, {
-    key: "parseAnnotation",
-    value: function parseAnnotation(id, graph) {
-      // check if mention exists & has been parsed already
-      var m = this.mentions[id];
-
-      if (m === undefined) {
-        return null;
-      }
-
-      if (m.object !== null) {
-        return m.object;
-      } // parse annotation
-
-
-      var tokens = m.annotation;
-
-      switch (tokens[0].charAt(0)) {
-        case "T":
-          /**
-           * Entity annotations have:
-           * - Unique ID
-           * - Type
-           * - Character span
-           * - Raw text
-           */
-          var tbm = this.parseTextMention(tokens);
-
-          if (tbm === null) {
-            // invalid line
-            delete this.mentions[id];
-            return null;
-          } else {
-            // valid line; add Word
-            graph.words.push(tbm);
-            m.object = tbm;
-            return tbm;
-          }
-
-        case "E":
-          /**
-           * Event annotations have:
-           * - Unique ID
-           * - Type:ID string representing the trigger entity
-           * - Role:ID strings representing the argument entities
-           */
-          var em = this.parseEventMention(tokens, graph);
-
-          if (em === null) {
-            // invalid event
-            delete this.mentions[id];
-            return null;
-          } else {
-            // valid event; add Link
-            graph.links.push(em);
-            m.object = em;
-            return em;
-          }
-
-        case "R":
-          /**
-           * Binary relations have:
-           * - Unique ID
-           * - Type
-           * - Role:ID strings representing the argument entities (x2)
-           */
-          var rm = this.parseRelationMention(tokens, graph);
-
-          if (rm === null) {
-            // invalid event
-            delete this.mentions[id];
-            return null;
-          } else {
-            // valid event; add Link
-            graph.links.push(rm);
-            m.object = rm;
-            return rm;
-          }
-
-        case "A":
-          break;
-      }
-
-      return null;
-    }
-  }, {
-    key: "parseTextMention",
-    value: function parseTextMention(tokens) {
-      var id = tokens[0].slice(1);
-      var label = tokens[1];
-      var charStart = Number(tokens[2]);
-      var charEnd = Number(tokens[3]);
-
-      if (charStart >= 0 && charStart < charEnd && charEnd <= this.text.length) {
-        // create Word
-        var word = new _word.default(this.text.slice(charStart, charEnd), Number(id));
-        word.registerTag("default", label);
-        word.addEventId(id); // cut textArray
-
-        var textWord = {
-          charStart: charStart,
-          charEnd: charEnd,
-          entity: word
-        };
-        var i = this.textArray.findIndex(function (token) {
-          return token.charEnd > charStart;
-        });
-
-        if (i === -1) {
-          console.log("// mistake in tokenizing string");
-        } else if (this.textArray[i].charStart < charStart) {
-          // textArray[i] starts to the left of the word
-          var tempEnd = this.textArray[i].charEnd;
-          this.textArray[i].charEnd = charStart; // insert word into array
-
-          if (tempEnd > charEnd) {
-            this.textArray.splice(i + 1, 0, textWord, {
-              charStart: charEnd,
-              charEnd: tempEnd,
-              entity: null
-            });
-          } else {
-            this.textArray.splice(i + 1, 0, textWord);
-          }
-        } else {
-          // textArray[i] starts at the same place or to the right of the word
-          if (this.textArray[i].charEnd === charEnd) {
-            this.textArray[i].entity = word;
-          } else {
-            this.textArray.splice(i, 0, textWord);
-            this.textArray[i + 1].charStart = charEnd;
-            this.textArray[i + 1].entity = null;
-          }
-        }
-
-        return word;
-      } else {
-        return null;
-      }
-    }
-  }, {
-    key: "searchBackwards",
-    value: function searchBackwards(arr, fn) {
-      for (var i = arr.length - 1; i >= 0; --i) {
-        if (fn(arr[i])) {
-          return arr[i];
-        }
-      }
-
-      return null;
-    }
-  }, {
-    key: "parseEventMention",
-    value: function parseEventMention(tokens, graph) {
-      var _this2 = this;
-
-      var successfulParse = true;
-      var id = tokens[0];
-      var args = tokens.slice(1).map(function (token, i) {
-        var _token$split = token.split(_this2.re),
-            _token$split2 = (0, _slicedToArray2.default)(_token$split, 2),
-            label = _token$split2[0],
-            id = _token$split2[1];
-
-        var object = _this2.parseAnnotation(id, graph);
-
-        if (object !== null) {
-          return {
-            type: label,
-            anchor: object
-          };
-        } else {
-          if (i === 0) {
-            successfulParse = false;
-          }
-
-          return null;
-        }
-      }).filter(function (arg) {
-        return arg;
-      });
-
-      if (successfulParse && args.length > 1) {
-        // create link
-        return new _link.default(id, args[0].anchor, args.slice(1));
-      } else {
-        return null;
-      }
-    }
-  }, {
-    key: "parseRelationMention",
-    value: function parseRelationMention(tokens, graph) {
-      var _this3 = this;
-
-      if (tokens.length < 4) {
-        return null;
-      }
-
-      var successfulParse = true;
-      var id = tokens[0];
-      var reltype = tokens[1];
-      var args = tokens.slice(2, 4).map(function (token) {
-        var _token$split3 = token.split(_this3.re),
-            _token$split4 = (0, _slicedToArray2.default)(_token$split3, 2),
-            label = _token$split4[0],
-            id = _token$split4[1];
-
-        var object = _this3.parseAnnotation(id, graph);
-
-        if (object !== null) {
-          return {
-            type: label,
-            anchor: object
-          };
-        } else {
-          successfulParse = false;
-        }
-      });
-
-      if (successfulParse === true) {
-        return new _link.default(id, null, args, reltype);
-      } else {
-        return null;
-      }
-    }
-  }]);
-  return BratParser;
-}();
-
-var _default = BratParser;
-exports.default = _default;
-
-},{"../components/link.js":49,"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],60:[function(require,module,exports){
-"use strict";
-
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
-
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-
-var _word = _interopRequireDefault(require("../components/word.js"));
-
-var _link = _interopRequireDefault(require("../components/link.js"));
-
-var _wordCluster = _interopRequireDefault(require("../components/word-cluster.js"));
+var _lodash = _interopRequireDefault(_dereq_("lodash"));
 
 /**
- * Parser for Odin `mentions.json` output
- * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
+ * Instantiation and static functions
  */
-var OdinParser =
-/*#__PURE__*/
-function () {
-  function OdinParser() {
-    (0, _classCallCheck2.default)(this, OdinParser);
-    // This will eventually hold the parsed data for returning to the caller
-    this.data = {
-      words: [],
-      links: [],
-      clusters: []
-    }; // Holds the data for individual documents
+// Parsers for the various annotation formats will be registered with the
+// main library, and will be inherited by individual TAG instances.
+var parsers = {};
+/**
+ * Initialises a TAG visualisation on the given element.
+ * @param {Object} params - Initialisation parameters.
+ * @param {String|Element|jQuery} params.container - Either a string
+ *     containing the ID of the container element, or the element itself (as a
+ *     native/jQuery object).
+ * @param {Object} [params.data] - Initial data to load, if any.
+ * @param {String} [params.format] - One of the supported format identifiers for
+ *     the data.
+ * @param {Object} [params.options] - Overrides for various default
+ *     library options.
+ */
 
-    this.parsedDocuments = {}; // Previously-parsed mentions, by Id.
-    // Old TextBoundMentions return their host Word/WordCluster
-    // Old EventMentions/RelationMentions return their Link
-
-    this.parsedMentions = {}; // We record the index of the last Word from the previous sentence so
-    // that we can generate each Word's global index (if not Word indices
-    // will incorrectly restart from 0 for each new document/sentence)
-
-    this.lastWordIdx = -1;
+function tag(params) {
+  // Core params
+  if (!params.container) {
+    throw "No TAG container element specified.";
   }
-  /**
-   * Parses the given data, filling out `this.data` accordingly.
-   * @param {Object} data
-   */
+
+  if (!params.options) {
+    params.options = {};
+  }
+
+  var instance = new _main["default"](params.container, params.options, parsers); // Initial data load
+
+  if (params.data && params.format) {
+    instance.loadData([params.data], params.format);
+  }
+
+  return instance;
+}
+/**
+ * Registers the parser for a new annotation format.
+ * @param {Object} parser - Parser object.
+ * @param {String} format - Identifier for the annotation format
+ *     associated with this parser.
+ */
 
 
-  (0, _createClass2.default)(OdinParser, [{
-    key: "parse",
-    value: function parse(data) {
-      // Clear out any old parse data
-      this.reset(); // At the top level, the data has two parts: `documents` and `mentions`.
-      // - `documents` includes the tokens and dependency parses for each
-      //   document the data contains.
-      // - `mentions` includes all the events/relations that *every* document
-      //   contains, but each mention has a `document` property that specifies
-      //   which document it applies to.
-      // We will display the tokens from every document consecutively, and fill in
-      // their mentions to match.
+function registerParser(parser, format) {
+  if (_lodash["default"].has(parsers, format)) {
+    throw "There is already a Parser registered for the given format.";
+  }
 
-      var docIds = Object.keys(data.documents).sort();
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = docIds[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var docId = _step.value;
-          this.parsedDocuments[docId] = this._parseDocument(data.documents[docId], docId);
-        } // There are a number of different types of mentions types:
-        // - TextBoundMention
-        // - EventMention
-
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return != null) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
-
-      try {
-        for (var _iterator2 = data.mentions[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var mention = _step2.value;
-
-          this._parseMention(mention);
-        }
-      } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-            _iterator2.return();
-          }
-        } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
-          }
-        }
-      }
-    }
-    /**
-     * Clears out all previously cached parse data (in preparation for a new
-     * parse)
-     */
-
-  }, {
-    key: "reset",
-    value: function reset() {
-      this.data = {
-        words: [],
-        links: [],
-        clusters: []
-      };
-      this.parsedDocuments = {};
-      this.parsedMentions = {};
-      this.lastWordIdx = -1;
-    }
-    /**
-     * Parses a given document (essentially an array of sentences), appending
-     * the tokens and first set of dependency links to the final dataset.
-     * TODO: Allow user to select between different dependency graphs
-     *
-     * @param document
-     * @property {Object[]} sentences
-     *
-     * @param {String} docId - Unique identifier for this document
-     * @private
-     */
-
-  }, {
-    key: "_parseDocument",
-    value: function _parseDocument(document, docId) {
-      var thisDocument = {};
-      /** @type Word[][] **/
-
-      thisDocument.sentences = [];
-      /**
-       * Each sentence is an object with a number of pre-defined properties;
-       * we are interested in the following.
-       * @property {String[]} words
-       * @property raw
-       * @property tags
-       * @property lemmas
-       * @property entities
-       * @property norms
-       * @property chunks
-       * @property graphs
-       */
-
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
-
-      try {
-        for (var _iterator3 = document.sentences.entries()[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var _step3$value = (0, _slicedToArray2.default)(_step3.value, 2),
-              sentenceId = _step3$value[0],
-              sentence = _step3$value[1];
-
-          // Hold on to the Words we generate even as we push them up to the
-          // main data store, so that we can create their syntax Links too
-          // (which rely on sentence-level indices, not global indices)
-          var thisSentence = []; // Read any token-level annotations
-
-          for (var thisIdx = 0; thisIdx < sentence.words.length; thisIdx++) {
-            var thisWord = new _word.default( // Text
-            sentence.words[thisIdx], // (Global) Word index
-            thisIdx + this.lastWordIdx + 1); // Various token-level tags, if they are available
-
-            if (sentence.raw) {
-              thisWord.registerTag("raw", sentence.raw[thisIdx]);
-            }
-
-            if (sentence.tags) {
-              thisWord.registerTag("POS", sentence.tags[thisIdx]);
-            }
-
-            if (sentence.lemmas) {
-              thisWord.registerTag("lemma", sentence.lemmas[thisIdx]);
-            }
-
-            if (sentence.entities) {
-              thisWord.registerTag("entity", sentence.entities[thisIdx]);
-            }
-
-            if (sentence.norms) {
-              thisWord.registerTag("norm", sentence.norms[thisIdx]);
-            }
-
-            if (sentence.chunks) {
-              thisWord.registerTag("chunk", sentence.chunks[thisIdx]);
-            }
-
-            thisSentence.push(thisWord);
-            this.data.words.push(thisWord);
-          } // Update the global Word index offset for the next sentence
+  parsers[format] = parser;
+} // ES6 and CommonJS compatibility
 
 
-          this.lastWordIdx += sentence.words.length; // Sentences may have multiple dependency graphs available
+var _default = {
+  tag: tag,
+  registerParser: registerParser
+};
+exports["default"] = _default;
+module.exports = {
+  tag: tag,
+  registerParser: registerParser
+};
 
-          var graphTypes = Object.keys(sentence.graphs);
-
-          for (var _i = 0; _i < graphTypes.length; _i++) {
-            var graphType = graphTypes[_i];
-
-            /**
-             * @property {Object[]} edges
-             * @property roots
-             */
-            var graph = sentence.graphs[graphType];
-            /**
-             * @property {Number} source
-             * @property {Number} destination
-             * @property {String} relation
-             */
-
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
-
-            try {
-              for (var _iterator4 = graph.edges.entries()[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                var _step4$value = (0, _slicedToArray2.default)(_step4.value, 2),
-                    edgeId = _step4$value[0],
-                    edge = _step4$value[1];
-
-                this.data.links.push(new _link.default( // eventId
-                "".concat(docId, "-").concat(sentenceId, "-").concat(graphType, "-").concat(edgeId), // Trigger
-                thisSentence[edge.source], // Arguments
-                [{
-                  anchor: thisSentence[edge.destination],
-                  type: edge.relation
-                }], // Relation type
-                edge.relation, // Draw Link above Words?
-                false, // Category
-                graphType));
-              }
-            } catch (err) {
-              _didIteratorError4 = true;
-              _iteratorError4 = err;
-            } finally {
-              try {
-                if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-                  _iterator4.return();
-                }
-              } finally {
-                if (_didIteratorError4) {
-                  throw _iteratorError4;
-                }
-              }
-            }
-          }
-
-          thisDocument.sentences.push(thisSentence);
-        }
-      } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-            _iterator3.return();
-          }
-        } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
-          }
-        }
-      }
-
-      return thisDocument;
-    }
-    /**
-     * Parses the given mention and enriches the data stores accordingly.
-     *
-     * - TextBoundMentions become WordTags
-     * - EventMentions become Links
-     * - RelationMentions become Links
-     *
-     * @param mention
-     * @private
-     */
-
-  }, {
-    key: "_parseMention",
-    value: function _parseMention(mention) {
-      /**
-       * @property {String} mention.type
-       * @property {String} mention.id
-       * @property {String} mention.document - The ID of the mention's host
-       *     document
-       * @property {Number} mention.sentence - The index of the sentence in the
-       *     document that this mention comes from
-       * @property {Object} mention.tokenInterval - The start and end indices
-       *     for this mention
-       * @property {String[]} mention.labels - An Array of the labels that
-       *     this mention should have.  By convention, the first element in the
-       *     Array is the actual label, and the other elements simply reflect the
-       *     higher-levels of the label's taxonomic hierarchy.
-       * @property {Object} mention.arguments
-       */
-      // Have we seen this one before?
-      if (this.parsedMentions[mention.id]) {
-        return this.parsedMentions[mention.id];
-      } // TextBoundMention
-      // Will become either a tag for a Word, or a WordCluster.
-
-
-      if (mention.type === "TextBoundMention") {
-        var tokens = this.parsedDocuments[mention.document].sentences[mention.sentence].slice(mention.tokenInterval.start, mention.tokenInterval.end);
-        var label = mention.labels[0];
-
-        if (tokens.length === 1) {
-          // Set the annotation tag for this Word
-          tokens[0].registerTag("default", label); // tokens[0].setTag(label);
-
-          this.parsedMentions[mention.id] = tokens[0];
-          return tokens[0];
-        } else {
-          var cluster = new _wordCluster.default(tokens, label);
-          this.data.clusters.push(cluster);
-          this.parsedMentions[mention.id] = cluster;
-          return cluster;
-        }
-      } // EventMention/RelationMention
-      // Will become a Link
-
-
-      if (mention.type === "EventMention" || mention.type === "RelationMention") {
-        // If there is a trigger, it will be a nested Mention.  Ensure it is
-        // parsed.
-        var trigger = null;
-
-        if (mention.trigger) {
-          trigger = this._parseMention(mention.trigger);
-        } // Read the relation label
-
-
-        var relType = mention.labels[0]; // Generate the arguments array
-        // `mentions.arguments` is an Object keyed by argument type.
-        // The value of each key is an array of nested Mentions as arguments
-
-        var linkArgs = [];
-
-        var _arr = Object.entries(mention["arguments"]);
-
-        for (var _i2 = 0; _i2 < _arr.length; _i2++) {
-          var _arr$_i = (0, _slicedToArray2.default)(_arr[_i2], 2),
-              type = _arr$_i[0],
-              args = _arr$_i[1];
-
-          var _iteratorNormalCompletion5 = true;
-          var _didIteratorError5 = false;
-          var _iteratorError5 = undefined;
-
-          try {
-            for (var _iterator5 = args[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-              var arg = _step5.value;
-
-              // Ensure that the argument mention has been parsed before
-              var anchor = this._parseMention(arg);
-
-              linkArgs.push({
-                anchor: anchor,
-                type: type
-              });
-            }
-          } catch (err) {
-            _didIteratorError5 = true;
-            _iteratorError5 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-                _iterator5.return();
-              }
-            } finally {
-              if (_didIteratorError5) {
-                throw _iteratorError5;
-              }
-            }
-          }
-        } // Done; prepare the new Link
-
-
-        var link = new _link.default( // eventId
-        mention.id, // Trigger
-        trigger, // Arguments
-        linkArgs, // Relation type
-        relType, // Draw Link above Words?
-        true);
-        this.data.links.push(link);
-        this.parsedMentions[mention.id] = link;
-        return link;
-      }
-    }
-  }]);
-  return OdinParser;
-}();
-
-var _default = OdinParser;
-exports.default = _default;
-
-},{"../components/link.js":49,"../components/word-cluster.js":51,"../components/word.js":53,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/slicedToArray":9}],61:[function(require,module,exports){
+},{"./main":54,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],59:[function(_dereq_,module,exports){
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireWildcard = _dereq_("@babel/runtime/helpers/interopRequireWildcard");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _lodash = _interopRequireWildcard(_dereq_("lodash"));
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var SVG = _interopRequireWildcard(_dereq_("svg.js"));
 
-var _lodash = _interopRequireDefault(require("lodash"));
-
-var _brat = _interopRequireDefault(require("./brat.js"));
-
-var _odin = _interopRequireDefault(require("./odin.js"));
-
-var re = /.*(?=\.(\S+))|.*/;
-
-var Parser =
-/*#__PURE__*/
-function () {
-  function Parser() {
-    (0, _classCallCheck2.default)(this, Parser);
-
-    /* output */
-    this._parsedData = {
-      words: [],
-      links: [],
-      clusters: []
-    };
-    /* supported formats */
-
-    this.ann = new _brat.default();
-    this.odin = new _odin.default();
-  }
-  /**
-   * Loads annotation data directly into the parser
-   * @param {Object} data - The raw data expected by the parser for the
-   *     given format
-   * @param {String} format
-   */
-
-
-  (0, _createClass2.default)(Parser, [{
-    key: "loadData",
-    value: function loadData(data, format) {
-      if (format === "brat") {
-        this.parseBrat(data);
-      } else if (format === "odin") {
-        this.parseOdin(data);
-      } else {
-        throw "Unknown annotation format: ".concat(format);
-      }
-
-      return this.getParsedData();
-    }
-    /**
-     * Loads annotation data from file objects (as read by Main.loadFilesAsync())
-     * @param {Array} files - An array of objects with the following structure:
-     *     {
-     *       name: <file name>
-     *       type: <file type>
-     *       content: <file contents as a string>
-     *     }
-     * @param {String} format
-     */
-
-  }, {
-    key: "loadFiles",
-    value: function loadFiles(files, format) {
-      if (files.length === 1) {
-        // Single file
-        var file = files[0];
-
-        if (format === "brat") {
-          this.parseBrat(file.content);
-        } else if (format === "odin") {
-          // The Odin parser expects an Object directly, not a String
-          this.parseOdin(JSON.parse(file.content));
-        } else {
-          throw "Unknown annotation format: ".concat(format);
-        }
-      } else {
-        // Multi-file format
-        // find 2 or 3 files that match in name
-        files.sort(function (a, b) {
-          return a.name.localeCompare(b.name);
-        });
-        var matchingFiles = [];
-        var i = 0;
-        var iname = files[i].name.match(re);
-
-        for (var j = 1; j < files.length; ++j) {
-          var jname = files[j].name.match(re);
-
-          if (jname[1] && jname[0] === iname[0]) {
-            matchingFiles.push(files[i], files[j]);
-            var k = j + 1;
-
-            while (k < files.length) {
-              var kname = files[k].name.match(re);
-
-              if (kname[1] && kname[0] === iname[0]) {
-                matchingFiles.push(files[k]);
-              } else {
-                break;
-              }
-
-              ++k;
-            }
-
-            break;
-          }
-        } // found matching files
-
-
-        if (format === "brat") {
-          if (matchingFiles.length === 2) {
-            // find text content
-            var text = matchingFiles.find(function (file) {
-              return file.name.endsWith(".txt");
-            });
-            var standoff = matchingFiles.find(function (file) {
-              return !file.name.endsWith(".txt");
-            });
-            this.parseBrat(text.content, standoff.content);
-          } else {
-            var _text = matchingFiles.find(function (file) {
-              return file.name.endsWith(".txt");
-            });
-
-            var entities = matchingFiles.find(function (file) {
-              return file.name.endsWith(".a1");
-            });
-            var evts = matchingFiles.find(function (file) {
-              return file.name.endsWith(".a2");
-            });
-
-            if (_text && evts && entities) {
-              this.parseBrat(_text.content, entities.content, evts.content);
-            } else {
-              throw "Wrong number/type of files for Brat format";
-            }
-          }
-        } else {
-          throw "Unknown format, or wrong number/type of files for format";
-        }
-      }
-
-      return this.getParsedData();
-    }
-    /**
-     * Returns a cloned copy of the most recently parsed data, with circular
-     * references (e.g., between Words and Links) intact
-     */
-
-  }, {
-    key: "getParsedData",
-    value: function getParsedData() {
-      return _lodash.default.cloneDeep(this._parsedData);
-    }
-    /**
-     * Parses the given Brat-format data
-     * http://brat.nlplab.org/standoff.html
-     */
-
-  }, {
-    key: "parseBrat",
-    value: function parseBrat() {
-      this.ann.parse.apply(this.ann, arguments);
-      this._parsedData = this.ann.data;
-    }
-    /**
-     * Parses the given Odin-format data
-     * https://gist.github.com/myedibleenso/87a3191c73938840b8ed768ec305db38
-     */
-
-  }, {
-    key: "parseOdin",
-    value: function parseOdin(data) {
-      this.odin.parse(data);
-      this._parsedData = this.odin.data;
-    }
-  }]);
-  return Parser;
-}();
-
-var _default = Parser;
-exports.default = _default;
-
-},{"./brat.js":59,"./odin.js":60,"@babel/runtime/helpers/classCallCheck":3,"@babel/runtime/helpers/createClass":4,"@babel/runtime/helpers/interopRequireDefault":5,"lodash":43}],62:[function(require,module,exports){
-"use strict";
-
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
-
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _lodash = _interopRequireDefault(require("lodash"));
-
-var SVG = _interopRequireWildcard(require("svg.js"));
-
-var draggable = _interopRequireWildcard(require("svg.draggable.js"));
+var draggable = _interopRequireWildcard(_dereq_("svg.draggable.js"));
 
 /**
  * Utility functions
@@ -45241,8 +44736,8 @@ function getCssRules(elements) {
               _iteratorError3 = err;
             } finally {
               try {
-                if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-                  _iterator3.return();
+                if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+                  _iterator3["return"]();
                 }
               } finally {
                 if (_didIteratorError3) {
@@ -45256,8 +44751,8 @@ function getCssRules(elements) {
           _iteratorError2 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-              _iterator2.return();
+            if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+              _iterator2["return"]();
             }
           } finally {
             if (_didIteratorError2) {
@@ -45277,8 +44772,8 @@ function getCssRules(elements) {
     _iteratorError = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion && _iterator.return != null) {
-        _iterator.return();
+      if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+        _iterator["return"]();
       }
     } finally {
       if (_didIteratorError) {
@@ -45287,7 +44782,7 @@ function getCssRules(elements) {
     }
   }
 
-  return _lodash.default.uniq(importRules.concat(ret));
+  return _lodash["default"].uniq(importRules.concat(ret));
 }
 /**
  * Sort some given array of Links in preparation for determining their slots
@@ -45323,11 +44818,28 @@ function sortForSlotting(links) {
     return links[link.idx];
   });
 }
+/**
+ * Deep diff between two object, using lodash
+ * @param  {Object} object Object compared
+ * @param  {Object} base   Object to compare with
+ * @return {Object}        Return a new object who represent the diff
+ */
+
+
+function difference(object, base) {
+  return (0, _lodash.transform)(object, function (result, value, key) {
+    if (!(0, _lodash.isEqual)(value, base[key])) {
+      result[key] = (0, _lodash.isObject)(value) && (0, _lodash.isObject)(base[key]) ? difference(value, base[key]) : value;
+    }
+  });
+}
 
 var _default = {
   getCssRules: getCssRules,
-  sortForSlotting: sortForSlotting
+  sortForSlotting: sortForSlotting,
+  difference: difference
 };
-exports.default = _default;
+exports["default"] = _default;
 
-},{"@babel/runtime/helpers/interopRequireDefault":5,"@babel/runtime/helpers/interopRequireWildcard":6,"lodash":43,"svg.draggable.js":47,"svg.js":48}]},{},[55]);
+},{"@babel/runtime/helpers/interopRequireWildcard":6,"lodash":43,"svg.draggable.js":46,"svg.js":47}]},{},[58])(58)
+});

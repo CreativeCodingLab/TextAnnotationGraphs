@@ -1,5 +1,5 @@
 /**
- * Tags for cases where multiple words make up a single entity
+ * Act like WordTags for cases where multiple words make up a single entity
  * E.g.: The two words "DNA damage" as a single "BioProcess"
  *
  * Act as the anchor for any incoming Links (in lieu of the Words it covers)
@@ -41,7 +41,7 @@ class WordCluster {
     // Cached SVG BBox values
     this._textBbox = null;
 
-    words.forEach(word => word.clusters.push(this));
+    words.forEach((word) => word.clusters.push(this));
   }
 
   /**
@@ -79,8 +79,7 @@ class WordCluster {
           .x(bbox.x - 4)
           .y(bbox.y - 2);
       } else {
-        this.editingRect.width(10)
-          .x(this.svgText.x() - 5);
+        this.editingRect.width(10).x(this.svgText.x() - 5);
       }
     }
   }
@@ -106,12 +105,12 @@ class WordCluster {
     const mainSvg = main.svg;
 
     if (!this.svgs[idx]) {
-      let svg = this.svgs[idx] = mainSvg.group()
+      let svg = (this.svgs[idx] = mainSvg
+        .group()
         .addClass("tag-element")
-        .addClass("word-cluster");
+        .addClass("word-cluster"));
 
-      this.lines[idx] = svg.path()
-        .addClass("tag-element");
+      this.lines[idx] = svg.path().addClass("tag-element");
 
       // Add the text label to the left arm
       if (idx === 0) {
@@ -120,9 +119,9 @@ class WordCluster {
 
         this.svgText.node.oncontextmenu = (e) => {
           e.preventDefault();
-          mainSvg.fire("tag-right-click", {object: this, event: e});
+          mainSvg.fire("tag-right-click", { object: this, event: e });
         };
-        this.svgText.click(() => mainSvg.fire("tag-edit", {object: this}));
+        this.svgText.click(() => mainSvg.fire("tag-edit", { object: this }));
       }
     }
 
@@ -153,9 +152,8 @@ class WordCluster {
     if (leftAnchor.row === rightAnchor.row) {
       // Draw in full curly brace between anchors
       const baseY = this.getBaseY(leftAnchor.row);
-      const textY = baseY
-        - this.config.wordTopTagPadding
-        - this._textBbox.height;
+      const textY =
+        baseY - this.config.wordTopTagPadding - this._textBbox.height;
 
       const centre = (leftX + rightX) / 2;
       this.svgText.move(centre, textY);
@@ -172,24 +170,31 @@ class WordCluster {
 
       // Left arm
       this.lines[0].plot(
-        "M" + [leftX, baseY]
-        + "c" + [0, curveY, curveControl, curveY, curveWidth, curveY]
-        + "c" + [curveWidth - curveControl, 0, curveWidth, 0, curveWidth, curveY]
+        "M" +
+          [leftX, baseY] +
+          "c" +
+          [0, curveY, curveControl, curveY, curveWidth, curveY] +
+          "c" +
+          [curveWidth - curveControl, 0, curveWidth, 0, curveWidth, curveY]
       );
 
       // Right arm
       this.lines[1].plot(
-        "M" + [rightX, baseY]
-        + "c" + [0, curveY, -curveControl, curveY, -curveWidth, curveY]
-        + "c" + [-curveWidth + curveControl, 0, -curveWidth, 0, -curveWidth, curveY]
+        "M" +
+          [rightX, baseY] +
+          "c" +
+          [0, curveY, -curveControl, curveY, -curveWidth, curveY] +
+          "c" +
+          [-curveWidth + curveControl, 0, -curveWidth, 0, -curveWidth, curveY]
       );
     } else {
       // Extend curly brace to end of first Row, draw intervening rows,
       // finish on last Row
-      const textY = leftAnchor.row.baseline
-        - leftAnchor.boxHeight
-        - this._textBbox.height
-        - this.config.wordTopTagPadding;
+      const textY =
+        leftAnchor.row.baseline -
+        leftAnchor.boxHeight -
+        this._textBbox.height -
+        this.config.wordTopTagPadding;
       let centre = (leftX + leftAnchor.row.rw) / 2;
       this.svgText.move(centre, textY);
       this._textBbox = this.svgText.bbox();
@@ -203,28 +208,36 @@ class WordCluster {
       const curveY = -this.config.wordTopTagPadding / 2;
 
       this.lines[0].plot(
-        "M" + [leftX, leftY]
-        + "c" + [0, curveY, curveControl, curveY, curveWidth, curveY]
-        + "c" + [curveWidth - curveControl, 0, curveWidth, 0, curveWidth, curveY]
+        "M" +
+          [leftX, leftY] +
+          "c" +
+          [0, curveY, curveControl, curveY, curveWidth, curveY] +
+          "c" +
+          [curveWidth - curveControl, 0, curveWidth, 0, curveWidth, curveY]
       );
 
       // Right arm, first Row
       let d = "";
-      d += "M" + [leftAnchor.row.rw, leftY + curveY]
-        + "c" + [-armWidth + curveControl, 0, -armWidth, 0, -armWidth, curveY];
+      d +=
+        "M" +
+        [leftAnchor.row.rw, leftY + curveY] +
+        "c" +
+        [-armWidth + curveControl, 0, -armWidth, 0, -armWidth, curveY];
 
       // Intervening rows
       for (let i = leftAnchor.row.idx + 1; i < rightAnchor.row.idx; i++) {
         const thisRow = this.main.rowManager.rows[i];
         const lineY = this.getBaseY(thisRow);
-        d += "M" + [0, lineY + curveY]
-          + "L" + [thisRow.rw, lineY + curveY];
+        d += "M" + [0, lineY + curveY] + "L" + [thisRow.rw, lineY + curveY];
       }
 
       // Last Row
       const rightY = this.getBaseY(rightAnchor.row);
-      d += "M" + [rightX, rightY]
-        + "c" + [0, curveY, -curveControl, curveY, -rightX, curveY];
+      d +=
+        "M" +
+        [rightX, rightY] +
+        "c" +
+        [0, curveY, -curveControl, curveY, -rightX, curveY];
 
       this.lines[1].plot(d);
 
@@ -244,7 +257,7 @@ class WordCluster {
     }
 
     // propagate draw command to parent links
-    this.links.forEach(l => l.draw(this));
+    this.links.forEach((l) => l.draw(this));
   }
 
   /**
@@ -263,8 +276,8 @@ class WordCluster {
   }
 
   remove() {
-    this.svgs.forEach(svg => svg.remove());
-    this.words.forEach(word => {
+    this.svgs.forEach((svg) => svg.remove());
+    this.words.forEach((word) => {
       let i = word.clusters.indexOf(this);
       if (i > -1) {
         word.clusters.splice(i, 1);
@@ -276,10 +289,9 @@ class WordCluster {
     this.isEditing = true;
     let bbox = this.svgText.bbox();
 
-    this.svgs[0]
-      .addClass("tag-element")
-      .addClass("editing");
-    this.editingRect = this.svgs[0].rect(bbox.width + 8, bbox.height + 4)
+    this.svgs[0].addClass("tag-element").addClass("editing");
+    this.editingRect = this.svgs[0]
+      .rect(bbox.width + 8, bbox.height + 4)
       .x(bbox.x - 4)
       .y(bbox.y - 2)
       .rx(2)
@@ -303,10 +315,7 @@ class WordCluster {
    * @return {Word[]}
    */
   get endpoints() {
-    return [
-      this.words[0],
-      this.words[this.words.length - 1]
-    ];
+    return [this.words[0], this.words[this.words.length - 1]];
   }
 
   get row() {
@@ -361,11 +370,16 @@ class WordCluster {
    */
   drawBbox() {
     const bbox = this.svgs[0].bbox();
-    this.svgs[0].polyline([
-      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
-      [bbox.x, bbox.y]])
+    this.svgs[0]
+      .polyline([
+        [bbox.x, bbox.y],
+        [bbox.x2, bbox.y],
+        [bbox.x2, bbox.y2],
+        [bbox.x, bbox.y2],
+        [bbox.x, bbox.y]
+      ])
       .fill("none")
-      .stroke({width: 1});
+      .stroke({ width: 1 });
   }
 
   /**
@@ -373,11 +387,16 @@ class WordCluster {
    */
   drawTextBbox() {
     const bbox = this.svgText.bbox();
-    this.svgs[0].polyline([
-      [bbox.x, bbox.y], [bbox.x2, bbox.y], [bbox.x2, bbox.y2], [bbox.x, bbox.y2],
-      [bbox.x, bbox.y]])
+    this.svgs[0]
+      .polyline([
+        [bbox.x, bbox.y],
+        [bbox.x2, bbox.y],
+        [bbox.x2, bbox.y2],
+        [bbox.x, bbox.y2],
+        [bbox.x, bbox.y]
+      ])
       .fill("none")
-      .stroke({width: 1});
+      .stroke({ width: 1 });
   }
 }
 
