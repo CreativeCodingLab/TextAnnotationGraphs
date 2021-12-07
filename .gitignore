@@ -4,9 +4,7 @@ build/
 #dist/
 
 # npm related
-
 node_modules/*
-
 
 #OS files and Swap Files
 *~
