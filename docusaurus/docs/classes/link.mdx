@@ -1,0 +1,223 @@
+---
+sidebar_position: 1
+---
+
+# Link
+
+### new Link(eventId, trigger, args, reltype, top, category)
+
+Creates a new Link between other entities. Links can have Words or other Links as argument anchors.
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>eventId</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="default"></td>
+            <td class="desc">Unique ID</td>
+        </tr>
+        <tr>
+            <td class="name"><code>trigger</code></td>
+            <td class="type"><code><a href="/docs/classes/word">Word</a></code></td>
+            <td class="default"></td>
+            <td class="desc">Text-bound entity that indicates the presence of this event</td>
+        </tr>
+        <tr>
+           <td class="name"><code>args</code></td>
+           <td class="type"><code>Array.{`<Object>`}</code></td>
+           <td class="default"></td>
+           <td class="desc">The arguments to this Link. An Array of Objects specifying anchor and type</td>
+       </tr>
+       <tr>
+           <td class="name"><code>reltype</code></td>
+           <td class="type"><code>String</code></td>
+           <td class="default"></td>
+           <td class="desc">For (binary) relational Links, a String identifying the relationship type</td>
+       </tr>
+       <tr>
+           <td class="name"><code>top</code></td>
+           <td class="type"><code>Boolean</code></td>
+           <td class="default">true</td>
+           <td class="desc">Whether or not this Link should be drawn above the text row (if false, it will be drawn below)</td>
+       </tr>
+       <tr>
+           <td class="name"><code>category</code></td>
+           <td class="type"><code>String</code></td>
+           <td class="default">default</td>
+           <td class="desc">Links can be shown/hidden by category</td>
+       </tr>
+    </tbody>
+</table>
+
+## Members
+
+### endpoints
+
+Gets the left-most and right-most Word anchors that come under this Link. (Nested Links are treated as extensions of this Link, so the relevant endpoint of the nested Link is recursively found and used)
+
+### width
+
+Returns the total horizontal width of the Link, from the leftmost handle to the rightmost handle
+
+### leftHandle
+
+Returns the leftmost handle (smallest Row index, smallest x-position) in this Link
+
+### rightHandle
+
+Returns the rightmost handle (largest Row index, largest x-position) in this Link
+
+### triggerHandle
+
+Returns the handle corresponding to the trigger for this Link, if one is defined
+
+## Methods
+
+### init(main)
+
+Initialises this Link against the main API instance
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>main</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### toggle()
+
+Toggles the visibility of this Link
+
+### show()
+
+Enables this Link and draws it onto the visualisation
+
+### hide()
+
+Disables this Link and removes it from the visualisation
+
+### showMainLabel()
+
+Shows the main label for this Link
+
+### hideMainLabel()
+
+Hides the main label for this Link
+
+### showArgLabels()
+
+Shows the argument labels for this Link
+
+### hideArgLabels()
+
+Hides the argument labels for this Link
+
+### draw(modAnchor<small>opt</small>)
+
+(Re-)draw some Link onto the main visualisation
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Attribute</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>modAnchor</code></td>
+            <td class="type"><code><a href="/docs/classes/word">Word</a> | <a href="/docs/classes/word-cluster">WordCluster</a> | <a href="/docs/classes/link">Link</a></code></td>
+            <td class="attr">{`<optional>`}</td>
+            <td class="desc">Passed when we know that (only) a specific anchor has changed position since the last redraw. If not, the positions of all handles will be recalculated.</td>
+        </tr>
+    </tbody>
+</table>
+
+### remove()
+
+Removes this Link's SVG elements from the visualisation, and removes all references to it from the data stores
+
+### getLineY(row)
+
+Returns the y-position that this Link's main line will have if it were drawn in the given row (based on the Row's position, and this Link's slot)
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>row</code></td>
+            <td class="type"><a href="/docs/classes/row">Row</a></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### calculateSlot(words)
+
+Given the full array of Words in the document, calculates this Link's slot based on other crossing/intervening/nested Links, recursively if necessary.
+
+Principles: 1) Links with no other Links intervening have priority for lowest slot 2) Links with fully slotted intervening Links (i.e., no crossings) have second priority 3) Crossed Links have lowest priority, and are handled in order from left to right and descending order of length (in terms of number of Words covered)
+
+Sorting of the full Links array is handled by [Util.sortForSlotting](/docs/modules/util#static-sortforslottinglinks).
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>words</code></td>
+            <td class="type">Array.{`<`}<a href="/docs/classes/word">Word</a>{`>`}</td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### drawBbox()
+
+Draws the outline of this component's bounding box
+
+### drawTextBbox()
+
+Draws the outline of the text element's bounding box
+

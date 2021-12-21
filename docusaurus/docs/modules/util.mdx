@@ -1,0 +1,58 @@
+---
+sidebar_position: 1
+---
+
+# Util
+
+Utility functions
+
+## Methods
+
+### <span class="color-grey">(static)</span> getCssRules(elements) → <span class="color-grey">{Array}</span>
+
+Get all the CSS rules that match the given elements Adapted from: https://stackoverflow.com/questions/2952667/find-all-css-rules-that-apply-to-an-element
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>elements</code></td>
+            <td class="type"><code>Array</code></td>
+            <td class="desc">Array of elements to get rules for</td>
+        </tr>
+    </tbody>
+</table>
+
+### <span class="color-grey">(static)</span> sortForSlotting(links)
+
+Sort some given array of Links in preparation for determining their slots (vertical intervals for overlapping/crossing Links).
+Needed because the order that the Parser puts Links in might not be the order we actually want:
+
+1) Primary sort by index of left endpoint, ascending 2) Secondary sort by number of Words covered, descending
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>links</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>

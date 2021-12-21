@@ -1,0 +1,184 @@
+---
+sidebar_position: 8
+---
+
+# Config
+
+### new Config() <span class="color-grey">→ {Config~Config}</span>
+
+Instantiates a new configuration object.
+
+## Type Definitions
+
+### Config <span class="color-grey">:Object</span>
+
+Available configuration options:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>topLinkCategory</code></td>
+            <td class="type"><code>String | "none"</code></td>
+            <td class="default"><code>"default"</code></td>
+            <td class="desc">The category of <a href="/docs/classes/link">Link</a> to show above the text.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>bottomLinkCategory</code></td>
+            <td class="type"><code>String | "none"</code></td>
+            <td class="default"><code>"none"</code></td>
+            <td class="desc">The category of <a href="/docs/classes/link">Link</a> to show below the text.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>topTagCategory</code></td>
+            <td class="type"><code>String | "none"</code></td>
+            <td class="default"><code>"default"</code></td>
+            <td class="desc">The category of <a href="/docs/classes/word-tag">WordTag</a> to show above the text.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>bottomTagCategory</code></td>
+            <td class="type"><code>String | "none"</code></td>
+            <td class="default"><code>"POS"</code></td>
+            <td class="desc">The category of <a href="/docs/classes/word-tag">WordTag</a> to show below the text.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>compactRows</code></td>
+            <td class="type"><code>Boolean</code></td>
+            <td class="default"><code>false</code></td>
+            <td class="desc">Whether or not to lock every <a href="/docs/classes/row">Row</a> to its minimum height.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>showTopLinksOnMove</code></td>
+            <td class="type"><code>Boolean</code></td>
+            <td class="default"><code>true</code></td>
+            <td class="desc">Continue to display top Links when the user drags <a href="/docs/classes/word">Words</a> around.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>showBottomLinksOnMove</code></td>
+            <td class="type"><code>Boolean</code></td>
+            <td class="default"><code>true</code></td>
+            <td class="desc">Continue to display bottom <a href="/docs/classes/link">Link</a> when the user drags <a href="/docs/classes/word">Words</a> around.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>showTopMainLabel</code></td>
+            <td class="type"><code>Boolean</code></td>
+            <td class="default"><code>true</code></td>
+            <td class="desc">Display the main type label for top <a href="/docs/classes/link">Link</a>.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>showTopArgLabels</code></td>
+            <td class="type"><code>Boolean</code></td>
+            <td class="default"><code>false</code></td>
+            <td class="desc">Display the type labels for each argument for top <a href="/docs/classes/link">Link</a>.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>showBottomMainLabel</code></td>
+            <td class="type"><code>Boolean</code></td>
+            <td class="default"><code>true</code></td>
+            <td class="desc">Display the main type label for bottom <a href="/docs/classes/link">Link</a>.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>showBottomArgLabels</code></td>
+            <td class="type"><code>Boolean</code></td>
+            <td class="default"><code>false</code></td>
+            <td class="desc">Display the type labels for each argument for bottom <a href="/docs/classes/link">Link</a>.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>rowEdgePadding</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="default"><code>10</code></td>
+            <td class="desc">Padding on the left/right edges of each <a href="/docs/classes/row">Row</a>.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>rowVerticalPadding</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="default"><code>20</code></td>
+            <td class="desc">Padding on the top/bottom of each <a href="/docs/classes/row">Row</a>.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>rowExtraTopPadding</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="default"><code>10</code></td>
+            <td class="desc">
+                Extra padding on <a href="/docs/classes/row">Row</a> top for <a href="/docs/classes/link">Link</a> labels. <br />
+                (Labels for top Links are drawn above their line, and it is not trivial to get a good value for how high they are, so swe use a pre-configured value here.)
+            </td>
+        </tr>
+        <tr>
+            <td class="name"><code>wordPadding</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="default"><code>10</code></td>
+            <td class="desc">Padding on the left of <a href="/docs/classes/word">Words</a>.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>wordPunctPadding</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="default"><code>2</code></td>
+            <td class="desc">Padding on the left of <a href="/docs/classes/word">Words</a> that contain a single punctuation character.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>wordTopTagPadding</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="default"><code>10</code></td>
+            <td class="desc">Padding between <a href="/docs/classes/word">Words</a> and the <a href="/docs/classes/word-tag">WordTags</a> drawn above them.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>wordBottomTagPadding</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="default"><code>0</code></td>
+            <td class="desc">Padding between <a href="/docs/classes/word">Words</a> and the <a href="/docs/classes/word-tag">WordTags</a> drawn below them.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>wordTagLineLength</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="default"><code>9</code></td>
+            <td class="desc">For <a href="/docs/classes/word-tag">WordTags</a> drawn above <a href="/docs/classes/word">Words</a>, the height of the connecting line/brace between the <a href="/docs/classes/word">Word</a> and the <a href="/docs/classes/word-tag">WordTag</a>.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>wordBraceThreshold</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="default"><code>100</code></td>
+            <td class="desc"><a href="/docs/classes/word">Words</a> that are wider than this will have curly braces drawn between them and their <a href="/docs/classes/word-tag">WordTags</a> (rather than a single vertical line).</td>
+        </tr>
+        <tr>
+            <td class="name"><code>linkSlotInterval</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="default"><code>40</code></td>
+            <td class="desc">Vertical distance between each overlapping <a href="/docs/classes/link">Link</a> slot.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>linkHandlePadding</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="default"><code>2</code></td>
+            <td class="desc">Vertical padding between <a href="/docs/classes/link">Link</a> handles and their anchors.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>linkCurveWidth</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="default"><code>5</code></td>
+            <td class="desc">Corner curve width for <a href="/docs/classes/link">Link</a> lines.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>linkArrowWidth</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="default"><code>5</code></td>
+            <td class="desc">Width of arrowheads for <a href="/docs/classes/link">Link</a> handles.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>tagDefaultColours</code></td>
+            <td class="type"><code>Array.{`<String>`}</code></td>
+            <td class="default"><code>...</code></td>
+            <td class="desc">
+                The first <i>n</i> default colours to use for <a href="/docs/classes/word-tag">WordTags</a> (as a queue). After this array is exhausted, <a href="/docs/classes/word-tag">WordTags</a> will be assigned random colours by default. <br />
+                See the source for the pre-configured default values.
+            </td>
+        </tr>
+    </tbody>
+</table>

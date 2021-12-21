@@ -1,0 +1,241 @@
+---
+sidebar_position: 10
+---
+
+# Row Manager
+
+### new RowManager(svg, config)
+
+Instantiate a RowManager for some TAG instance
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>svg</code></td>
+            <td class="type"></td>
+            <td class="desc">The svg.js API object for the current TAG instance</td>
+        </tr>
+        <tr>
+            <td class="name"><code>config</code></td>
+            <td class="type"></td>
+            <td class="desc">The Config object for the instance</td>
+        </tr>
+    </tbody>
+</table>
+
+## Members
+
+### lastRow
+
+Returns the last Row managed by the RowManager
+
+### rows
+
+Returns the RowManager's internal Row array
+
+## Methods
+
+### resizeAll()
+
+Resizes all the Rows in the visualisation, making sure that they all fit the parent container and that none of the Rows/Words overlap
+
+### resizeRow()
+
+Attempts to adjust the height of the Row with index `i` by the specified `dy`.
+If successful, also adjusts the positions of all the Rows that follow it accordingly.
+
+If called without a `dy`, simply ensures that the Row's height is at least as large as its minimum height.
+
+### width(rw)
+
+Sets the width of all the Rows in the visualisation
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>rw</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="desc">The new Row width</td>
+        </tr>
+    </tbody>
+</table>
+
+### fitWords()
+
+Makes sure that all Words fit nicely on their Rows without overlaps. Runs through all the Words on all the Rows in order; the moment one is found that overlaps with a neighbour, a recursive move is initiated.
+
+### appendRow()
+
+Adds a new Row to the bottom of the svg and sets the height of the main document to match
+
+### removeLastRow()
+
+Remove last row at the bottom of the svg and resize to match
+
+### addWordToRow(word, row, i, forceX)
+
+Adds the given Word to the given Row at the given index. Optionally attempts to force an x-position for the Word, which will also adjust the x-positions of any Words with higher indices on this Row.
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>word</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+        <tr>
+            <td class="name"><code>row</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+        <tr>
+            <td class="name"><code>i</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+        <tr>
+            <td class="name"><code>forceX</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### moveWordRight()
+
+Recursively attempts to move the Word at the given index on the given Row rightwards. If it runs out of space, moves all other Words right or to the next Row as needed.
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>params.row</code></td>
+            <td class="type"><code>Row</code></td>
+            <td class="desc"></td>
+        </tr>
+        <tr>
+            <td class="name"><code>params.wordIndex</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="desc"></td>
+        </tr>
+        <tr>
+            <td class="name"><code>params.dx</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="desc">A positive number specifying how far to the right we should move the Word</td>
+        </tr>
+    </tbody>
+</table>
+
+### moveWordLeft() <span class="color-grey">→ {Boolean}</span>
+
+Recursively attempts to move the Word at the given index on the given Row leftwards. If it runs out of space, tries to move preceding Words leftwards or to the previous Row as needed.
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>params.row</code></td>
+            <td class="type"><code><a href="/docs/classes/row">Row</a></code></td>
+            <td class="desc"></td>
+        </tr>
+        <tr>
+            <td class="name"><code>params.wordIndex</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="desc"></td>
+        </tr>
+        <tr>
+            <td class="name"><code>params.dx</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="desc">A positive number specifying how far to the left we should try to move the Word</td>
+        </tr>
+    </tbody>
+</table>
+
+### moveFirstWordUp(index)
+
+Move the first Word on the Row with the given index up to the end of the previous Row
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>index</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### moveLastWordDown(index)
+
+Move the last Word on the Row with the given index down to the start of the next Row
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>index</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>

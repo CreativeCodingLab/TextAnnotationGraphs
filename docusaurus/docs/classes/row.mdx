@@ -1,0 +1,309 @@
+---
+sidebar_position: 4
+---
+
+# Row
+
+### new Row(svg, config, idx, ry, rh)
+
+Creates a new Row for holding Words.
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>svg</code></td>
+            <td class="type"></td>
+            <td class="default"></td>
+            <td class="desc">This Row's SVG group</td>
+        </tr>
+        <tr>
+            <td class="name"><code>config</code></td>
+            <td class="type"><code><a href="/docs/classes/config">Config~Config</a></code></td>
+            <td class="default"></td>
+            <td class="desc">The Config object for the parent TAG instance</td>
+        </tr>
+        <tr>
+            <td class="name"><code>idx</code></td>
+            <td class="type">Number</td>
+            <td class="default">0</td>
+            <td class="desc">The Row's index</td>
+        </tr>
+        <tr>
+            <td class="name"><code>ry</code></td>
+            <td class="type">Number</td>
+            <td class="default">0</td>
+            <td class="desc">The y-position of the Row's top edge</td>
+        </tr>
+        <tr>
+            <td class="name"><code>rh</code></td>
+            <td class="type">Number</td>
+            <td class="default">100</td>
+            <td class="desc">The Row's height</td>
+        </tr>
+    </tbody>
+</table>
+
+## Members
+
+### baseline
+
+Gets the y-position of the Row's baseline (where the draggable resize line is, and the baseline for all the Row's words)
+
+### ry2
+
+Returns the lower bound of the Row on the y-axis
+
+### maxSlot
+
+Returns the maximum slot occupied by Links related to Words on this Row. Considers positive slots, so only accounts for top Links.
+
+### minSlot
+
+Returns the minimum slot occupied by Links related to Words on this Row. Considers negative slots, so only accounts for bottom Links.
+
+### wordHeight
+
+Returns the maximum height above the baseline of the Word elements on the Row (accounting for their top WordTags and attached WordClusters, if present)
+
+### wordDescent
+
+Returns the maximum descent below the baseline of the Word elements on the Row (accounting for their bottom WordTags, if present)
+
+### minHeight
+
+Returns the minimum amount of height above the baseline needed to fit all this Row's Words, top WordTags and currently-visible top Links. Includes vertical Row padding.
+
+### minDescent
+
+Returns the minimum amount of descent below the baseline needed to fit all this Row's bottom WordTags and currently-visible bottom Links. Includes vertical Row padding.
+
+### availableSpace
+
+Returns the amount of space available at the end of this Row for adding new Words
+
+## Methods
+
+### svgInit(mainSvg)
+
+Initialises the SVG elements related to this Row, and performs an initial draw of the baseline/resize line
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>mainSvg</code></td>
+            <td class="type"></td>
+            <td class="desc">The main SVG document</td>
+        </tr>
+    </tbody>
+</table>
+
+### remove() <span class="color-grey">→ {*}</span>
+
+Removes all elements related to this Row from the main SVG document
+
+dy(y)
+
+Changes the y-position of this Row's upper bound by the given amount
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>y</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### move(y)
+
+Moves this Row's upper bound vertically to the given y-position
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>y</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### height(rh)
+
+Sets the height of this Row
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>rh</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### width(rw)
+
+Sets the width of this Row
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>rw</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### addWord(word, index, forceX) <span class="color-grey">→ {number}</span>
+
+Adds the given Word to this Row at the given index, adjusting the x-positions of any Words with higher indices. Optionally, attempts to force an x-position for the Word. If adding the Word to the Row causes any existing Words to overflow its bounds, will return the index of the first Word that no longer fits.
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>word</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+        <tr>
+            <td class="name"><code>index</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+        <tr>
+            <td class="name"><code>forceX</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### positionWord(word, newX) <span class="color-grey">→ {number}</span>
+
+Assumes that the given Word is already on this Row. Tries to move the Word to the given x-position, adjusting the x-positions of all the following Words on the Row as well. If this ends up pushing some Words off the Row, returns the index of the first Word that no longer fits.
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>word</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+        <tr>
+            <td class="name"><code>newX</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### removeWord(word) <span class="color-grey">→ {<a href="/docs/classes/word">Word</a>}</span>
+
+Removes the specified Word from this Row, returning it for potential further operations.
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>word</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### removeLastWord() <span class="color-grey">→ {<a href="/docs/classes/word">Word</a>}</span>
+
+Removes the last Word from this Row, returning it for potential further operations.
+
+### redrawLinksAndClusters()
+
+Redraws all the unique Links and WordClusters associated with all the Words in the row
+
+### drawBbox()
+
+Draws the outline of this component's bounding box

@@ -1,0 +1,131 @@
+---
+sidebar_position: 3
+---
+
+# Label
+
+:::tip Important
+
+Helper class for various types of labels to be drawn on/around the Link. Consists of two main SVG elements:
+
+An SVG Text element with the label text, drawn in some given colour
+Another SVG Text element with the same text, but with a larger stroke width and drawn in white, to serve as the background for the main element
+
+:::
+
+## Constructor
+
+### new Label(mainSvg, svg, text, addClass)
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>mainSvg</code></td>
+            <td class="type"></td>
+            <td class="desc">The main SVG document (for firing events, etc.)</td>
+        </tr>
+        <tr>
+            <td class="name"><code>svg</code></td>
+            <td class="type"><code>svgjs.Doc</code></td>
+            <td class="desc">The SVG document/group to draw the Text elements in</td>
+        </tr>
+        <tr>
+            <td class="name"><code>text</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="desc">The text of the Label</td>
+        </tr>
+        <tr>
+            <td class="name"><code>addClass</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="desc">Any additional CSS classes to add to the SVG elements</td>
+        </tr>
+    </tbody>
+</table>
+
+## Members
+
+### svgText <span class="color-grey">:svgjs.Text</span>
+
+## Methods
+
+### show()
+
+Shows the Label text elements
+
+### hide()
+
+Hides the Label text elements
+
+### move(x, y)
+
+Moves the centre of the baseline of the Label text elements to the given coordinates (N.B.: SVG Text elements are positioned horizontally by their centres, by default. Also, setting the y-attribute directly allows us to move the Text element directly by its baseline, rather than its top edge)
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>x</code></td>
+            <td class="type"></td>
+            <td class="desc">New horizontal centre of the Label</td>
+        </tr>
+        <tr>
+            <td class="name"><code>y</code></td>
+            <td class="type"></td>
+            <td class="desc">New baseline of the Label</td>
+        </tr>
+    </tbody>
+</table>
+
+### centre(x, y)
+
+Centres the Label elements horizontally and vertically on the given point
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>x</code></td>
+            <td class="type"></td>
+            <td class="desc">New horizontal centre of the Label</td>
+        </tr>
+        <tr>
+            <td class="name"><code>y</code></td>
+            <td class="type"></td>
+            <td class="desc">New vertical centre of the Label</td>
+        </tr>
+    </tbody>
+</table>
+
+### length()
+
+Returns the length (i.e., width) of the main label https://svgjs.com/docs/2.7/elements/#text-length
+
+### drawTextBbox()
+
+Draws the outline of the text element's bounding box
+

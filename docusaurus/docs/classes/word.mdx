@@ -1,0 +1,276 @@
+---
+sidebar_position: 7
+---
+
+# Word
+
+### new Word(text, idx)
+
+Creates a new Word instance
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>text</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="desc">The raw text for this Word</td>
+        </tr>
+        <tr>
+            <td class="name"><code>idx</code></td>
+            <td class="type"><code>Number</code></td>
+            <td class="desc">The index of this Word within the currently-parsed document</td>
+        </tr>
+    </tbody>
+</table>
+
+## Members
+
+### boxWidth
+
+Returns the width of the bounding box for this Word and its WordTags.
+
+### minWidth
+
+Returns the minimum width needed to hold this Word and its WordTags. Differs from boxWidth in that it will also reserve space for the Word's WordClusters if necessary (even though the WordClusters are not technically part of the Word's box)
+
+### boxHeight
+
+Returns the extent of the bounding box for this Word above the Row's line
+
+### descendHeight
+
+Returns the extent of the bounding box for this Word below the Row's line
+
+### absoluteY
+
+Returns the absolute y-position of the top of this Word's bounding box
+
+### absoluteDescent
+
+Returns the absolute y-position of the bottom of this Word's bounding box
+
+### cx
+
+Returns the absolute x-position of the centre of this Word's box
+
+### textWidth
+
+Returns the width of the bounding box of the Word's SVG text element
+
+### textHeight
+
+Returns the height of the bounding box of the Word's SVG text element
+
+### textRcx
+
+Returns the relative x-position of the centre of the bounding box of the Word's SVG text element
+
+### isPunct
+
+Returns true if this Word contains a single punctuation character
+
+FIXME: doesn't handle fancier unicode punctuation | should exclude left-punctuation e.g. left-paren or left-quote
+
+## Methods
+
+### addEventId(id)
+
+Any event IDs (essentially arbitrary labels) that this Word is associated with
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>id</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### registerTag(category, tag)
+
+Register a tag for this word under the given category. At run-time, one category of tags can be shown above this Word and another can be shown below it.
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>category</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="default">default</td>
+            <td class="desc"></td>
+        </tr>
+        <tr>
+            <td class="name"><code>tag</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="default"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### getTagCategories()
+
+Returns all the unique tag categories currently registered for this Word
+
+### setTopTagCategory(category)
+
+Sets the top tag category for this Word, redrawing it if it is initialised
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>category</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### setBottomTagCategory(category)
+
+Sets the bottom tag category for this Word, redrawing it if it is initialised
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>category</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### init(main)
+
+Initialises the SVG elements related to this Word, and performs an initial draw of it and its WordTags. The Word will be drawn in the top left corner of the canvas, but will be properly positioned when added to a Row.
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>main</code></td>
+            <td class="type"></td>
+            <td class="desc">The main API instance</td>
+        </tr>
+    </tbody>
+</table>
+
+### redrawLinks()
+
+Redraw Links
+
+### redrawClusters()
+
+Redraw all clusters (they should always be visible)
+
+### move(x)
+
+Sets the base x-position of this Word and its attendant SVG elements (including its WordTags)
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>x</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### dx(x)
+
+Moves the base x-position of this Word and its attendant SVG elements by the given amount
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>x</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### alignBox()
+
+Aligns the elements of this Word and any attendant WordTags such that the entire Word's bounding box has an x-value of 0, and an x2-value equal to its width
+
+### drawBbox()
+
+Draws the outline of this component's bounding box
+
+### drawTextBbox()
+
+Draws the outline of the text element's bounding box

@@ -1,0 +1,65 @@
+---
+sidebar_position: 2
+---
+
+# Handle
+
+:::tip Important
+
+Helper class for Link handles (the start/end-points for the Link's line; for each Link, there is one handle for each associated Word/nested Link)
+
+:::
+
+## Constructor
+
+### new Handle(anchor, parent)
+
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>anchor</code></td>
+            <td class="type"><code><a href="/docs/classes/word">Word</a> | <a href="/docs/classes/link">Link</a></code></td>
+            <td class="desc">The Word or Link anchor for this Handle</td>
+        </tr>
+        <tr>
+            <td class="name"><code>parent</code></td>
+            <td class="type"><code><a href="/docs/classes/link">Link</a></code></td>
+            <td class="desc">The parent Link that this Handle belongs to</td>
+        </tr>
+    </tbody>
+</table>
+
+## Methods
+
+### precedes(handle)
+
+Returns true if this handle precedes the given handle (i.e., this handle has an earlier Row, or is to its left within the same row)
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>handle</code></td>
+            <td class="type"><code><a href="/docs/classes/handle">Handle</a></code></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,178 @@
+---
+sidebar_position: 5
+---
+
+# Word Cluster
+
+:::tip Important
+
+Tags for cases where multiple words make up a single entity E.g.: The two words "DNA damage" as a single "BioProcess"
+
+Act as the anchor for any incoming Links (in lieu of the Words it covers)
+
+WordTag -> Word -> Row [WordCluster] Link
+:::
+
+## Constructor
+
+### new WordCluster(words, val)
+
+Creates a new WordCluster instance
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>wirds</code></td>
+            <td class="type"><code>Array.{`<`}<a href="/docs/classes/word">Word</a>{`>`}</code></td>
+            <td class="desc">New horizontal centre of the Label</td>
+        </tr>
+        <tr>
+            <td class="name"><code>val</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="desc">New vertical centre of the Label</td>
+        </tr>
+    </tbody>
+</table>
+
+## Members
+
+### endpoints
+
+Returns an array of the first and last Words covered by this WordCluster
+
+### absoluteY
+
+Returns the absolute y-position of the top of the WordCluster's label (for positioning Links that point at it)
+
+### fullHeight
+
+Returns the height of this WordCluster, from Row baseline to the top of its label
+
+### cx
+
+Returns the x-position of the centre of this WordCluster's label
+
+### textWidth
+
+Returns the width of the bounding box of the WordTag's SVG text element
+
+## Methods
+
+### addEventId(id)
+
+Any event IDs (essentially arbitrary labels) that this WordCluster is associated with
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>id</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### text(val) <span class="color-grey">→ {*}</span>
+
+Sets the text of this WordCluster, or returns this WordCluster's SVG text element
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>val</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### init(word, main)
+
+Initialise this WordCluster against the main API instance. Will be called once each by every Word within this cluster's coverage, but we are really only interested in the first Word and the last Word
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>word</code></td>
+            <td class="type"><code><a href="/docs/classes/word">Word</a></code></td>
+            <td class="desc">A Word within this cluster's coverage.</td>
+        </tr>
+        <tr>
+            <td class="name"><code>main</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### draw()
+
+Draws in the SVG elements for this WordCluster https://codepen.io/explosion/pen/YGApwd
+
+### getBaseY(row)
+
+Calculates what the absolute y-value for the base of this cluster's curly brace should be if it were drawn on the given Row
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>row</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### drawBbox()
+
+Draws the outline of this component's bounding box
+
+### drawTextBbox()
+
+Draws the outline of the text element's bounding box
+

@@ -1,0 +1,486 @@
+---
+sidebar_position: 9
+---
+
+# Main
+
+### new Main(container, options)
+
+Initialises a TAG instance with the given parameters
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>container</code></td>
+            <td class="type"><code>String | Element | jQuery</code></td>
+            <td class="desc">Either a string containing the ID of the container element, or the element itself (as a native/jQuery object)</td>
+        </tr>
+        <tr>
+            <td class="name"><code>options</code></td>
+            <td class="type"><code>Object</code></td>
+            <td class="desc">Overrides for default library options</td>
+        </tr>
+    </tbody>
+</table>
+
+## Methods
+
+### loadData(data, format)
+
+Loads the given annotation data onto the TAG visualisation
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>data</code></td>
+            <td class="type"><code>Object</code></td>
+            <td class="desc">The data to load</td>
+        </tr>
+        <tr>
+            <td class="name"><code>format</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="desc">One of the supported format identifiers for the data</td>
+        </tr>
+    </tbody>
+</table>
+
+### <span class="color-grey">(async)</span> loadUrlAsync(path, format)
+
+Reads the given data file asynchronously and loads it onto the TAG visualisation
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>path</code></td>
+            <td class="type"><code>Object</code></td>
+            <td class="desc">The path pointing to the data</td>
+        </tr>
+        <tr>
+            <td class="name"><code>format</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="desc">One of the supported format identifiers for the data</td>
+        </tr>
+    </tbody>
+</table>
+
+### <span class="color-grey">(async)</span> loadFilesAsync(fileList, format)
+
+Reads the given annotation files and loads them onto the TAG visualisation
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>fileList</code></td>
+            <td class="type"><code>FileList</code></td>
+            <td class="desc">We generally expect only one file here, but some formats (e.g., Brat) involve multiple files per dataset</td>
+        </tr>
+        <tr>
+            <td class="name"><code>format</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### init()
+
+Prepares all the Rows/Words/Links. Adds all Words/WordClusters to Rows in the visualisation, but does not draw Links or colour the various Words/WordTags
+
+### draw()
+
+Resizes Rows and (re-)draws Links and WordClusters, without changing the positions of Words/Link handles
+
+### clear()
+
+Removes all elements from the visualisation
+
+### redraw()
+
+Resets and redraws the visualisation using the data currently stored by the Parser (if any)
+
+### resize()
+
+Fits the SVG element and its children to the size of its container
+
+### loadTaxonomyYaml(taxonomy)
+
+Loads a new taxonomy specification (in YAML form) into the module
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>taxonomy</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="desc">A YAML string representing the taxonomy object</td>
+        </tr>
+    </tbody>
+</table>
+
+### getTaxonomyYaml()
+
+Returns a YAML representation of the currently loaded taxonomy
+
+### getTaxonomyTree() <span class="color-grey">→ {Array}</span>
+
+Returns the currently loaded taxonomy as an Array. Simple labels are stored as Strings in Arrays, and category labels are stored as single-key objects.
+
+E.g., a YAML document like the following:
+
+- Label A
+- Category 1:
+    - Label B
+    - Label C
+- Label D
+
+Parses to the following taxonomy object:
+
+`
+[ "Label A", { "Category 1": [ "Label B", "Label C" ] }, "Label D" ]
+`
+
+### getColour(label)
+
+Given some label (either for a WordTag or WordCluster), return the colour that the taxonomy manager has assigned to it
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>label</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### setColour(label, colour)
+
+Sets the colour for some label (either for a WordTag or WordCluster) and redraws the visualisation
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>label</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+        <tr>
+            <td class="name"><code>colour</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### exportSvg()
+
+Exports the current visualisation as an SVG file
+
+### setOption(option, value)
+
+Changes the value of the given option setting (Redraw to see changes)
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>option</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="desc"></td>
+        </tr>
+        <tr>
+            <td class="name"><code>value</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+getOption(option)
+
+Gets the current value for the given option setting
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>option</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### getTopLinkCategories()
+
+Returns an Array of all the categories available for the top Links (Generally, event/relation annotations)
+
+### setTopLinkCategory(category)
+
+Shows the specified category of top Links, hiding the others
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>category</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### getBottomLinkCategories()
+
+Returns an Array of all the categories available for the bottom Links (Generally, syntactic/dependency parses)
+
+### setBottomLinkCategory(category)
+
+Shows the specified category of bottom Links, hiding the others
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>category</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### getTagCategories()
+
+Returns an Array of all the categories available for top Word tags (Generally, text-bound mentions)
+
+### setTopTagCategory(category)
+
+Shows the specified category of top Word tags
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>category</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### setBottomTagCategory(category)
+
+Shows the specified category of bottom Word tags
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>category</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### setTopMainLabelVisibility(visible)
+
+Shows/hides the main label on top Links
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>visible</code></td>
+            <td class="type"><code>Boolean</code></td>
+            <td class="desc">Show if true, hide if false</td>
+        </tr>
+    </tbody>
+</table>
+
+### setTopArgLabelVisibility(visible)
+
+Shows/hides the argument labels on top Links
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>visible</code></td>
+            <td class="type"><code>Boolean</code></td>
+            <td class="desc">Show if true, hide if false</td>
+        </tr>
+    </tbody>
+</table>
+
+### setBottomMainLabelVisibility(visible)
+
+Shows/hides the main label on bottom Links
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>visible</code></td>
+            <td class="type"><code>Boolean</code></td>
+            <td class="desc">Show if true, hide if false</td>
+        </tr>
+    </tbody>
+</table>
+
+### setBottomArgLabelVisibility(visible)
+
+Shows/hides the argument labels on bottom Links
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>visible</code></td>
+            <td class="type"><code>Boolean</code></td>
+            <td class="desc">Show if true, hide if false</td>
+        </tr>
+    </tbody>
+</table>

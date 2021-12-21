@@ -1,0 +1,116 @@
+---
+sidebar_position: 6
+---
+
+# Word Tag
+
+:::tip Important
+
+Tags for single entities/tokens. Essentially a helper class for Words; should not be directly instantiated by Parsers.
+
+[WordTag] -> Word -> Row WordCluster Link
+:::
+
+## Constructor
+
+### new WordTag(val, word, config, top)
+
+Creates a new WordTag instance
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>val</code></td>
+            <td class="type"><code>String</code></td>
+            <td class="default"></td>
+            <td class="desc">The raw text for this WordTag</td>
+        </tr>
+        <tr>
+            <td class="name"><code>word</code></td>
+            <td class="type"><code><a href="/docs/classes/word">Word</a></code></td>
+            <td class="default"></td>
+            <td class="desc">The parent Word for this WordTag</td>
+        </tr>
+        <tr>
+            <td class="name"><code>config</code></td>
+            <td class="type"><code><a href="/docs/classes/config">Config-Config</a></code></td>
+            <td class="default"></td>
+            <td class="desc">The Config object for the parent TAG instance</td>
+        </tr>
+        <tr>
+            <td class="name"><code>top</code></td>
+            <td class="type"><code>Boolean</code></td>
+            <td class="default">true</td>
+            <td class="desc">True if this WordTag should be drawn above the parent Word, false if it should be drawn below</td>
+        </tr>
+    </tbody>
+</table>
+
+## Members
+
+### textWidth
+
+Returns the width of the bounding box of the WordTag's SVG text element
+
+## Methods
+
+### draw()
+
+(Re-)draws this WordTag's SVG elements onto the visualisation
+
+### centre()
+
+Centres this WordTag and its line horizontally against the base Word's current position (N.B.: SVG Text elements are positioned on the x-axis by their centres)
+
+### remove() <span class="color-grey">→ {*}</span>
+
+Removes this WordTag's SVG elements from the visualisation If this instance is not deleted, it can be redrawn with the .draw() method
+
+### drawTagLine()
+
+Draws a connecting line between this WordTag and its parent Word, if this is a top WordTag.
+
+### text(val) <span class="color-grey">→ {*}</span>
+
+Sets the text of this WordTag, or returns this WordTag's SVG text element
+
+PARAMETERS:
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="name"><code>val</code></td>
+            <td class="type"></td>
+            <td class="desc"></td>
+        </tr>
+    </tbody>
+</table>
+
+### boxWidth()
+
+Returns the width of the bounding box for this WordTag
+
+### drawBbox()
+
+Draws the outline of this component's bounding box
+
+### drawTextBbox()
+
+Draws the outline of the text element's bounding box
